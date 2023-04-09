@@ -195,7 +195,6 @@ public abstract class AnvilScreenMixin extends Screen {
 						i++;
 					}
 				}
-				System.out.println(currentItem);
 
 				icon1 = new ItemStack(stack.getItem());
 				icon2 = new ItemStack(stack.getItem());

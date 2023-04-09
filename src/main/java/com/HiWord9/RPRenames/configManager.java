@@ -37,7 +37,6 @@ public class configManager {
             Properties p = new Properties();
             p.load(options);
             resourcePacks = p.getProperty("resourcePacks");
-            System.out.println(resourcePacks);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -104,7 +103,6 @@ public class configManager {
                                 if (finish) {
                                     item = items;
                                 }
-                                System.out.println(item);
 
                                 File currentFile = new File(configPath + item + ".json");
                                 boolean nameExist = false;
@@ -186,9 +184,6 @@ public class configManager {
             Gson gson = new Gson();
             theList = gson.fromJson(fileReader, type);
             fileReader.close();
-            for (Rename n : theList) {
-                System.out.println(Arrays.toString(n.getName()));
-            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
