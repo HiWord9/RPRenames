@@ -1,9 +1,3 @@
-# Fabric Example Mod
-
-## Setup
-
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+# RP Renames Minecraft fabric mod
+This mod shows u every textured rename from ur resource packs for active item in anvil menu (cit).
+For start u need to update ur resourcepacks and then mod will create config with renames (Done button on screen with pack selection)
