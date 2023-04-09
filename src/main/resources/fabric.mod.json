@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "RP Renames",
-  "description": "",
+  "description": "Minecraft mod that allows u to see every possible cit rename from ur resource packs",
   "authors": [
     "HiWord9"
   ],
   "contact": {
     "homepage": "",
-    "sources": ""
+    "sources": "https://github.com/HiWord9/RPRenames-fabric"
   },
 
   "license": "CC0-1.0",

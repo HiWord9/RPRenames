@@ -83,73 +83,75 @@ public class configManager {
                             p.load(properties);
 
                             String items = p.getProperty("matchItems");
-                            while (items.endsWith(" ")) {
-                                items = items.substring(0, items.length() - 1);
-                            }
-                            String item = null;
-                            boolean finish = false;
-                            while (!finish) {
-                                int i = 0;
-                                while (i < items.length()) {
-                                    if (String.valueOf(items.charAt(i)).equals(" ")) {
-                                        item = items.substring(0, i);
-                                        items = items.substring(i + 1);
-                                        finish = false;
-                                        break;
-                                    }
-                                    i++;
-                                    finish = true;
+                            if (items != null) {
+                                while (items.endsWith(" ")) {
+                                    items = items.substring(0, items.length() - 1);
                                 }
-                                if (finish) {
-                                    item = items;
-                                }
-
-                                File currentFile = new File(configPath + item + ".json");
-                                boolean nameExist = false;
-                                if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
-                                    Rename alreadyExist = configRead(currentFile);
-                                    String[] ae = alreadyExist.getName();
-                                    for (String s : ae) {
-                                        if (getFirstName(p.getProperty("nbt.display.Name")).equals(s)) {
-                                            nameExist = true;
+                                String item = null;
+                                boolean finish = false;
+                                while (!finish) {
+                                    int i = 0;
+                                    while (i < items.length()) {
+                                        if (String.valueOf(items.charAt(i)).equals(" ")) {
+                                            item = items.substring(0, i);
+                                            items = items.substring(i + 1);
+                                            finish = false;
+                                            break;
                                         }
+                                        i++;
+                                        finish = true;
                                     }
-                                    if (!nameExist) {
-                                        int AEsize = ae.length;
-                                        String[] newConfig = new String[AEsize + 1];
-                                        int h = 0;
-                                        while (h < AEsize) {
-                                            newConfig[h] = ae[h];
-                                            h++;
-                                        }
-                                        newConfig[h] = getFirstName(p.getProperty("nbt.display.Name"));
-
-                                        Rename newRename = new Rename(newConfig);
-                                        ArrayList<Rename> listFiles = new ArrayList<>();
-                                        listFiles.add(newRename);
-
-                                        try {
-                                            FileWriter fileWriter = new FileWriter(currentFile);
-                                            Gson gson = new Gson();
-                                            gson.toJson(listFiles, fileWriter);
-                                            fileWriter.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
+                                    if (finish) {
+                                        item = items;
                                     }
-                                } else {
-                                    if (p.getProperty("nbt.display.Name") != null) {
-                                        try {
-                                            System.out.println("Current file does not exist, creating new one");
-                                            ArrayList<Rename> listNames = new ArrayList<>();
-                                            Rename name1 = new Rename(new String[]{getFirstName(p.getProperty("nbt.display.Name"))});
-                                            listNames.add(name1);
-                                            FileWriter fileWriter = new FileWriter(currentFile);
-                                            Gson gson = new Gson();
-                                            gson.toJson(listNames, fileWriter);
-                                            fileWriter.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
+
+                                    File currentFile = new File(configPath + item + ".json");
+                                    boolean nameExist = false;
+                                    if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
+                                        Rename alreadyExist = configRead(currentFile);
+                                        String[] ae = alreadyExist.getName();
+                                        for (String s : ae) {
+                                            if (getFirstName(p.getProperty("nbt.display.Name")).equals(s)) {
+                                                nameExist = true;
+                                            }
+                                        }
+                                        if (!nameExist) {
+                                            int AEsize = ae.length;
+                                            String[] newConfig = new String[AEsize + 1];
+                                            int h = 0;
+                                            while (h < AEsize) {
+                                                newConfig[h] = ae[h];
+                                                h++;
+                                            }
+                                            newConfig[h] = getFirstName(p.getProperty("nbt.display.Name"));
+
+                                            Rename newRename = new Rename(newConfig);
+                                            ArrayList<Rename> listFiles = new ArrayList<>();
+                                            listFiles.add(newRename);
+
+                                            try {
+                                                FileWriter fileWriter = new FileWriter(currentFile);
+                                                Gson gson = new Gson();
+                                                gson.toJson(listFiles, fileWriter);
+                                                fileWriter.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    } else {
+                                        if (p.getProperty("nbt.display.Name") != null) {
+                                            try {
+                                                System.out.println("Current file does not exist, creating new one");
+                                                ArrayList<Rename> listNames = new ArrayList<>();
+                                                Rename name1 = new Rename(new String[]{getFirstName(p.getProperty("nbt.display.Name"))});
+                                                listNames.add(name1);
+                                                FileWriter fileWriter = new FileWriter(currentFile);
+                                                Gson gson = new Gson();
+                                                gson.toJson(listNames, fileWriter);
+                                                fileWriter.close();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     }
                                 }
