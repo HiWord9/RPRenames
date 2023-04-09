@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "rprenames",
+  "version": "${version}",
+
+  "name": "RP Renames",
+  "description": "",
+  "authors": [
+    "HiWord9"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/rprenames/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.HiWord9.RPRenames.RPRenames"
+    ]
+  },
+  "mixins": [
+    "rprenames.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.11",
+    "fabric-api": "*",
+    "minecraft": "~1.19.2",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
