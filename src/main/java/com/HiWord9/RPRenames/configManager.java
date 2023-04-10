@@ -196,19 +196,23 @@ public class configManager {
 
     public static String getFirstName(String nbtDisplayName) {
         int a = 0;
-        while (!(String.valueOf(nbtDisplayName.charAt(a)).equals(":")) && a != nbtDisplayName.length()-1) {
-            a++;
+        if (nbtDisplayName.length() > 0) {
+            while (!(String.valueOf(nbtDisplayName.charAt(a)).equals(":")) && a != nbtDisplayName.length() - 1) {
+                a++;
+            }
+            nbtDisplayName = nbtDisplayName.substring(a + 1);
         }
-        nbtDisplayName = nbtDisplayName.substring(a+1);
-        if (String.valueOf(nbtDisplayName.charAt(0)).equals("(")) {
-            nbtDisplayName = nbtDisplayName.substring(1);
-        }
-        int b = 0;
-        while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|")) && b != nbtDisplayName.length()-1) {
-            b++;
-        }
-        if (String.valueOf(nbtDisplayName.charAt(b)).equals("|") || String.valueOf(nbtDisplayName.charAt(b)).equals(")")) {
-            nbtDisplayName = nbtDisplayName.substring(0,b);
+        if (nbtDisplayName.length() > 0) {
+            if (String.valueOf(nbtDisplayName.charAt(0)).equals("(")) {
+                nbtDisplayName = nbtDisplayName.substring(1);
+            }
+            int b = 0;
+            while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|")) && b != nbtDisplayName.length() - 1) {
+                b++;
+            }
+            if (String.valueOf(nbtDisplayName.charAt(b)).equals("|") || String.valueOf(nbtDisplayName.charAt(b)).equals(")")) {
+                nbtDisplayName = nbtDisplayName.substring(0, b);
+            }
         }
         return nbtDisplayName;
     }

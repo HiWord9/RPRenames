@@ -79,7 +79,7 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	CallbackInfo ci;
 
-	//setup
+	//setup method_25445
 	@Inject(at = @At("RETURN"), method = "method_25445")
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
@@ -117,18 +117,18 @@ public abstract class AnvilScreenMixin extends Screen {
 				updatePageWidgets();
 				addDrawableChild(searchField);
 				searchField.setFocusUnlocked(true);
-				searchField.setTextFieldFocused(true);
-				nameField.setTextFieldFocused(false);
+				searchField.setFocused(true);
+				nameField.setFocused(false);
 				nameField.setFocusUnlocked(true);
 				System.out.println("Opened RP Renames Menu");
 			} else {
 				open = false;
 				clearAll();
-				searchField.setTextFieldFocused(false);
+				searchField.setFocused(false);
 				searchField.setFocusUnlocked(false);
 				searchField.setText("");
 				remove(searchField);
-				nameField.setTextFieldFocused(true);
+				nameField.setFocused(true);
 				nameField.setFocusUnlocked(false);
 				System.out.println("Closed RP Renames Menu");
 			}
@@ -158,8 +158,8 @@ public abstract class AnvilScreenMixin extends Screen {
 					updatePageWidgets();
 					addDrawableChild(searchField);
 					searchField.setFocusUnlocked(true);
-					searchField.setTextFieldFocused(true);
-					nameField.setTextFieldFocused(false);
+					searchField.setFocused(true);
+					nameField.setFocused(false);
 					nameField.setFocusUnlocked(true);
 				}
 
@@ -172,7 +172,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	//onSlotUpdate
+	//onSlotUpdate method_7635
 	@Inject(at = @At("RETURN"), method = "method_7635")
 	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
 		if (slotId == 0) {
@@ -182,7 +182,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				searchField.setText("");
 				searchField.setFocusUnlocked(false);
 				remove(searchField);
-				searchField.setTextFieldFocused(false);
+				searchField.setFocused(false);
 				screenUpdate();
 			} else {
 				currentItem = stack.getItem().getTranslationKey();
@@ -211,7 +211,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	//drawForeground
+	//drawForeground method_2388
 	@Inject(at = @At("RETURN"), method = "method_2388")
 	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
 		iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);
