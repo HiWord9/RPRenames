@@ -4,12 +4,12 @@
   "version": "${version}",
 
   "name": "RP Renames",
-  "description": "Minecraft mod that allows u to see every possible cit rename from ur resource packs",
+  "description": "Minecraft mod that allows u to see every possible cit rename from ur resource packs in anvil menu",
   "authors": [
     "HiWord9"
   ],
   "contact": {
-    "homepage": "",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/rp-renames",
     "sources": "https://github.com/HiWord9/RPRenames-fabric"
   },
 
