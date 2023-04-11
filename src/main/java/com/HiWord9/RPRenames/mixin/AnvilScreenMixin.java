@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -79,7 +80,7 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	CallbackInfo ci;
 
-	//setup
+	//setup method_25445
 	@Inject(at = @At("RETURN"), method = "method_25445")
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
@@ -172,7 +173,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	//onSlotUpdate
+	//onSlotUpdate method_7635
 	@Inject(at = @At("RETURN"), method = "method_7635")
 	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
 		if (slotId == 0) {
@@ -211,7 +212,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	//drawForeground
+	//drawForeground method_2388
 	@Inject(at = @At("RETURN"), method = "method_2388")
 	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
 		iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);

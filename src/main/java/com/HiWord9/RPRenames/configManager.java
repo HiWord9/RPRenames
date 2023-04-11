@@ -18,7 +18,7 @@ public class configManager {
 
     public static void jsonManage() {
         if (configFolder.exists()) {
-            System.out.println("Config's folder is already exist. Starting recreate");
+            System.out.println("[RPR] Config's folder is already exist. Starting recreate");
             configDeleter(configPath);
             startConfigCreate();
         } else {
@@ -83,6 +83,9 @@ public class configManager {
                             p.load(properties);
 
                             String items = p.getProperty("matchItems");
+                            if (items == null) {
+                                items = p.getProperty("items");
+                            }
                             if (items != null) {
                                 while (items.endsWith(" ")) {
                                     items = items.substring(0, items.length() - 1);
@@ -103,6 +106,17 @@ public class configManager {
                                     }
                                     if (finish) {
                                         item = items;
+                                    }
+
+                                    while (item.contains(":")) {
+                                        int r = 0;
+                                        while (r < item.length()) {
+                                            if (String.valueOf(item.charAt(r)).equals(":")) {
+                                                break;
+                                            }
+                                            r++;
+                                        }
+                                        item = item.substring(r+1);
                                     }
 
                                     File currentFile = new File(configPath + item + ".json");
@@ -141,7 +155,7 @@ public class configManager {
                                     } else {
                                         if (p.getProperty("nbt.display.Name") != null) {
                                             try {
-                                                System.out.println("Current file does not exist, creating new one");
+                                                System.out.println("[RPR] Created new file for config: " + configPath + item + ".json");
                                                 ArrayList<Rename> listNames = new ArrayList<>();
                                                 Rename name1 = new Rename(new String[]{getFirstName(p.getProperty("nbt.display.Name"))});
                                                 listNames.add(name1);
@@ -195,23 +209,37 @@ public class configManager {
     }
 
     public static String getFirstName(String nbtDisplayName) {
-        int a = 0;
-        if (nbtDisplayName.length() > 0) {
-            while (!(String.valueOf(nbtDisplayName.charAt(a)).equals(":")) && a != nbtDisplayName.length() - 1) {
-                a++;
+        if (nbtDisplayName.startsWith("pattern:") || nbtDisplayName.startsWith("ipattern:")) {
+            if (nbtDisplayName.startsWith("pattern:")) {
+                nbtDisplayName = nbtDisplayName.replace("pattern:", "");
+            } else if (nbtDisplayName.startsWith("ipattern:")) {
+                nbtDisplayName = nbtDisplayName.replace("ipattern:", "");
             }
-            nbtDisplayName = nbtDisplayName.substring(a + 1);
-        }
-        if (nbtDisplayName.length() > 0) {
-            if (String.valueOf(nbtDisplayName.charAt(0)).equals("(")) {
-                nbtDisplayName = nbtDisplayName.substring(1);
+            nbtDisplayName = nbtDisplayName.replace("*", "");
+            nbtDisplayName = nbtDisplayName.replace("?", "");
+        } else if (nbtDisplayName.startsWith("regex:") || nbtDisplayName.startsWith("iregex:")) {
+            if (nbtDisplayName.startsWith("regex:")) {
+                nbtDisplayName = nbtDisplayName.replace("regex:", "");
+            } else if (nbtDisplayName.startsWith("iregex:")) {
+                nbtDisplayName = nbtDisplayName.replace("iregex:", "");
             }
-            int b = 0;
-            while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|")) && b != nbtDisplayName.length() - 1) {
-                b++;
+            while (nbtDisplayName.contains("(")) {
+                int a = 0;
+                while (!(String.valueOf(nbtDisplayName.charAt(a)).equals("("))) {
+                    a++;
+                }
+                int b = 0;
+                while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|"))) {
+                    b++;
+                }
+                int c = 0;
+                while (!(String.valueOf(nbtDisplayName.charAt(c)).equals(")"))) {
+                    c++;
+                }
+                nbtDisplayName = nbtDisplayName.substring(0, b).replace("(", "") + nbtDisplayName.substring(c + 1);
             }
-            if (String.valueOf(nbtDisplayName.charAt(b)).equals("|") || String.valueOf(nbtDisplayName.charAt(b)).equals(")")) {
-                nbtDisplayName = nbtDisplayName.substring(0, b);
+            while (nbtDisplayName.contains(".*")) {
+                nbtDisplayName = nbtDisplayName.replace(".*", "");
             }
         }
         return nbtDisplayName;
