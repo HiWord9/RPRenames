@@ -2,18 +2,21 @@ package com.HiWord9.RPRenames;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class configManager {
 
     private static ArrayList<Rename> theList;
 
     public static String configPath = "config/renames/";
+    public static String configPathTemp = "config/renames/temp";
     public static File configFolder = new File(configPath);
 
     public static void jsonManage() {
@@ -56,7 +59,14 @@ public class configManager {
                         if (String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
                             if (currentRP.startsWith("file/")) {
                                 currentRP = currentRP.substring(5);
-                                configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit");
+                                if (currentRP.endsWith(".zip")) {
+                                    //TODO IMMEDIATELY DELETING THE TEMP FOLDER
+                                    configDeleter(configPathTemp);
+                                    getPropertiesFromZip("resourcepacks/" + currentRP);
+                                    configCreator(configPathTemp);
+                                } else {
+                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit");
+                                }
                             }
                             h = h + 3;
                             currentRP = "";
@@ -68,11 +78,8 @@ public class configManager {
     }
 
     public static void configCreator(String directoryName) {
-
         File directory = new File(directoryName);
-
         File[] fList = directory.listFiles();
-
         if (directory.exists()) {
             for (File file : fList) {
                 if (file.isFile()) {
@@ -170,8 +177,6 @@ public class configManager {
                                     }
                                 }
                             }
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -185,11 +190,10 @@ public class configManager {
 
     public static void configDeleter(String directoryName) {
         File directory = new File(directoryName);
-        File[] fList = directory.listFiles();
-        for (File file : fList) {
-            if (file.isFile()) {
-                file.delete();
-            }
+        try {
+            FileUtils.deleteDirectory(directory);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -200,8 +204,6 @@ public class configManager {
             Gson gson = new Gson();
             theList = gson.fromJson(fileReader, type);
             fileReader.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -243,5 +245,34 @@ public class configManager {
             }
         }
         return nbtDisplayName;
+    }
+
+    public static void getPropertiesFromZip(String fileName) {
+        byte[] buffer = new byte[1024];
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(fileName);
+            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+            ZipEntry currentZip;
+            while ((currentZip = zis.getNextEntry()) != null) {
+                if (currentZip.getName().endsWith(".properties")) {
+                    File newTemp = new File(configPathTemp + File.separator + currentZip.getName());
+                    new File(newTemp.getParent()).mkdirs();
+                    FileOutputStream fos = new FileOutputStream(newTemp);
+                    int len;
+                    while ((len = zis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    zis.closeEntry();
+                    currentZip = zis.getNextEntry();
+                }
+            }
+            zis.closeEntry();
+            zis.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -11,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,20 +33,23 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	@Shadow private TextFieldWidget nameField;
 
+	@Shadow public abstract void removed();
+
 	protected AnvilScreenMixin(Text title) {
 		super(title);
 	}
 
 	boolean open = false;
 
-	private static final Identifier RENAMES_MENU = new Identifier(RPRenames.MOD_ID,"textures/gui/renames_menu.png");
-	private static final Identifier RENAMES_BUTTON = new Identifier(RPRenames.MOD_ID,"textures/gui/renames_button.png");
+	private static final Identifier RENAMES_MENU = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_menu.png");
+	private static final Identifier RENAMES_BUTTON = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_button.png");
 	int page = 0;
 	int renameListSize;
 
 	String currentItem = null;
 	TexturedButtonWidget background;
 	TexturedButtonWidget opener;
+	TexturedButtonWidget openerOpened;
 	TexturedButtonWidget button1;
 	TexturedButtonWidget button2;
 	TexturedButtonWidget button3;
@@ -85,6 +87,8 @@ public abstract class AnvilScreenMixin extends Screen {
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
 
+		open = false;
+
 		background = new TexturedButtonWidget(this.width / 2 - 200 - 28, this.height / 2 - 83, 110+28, 166, 118, 0, 0, RENAMES_MENU, 256, 166, null);
 
 		pageDown = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 140, 30, 16, 58, 40, 16, RENAMES_MENU, 256, 166, (button -> {
@@ -110,7 +114,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			}
 		}));
 
-		opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38 + 1, 20, 19, 0, 0, 19, RENAMES_BUTTON, 20, 57, (button) -> {
+		opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
 			if (!open) {
 				open = true;
 				showButtons();
@@ -121,7 +125,8 @@ public abstract class AnvilScreenMixin extends Screen {
 				searchField.setTextFieldFocused(true);
 				nameField.setTextFieldFocused(false);
 				nameField.setFocusUnlocked(true);
-				System.out.println("Opened RP Renames Menu");
+				addDrawableChild(openerOpened);
+				System.out.println("[RPR] Opened RP Renames Menu");
 			} else {
 				open = false;
 				clearAll();
@@ -131,9 +136,13 @@ public abstract class AnvilScreenMixin extends Screen {
 				remove(searchField);
 				nameField.setTextFieldFocused(true);
 				nameField.setFocusUnlocked(false);
-				System.out.println("Closed RP Renames Menu");
+				remove(openerOpened);
+				System.out.println("[RPR] Closed RP Renames Menu");
 			}
 		});
+
+		openerOpened = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 60, 20, RENAMES_BUTTON, 20, 100, null);
+
 		addDrawableChild(opener);
 
 		searchField = new TextFieldWidget(renderer, this.width / 2 - 200 + 10 + 14 - 28, this.height / 2 - 83 + 30 - 22 + 5, 90 - 14 + 28, 10, Text.of(""));
@@ -162,11 +171,14 @@ public abstract class AnvilScreenMixin extends Screen {
 					searchField.setTextFieldFocused(true);
 					nameField.setTextFieldFocused(false);
 					nameField.setFocusUnlocked(true);
+					remove(openerOpened);
+					addDrawableChild(openerOpened);
 				}
 
 				opener.active = true;
 			} else {
 				opener.active = false;
+				remove(openerOpened);
 			}
 		} else {
 			opener.active = false;
