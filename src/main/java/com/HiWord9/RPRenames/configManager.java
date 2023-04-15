@@ -6,17 +6,18 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class configManager {
 
     private static ArrayList<Rename> theList;
 
     public static String configPath = "config/renames/";
-    public static String configPathTemp = "config/renames/temp";
     public static File configFolder = new File(configPath);
 
     public static void jsonManage() {
@@ -52,7 +53,7 @@ public class configManager {
             if (String.valueOf(resourcePacks.charAt(h)).equals("[") || String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
                 h++;
             } else {
-                if (String.valueOf(resourcePacks.charAt(h-1)).equals("\"")) {
+                if (String.valueOf(resourcePacks.charAt(h - 1)).equals("\"")) {
                     while (h < resourcePacks.length()) {
                         currentRP = currentRP + resourcePacks.charAt(h);
                         h++;
@@ -60,10 +61,7 @@ public class configManager {
                             if (currentRP.startsWith("file/")) {
                                 currentRP = currentRP.substring(5);
                                 if (currentRP.endsWith(".zip")) {
-                                    //TODO IMMEDIATELY DELETING THE TEMP FOLDER
-                                    configDeleter(configPathTemp);
-                                    getPropertiesFromZip("resourcepacks/" + currentRP);
-                                    configCreator(configPathTemp);
+                                    zipConfigCreate("resourcepacks/" + currentRP);
                                 } else {
                                     configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit");
                                 }
@@ -89,94 +87,7 @@ public class configManager {
                             Properties p = new Properties();
                             p.load(properties);
 
-                            String items = p.getProperty("matchItems");
-                            if (items == null) {
-                                items = p.getProperty("items");
-                            }
-                            if (items != null) {
-                                while (items.endsWith(" ")) {
-                                    items = items.substring(0, items.length() - 1);
-                                }
-                                String item = null;
-                                boolean finish = false;
-                                while (!finish) {
-                                    int i = 0;
-                                    while (i < items.length()) {
-                                        if (String.valueOf(items.charAt(i)).equals(" ")) {
-                                            item = items.substring(0, i);
-                                            items = items.substring(i + 1);
-                                            finish = false;
-                                            break;
-                                        }
-                                        i++;
-                                        finish = true;
-                                    }
-                                    if (finish) {
-                                        item = items;
-                                    }
-
-                                    while (item.contains(":")) {
-                                        int r = 0;
-                                        while (r < item.length()) {
-                                            if (String.valueOf(item.charAt(r)).equals(":")) {
-                                                break;
-                                            }
-                                            r++;
-                                        }
-                                        item = item.substring(r+1);
-                                    }
-
-                                    File currentFile = new File(configPath + item + ".json");
-                                    boolean nameExist = false;
-                                    if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
-                                        Rename alreadyExist = configRead(currentFile);
-                                        String[] ae = alreadyExist.getName();
-                                        for (String s : ae) {
-                                            if (getFirstName(p.getProperty("nbt.display.Name")).equals(s)) {
-                                                nameExist = true;
-                                            }
-                                        }
-                                        if (!nameExist) {
-                                            int AEsize = ae.length;
-                                            String[] newConfig = new String[AEsize + 1];
-                                            int h = 0;
-                                            while (h < AEsize) {
-                                                newConfig[h] = ae[h];
-                                                h++;
-                                            }
-                                            newConfig[h] = getFirstName(p.getProperty("nbt.display.Name"));
-
-                                            Rename newRename = new Rename(newConfig);
-                                            ArrayList<Rename> listFiles = new ArrayList<>();
-                                            listFiles.add(newRename);
-
-                                            try {
-                                                FileWriter fileWriter = new FileWriter(currentFile);
-                                                Gson gson = new Gson();
-                                                gson.toJson(listFiles, fileWriter);
-                                                fileWriter.close();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    } else {
-                                        if (p.getProperty("nbt.display.Name") != null) {
-                                            try {
-                                                System.out.println("[RPR] Created new file for config: " + configPath + item + ".json");
-                                                ArrayList<Rename> listNames = new ArrayList<>();
-                                                Rename name1 = new Rename(new String[]{getFirstName(p.getProperty("nbt.display.Name"))});
-                                                listNames.add(name1);
-                                                FileWriter fileWriter = new FileWriter(currentFile);
-                                                Gson gson = new Gson();
-                                                gson.toJson(listNames, fileWriter);
-                                                fileWriter.close();
-                                            } catch (IOException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            propertiesToJson(p);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -200,7 +111,8 @@ public class configManager {
     public static Rename configRead(File theFile) {
         try {
             FileReader fileReader = new FileReader(theFile);
-            Type type = new TypeToken<ArrayList<Rename>>(){}.getType();
+            Type type = new TypeToken<ArrayList<Rename>>() {
+            }.getType();
             Gson gson = new Gson();
             theList = gson.fromJson(fileReader, type);
             fileReader.close();
@@ -247,32 +159,104 @@ public class configManager {
         return nbtDisplayName;
     }
 
-    public static void getPropertiesFromZip(String fileName) {
-        byte[] buffer = new byte[1024];
-        FileInputStream fis;
+    public static void zipConfigCreate(String filePath) {
         try {
-            fis = new FileInputStream(fileName);
-            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-            ZipEntry currentZip;
-            while ((currentZip = zis.getNextEntry()) != null) {
-                if (currentZip.getName().endsWith(".properties")) {
-                    File newTemp = new File(configPathTemp + File.separator + currentZip.getName());
-                    new File(newTemp.getParent()).mkdirs();
-                    FileOutputStream fos = new FileOutputStream(newTemp);
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                    fos.close();
-                    zis.closeEntry();
-                    currentZip = zis.getNextEntry();
+            FileSystem zip = FileSystems.newFileSystem(Paths.get(filePath), (ClassLoader) null);
+            Files.walk(zip.getPath("/assets/minecraft/optifine/cit/"), new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
+                try {
+                    InputStream inputStream = Files.newInputStream(propertiesFile);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    Properties p = new Properties();
+                    p.load(bufferedReader);
+                    propertiesToJson(p);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
-            zis.closeEntry();
-            zis.close();
-            fis.close();
+            });
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void propertiesToJson(Properties p) {
+        String items = p.getProperty("matchItems");
+        if (items == null) {
+            items = p.getProperty("items");
+        }
+        if (items != null) {
+            while (items.endsWith(" ")) {
+                items = items.substring(0, items.length() - 1);
+            }
+            String item = null;
+            boolean finish = false;
+            while (!finish) {
+                int i = 0;
+                while (i < items.length()) {
+                    if (String.valueOf(items.charAt(i)).equals(" ")) {
+                        item = items.substring(0, i);
+                        items = items.substring(i + 1);
+                        finish = false;
+                        break;
+                    }
+                    i++;
+                    finish = true;
+                }
+                if (finish) {
+                    item = items;
+                }
+
+                item = item.replace("minecraft:", "");
+
+                File currentFile = new File(configPath + item + ".json");
+                boolean nameExist = false;
+                if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
+                    Rename alreadyExist = configRead(currentFile);
+                    String[] ae = alreadyExist.getName();
+                    for (String s : ae) {
+                        if (getFirstName(p.getProperty("nbt.display.Name")).equals(s)) {
+                            nameExist = true;
+                        }
+                    }
+                    if (!nameExist) {
+                        int AEsize = ae.length;
+                        String[] newConfig = new String[AEsize + 1];
+                        int h = 0;
+                        while (h < AEsize) {
+                            newConfig[h] = ae[h];
+                            h++;
+                        }
+                        newConfig[h] = getFirstName(p.getProperty("nbt.display.Name"));
+
+                        Rename newRename = new Rename(newConfig);
+                        ArrayList<Rename> listFiles = new ArrayList<>();
+                        listFiles.add(newRename);
+
+                        try {
+                            FileWriter fileWriter = new FileWriter(currentFile);
+                            Gson gson = new Gson();
+                            gson.toJson(listFiles, fileWriter);
+                            fileWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    if (p.getProperty("nbt.display.Name") != null) {
+                        try {
+                            System.out.println("[RPR] Created new file for config: " + configPath + item + ".json");
+                            ArrayList<Rename> listNames = new ArrayList<>();
+                            Rename name1 = new Rename(new String[]{getFirstName(p.getProperty("nbt.display.Name"))});
+                            listNames.add(name1);
+                            FileWriter fileWriter = new FileWriter(currentFile);
+                            Gson gson = new Gson();
+                            gson.toJson(listNames, fileWriter);
+                            fileWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
     }
 }
