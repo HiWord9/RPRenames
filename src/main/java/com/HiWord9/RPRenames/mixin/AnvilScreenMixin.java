@@ -33,8 +33,6 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	@Shadow private TextFieldWidget nameField;
 
-	@Shadow public abstract void removed();
-
 	protected AnvilScreenMixin(Text title) {
 		super(title);
 	}
