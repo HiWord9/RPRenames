@@ -33,20 +33,23 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	@Shadow private TextFieldWidget nameField;
 
+	@Shadow public abstract void removed();
+
 	protected AnvilScreenMixin(Text title) {
 		super(title);
 	}
 
 	boolean open = false;
 
-	private static final Identifier RENAMES_MENU = new Identifier(RPRenames.MOD_ID,"textures/gui/renames_menu.png");
-	private static final Identifier RENAMES_BUTTON = new Identifier(RPRenames.MOD_ID,"textures/gui/renames_button.png");
+	private static final Identifier RENAMES_MENU = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_menu.png");
+	private static final Identifier RENAMES_BUTTON = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_button.png");
 	int page = 0;
 	int renameListSize;
 
 	String currentItem = null;
 	TexturedButtonWidget background;
 	TexturedButtonWidget opener;
+	TexturedButtonWidget openerOpened;
 	TexturedButtonWidget button1;
 	TexturedButtonWidget button2;
 	TexturedButtonWidget button3;
@@ -57,6 +60,11 @@ public abstract class AnvilScreenMixin extends Screen {
 	WLabel button3text = new WLabel(Text.of(""),0xffffff);
 	WLabel button4text = new WLabel(Text.of(""),0xffffff);
 	WLabel button5text = new WLabel(Text.of(""),0xffffff);
+	WLabel button1textShadow = new WLabel(Text.of(""),0x3f3f3f);
+	WLabel button2textShadow = new WLabel(Text.of(""),0x3f3f3f);
+	WLabel button3textShadow = new WLabel(Text.of(""),0x3f3f3f);
+	WLabel button4textShadow = new WLabel(Text.of(""),0x3f3f3f);
+	WLabel button5textShadow = new WLabel(Text.of(""),0x3f3f3f);
 	TexturedButtonWidget pageDown;
 	TexturedButtonWidget pageUp;
 	WLabel pageCount = new WLabel(Text.of(""),0xffffff);
@@ -84,6 +92,8 @@ public abstract class AnvilScreenMixin extends Screen {
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
 
+		open = false;
+
 		background = new TexturedButtonWidget(this.width / 2 - 200 - 28, this.height / 2 - 83, 110+28, 166, 118, 0, 0, RENAMES_MENU, 256, 166, null);
 
 		pageDown = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 140, 30, 16, 58, 40, 16, RENAMES_MENU, 256, 166, (button -> {
@@ -109,7 +119,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			}
 		}));
 
-		opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38 + 1, 20, 19, 0, 0, 19, RENAMES_BUTTON, 20, 57, (button) -> {
+		opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
 			if (!open) {
 				open = true;
 				showButtons();
@@ -120,7 +130,8 @@ public abstract class AnvilScreenMixin extends Screen {
 				searchField.setFocused(true);
 				nameField.setFocused(false);
 				nameField.setFocusUnlocked(true);
-				System.out.println("Opened RP Renames Menu");
+				addDrawableChild(openerOpened);
+				System.out.println("[RPR] Opened RP Renames Menu");
 			} else {
 				open = false;
 				clearAll();
@@ -130,9 +141,13 @@ public abstract class AnvilScreenMixin extends Screen {
 				remove(searchField);
 				nameField.setFocused(true);
 				nameField.setFocusUnlocked(false);
-				System.out.println("Closed RP Renames Menu");
+				remove(openerOpened);
+				System.out.println("[RPR] Closed RP Renames Menu");
 			}
 		});
+
+		openerOpened = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 60, 20, RENAMES_BUTTON, 20, 100, null);
+
 		addDrawableChild(opener);
 
 		searchField = new TextFieldWidget(renderer, this.width / 2 - 200 + 10 + 14 - 28, this.height / 2 - 83 + 30 - 22 + 5, 90 - 14 + 28, 10, Text.of(""));
@@ -161,14 +176,18 @@ public abstract class AnvilScreenMixin extends Screen {
 					searchField.setFocused(true);
 					nameField.setFocused(false);
 					nameField.setFocusUnlocked(true);
+					remove(openerOpened);
+					addDrawableChild(openerOpened);
 				}
 
 				opener.active = true;
 			} else {
 				opener.active = false;
+				remove(openerOpened);
 			}
 		} else {
 			opener.active = false;
+			remove(openerOpened);
 		}
 	}
 
@@ -222,6 +241,16 @@ public abstract class AnvilScreenMixin extends Screen {
 		pageCount.setHorizontalAlignment(HorizontalAlignment.CENTER);
 		pageCount.paint(matrices,83 + 10 - 200 + 10 + 30 + 5 - 14, 140 + 4, mouseX, mouseY);
 		pageCount.setSize(12, 30);
+		button1textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 30 + 7 + 1, mouseX, mouseY);
+		button2textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 52 + 7 + 1, mouseX, mouseY);
+		button3textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 74 + 7 + 1, mouseX, mouseY);
+		button4textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 96 + 7 + 1, mouseX, mouseY);
+		button5textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 118 + 7 + 1, mouseX, mouseY);
+		button1textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		button2textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		button3textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		button4textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
+		button5textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
 		button1text.paint(matrices, -130 + 20 + 49 - 10, 30 + 7, mouseX, mouseY);
 		button2text.paint(matrices, -130 + 20 + 49 - 10, 52 + 7, mouseX, mouseY);
 		button3text.paint(matrices, -130 + 20 + 49 - 10, 74 + 7, mouseX, mouseY);
@@ -242,26 +271,31 @@ public abstract class AnvilScreenMixin extends Screen {
 			this.addDrawableChild(button1);
 			iconSlot1.setIcon(new ItemIcon(icon1));
 			button1text.setText(Text.of(renameList.getName(page * 5)));
+			button1textShadow.setText(Text.of(renameList.getName(page * 5)));
 		}
 		if (1 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button2);
 			iconSlot2.setIcon(new ItemIcon(icon2));
 			button2text.setText(Text.of(renameList.getName(1 + page * 5)));
+			button2textShadow.setText(Text.of(renameList.getName(1 + page * 5)));
 		}
 		if (2 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button3);
 			iconSlot3.setIcon(new ItemIcon(icon3));
 			button3text.setText(Text.of(renameList.getName(2 + page * 5)));
+			button3textShadow.setText(Text.of(renameList.getName(2 + page * 5)));
 		}
 		if (3 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button4);
 			iconSlot4.setIcon(new ItemIcon(icon4));
 			button4text.setText(Text.of(renameList.getName(3 + page * 5)));
+			button4textShadow.setText(Text.of(renameList.getName(3 + page * 5)));
 		}
 		if (4 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button5);
 			iconSlot5.setIcon(new ItemIcon(icon5));
 			button5text.setText(Text.of(renameList.getName(4 + page * 5)));
+			button5textShadow.setText(Text.of(renameList.getName(4 + page * 5)));
 		}
 	}
 
@@ -282,6 +316,11 @@ public abstract class AnvilScreenMixin extends Screen {
 		button3text.setText(Text.of(""));
 		button4text.setText(Text.of(""));
 		button5text.setText(Text.of(""));
+		button1textShadow.setText(Text.of(""));
+		button2textShadow.setText(Text.of(""));
+		button3textShadow.setText(Text.of(""));
+		button4textShadow.setText(Text.of(""));
+		button5textShadow.setText(Text.of(""));
 	}
 
 	private void clearAll() {
@@ -305,6 +344,11 @@ public abstract class AnvilScreenMixin extends Screen {
 		button3text.setText(Text.of(""));
 		button4text.setText(Text.of(""));
 		button5text.setText(Text.of(""));
+		button1textShadow.setText(Text.of(""));
+		button2textShadow.setText(Text.of(""));
+		button3textShadow.setText(Text.of(""));
+		button4textShadow.setText(Text.of(""));
+		button5textShadow.setText(Text.of(""));
 	}
 
 	private void buttonsDefine() {
@@ -314,6 +358,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				nameField.setText(text1.getString());
 			}), text1);
 			button1text.setText(text1);
+			button1textShadow.setText(text1);
 			iconSlot1.setIcon(new ItemIcon(icon1));
 			icon1.setCustomName(text1);
 		}
@@ -324,6 +369,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				nameField.setText(text2.getString());
 			}), text2);
 			button2text.setText(text2);
+			button2textShadow.setText(text2);
 			iconSlot2.setIcon(new ItemIcon(icon2));
 			icon2.setCustomName(text2);
 		}
@@ -334,6 +380,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				nameField.setText(text3.getString());
 			}), text3);
 			button3text.setText(text3);
+			button3textShadow.setText(text3);
 			iconSlot3.setIcon(new ItemIcon(icon3));
 			icon3.setCustomName(text3);
 		}
@@ -344,6 +391,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				nameField.setText(text4.getString());
 			}), text4);
 			button4text.setText(text4);
+			button4textShadow.setText(text4);
 			iconSlot4.setIcon(new ItemIcon(icon4));
 			icon4.setCustomName(text4);
 		}
@@ -354,6 +402,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				nameField.setText(text5.getString());
 			}), text5);
 			button5text.setText(text5);
+			button5textShadow.setText(text5);
 			iconSlot5.setIcon(new ItemIcon(icon5));
 			icon5.setCustomName(text5);
 		}

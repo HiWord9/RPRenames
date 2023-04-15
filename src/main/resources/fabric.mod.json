@@ -19,6 +19,8 @@
   "environment": "*",
   "entrypoints": {
     "main": [
+    ],
+    "client": [
       "com.HiWord9.RPRenames.RPRenames"
     ]
   },
