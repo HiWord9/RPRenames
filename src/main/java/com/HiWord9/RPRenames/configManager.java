@@ -11,20 +11,24 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Properties;
 
 public class configManager {
 
     private static ArrayList<Rename> theList;
 
-    public static String configPath = "config/renames/";
-    public static File configFolder = new File(configPath);
+    public static String configPath = RPRenames.configPath;
+    public static File configFolder = RPRenames.configFolder;
 
     public static void jsonManage() {
         if (configFolder.exists()) {
             System.out.println("[RPR] Config's folder is already exist. Starting recreate");
             configDeleter(configPath);
             startConfigCreate();
+            if (Objects.requireNonNull(configFolder.listFiles()).length == 0) {
+                configFolder.delete();
+            }
         } else {
             startConfigCreate();
         }

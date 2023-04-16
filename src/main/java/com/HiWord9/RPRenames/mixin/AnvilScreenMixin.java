@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -85,6 +86,9 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	CallbackInfo ci;
 
+	private static final String configPath = RPRenames.configPath;
+	private static final File configFolder = RPRenames.configFolder;
+
 	//setup method_25445
 	@Inject(at = @At("RETURN"), method = "method_25445")
 	private void init(CallbackInfo ci) {
@@ -117,32 +121,40 @@ public abstract class AnvilScreenMixin extends Screen {
 			}
 		}));
 
-		opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
-			if (!open) {
-				open = true;
-				showButtons();
-				page = 0;
-				updatePageWidgets();
-				addDrawableChild(searchField);
-				searchField.setFocusUnlocked(true);
-				searchField.setFocused(true);
-				nameField.setFocused(false);
-				nameField.setFocusUnlocked(true);
-				addDrawableChild(openerOpened);
-				System.out.println("[RPR] Opened RP Renames Menu");
-			} else {
-				open = false;
-				clearAll();
-				searchField.setFocused(false);
-				searchField.setFocusUnlocked(false);
-				searchField.setText("");
-				remove(searchField);
-				nameField.setFocused(true);
-				nameField.setFocusUnlocked(false);
-				remove(openerOpened);
-				System.out.println("[RPR] Closed RP Renames Menu");
-			}
-		});
+		if (!configFolder.exists()) {
+			Text noConfigText = Text.translatable("rprenames.config.notfound", configPath);
+			opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
+			});
+			Tooltip tooltip = Tooltip.of(noConfigText);
+			opener.setTooltip(tooltip);
+		} else {
+			opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
+				if (!open) {
+					open = true;
+					showButtons();
+					page = 0;
+					updatePageWidgets();
+					addDrawableChild(searchField);
+					searchField.setFocusUnlocked(true);
+					searchField.setFocused(true);
+					nameField.setFocused(false);
+					nameField.setFocusUnlocked(true);
+					addDrawableChild(openerOpened);
+					System.out.println("[RPR] Opened RP Renames Menu");
+				} else {
+					open = false;
+					clearAll();
+					searchField.setFocused(false);
+					searchField.setFocusUnlocked(false);
+					searchField.setText("");
+					remove(searchField);
+					nameField.setFocused(true);
+					nameField.setFocusUnlocked(false);
+					remove(openerOpened);
+					System.out.println("[RPR] Closed RP Renames Menu");
+				}
+			});
+		}
 
 		openerOpened = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 60, 20, RENAMES_BUTTON, 20, 100, null);
 
@@ -268,32 +280,32 @@ public abstract class AnvilScreenMixin extends Screen {
 		if (page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button1);
 			iconSlot1.setIcon(new ItemIcon(icon1));
-			button1text.setText(Text.of(renameList.getName(page * 5)));
-			button1textShadow.setText(Text.of(renameList.getName(page * 5)));
+			button1text.setText(Text.of(shortText(Text.of(renameList.getName(page * 5)))));
+			button1textShadow.setText(Text.of(shortText(Text.of(renameList.getName(page * 5)))));
 		}
 		if (1 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button2);
 			iconSlot2.setIcon(new ItemIcon(icon2));
-			button2text.setText(Text.of(renameList.getName(1 + page * 5)));
-			button2textShadow.setText(Text.of(renameList.getName(1 + page * 5)));
+			button2text.setText(Text.of(shortText(Text.of(renameList.getName(1 + page * 5)))));
+			button2textShadow.setText(Text.of(shortText(Text.of(renameList.getName(1 + page * 5)))));
 		}
 		if (2 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button3);
 			iconSlot3.setIcon(new ItemIcon(icon3));
-			button3text.setText(Text.of(renameList.getName(2 + page * 5)));
-			button3textShadow.setText(Text.of(renameList.getName(2 + page * 5)));
+			button3text.setText(Text.of(shortText(Text.of(renameList.getName(2 + page * 5)))));
+			button3textShadow.setText(Text.of(shortText(Text.of(renameList.getName(2 + page * 5)))));
 		}
 		if (3 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button4);
 			iconSlot4.setIcon(new ItemIcon(icon4));
-			button4text.setText(Text.of(renameList.getName(3 + page * 5)));
-			button4textShadow.setText(Text.of(renameList.getName(3 + page * 5)));
+			button4text.setText(Text.of(shortText(Text.of(renameList.getName(3 + page * 5)))));
+			button4textShadow.setText(Text.of(shortText(Text.of(renameList.getName(3 + page * 5)))));
 		}
 		if (4 + page * 5 <= renameListSize - 1) {
 			this.addDrawableChild(button5);
 			iconSlot5.setIcon(new ItemIcon(icon5));
-			button5text.setText(Text.of(renameList.getName(4 + page * 5)));
-			button5textShadow.setText(Text.of(renameList.getName(4 + page * 5)));
+			button5text.setText(Text.of(shortText(Text.of(renameList.getName(4 + page * 5)))));
+			button5textShadow.setText(Text.of(shortText(Text.of(renameList.getName(4 + page * 5)))));
 		}
 	}
 
@@ -351,59 +363,86 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	private void buttonsDefine() {
 		if (page * 5 <= renameListSize - 1) {
-			Text text1 = Text.of(renameList.getName(page * 5));
-			button1 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button -> {
-				nameField.setText(text1.getString());
-			}), text1);
-			button1text.setText(text1);
-			button1textShadow.setText(text1);
+			Text text = Text.of(renameList.getName(page * 5));
+			String shortText = shortText(text);
+			button1 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
+				nameField.setText(text.getString());
+			});
+			Tooltip tooltip = Tooltip.of(text);
+			button1.setTooltip(tooltip);
+			button1text.setText(Text.of(shortText));
+			button1textShadow.setText(Text.of(shortText));
 			iconSlot1.setIcon(new ItemIcon(icon1));
-			icon1.setCustomName(text1);
+			icon1.setCustomName(text);
 		}
 
 		if (1 + page * 5 <= renameListSize - 1) {
-			Text text2 = Text.of(renameList.getName(1 + page * 5));
-			button2 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 52, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button -> {
-				nameField.setText(text2.getString());
-			}), text2);
-			button2text.setText(text2);
-			button2textShadow.setText(text2);
+			Text text = Text.of(renameList.getName(1 + page * 5));
+			String shortText = shortText(text);
+			button2 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 52, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
+				nameField.setText(text.getString());
+			});
+			Tooltip tooltip = Tooltip.of(text);
+			button2.setTooltip(tooltip);
+			button2text.setText(Text.of(shortText));
+			button2textShadow.setText(Text.of(shortText));
 			iconSlot2.setIcon(new ItemIcon(icon2));
-			icon2.setCustomName(text2);
+			icon2.setCustomName(text);
 		}
 
 		if (2 + page * 5 <= renameListSize - 1) {
-			Text text3 = Text.of(renameList.getName(2 + page * 5));
-			button3 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 74, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button -> {
-				nameField.setText(text3.getString());
-			}), text3);
-			button3text.setText(text3);
-			button3textShadow.setText(text3);
+			Text text = Text.of(renameList.getName(2 + page * 5));
+			String shortText = shortText(text);
+			button3 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 74, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
+				nameField.setText(text.getString());
+			});
+			Tooltip tooltip = Tooltip.of(text);
+			button3.setTooltip(tooltip);
+			button3text.setText(Text.of(shortText));
+			button3textShadow.setText(Text.of(shortText));
 			iconSlot3.setIcon(new ItemIcon(icon3));
-			icon3.setCustomName(text3);
+			icon3.setCustomName(text);
 		}
 
 		if (3 + page * 5 <= renameListSize - 1) {
-			Text text4 = Text.of(renameList.getName(3 + page * 5));
-			button4 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 96, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button -> {
-				nameField.setText(text4.getString());
-			}), text4);
-			button4text.setText(text4);
-			button4textShadow.setText(text4);
+			Text text = Text.of(renameList.getName(3 + page * 5));
+			String shortText = shortText(text);
+			button4 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 96, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
+				nameField.setText(text.getString());
+			});
+			Tooltip tooltip = Tooltip.of(text);
+			button4.setTooltip(tooltip);
+			button4text.setText(Text.of(shortText));
+			button4textShadow.setText(Text.of(shortText));
 			iconSlot4.setIcon(new ItemIcon(icon4));
-			icon4.setCustomName(text4);
+			icon4.setCustomName(text);
 		}
 
 		if (4 + page * 5 <= renameListSize - 1) {
-			Text text5 = Text.of(renameList.getName(4 + page * 5));
-			button5 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 118, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button -> {
-				nameField.setText(text5.getString());
-			}), text5);
-			button5text.setText(text5);
-			button5textShadow.setText(text5);
+			Text text = Text.of(renameList.getName(4 + page * 5));
+			String shortText = shortText(text);
+			button5 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 118, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
+				nameField.setText(text.getString());
+			});
+			Tooltip tooltip = Tooltip.of(text);
+			button5.setTooltip(tooltip);
+			button5text.setText(Text.of(shortText));
+			button5textShadow.setText(Text.of(shortText));
 			iconSlot5.setIcon(new ItemIcon(icon5));
-			icon5.setCustomName(text5);
+			icon5.setCustomName(text);
 		}
+	}
+
+	private String shortText(Text text) {
+		String shortText;
+		shortText = text.getString();
+		if (renderer.getWidth(shortText) > 92 - 5) {
+			while (renderer.getWidth(shortText) > 92 - 5) {
+				shortText = shortText.substring(0, shortText.length() - 1);
+			}
+			return shortText + "...";
+		}
+		return shortText;
 	}
 
 	private void updatePageWidgets() {
