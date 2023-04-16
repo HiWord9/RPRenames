@@ -6,8 +6,13 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 
+import java.io.File;
+
 public class RPRenames implements ClientModInitializer {
 	public static final String MOD_ID = "rprenames";
+
+	public static String configPath = "config/renames/";
+	public static File configFolder = new File(configPath);
 
 	@Override
 	public void onInitializeClient() {
