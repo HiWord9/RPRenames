@@ -86,6 +86,7 @@ public class configManager {
             for (File file : fList) {
                 if (file.isFile()) {
                     if (file.getAbsolutePath().endsWith(".properties")) {
+                        System.out.println(file.getAbsolutePath());
                         try {
                             FileReader properties = new FileReader(file.getAbsolutePath());
                             Properties p = new Properties();
@@ -147,17 +148,31 @@ public class configManager {
                     a++;
                 }
                 int b = 0;
-                while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|"))) {
-                    b++;
+                if (nbtDisplayName.contains("|")) {
+                    while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("|")) && b < nbtDisplayName.length()-1) {
+                        b++;
+                    }
                 }
                 int c = 0;
                 while (!(String.valueOf(nbtDisplayName.charAt(c)).equals(")"))) {
                     c++;
                 }
+                if (b == nbtDisplayName.length() || b > c) {
+                    b = 0;
+                }
+                if (b == 0) {
+                    b = c;
+                }
                 nbtDisplayName = nbtDisplayName.substring(0, b).replace("(", "") + nbtDisplayName.substring(c + 1);
             }
             while (nbtDisplayName.contains(".*")) {
                 nbtDisplayName = nbtDisplayName.replace(".*", "");
+            }
+            if (String.valueOf(nbtDisplayName.charAt(0)).equals(" ")) {
+                nbtDisplayName = nbtDisplayName.substring(1);
+            }
+            if (String.valueOf(nbtDisplayName.charAt(nbtDisplayName.length() - 1)).equals(" ")) {
+                nbtDisplayName = nbtDisplayName.substring(0, nbtDisplayName.length() - 1);
             }
         }
         return nbtDisplayName;
