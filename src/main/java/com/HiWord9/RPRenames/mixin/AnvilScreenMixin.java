@@ -93,7 +93,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	private static final File configFolder = RPRenames.configFolder;
 
 	//setup method_25445
-	@Inject(at = @At("RETURN"), method = "method_25445")
+	@Inject(at = @At("RETURN"), method = "setup")
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
 
@@ -211,7 +211,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	//onSlotUpdate method_7635
-	@Inject(at = @At("RETURN"), method = "method_7635")
+	@Inject(at = @At("RETURN"), method = "onSlotUpdate")
 	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
 		if (slotId == 0) {
 			if (stack.isEmpty()) {
@@ -250,7 +250,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	//drawForeground method_2388
-	@Inject(at = @At("RETURN"), method = "method_2388")
+	@Inject(at = @At("RETURN"), method = "drawForeground")
 	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
 		iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);
 		iconSlot2.paint(matrices, -130 + 1, 52 + 1, mouseX, mouseY);

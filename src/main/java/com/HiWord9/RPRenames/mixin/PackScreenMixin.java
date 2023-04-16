@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PackScreenMixin{
 
 	//close (onClose) method_25419
-	@Inject(at = @At("RETURN"), method = "method_25419")
+	@Inject(at = @At("RETURN"), method = "close")
 	private void listCreator(CallbackInfo ci) {
 		configManager.jsonManage();
 	}
