@@ -615,9 +615,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				v = 166;
 			}
 		}
-		return new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> {
-			nameField.setText(text.getString());
-		}, new ButtonWidget.TooltipSupplier() {
+		return new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> nameField.setText(text.getString()), new ButtonWidget.TooltipSupplier() {
 			public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
 				renderTooltip(matrixStack, text, i, j);
 			}
