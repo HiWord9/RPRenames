@@ -11,7 +11,8 @@ import java.io.File;
 public class RPRenames implements ClientModInitializer {
 	public static final String MOD_ID = "rprenames";
 
-	public static String configPath = "config/renames/";
+	public static String configPath = "config/renames/all/";
+	public static String configPathFavorite = "config/renames/favorite/";
 	public static File configFolder = new File(configPath);
 
 	@Override

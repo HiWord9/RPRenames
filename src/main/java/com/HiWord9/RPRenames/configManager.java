@@ -86,7 +86,6 @@ public class configManager {
             for (File file : fList) {
                 if (file.isFile()) {
                     if (file.getAbsolutePath().endsWith(".properties")) {
-                        System.out.println(file.getAbsolutePath());
                         try {
                             FileReader properties = new FileReader(file.getAbsolutePath());
                             Properties p = new Properties();
@@ -164,6 +163,17 @@ public class configManager {
                     b = c;
                 }
                 nbtDisplayName = nbtDisplayName.substring(0, b).replace("(", "") + nbtDisplayName.substring(c + 1);
+            }
+            while (nbtDisplayName.contains("[")) {
+                int a = 0;
+                while (!(String.valueOf(nbtDisplayName.charAt(a)).equals("["))) {
+                    a++;
+                }
+                int b = 0;
+                while (!(String.valueOf(nbtDisplayName.charAt(b)).equals("]"))) {
+                    b++;
+                }
+                nbtDisplayName = nbtDisplayName.substring(0, a + 2).replace("[", "") + nbtDisplayName.substring(b + 1);
             }
             while (nbtDisplayName.contains(".*")) {
                 nbtDisplayName = nbtDisplayName.replace(".*", "");
