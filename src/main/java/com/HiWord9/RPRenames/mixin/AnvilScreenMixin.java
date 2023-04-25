@@ -13,7 +13,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,7 +31,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 @Mixin(AnvilScreen.class)
 public abstract class AnvilScreenMixin extends Screen {
@@ -585,9 +583,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				v = 166;
 			}
 		}
-		TexturedButtonWidget nameButton = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> {
-			nameField.setText(text.getString());
-		});
+		TexturedButtonWidget nameButton = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> nameField.setText(text.getString()));
 		Tooltip tooltip = Tooltip.of(text);
 		nameButton.setTooltip(tooltip);
 		return nameButton;
