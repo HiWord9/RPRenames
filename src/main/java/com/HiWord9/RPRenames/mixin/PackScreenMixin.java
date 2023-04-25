@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PackScreen.class)
-public abstract class PackScreenMixin{
+public class PackScreenMixin{
 
 	//close (onClose) method_25419
 	@Inject(at = @At("RETURN"), method = "method_25419")

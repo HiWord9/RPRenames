@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.mixin;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
 import com.HiWord9.RPRenames.configManager;
+import com.google.gson.Gson;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
@@ -27,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
@@ -44,19 +47,29 @@ public abstract class AnvilScreenMixin extends Screen {
 	boolean open = false;
 
 	private static final Identifier RENAMES_MENU = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_menu.png");
+	int menuWidth = 256;
+	int menuHeight = 206;
 	private static final Identifier RENAMES_BUTTON = new Identifier(RPRenames.MOD_ID,"textures/gui/rename_button.png");
 	int page = 0;
-	int renameListSize;
+	int currentRenameListSize;
 
 	String currentItem = null;
 	TexturedButtonWidget background;
 	TexturedButtonWidget opener;
 	TexturedButtonWidget openerOpened;
+	TexturedButtonWidget openerFavoriteOnly;
 	TexturedButtonWidget button1;
 	TexturedButtonWidget button2;
 	TexturedButtonWidget button3;
 	TexturedButtonWidget button4;
 	TexturedButtonWidget button5;
+	TexturedButtonWidget searchTab;
+	TexturedButtonWidget favoriteTab;
+	TexturedButtonWidget searchTab2;
+	TexturedButtonWidget favoriteTab2;
+	int tabNum = 1;
+	TexturedButtonWidget favorite;
+	TexturedButtonWidget unfavorite;
 	WLabel button1text = new WLabel(Text.of(""),0xffffff);
 	WLabel button2text = new WLabel(Text.of(""),0xffffff);
 	WLabel button3text = new WLabel(Text.of(""),0xffffff);
@@ -70,7 +83,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	TexturedButtonWidget pageDown;
 	TexturedButtonWidget pageUp;
 	WLabel pageCount = new WLabel(Text.of(""),0xffffff);
-	Rename renameList;
+	Rename currentRenameList;
 
 	TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
 	TextFieldWidget searchField;
@@ -90,6 +103,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	CallbackInfo ci;
 
 	private static final String configPath = RPRenames.configPath;
+	private static final String configPathFavorite = RPRenames.configPathFavorite;
 	private static final File configFolder = RPRenames.configFolder;
 
 	//setup method_25445
@@ -99,27 +113,32 @@ public abstract class AnvilScreenMixin extends Screen {
 
 		open = false;
 
-		background = new TexturedButtonWidget(this.width / 2 - 200 - 28, this.height / 2 - 83, 110+28, 166, 118, 0, 0, RENAMES_MENU, 256, 166, null);
+		background = new TexturedButtonWidget(this.width / 2 - 200 - 28, this.height / 2 - 83, 110+28, 166, 118, 0, 0, RENAMES_MENU, 256, 206, null);
+		background.active = false;
 
-		pageDown = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 140, 30, 16, 58, 40, 16, RENAMES_MENU, 256, 166, (button -> {
+		pageDown = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 140, 30, 16, 58, 40, 16, RENAMES_MENU, 256, 206, (button -> {
 			page--;
 			hideButtons();
 			buttonsDefine();
+			addDrawableChild(background);
 			showButtons();
+			tabsUpdate();
 			updatePageWidgets();
 			if (page == 0) {
 				button.active = false;
 			}
 			pageUp.active = true;
 		}));
-		pageUp = new TexturedButtonWidget(this.width / 2 - 200 + 10 + 60, this.height / 2 - 83 + 140, 30, 16, 88, 40, 16, RENAMES_MENU, 256, 166, (button -> {
+		pageUp = new TexturedButtonWidget(this.width / 2 - 200 + 10 + 60, this.height / 2 - 83 + 140, 30, 16, 88, 40, 16, RENAMES_MENU, 256, 206, (button -> {
 			page++;
 			hideButtons();
 			buttonsDefine();
+			addDrawableChild(background);
 			showButtons();
+			tabsUpdate();
 			updatePageWidgets();
 			pageDown.active = true;
-			if (5 + page * 5 > renameListSize - 1) {
+			if (5 + page * 5 > currentRenameListSize - 1) {
 				button.active = false;
 			}
 		}));
@@ -127,7 +146,28 @@ public abstract class AnvilScreenMixin extends Screen {
 		if (!configFolder.exists()) {
 			Text noConfigText = Text.translatable("rprenames.config.notfound", configPath);
 			opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
-			}, new ButtonWidget.TooltipSupplier() {
+				if (!open) {
+					open = true;
+					page = 0;
+					System.out.println("[RPR] Opened RP Renames Menu");
+					screenUpdate();
+				} else {
+					open = false;
+					clearAll();
+					searchField.setTextFieldFocused(false);
+					searchField.setFocusUnlocked(false);
+					searchField.setText("");
+					remove(searchField);
+					nameField.setTextFieldFocused(true);
+					nameField.setFocusUnlocked(false);
+					remove(openerOpened);
+					remove(searchTab);
+					remove(favoriteTab);
+					remove(searchTab2);
+					remove(favoriteTab2);
+					tabNum = 1;
+					System.out.println("[RPR] Closed RP Renames Menu");
+				}}, new ButtonWidget.TooltipSupplier() {
 				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
 					renderTooltip(matrixStack, noConfigText, i, j);
 				}
@@ -140,16 +180,9 @@ public abstract class AnvilScreenMixin extends Screen {
 			opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
 				if (!open) {
 					open = true;
-					showButtons();
 					page = 0;
-					updatePageWidgets();
-					addDrawableChild(searchField);
-					searchField.setFocusUnlocked(true);
-					searchField.setTextFieldFocused(true);
-					nameField.setTextFieldFocused(false);
-					nameField.setFocusUnlocked(true);
-					addDrawableChild(openerOpened);
 					System.out.println("[RPR] Opened RP Renames Menu");
+					screenUpdate();
 				} else {
 					open = false;
 					clearAll();
@@ -160,14 +193,155 @@ public abstract class AnvilScreenMixin extends Screen {
 					nameField.setTextFieldFocused(true);
 					nameField.setFocusUnlocked(false);
 					remove(openerOpened);
+					remove(searchTab);
+					remove(favoriteTab);
+					remove(searchTab2);
+					remove(favoriteTab2);
+					tabNum = 1;
 					System.out.println("[RPR] Closed RP Renames Menu");
 				}
 			});
 		}
 
 		openerOpened = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 60, 20, RENAMES_BUTTON, 20, 100, null);
+		openerFavoriteOnly = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 40, 0, RENAMES_BUTTON, 20, 100, null);
 
 		addDrawableChild(opener);
+
+		searchTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3, 33, 26, 48 + 4, 88,0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			tabNum = 1;
+			remove(searchTab2);
+			remove(favoriteTab2);
+			addDrawableChild(searchTab2);
+			screenUpdate();
+		});
+		favoriteTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31, 33, 26, 48 + 4, 88 + 26,0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			tabNum = 2;
+			remove(searchTab2);
+			remove(favoriteTab2);
+			addDrawableChild(favoriteTab2);
+			screenUpdate();
+		});
+		searchTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3, 33, 26, 48 + 35 + 2, 88,0, RENAMES_MENU, menuWidth, menuHeight, null);
+		favoriteTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31, 33, 26, 48 + 35 + 2, 88 + 26,0, RENAMES_MENU, menuWidth, menuHeight, null);
+		searchTab2.active = false;
+		favoriteTab2.active = false;
+
+		favorite = new TexturedButtonWidget(this.width / 2 + 88 - 8 - 10 + 1, this.height / 2 - 83 + 8, 9, 9, 43, 88 + 9, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			String favoriteName = nameField.getText();
+
+			String item = currentItem;
+
+			File currentFile = new File(configPathFavorite + item + ".json");
+			boolean nameExist = false;
+			if (currentFile.exists() && favoriteName != null) {
+				Rename alreadyExist = configManager.configRead(currentFile);
+				String[] ae = alreadyExist.getName();
+				for (String s : ae) {
+					if (favoriteName.equals(s)) {
+						nameExist = true;
+						break;
+					}
+				}
+				if (!nameExist) {
+					int AEsize = ae.length;
+					String[] newConfig = new String[AEsize + 1];
+					int h = 0;
+					while (h < AEsize) {
+						newConfig[h] = ae[h];
+						h++;
+					}
+					newConfig[h] = favoriteName;
+
+					Rename newRename = new Rename(newConfig);
+					ArrayList<Rename> listFiles = new ArrayList<>();
+					listFiles.add(newRename);
+
+					try {
+						FileWriter fileWriter = new FileWriter(currentFile);
+						Gson gson = new Gson();
+						gson.toJson(listFiles, fileWriter);
+						fileWriter.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				if (favoriteName != null) {
+					try {
+						new File(configPathFavorite).mkdirs();
+						System.out.println("[RPR] Created new file for favorites config: " + configPathFavorite + item + ".json");
+						ArrayList<Rename> listNames = new ArrayList<>();
+						Rename name1 = new Rename(new String[]{favoriteName});
+						listNames.add(name1);
+						FileWriter fileWriter = new FileWriter(currentFile);
+						Gson gson = new Gson();
+						gson.toJson(listNames, fileWriter);
+						fileWriter.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			newNameEntered(nameField.getText(), ci);
+			if (tabNum == 1 && open) {
+				buttonsDefine();
+				showButtons();
+			}
+			if (tabNum == 2) {
+				screenUpdate();
+			}
+		});
+		unfavorite = new TexturedButtonWidget(this.width / 2 + 88 - 8 - 10 + 1, this.height / 2 - 83 + 8, 9, 9, 43, 88, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			String favoriteName = nameField.getText();
+
+			String item = currentItem;
+
+			File currentFile = new File(configPathFavorite + item + ".json");
+			Rename alreadyExist = configManager.configRead(currentFile);
+			String[] ae = alreadyExist.getName();
+			int n = 0;
+			for (String s : ae) {
+				if (favoriteName.equals(s)) {
+					ae[n] = null;
+				}
+				n++;
+			}
+			int AEsize = ae.length;
+			String[] newConfig = new String[AEsize - 1];
+			int h = 0;
+			int h2 = 0;
+			while (h2 < newConfig.length) {
+				if (ae[h] != null) {
+					newConfig[h2] = ae[h];
+					h++;
+					h2++;
+				} else {
+					h++;
+				}
+			}
+
+			Rename newRename = new Rename(newConfig);
+			ArrayList<Rename> listFiles = new ArrayList<>();
+			listFiles.add(newRename);
+
+			try {
+				FileWriter fileWriter = new FileWriter(currentFile);
+				Gson gson = new Gson();
+				gson.toJson(listFiles, fileWriter);
+				fileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			newNameEntered(nameField.getText(), ci);
+			if (tabNum == 1 && open) {
+				buttonsDefine();
+				showButtons();
+			}
+			if (tabNum == 2) {
+				screenUpdate();
+			}
+		});
 
 		searchField = new TextFieldWidget(renderer, this.width / 2 - 200 + 10 + 14 - 28, this.height / 2 - 83 + 30 - 22 + 5, 90 - 14 + 28, 10, Text.of(""));
 		searchField.setChangedListener(this::onSearch);
@@ -178,35 +352,84 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	private void screenUpdate() {
 		clearAll();
+		opener.active = true;
 		if (currentItem != null) {
-			File jsonRenames = new File(configManager.configPath + currentItem + ".json");
+			File jsonRenames = new File(configPath + currentItem + ".json");
+			File jsonRenamesFavorite = new File(configPathFavorite + currentItem + ".json");
 			if (jsonRenames.exists()) {
-				renameList = new Rename(search(configManager.configRead(jsonRenames).getName(), searchField.getText()));
-				renameListSize = renameList.getName().length;
+				searchTab.active = true;
+				if (tabNum == 1) {
+					currentRenameList = new Rename(search(configManager.configRead(jsonRenames).getName(), searchField.getText()));
+				} else if (tabNum == 2) {
+					if (jsonRenamesFavorite.exists()) {
+						currentRenameList = new Rename(search(configManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
+					} else {
+						currentRenameList = new Rename(new String[0]);
+					}
+				}
+				currentRenameListSize = currentRenameList.getName().length;
 
 				buttonsDefine();
 				clearAll();
 
-				if (open) {
-					showButtons();
-					updatePageWidgets();
-					addDrawableChild(searchField);
-					searchField.setFocusUnlocked(true);
-					searchField.setTextFieldFocused(true);
-					nameField.setTextFieldFocused(false);
-					nameField.setFocusUnlocked(true);
-					remove(openerOpened);
-					addDrawableChild(openerOpened);
-				}
-
-				opener.active = true;
 			} else {
-				opener.active = false;
+				searchTab.active = false;
+				tabNum = 2;
+				if (jsonRenamesFavorite.exists()) {
+					currentRenameList = new Rename(search(configManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
+				} else {
+					currentRenameList = new Rename(new String[0]);
+				}
+				currentRenameListSize = currentRenameList.getName().length;
+
+				buttonsDefine();
+				clearAll();
+
+				addDrawableChild(openerFavoriteOnly);
+			}
+			if (open) {
+				addDrawableChild(background);
+				showButtons();
+				updatePageWidgets();
+				addDrawableChild(searchField);
+				searchField.setFocusUnlocked(true);
+				searchField.setTextFieldFocused(true);
+				nameField.setTextFieldFocused(false);
+				nameField.setFocusUnlocked(true);
 				remove(openerOpened);
+				addDrawableChild(openerOpened);
+				tabsUpdate();
 			}
 		} else {
 			opener.active = false;
 			remove(openerOpened);
+		}
+	}
+
+	//onRenamed method_2403
+	@Inject(at = @At("RETURN"), method = "method_2403")
+	private void newNameEntered(String name, CallbackInfo ci) {
+		remove(favorite);
+		remove(unfavorite);
+		if (!name.isEmpty()) {
+			File file = new File(configPathFavorite + currentItem + ".json");
+			if (file.exists()) {
+				String[] favoriteName = configManager.configRead(file).getName();
+				boolean nameExist = false;
+				for (String s : favoriteName) {
+					if (name.equals(s)) {
+						nameExist = true;
+						break;
+					}
+				}
+				if (nameExist) {
+					addDrawableChild(unfavorite);
+				} else {
+					addDrawableChild(favorite);
+				}
+			} else {
+				addDrawableChild(favorite);
+			}
 		}
 	}
 
@@ -244,6 +467,8 @@ public abstract class AnvilScreenMixin extends Screen {
 				clearAll();
 				searchField.setText("");
 				searchField.setFocusUnlocked(true);
+				tabNum = 1;
+				newNameEntered(nameField.getText(), ci);
 				screenUpdate();
 			}
 		}
@@ -283,38 +508,35 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	private void showButtons() {
-		this.addDrawableChild(background);
-		background.active = false;
-
-		if (page * 5 <= renameListSize - 1) {
+		if (page * 5 <= currentRenameListSize - 1) {
 			this.addDrawableChild(button1);
 			iconSlot1.setIcon(new ItemIcon(icon1));
-			button1text.setText(Text.of(shortText(Text.of(renameList.getName(page * 5)))));
-			button1textShadow.setText(Text.of(shortText(Text.of(renameList.getName(page * 5)))));
+			button1text.setText(Text.of(shortText(Text.of(currentRenameList.getName(page * 5)))));
+			button1textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(page * 5)))));
 		}
-		if (1 + page * 5 <= renameListSize - 1) {
+		if (1 + page * 5 <= currentRenameListSize - 1) {
 			this.addDrawableChild(button2);
 			iconSlot2.setIcon(new ItemIcon(icon2));
-			button2text.setText(Text.of(shortText(Text.of(renameList.getName(1 + page * 5)))));
-			button2textShadow.setText(Text.of(shortText(Text.of(renameList.getName(1 + page * 5)))));
+			button2text.setText(Text.of(shortText(Text.of(currentRenameList.getName(1 + page * 5)))));
+			button2textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(1 + page * 5)))));
 		}
-		if (2 + page * 5 <= renameListSize - 1) {
+		if (2 + page * 5 <= currentRenameListSize - 1) {
 			this.addDrawableChild(button3);
 			iconSlot3.setIcon(new ItemIcon(icon3));
-			button3text.setText(Text.of(shortText(Text.of(renameList.getName(2 + page * 5)))));
-			button3textShadow.setText(Text.of(shortText(Text.of(renameList.getName(2 + page * 5)))));
+			button3text.setText(Text.of(shortText(Text.of(currentRenameList.getName(2 + page * 5)))));
+			button3textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(2 + page * 5)))));
 		}
-		if (3 + page * 5 <= renameListSize - 1) {
+		if (3 + page * 5 <= currentRenameListSize - 1) {
 			this.addDrawableChild(button4);
 			iconSlot4.setIcon(new ItemIcon(icon4));
-			button4text.setText(Text.of(shortText(Text.of(renameList.getName(3 + page * 5)))));
-			button4textShadow.setText(Text.of(shortText(Text.of(renameList.getName(3 + page * 5)))));
+			button4text.setText(Text.of(shortText(Text.of(currentRenameList.getName(3 + page * 5)))));
+			button4textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(3 + page * 5)))));
 		}
-		if (4 + page * 5 <= renameListSize - 1) {
+		if (4 + page * 5 <= currentRenameListSize - 1) {
 			this.addDrawableChild(button5);
 			iconSlot5.setIcon(new ItemIcon(icon5));
-			button5text.setText(Text.of(shortText(Text.of(renameList.getName(4 + page * 5)))));
-			button5textShadow.setText(Text.of(shortText(Text.of(renameList.getName(4 + page * 5)))));
+			button5text.setText(Text.of(shortText(Text.of(currentRenameList.getName(4 + page * 5)))));
+			button5textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(4 + page * 5)))));
 		}
 	}
 
@@ -368,103 +590,94 @@ public abstract class AnvilScreenMixin extends Screen {
 		button3textShadow.setText(Text.of(""));
 		button4textShadow.setText(Text.of(""));
 		button5textShadow.setText(Text.of(""));
+		remove(searchTab);
+		remove(favoriteTab);
+		remove(searchTab2);
+		remove(favoriteTab2);
+		remove(openerFavoriteOnly);
+	}
+
+	private TexturedButtonWidget createButton(int order, Text text) {
+		int u = 0;
+		int v = 0;
+		File file = new File(configPathFavorite + currentItem + ".json");
+		if (file.exists()) {
+			boolean favorite = false;
+			String[] favoriteList = configManager.configRead(file).getName();
+			for (String s : favoriteList) {
+				if (text.equals(Text.of(s))) {
+					favorite = true;
+					break;
+				}
+			}
+			if (favorite) {
+				u = 138;
+				v = 166;
+			}
+		}
+		return new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> {
+			nameField.setText(text.getString());
+		}, new ButtonWidget.TooltipSupplier() {
+			public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+				renderTooltip(matrixStack, text, i, j);
+			}
+
+			public void supply(Consumer<Text> consumer) {
+				consumer.accept(text);
+			}
+		}, text);
 	}
 
 	private void buttonsDefine() {
-		if (page * 5 <= renameListSize - 1) {
-			Text text = Text.of(renameList.getName(page * 5));
+		remove(button1);
+		remove(button2);
+		remove(button3);
+		remove(button4);
+		remove(button5);
+		if (page * 5 <= currentRenameListSize - 1) {
+			Text text = Text.of(currentRenameList.getName(page * 5));
 			String shortText = shortText(text);
-			button1 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
-				nameField.setText(text.getString());
-			}, new ButtonWidget.TooltipSupplier() {
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					renderTooltip(matrixStack, text, i, j);
-				}
-
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			}, text);
+			button1 = createButton(1, text);
 			button1text.setText(Text.of(shortText));
 			button1textShadow.setText(Text.of(shortText));
 			iconSlot1.setIcon(new ItemIcon(icon1));
 			icon1.setCustomName(text);
 		}
 
-		if (1 + page * 5 <= renameListSize - 1) {
-			Text text = Text.of(renameList.getName(1 + page * 5));
+		if (1 + page * 5 <= currentRenameListSize - 1) {
+			Text text = Text.of(currentRenameList.getName(1 + page * 5));
 			String shortText = shortText(text);
-			button2 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 52, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
-				nameField.setText(text.getString());
-			}, new ButtonWidget.TooltipSupplier() {
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					renderTooltip(matrixStack, text, i, j);
-				}
-
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			}, text);
+			button2 = createButton(2, text);
 			button2text.setText(Text.of(shortText));
 			button2textShadow.setText(Text.of(shortText));
 			iconSlot2.setIcon(new ItemIcon(icon2));
 			icon2.setCustomName(text);
 		}
 
-		if (2 + page * 5 <= renameListSize - 1) {
-			Text text = Text.of(renameList.getName(2 + page * 5));
+		if (2 + page * 5 <= currentRenameListSize - 1) {
+			Text text = Text.of(currentRenameList.getName(2 + page * 5));
 			String shortText = shortText(text);
-			button3 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 74, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
-				nameField.setText(text.getString());
-			}, new ButtonWidget.TooltipSupplier() {
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					renderTooltip(matrixStack, text, i, j);
-				}
-
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			}, text);
+			button3 = createButton(3, text);
 			button3text.setText(Text.of(shortText));
 			button3textShadow.setText(Text.of(shortText));
 			iconSlot3.setIcon(new ItemIcon(icon3));
 			icon3.setCustomName(text);
 		}
 
-		if (3 + page * 5 <= renameListSize - 1) {
-			Text text = Text.of(renameList.getName(3 + page * 5));
+		if (3 + page * 5 <= currentRenameListSize - 1) {
+			Text text = Text.of(currentRenameList.getName(3 + page * 5));
 			String shortText = shortText(text);
-			button4 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 96, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
-				nameField.setText(text.getString());
-			}, new ButtonWidget.TooltipSupplier() {
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					renderTooltip(matrixStack, text, i, j);
-				}
-
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			}, text);
+			button4 = createButton(4, text);
 			button4text.setText(Text.of(shortText));
 			button4textShadow.setText(Text.of(shortText));
 			iconSlot4.setIcon(new ItemIcon(icon4));
 			icon4.setCustomName(text);
 		}
 
-		if (4 + page * 5 <= renameListSize - 1) {
-			Text text = Text.of(renameList.getName(4 + page * 5));
+		if (4 + page * 5 <= currentRenameListSize - 1) {
+			Text text = Text.of(currentRenameList.getName(4 + page * 5));
 			String shortText = shortText(text);
-			button5 = new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 118, 118, 20, 0,0, 20,RENAMES_MENU,256,166, (button) -> {
-				nameField.setText(text.getString());
-			}, new ButtonWidget.TooltipSupplier() {
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					renderTooltip(matrixStack, text, i, j);
-				}
-
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			}, text);
+			button5 = createButton(5, text);
 			button5text.setText(Text.of(shortText));
 			button5textShadow.setText(Text.of(shortText));
 			iconSlot5.setIcon(new ItemIcon(icon5));
@@ -492,8 +705,26 @@ public abstract class AnvilScreenMixin extends Screen {
 		if (page == 0) {
 			pageDown.active = false;
 		}
-		pageUp.active = 5 + page * 5 <= renameListSize - 1;
-		pageCount.setText(Text.of(page + 1 + "/" + (renameList.getName().length + 4) / 5));
+		pageUp.active = 5 + page * 5 <= currentRenameListSize - 1;
+		pageCount.setText(Text.of(page + 1 + "/" + (currentRenameList.getName().length + 4) / 5));
+	}
+
+	private void tabsUpdate() {
+		remove(searchTab);
+		remove(favoriteTab);
+		addDrawableChild(searchTab);
+		addDrawableChild(favoriteTab);
+		remove(searchTab2);
+		remove(favoriteTab2);
+		if (tabNum == 1) {
+			addDrawableChild(searchTab2);
+			searchTab.active = false;
+			favoriteTab.active = true;
+		} else if (tabNum == 2) {
+			addDrawableChild(favoriteTab2);
+			searchTab.active = true;
+			favoriteTab.active = false;
+		}
 	}
 
 	private void onSearch(String search) {
