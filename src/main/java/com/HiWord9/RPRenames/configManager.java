@@ -11,6 +11,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -20,11 +21,14 @@ public class configManager {
 
     public static String configPath = RPRenames.configPath;
     public static File configFolder = RPRenames.configFolder;
+    public static String configPathModels = RPRenames.configPathModels;
+    public static File configFolderModels = RPRenames.configFolderModels;
 
     public static void jsonManage() {
         if (configFolder.exists()) {
             System.out.println("[RPR] Config's folder is already exist. Starting recreate");
             configDeleter(configPath);
+            configDeleter(configPathModels);
             startConfigCreate();
             if (Objects.requireNonNull(configFolder.listFiles()).length == 0) {
                 configFolder.delete();
@@ -36,6 +40,7 @@ public class configManager {
 
     private static void startConfigCreate() {
         configFolder.mkdirs();
+        configFolderModels.mkdirs();
 
         String resourcePacks = null;
         try {
@@ -45,15 +50,13 @@ public class configManager {
             Properties p = new Properties();
             p.load(options);
             resourcePacks = p.getProperty("resourcePacks");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         int h = 0;
         String currentRP = "";
-        while (h < resourcePacks.length()) {
+        while (h < Objects.requireNonNull(resourcePacks).length()) {
             if (String.valueOf(resourcePacks.charAt(h)).equals("[") || String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
                 h++;
             } else {
@@ -67,7 +70,8 @@ public class configManager {
                                 if (currentRP.endsWith(".zip")) {
                                     zipConfigCreate("resourcepacks/" + currentRP);
                                 } else {
-                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit");
+                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit", "cit");
+                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/random", "random");
                                 }
                             }
                             h = h + 3;
@@ -79,7 +83,7 @@ public class configManager {
         }
     }
 
-    public static void configCreator(String directoryName) {
+    public static void configCreator(String directoryName, String mode) {
         File directory = new File(directoryName);
         File[] fList = directory.listFiles();
         if (directory.exists()) {
@@ -91,13 +95,17 @@ public class configManager {
                             Properties p = new Properties();
                             p.load(properties);
 
-                            propertiesToJson(p);
+                            if (mode.equals("cit")) {
+                                propertiesToJson(p);
+                            } else if (mode.equals("random")){
+                                propertiesToJsonModels(p, file.getName().substring(0, file.getName().length()-11));
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                 } else if (file.isDirectory()) {
-                    configCreator(file.getAbsolutePath());
+                    configCreator(file.getAbsolutePath(), mode);
                 }
             }
         }
@@ -202,6 +210,18 @@ public class configManager {
                     e.printStackTrace();
                 }
             });
+            Files.walk(zip.getPath("/assets/minecraft/optifine/random/"), new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
+                try {
+                    InputStream inputStream = Files.newInputStream(propertiesFile);
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                    Properties p = new Properties();
+                    p.load(bufferedReader);
+                    String fileName = propertiesFile.getFileName().toString();
+                    propertiesToJsonModels(p, fileName.substring(0, fileName.length()-11));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -234,7 +254,7 @@ public class configManager {
                     item = items;
                 }
 
-                item = item.replace("minecraft:", "");
+                item = Objects.requireNonNull(item).replace("minecraft:", "");
 
                 File currentFile = new File(configPath + item + ".json");
                 boolean nameExist = false;
@@ -285,6 +305,46 @@ public class configManager {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    public static void propertiesToJsonModels(Properties p, String fileName) {
+        ArrayList<String> namesArray = new ArrayList<>();
+        List<String> namesValues = p.stringPropertyNames().stream().toList();
+        ArrayList<String> skins = new ArrayList<>();
+        for (String s : namesValues) {
+            if (s.startsWith("name.")) {
+                if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
+                    skins.add(p.getProperty("skins." + s.substring(5)));
+                    String name = getFirstName(p.getProperty(s));
+                    namesArray.add(name);
+                }
+            }
+        }
+        String[] names = new String[namesArray.size()];
+        int i = 0;
+
+        for (String s : namesArray) {
+            names[i] = s;
+            i++;
+        }
+
+        Rename rename = new Rename(names);
+        ArrayList<Rename> renameArray = new ArrayList<>();
+        renameArray.add(rename);
+
+        File currentFile = new File(configPathModels + fileName + ".json");
+
+        if (names.length != 0) {
+            try {
+                System.out.println("[RPR] Created new file for config: " + configPathModels + fileName + ".json");
+                FileWriter fileWriter = new FileWriter(currentFile);
+                Gson gson = new Gson();
+                gson.toJson(renameArray, fileWriter);
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

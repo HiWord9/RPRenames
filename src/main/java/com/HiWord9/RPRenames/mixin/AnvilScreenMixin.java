@@ -28,9 +28,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Mixin(AnvilScreen.class)
@@ -104,10 +105,12 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	private static final String configPath = RPRenames.configPath;
 	private static final String configPathFavorite = RPRenames.configPathFavorite;
+	private static final String configPathModels = RPRenames.configPathModels;
+	private static final File configFolderModels = RPRenames.configFolderModels;
 	private static final File configFolder = RPRenames.configFolder;
 
 	//setup method_25445
-	@Inject(at = @At("RETURN"), method = "method_25445")
+	@Inject(at = @At("RETURN"), method = "setup")
 	private void init(CallbackInfo ci) {
 		this.ci = ci;
 
@@ -367,6 +370,73 @@ public abstract class AnvilScreenMixin extends Screen {
 						currentRenameList = new Rename(new String[0]);
 					}
 				}
+
+				if (tabNum == 1 && currentItem.equals("name_tag")) {
+					ArrayList<String> modelsArray = new ArrayList<>();
+					ArrayList<String> mob = new ArrayList<>();
+					//TODO MOB ICON; ONLY MODELS;
+
+					File[] fList = configFolderModels.listFiles();
+					if (configFolderModels.exists()) {
+						for (File file : fList) {
+							if (file.isFile()) {
+								for (String s : search(configManager.configRead(file).getName(), searchField.getText())) {
+									if (!modelsArray.contains(s) && !Arrays.stream(currentRenameList.getName()).toList().contains(s)) {
+										modelsArray.add(s);
+										mob.add(file.getName().substring(0, file.getName().length() - 5));
+									}
+								}
+							}
+						}
+					}
+					String[] finalList = new String[currentRenameList.getName().length + modelsArray.size()];
+					int g = 0;
+					for (String s : currentRenameList.getName()) {
+						finalList[g] = s;
+						g++;
+					}
+					g = 0;
+					for (String s : modelsArray) {
+						finalList[currentRenameList.getName().length + g] = s;
+						g++;
+					}
+					if (g != 0) {
+						currentRenameList = new Rename(finalList);
+					}
+				}
+
+				currentRenameListSize = currentRenameList.getName().length;
+
+				buttonsDefine();
+				clearAll();
+
+			} else if (!jsonRenames.exists() && Objects.requireNonNull(configFolderModels.listFiles()).length > 0 && tabNum == 1 && currentItem.equals("name_tag")) {
+
+				ArrayList<String> modelsArray = new ArrayList<>();
+				ArrayList<String> mob = new ArrayList<>();
+				//TODO MOB ICON; ONLY MODELS;
+
+				File[] fList = configFolderModels.listFiles();
+				if (configFolderModels.exists()) {
+					for (File file : fList) {
+						if (file.isFile()) {
+							for (String s : search(configManager.configRead(file).getName(), searchField.getText())) {
+								if (!modelsArray.contains(s)) {
+									modelsArray.add(s);
+									mob.add(file.getName().substring(0, file.getName().length() - 5));
+								}
+							}
+						}
+					}
+				}
+				String[] finalList = new String[modelsArray.size()];
+				int g = 0;
+				for (String s : modelsArray) {
+					finalList[g] = s;
+					g++;
+				}
+				currentRenameList = new Rename(finalList);
+
 				currentRenameListSize = currentRenameList.getName().length;
 
 				buttonsDefine();
@@ -387,6 +457,7 @@ public abstract class AnvilScreenMixin extends Screen {
 
 				addDrawableChild(openerFavoriteOnly);
 			}
+
 			if (open) {
 				addDrawableChild(background);
 				showButtons();
@@ -407,7 +478,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	//onRenamed method_2403
-	@Inject(at = @At("RETURN"), method = "method_2403")
+	@Inject(at = @At("RETURN"), method = "onRenamed")
 	private void newNameEntered(String name, CallbackInfo ci) {
 		remove(favorite);
 		remove(unfavorite);
@@ -434,7 +505,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	//onSlotUpdate method_7635
-	@Inject(at = @At("RETURN"), method = "method_7635")
+	@Inject(at = @At("RETURN"), method = "onSlotUpdate")
 	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
 		if (slotId == 0) {
 			if (stack.isEmpty()) {
@@ -475,7 +546,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	//drawForeground method_2388
-	@Inject(at = @At("RETURN"), method = "method_2388")
+	@Inject(at = @At("RETURN"), method = "drawForeground")
 	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
 		iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);
 		iconSlot2.paint(matrices, -130 + 1, 52 + 1, mouseX, mouseY);
