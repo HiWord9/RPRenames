@@ -6,10 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +29,9 @@ public class configManager {
             startConfigCreate();
             if (Objects.requireNonNull(configFolder.listFiles()).length == 0) {
                 configFolder.delete();
+            }
+            if (Objects.requireNonNull(configFolderModels.listFiles()).length == 0) {
+                configFolderModels.delete();
             }
         } else {
             startConfigCreate();
@@ -67,45 +67,12 @@ public class configManager {
                         if (String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
                             if (currentRP.startsWith("file/")) {
                                 currentRP = currentRP.substring(5);
-                                if (currentRP.endsWith(".zip")) {
-                                    zipConfigCreate("resourcepacks/" + currentRP);
-                                } else {
-                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/cit", "cit");
-                                    configCreator("resourcepacks/" + currentRP + "/assets/minecraft/optifine/random", "random");
-                                }
+                                configCreate("resourcepacks/" + currentRP);
                             }
                             h = h + 3;
                             currentRP = "";
                         }
                     }
-                }
-            }
-        }
-    }
-
-    public static void configCreator(String directoryName, String mode) {
-        File directory = new File(directoryName);
-        File[] fList = directory.listFiles();
-        if (directory.exists()) {
-            for (File file : fList) {
-                if (file.isFile()) {
-                    if (file.getAbsolutePath().endsWith(".properties")) {
-                        try {
-                            FileReader properties = new FileReader(file.getAbsolutePath());
-                            Properties p = new Properties();
-                            p.load(properties);
-
-                            if (mode.equals("cit")) {
-                                propertiesToJson(p);
-                            } else if (mode.equals("random")){
-                                propertiesToJsonModels(p, file.getName().substring(0, file.getName().length()-11));
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } else if (file.isDirectory()) {
-                    configCreator(file.getAbsolutePath(), mode);
                 }
             }
         }
@@ -196,34 +163,51 @@ public class configManager {
         return nbtDisplayName;
     }
 
-    public static void zipConfigCreate(String filePath) {
-        try {
-            FileSystem zip = FileSystems.newFileSystem(Paths.get(filePath), (ClassLoader) null);
-            Files.walk(zip.getPath("/assets/minecraft/optifine/cit/"), new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
-                try {
-                    InputStream inputStream = Files.newInputStream(propertiesFile);
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    Properties p = new Properties();
-                    p.load(bufferedReader);
-                    propertiesToJson(p);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-            Files.walk(zip.getPath("/assets/minecraft/optifine/random/"), new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
-                try {
-                    InputStream inputStream = Files.newInputStream(propertiesFile);
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                    Properties p = new Properties();
-                    p.load(bufferedReader);
-                    String fileName = propertiesFile.getFileName().toString();
-                    propertiesToJsonModels(p, fileName.substring(0, fileName.length()-11));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void configCreate(String filePath) {
+        FileSystem zip = null;
+        if (filePath.endsWith(".zip")) {
+            try {
+                zip = FileSystems.newFileSystem(Paths.get(filePath), (ClassLoader) null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Path currentPath;
+
+        ArrayList<String> folders = new ArrayList<>();
+        folders.add("/assets/minecraft/optifine/cit/");
+        folders.add("/assets/minecraft/optifine/random/");
+
+        for (String currentFolder : folders) {
+
+            if (filePath.endsWith(".zip")) {
+                assert zip != null;
+                currentPath = zip.getPath(currentFolder);
+            } else {
+                currentPath = Path.of(filePath + currentFolder);
+            }
+
+            try {
+                Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
+                    try {
+                        InputStream inputStream = Files.newInputStream(propertiesFile);
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                        Properties p = new Properties();
+                        p.load(bufferedReader);
+                        if (currentFolder.contains("/cit")) {
+                            propertiesToJson(p);
+                        } else if (currentFolder.contains("/random")) {
+                            String fileName = propertiesFile.getFileName().toString();
+                            propertiesToJsonModels(p, fileName.substring(0, fileName.length() - 11));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

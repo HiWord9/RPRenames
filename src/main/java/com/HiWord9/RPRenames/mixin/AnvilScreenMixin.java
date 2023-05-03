@@ -410,11 +410,10 @@ public abstract class AnvilScreenMixin extends Screen {
 				buttonsDefine();
 				clearAll();
 
-			} else if (!jsonRenames.exists() && Objects.requireNonNull(configFolderModels.listFiles()).length > 0 && tabNum == 1 && currentItem.equals("name_tag")) {
+			} else if (!jsonRenames.exists() && configFolderModels.exists() && currentItem.equals("name_tag")) {
 
 				ArrayList<String> modelsArray = new ArrayList<>();
 				ArrayList<String> mob = new ArrayList<>();
-				//TODO MOB ICON; ONLY MODELS;
 
 				File[] fList = configFolderModels.listFiles();
 				if (configFolderModels.exists()) {
