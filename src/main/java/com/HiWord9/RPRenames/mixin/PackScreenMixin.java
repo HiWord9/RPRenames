@@ -34,7 +34,7 @@ public class PackScreenMixin extends Screen {
 	@Inject(at = @At("RETURN"), method = "close")
 	private void listCreator(CallbackInfo ci) {
 		if (toggleConfig.isChecked()) {
-			configManager.jsonManage();
+			configManager.jsonManager();
 		}
 
 		if (!outputFolder.exists() || !outputFolder.isDirectory()) {

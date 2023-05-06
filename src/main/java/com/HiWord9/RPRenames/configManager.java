@@ -7,10 +7,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 public class configManager {
 
@@ -21,7 +18,7 @@ public class configManager {
     public static String configPathModels = RPRenames.configPathModels;
     public static File configFolderModels = RPRenames.configFolderModels;
 
-    public static void jsonManage() {
+    public static void jsonManager() {
         if (configFolder.exists()) {
             System.out.println("[RPR] Config's folder is already exist. Starting recreate");
             configDeleter(configPath);
@@ -177,7 +174,7 @@ public class configManager {
 
         ArrayList<String> folders = new ArrayList<>();
         folders.add("/assets/minecraft/optifine/cit/");
-        folders.add("/assets/minecraft/optifine/random/");
+        folders.add("/assets/minecraft/optifine/cem/");
 
         for (String currentFolder : folders) {
 
@@ -188,18 +185,28 @@ public class configManager {
                 currentPath = Path.of(filePath + currentFolder);
             }
 
+            String FT = null;
+            if (currentFolder.endsWith("/cit/")) {
+                FT = ".properties";
+            } else if (currentFolder.endsWith("/cem/")) {
+                FT = ".jem";
+            }
+            String fileType = FT;
+
             try {
-                Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(".properties")).forEach(propertiesFile -> {
+                Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().endsWith(fileType)).forEach(propertiesFile -> {
                     try {
-                        InputStream inputStream = Files.newInputStream(propertiesFile);
-                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                        Properties p = new Properties();
-                        p.load(bufferedReader);
-                        if (currentFolder.contains("/cit")) {
+                        if (currentFolder.endsWith("/cit/")) {
+                            InputStream inputStream = Files.newInputStream(propertiesFile);
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                            Properties p = new Properties();
+                            p.load(bufferedReader);
                             propertiesToJson(p);
-                        } else if (currentFolder.contains("/random")) {
+                        } else if (currentFolder.endsWith("/cem/")) {
                             String fileName = propertiesFile.getFileName().toString();
-                            propertiesToJsonModels(p, fileName.substring(0, fileName.length() - 11));
+                            if (Arrays.stream(CEM.models).toList().contains(fileName.substring(0, propertiesFile.getFileName().toString().length() - 4))) {
+                                startPropToJsonModels(filePath);
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -241,16 +248,10 @@ public class configManager {
                 item = Objects.requireNonNull(item).replace("minecraft:", "");
 
                 File currentFile = new File(configPath + item + ".json");
-                boolean nameExist = false;
                 if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
                     Rename alreadyExist = configRead(currentFile);
                     String[] ae = alreadyExist.getName();
-                    for (String s : ae) {
-                        if (getFirstName(p.getProperty("nbt.display.Name")).equals(s)) {
-                            nameExist = true;
-                        }
-                    }
-                    if (!nameExist) {
+                    if (!Arrays.stream(ae).toList().contains(getFirstName(p.getProperty("nbt.display.Name")))) {
                         int AEsize = ae.length;
                         String[] newConfig = new String[AEsize + 1];
                         int h = 0;
@@ -294,42 +295,275 @@ public class configManager {
     }
 
     public static void propertiesToJsonModels(Properties p, String fileName) {
-        ArrayList<String> namesArray = new ArrayList<>();
-        List<String> namesValues = p.stringPropertyNames().stream().toList();
-        ArrayList<String> skins = new ArrayList<>();
-        for (String s : namesValues) {
-            if (s.startsWith("name.")) {
-                if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
-                    skins.add(p.getProperty("skins." + s.substring(5)));
-                    String name = getFirstName(p.getProperty(s));
-                    namesArray.add(name);
+        File currentFile = new File(configPathModels + fileName + ".json");
+        if (currentFile.exists()) {
+            List<String> namesValues = p.stringPropertyNames().stream().toList();
+            ArrayList<String> skins = new ArrayList<>();
+            for (String s : namesValues) {
+                if (s.startsWith("name.")) {
+                    if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
+                        skins.add(p.getProperty("skins." + s.substring(5)));
+                        String name = getFirstName(p.getProperty(s));
+                        if (currentFile.exists() && name != null) {
+                            Rename alreadyExist = configRead(currentFile);
+                            String[] ae = alreadyExist.getName();
+                            if (!Arrays.stream(ae).toList().contains(name)) {
+                                int AEsize = ae.length;
+                                String[] newConfig = new String[AEsize + 1];
+                                int h = 0;
+                                while (h < AEsize) {
+                                    newConfig[h] = ae[h];
+                                    h++;
+                                }
+                                newConfig[h] = name;
+
+                                Rename newRename = new Rename(newConfig);
+                                ArrayList<Rename> listFiles = new ArrayList<>();
+                                listFiles.add(newRename);
+
+                                try {
+                                    FileWriter fileWriter = new FileWriter(currentFile);
+                                    Gson gson = new Gson();
+                                    gson.toJson(listFiles, fileWriter);
+                                    fileWriter.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            ArrayList<String> namesArray = new ArrayList<>();
+            List<String> namesValues = p.stringPropertyNames().stream().toList();
+            ArrayList<String> skins = new ArrayList<>();
+            for (String s : namesValues) {
+                if (s.startsWith("name.")) {
+                    if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
+                        skins.add(p.getProperty("skins." + s.substring(5)));
+                        String name = getFirstName(p.getProperty(s));
+                        if (!namesArray.contains(name)) {
+                            namesArray.add(name);
+                        }
+                    }
+                }
+            }
+            String[] names = new String[namesArray.size()];
+            int i = 0;
+
+            for (String s : namesArray) {
+                names[i] = s;
+                i++;
+            }
+
+            Rename rename = new Rename(names);
+            ArrayList<Rename> renameArray = new ArrayList<>();
+            renameArray.add(rename);
+
+            if (names.length != 0) {
+                try {
+                    System.out.println("[RPR] Created new file for config: " + configPathModels + fileName + ".json");
+                    FileWriter fileWriter = new FileWriter(currentFile);
+                    Gson gson = new Gson();
+                    gson.toJson(renameArray, fileWriter);
+                    fileWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        String[] names = new String[namesArray.size()];
-        int i = 0;
+    }
 
-        for (String s : namesArray) {
-            names[i] = s;
-            i++;
-        }
-
-        Rename rename = new Rename(names);
-        ArrayList<Rename> renameArray = new ArrayList<>();
-        renameArray.add(rename);
-
-        File currentFile = new File(configPathModels + fileName + ".json");
-
-        if (names.length != 0) {
+    public static void startPropToJsonModels(String rpPath) {
+        ArrayList<String> checked = new ArrayList<>();
+        String cemPath = "/assets/minecraft/optifine/cem/";
+        String randomEntityPath = "/assets/minecraft/optifine/random/entity/";
+        if (rpPath.endsWith(".zip")) {
             try {
-                System.out.println("[RPR] Created new file for config: " + configPathModels + fileName + ".json");
-                FileWriter fileWriter = new FileWriter(currentFile);
-                Gson gson = new Gson();
-                gson.toJson(renameArray, fileWriter);
-                fileWriter.close();
+                FileSystem zip = FileSystems.newFileSystem(Paths.get(rpPath), (ClassLoader) null);
+                Path currentPath = zip.getPath("/assets/minecraft/optifine/");
+                int c = 0;
+                while (c < CEM.models.length) {
+                    int fc = c;
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(cemPath + CEM.models[fc] + ".jem")).forEach(jemFile -> {
+                        String obj = getObjFromBF(jemFile).toString();
+                        ArrayList<String> jpmList = getParamListFromObj(obj, "model=");
+                        for (String jpmFileName : jpmList) {
+                            if (jpmFileName != null && jpmFileName.endsWith(".jpm")) {
+                                try {
+                                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(cemPath + jpmFileName)).forEach(jpmFile -> {
+                                        String jpmObj = getObjFromBF(jpmFile).toString();
+                                        String textureName = getPropPathInRandom(Objects.requireNonNull(getParamListFromObj(jpmObj, "texture=").get(0)));
+                                        try {
+                                            Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + textureName + ".properties")).forEach(propFile -> {
+                                                try {
+                                                    checked.add(String.valueOf(propFile));
+                                                    InputStream inputStream = Files.newInputStream(propFile);
+                                                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                                    Properties p = new Properties();
+                                                    p.load(reader);
+                                                    propertiesToJsonModels(p, CEM.mobsNames[fc]);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            });
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    });
+                    c++;
+                }
+                c = 0;
+                while (c < CEM.textures.length) {
+                    int fc = c;
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + CEM.textures[fc] + ".properties")).forEach(propFile -> {
+                        if (!checked.contains(String.valueOf(propFile))) {
+                            try {
+                                InputStream inputStream = Files.newInputStream(propFile);
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                Properties p = new Properties();
+                                p.load(reader);
+                                propertiesToJsonModels(p, CEM.mobsNames[fc]);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + getLastPathPart(CEM.textures[fc]) + ".properties")).forEach(propFile -> {
+                        if (!checked.contains(String.valueOf(propFile))) {
+                            try {
+                                InputStream inputStream = Files.newInputStream(propFile);
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                Properties p = new Properties();
+                                p.load(reader);
+                                propertiesToJsonModels(p, CEM.mobsNames[fc]);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    c++;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            int c = 0;
+            while (c < CEM.models.length) {
+                File currentJem = new File(rpPath + cemPath + CEM.models[c] + ".jem");
+                if (currentJem.exists()) {
+                    String obj = getObjFromBF(currentJem.toPath()).toString();
+                    ArrayList<String> jpmList = getParamListFromObj(obj, "model=");
+                    for (String jpmFileName : jpmList) {
+                        if (jpmFileName != null && jpmFileName.endsWith(".jpm")) {
+                            String jpmObj = getObjFromBF(new File(rpPath + cemPath + jpmFileName).toPath()).toString();
+                            String textureName = getPropPathInRandom(Objects.requireNonNull(getParamListFromObj(jpmObj, "texture=").get(0)));
+                            File propertiesFile = new File(rpPath + randomEntityPath + textureName + ".properties");
+                            if (propertiesFile.exists()) {
+                                try {
+                                    checked.add(propertiesFile.getPath());
+                                    InputStream inputStream = Files.newInputStream(propertiesFile.toPath());
+                                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                    Properties p = new Properties();
+                                    p.load(reader);
+                                    propertiesToJsonModels(p, CEM.mobsNames[c]);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }
+                c++;
+            }
+            c = 0;
+            while (c < CEM.textures.length) {
+                File propertiesFile = null;
+                if (new File(rpPath + randomEntityPath + CEM.textures[c] + ".properties").exists()) {
+                    propertiesFile = new File(rpPath + randomEntityPath + CEM.textures[c] + ".properties");
+                } else if (new File(rpPath + randomEntityPath + getLastPathPart(CEM.textures[c]) + ".properties").exists()) {
+                    propertiesFile = new File(rpPath + randomEntityPath + getLastPathPart(CEM.textures[c]) + ".properties");
+                }
+                if (propertiesFile != null && !checked.contains(propertiesFile.getPath())) {
+                    try {
+                        InputStream inputStream = Files.newInputStream(propertiesFile.toPath());
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                        Properties p = new Properties();
+                        p.load(reader);
+                        propertiesToJsonModels(p, CEM.mobsNames[c]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                c++;
+            }
         }
+    }
+
+    public static ArrayList<String> getParamListFromObj(String obj, String parName) {
+        ArrayList<String> list = new ArrayList<>();
+        int i = 0;
+        while (i < obj.length() - parName.length()) {
+            if (obj.startsWith(parName, i) && !String.valueOf(obj.charAt(i - 1)).equals("b")){
+                int o = i + parName.length();
+                while (!String.valueOf(obj.charAt(o)).equals(",")) {
+                    o++;
+                }
+                list.add(obj.substring(i + parName.length(), o));
+            }
+            i++;
+        }
+        return list;
+    }
+
+    public static String getLastPathPart(String path) {
+        int i = path.length() - 1;
+        while (i >= 0) {
+            if (!String.valueOf(path.charAt(i)).equals("/")) {
+                i--;
+            } else {
+                break;
+            }
+        }
+        if (i >= 0) {
+            return path.substring(i + 1);
+        }
+        return path;
+    }
+
+    public static String getPropPathInRandom(String texturePath) {
+        if (texturePath.endsWith(".png")) {
+            texturePath.substring(0, texturePath.length() - 4);
+        }
+        if (texturePath.startsWith("textures/entity/")) {
+            texturePath = texturePath.substring(16);
+        }
+        return texturePath;
+    }
+
+    public static Object getObjFromBF(Path pathToFile) {
+        Object obj = null;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Files.newInputStream(pathToFile)));
+            try {
+                Type type = new com.google.gson.reflect.TypeToken<Object>() {
+                }.getType();
+                Gson gson = new Gson();
+                obj = gson.fromJson(bufferedReader, type);
+                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return obj;
     }
 }
