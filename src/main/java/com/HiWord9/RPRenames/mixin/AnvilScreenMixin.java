@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
 import com.HiWord9.RPRenames.configManager;
 import com.google.gson.Gson;
+import io.github.cottonmc.cotton.gui.widget.WItem;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
@@ -20,9 +21,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.MinecartEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MinecartItem;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,6 +40,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -105,6 +114,8 @@ public abstract class AnvilScreenMixin extends Screen {
 	ItemStack icon5;
 
 	CallbackInfo ci;
+
+	ArrayList<ArrayList<String>> mobName = new ArrayList<>();
 
 	private static final String configPath = RPRenames.configPath;
 	private static final String configPathFavorite = RPRenames.configPathFavorite;
@@ -359,6 +370,7 @@ public abstract class AnvilScreenMixin extends Screen {
 	private void screenUpdate() {
 		clearAll();
 		opener.active = true;
+		mobName.clear();
 		if (currentItem != null) {
 			File jsonRenames = new File(configPath + currentItem + ".json");
 			File jsonRenamesFavorite = new File(configPathFavorite + currentItem + ".json");
@@ -376,31 +388,51 @@ public abstract class AnvilScreenMixin extends Screen {
 
 				if (tabNum == 1 && currentItem.equals("name_tag")) {
 					ArrayList<String> modelsArray = new ArrayList<>();
-					ArrayList<String> mob = new ArrayList<>();
-					//TODO MOB ICON; ONLY MODELS;
-
-					File[] fList = configFolderModels.listFiles();
 					if (configFolderModels.exists()) {
-						for (File file : fList) {
-							if (file.isFile()) {
-								for (String s : search(configManager.configRead(file).getName(), searchField.getText())) {
-									if (!modelsArray.contains(s) && !Arrays.stream(currentRenameList.getName()).toList().contains(s)) {
-										modelsArray.add(s);
-										mob.add(file.getName().substring(0, file.getName().length() - 5));
+						try {
+							Files.walk(Path.of(configPathModels), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
+								File file = new File(String.valueOf(jsonFile));
+								for (String s : configManager.configRead(file).getName()) {
+									if (Arrays.stream(search(configManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+										if (!modelsArray.contains(s)) {
+											modelsArray.add(s);
+											ArrayList<String> nal = new ArrayList<>();
+											nal.add(file.getName().substring(0, file.getName().length() - 5));
+											mobName.add(nal);
+										} else {
+											int n = 0;
+											for (String s2 : modelsArray) {
+												if (s2.equals(s)) {
+													break;
+												}
+												n++;
+											}
+											ArrayList<String> nal = mobName.get(n);
+											nal.add(file.getName().substring(0, file.getName().length() - 5));
+											mobName.set(n, nal);
+										}
 									}
 								}
-							}
+							});
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					}
-					String[] finalList = new String[currentRenameList.getName().length + modelsArray.size()];
-					int g = 0;
+					ArrayList<String> citWithoutModels = new ArrayList<>();
 					for (String s : currentRenameList.getName()) {
+						if (!modelsArray.contains(s)) {
+							citWithoutModels.add(s);
+						}
+					}
+					String[] finalList = new String[citWithoutModels.size() + modelsArray.size()];
+					int g = 0;
+					for (String s : citWithoutModels) {
 						finalList[g] = s;
 						g++;
 					}
 					g = 0;
 					for (String s : modelsArray) {
-						finalList[currentRenameList.getName().length + g] = s;
+						finalList[citWithoutModels.size() + g] = s;
 						g++;
 					}
 					if (g != 0) {
@@ -414,21 +446,35 @@ public abstract class AnvilScreenMixin extends Screen {
 				clearAll();
 
 			} else if (!jsonRenames.exists() && configFolderModels.exists() && currentItem.equals("name_tag")) {
-
 				ArrayList<String> modelsArray = new ArrayList<>();
-				ArrayList<String> mob = new ArrayList<>();
-
-				File[] fList = configFolderModels.listFiles();
 				if (configFolderModels.exists()) {
-					for (File file : fList) {
-						if (file.isFile()) {
-							for (String s : search(configManager.configRead(file).getName(), searchField.getText())) {
-								if (!modelsArray.contains(s)) {
-									modelsArray.add(s);
-									mob.add(file.getName().substring(0, file.getName().length() - 5));
+					try {
+						Files.walk(Path.of(configPathModels), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
+							File file = new File(String.valueOf(jsonFile));
+							for (String s : configManager.configRead(file).getName()) {
+								if (Arrays.stream(search(configManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+									if (!modelsArray.contains(s)) {
+										modelsArray.add(s);
+										ArrayList<String> nal = new ArrayList<>();
+										nal.add(file.getName().substring(0, file.getName().length() - 5));
+										mobName.add(nal);
+									} else {
+										int n = 0;
+										for (String s2 : modelsArray) {
+											if (s2.equals(s)) {
+												break;
+											}
+											n++;
+										}
+										ArrayList<String> nal = mobName.get(n);
+										nal.add(file.getName().substring(0, file.getName().length() - 5));
+										mobName.set(n, nal);
+									}
 								}
 							}
-						}
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 				String[] finalList = new String[modelsArray.size()];
@@ -688,9 +734,17 @@ public abstract class AnvilScreenMixin extends Screen {
 				v = 166;
 			}
 		}
+		int citSize = currentRenameList.getName().length - mobName.size();
+		ArrayList<Text> toolTip = new ArrayList<>();
+		toolTip.add(text);
+		if (currentItem.equals("name_tag") && (page * 5) + order > citSize) {
+			for (String s : mobName.get((page * 5) + order - 1 - citSize)) {
+				toolTip.add(Text.of(s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)));
+			}
+		}
 		return new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> nameField.setText(text.getString()), new ButtonWidget.TooltipSupplier() {
 			public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-				renderTooltip(matrixStack, text, i, j);
+				renderTooltip(matrixStack, toolTip, i, j);
 			}
 
 			public void supply(Consumer<Text> consumer) {

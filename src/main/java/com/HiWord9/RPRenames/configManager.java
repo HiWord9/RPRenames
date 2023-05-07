@@ -386,17 +386,17 @@ public class configManager {
                 int c = 0;
                 while (c < CEM.models.length) {
                     int fc = c;
-                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(cemPath + CEM.models[fc] + ".jem")).forEach(jemFile -> {
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + CEM.models[fc] + ".jem")).forEach(jemFile -> {
                         String obj = getObjFromBF(jemFile).toString();
                         ArrayList<String> jpmList = getParamListFromObj(obj, "model=");
                         for (String jpmFileName : jpmList) {
                             if (jpmFileName != null && jpmFileName.endsWith(".jpm")) {
                                 try {
-                                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(cemPath + jpmFileName)).forEach(jpmFile -> {
+                                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + jpmFileName)).forEach(jpmFile -> {
                                         String jpmObj = getObjFromBF(jpmFile).toString();
                                         String textureName = getPropPathInRandom(Objects.requireNonNull(getParamListFromObj(jpmObj, "texture=").get(0)));
                                         try {
-                                            Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + textureName + ".properties")).forEach(propFile -> {
+                                            Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + textureName + ".properties")).forEach(propFile -> {
                                                 try {
                                                     checked.add(String.valueOf(propFile));
                                                     InputStream inputStream = Files.newInputStream(propFile);
@@ -423,7 +423,7 @@ public class configManager {
                 c = 0;
                 while (c < CEM.textures.length) {
                     int fc = c;
-                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + CEM.textures[fc] + ".properties")).forEach(propFile -> {
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + CEM.textures[fc] + ".properties")).forEach(propFile -> {
                         if (!checked.contains(String.valueOf(propFile))) {
                             try {
                                 InputStream inputStream = Files.newInputStream(propFile);
@@ -436,7 +436,7 @@ public class configManager {
                             }
                         }
                     });
-                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().startsWith(randomEntityPath + getLastPathPart(CEM.textures[fc]) + ".properties")).forEach(propFile -> {
+                    Files.walk(currentPath, new java.nio.file.FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + getLastPathPart(CEM.textures[fc]) + ".properties")).forEach(propFile -> {
                         if (!checked.contains(String.valueOf(propFile))) {
                             try {
                                 InputStream inputStream = Files.newInputStream(propFile);
