@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.configManager;
+import com.HiWord9.RPRenames.config.ConfigManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.CheckboxWidget;
@@ -34,7 +34,7 @@ public class PackScreenMixin extends Screen {
 	@Inject(at = @At("RETURN"), method = "close")
 	private void listCreator(CallbackInfo ci) {
 		if (toggleConfig.isChecked()) {
-			configManager.jsonManager();
+			ConfigManager.configUpdate();
 		}
 
 		if (!outputFolder.exists() || !outputFolder.isDirectory()) {
