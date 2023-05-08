@@ -540,7 +540,7 @@ public class configManager {
 
     public static String getPropPathInRandom(String texturePath) {
         if (texturePath.endsWith(".png")) {
-            texturePath.substring(0, texturePath.length() - 4);
+            texturePath = texturePath.substring(0, texturePath.length() - 4);
         }
         if (texturePath.startsWith("textures/entity/")) {
             texturePath = texturePath.substring(16);
@@ -553,7 +553,7 @@ public class configManager {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(Files.newInputStream(pathToFile)));
             try {
-                Type type = new com.google.gson.reflect.TypeToken<Object>() {
+                Type type = new com.google.gson.reflect.TypeToken<>() {
                 }.getType();
                 Gson gson = new Gson();
                 obj = gson.fromJson(bufferedReader, type);
