@@ -31,7 +31,7 @@ public class PackScreenMixin extends Screen {
 	boolean isToggled = true;
 
 	//close (onClose) method_25419
-	@Inject(at = @At("RETURN"), method = "method_25419")
+	@Inject(at = @At("RETURN"), method = "close")
 	private void listCreator(CallbackInfo ci) {
 		if (toggleConfig.isChecked()) {
 			configManager.jsonManager();
@@ -53,7 +53,7 @@ public class PackScreenMixin extends Screen {
 
 
 	//init method_25426
-	@Inject(at = @At("RETURN"), method = "method_25426")
+	@Inject(at = @At("RETURN"), method = "init")
 	private void toggleButton(CallbackInfo ci) {
 		if (settingsFile.exists()) {
 			try {
