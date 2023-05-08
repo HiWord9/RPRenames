@@ -1,3 +1,7 @@
+### [RP Renames on Curseforge](https://www.curseforge.com/minecraft/mc-mods/rp-renames)
+
+### [RP Renames on Modrinth](https://modrinth.com/mod/rp-renames)
+
 \I am not good enough in codding and codding mods, if u have some advices about code u can mark misstakes as issues. thanks.
 # ! only beta now ! ! may produre heart attack after seening the code (it is ryly bad) !
 # RP Renames Minecraft fabric mod
