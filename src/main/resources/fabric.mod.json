@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "RP Renames",
-  "description": "Minecraft mod that allows u to see every possible cit rename from ur resource packs",
+  "description": "Minecraft mod that allows u to see every possible CIT and CEM rename from ur resource packs in anvil menu",
   "authors": [
     "HiWord9"
   ],

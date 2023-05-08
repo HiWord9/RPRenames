@@ -13,8 +13,10 @@ public class RPRenames implements ClientModInitializer {
 
 	public static String configPath = "config/renames/all/";
 	public static String configPathFavorite = "config/renames/favorite/";
+	public static String configPathModels = "config/renames/models/";
 	public static String settingsPath = "config/rprenames.properties";
 	public static File configFolder = new File(configPath);
+	public static File configFolderModels = new File(configPathModels);
 
 	@Override
 	public void onInitializeClient() {
