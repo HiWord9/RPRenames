@@ -1,10 +1,10 @@
-package com.HiWord9.RPRenames;
+package com.HiWord9.RPRenames.config;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
-public class CEM {
+public class CEMList {
     public static String[] models = new String[]{
             "allay", "armor_stand", "axolotl", "axolotl", "axolotl", "axolotl", "axolotl",
             "bat", "polar_bear", "bee", "bee", "bee", "bee", "bee", "blaze",

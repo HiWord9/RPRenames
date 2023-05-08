@@ -1,9 +1,9 @@
 package com.HiWord9.RPRenames.mixin;
 
-import com.HiWord9.RPRenames.CEM;
+import com.HiWord9.RPRenames.config.CEMList;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
-import com.HiWord9.RPRenames.configManager;
+import com.HiWord9.RPRenames.config.ConfigManager;
 import com.google.gson.Gson;
 import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
@@ -252,7 +252,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			File currentFile = new File(configPathFavorite + item + ".json");
 			boolean nameExist = false;
 			if (currentFile.exists() && favoriteName != null) {
-				Rename alreadyExist = configManager.configRead(currentFile);
+				Rename alreadyExist = ConfigManager.configRead(currentFile);
 				String[] ae = alreadyExist.getName();
 				for (String s : ae) {
 					if (favoriteName.equals(s)) {
@@ -315,7 +315,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			String item = currentItem;
 
 			File currentFile = new File(configPathFavorite + item + ".json");
-			Rename alreadyExist = configManager.configRead(currentFile);
+			Rename alreadyExist = ConfigManager.configRead(currentFile);
 			String[] ae = alreadyExist.getName();
 			int n = 0;
 			for (String s : ae) {
@@ -377,10 +377,10 @@ public abstract class AnvilScreenMixin extends Screen {
 			if (jsonRenames.exists()) {
 				searchTab.active = true;
 				if (tabNum == 1) {
-					currentRenameList = new Rename(search(configManager.configRead(jsonRenames).getName(), searchField.getText()));
+					currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenames).getName(), searchField.getText()));
 				} else if (tabNum == 2) {
 					if (jsonRenamesFavorite.exists()) {
-						currentRenameList = new Rename(search(configManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
+						currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
 					} else {
 						currentRenameList = new Rename(new String[0]);
 					}
@@ -392,8 +392,8 @@ public abstract class AnvilScreenMixin extends Screen {
 						try {
 							Files.walk(Path.of(configPathModels), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
 								File file = new File(String.valueOf(jsonFile));
-								for (String s : configManager.configRead(file).getName()) {
-									if (Arrays.stream(search(configManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+								for (String s : ConfigManager.configRead(file).getName()) {
+									if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
 										if (!modelsArray.contains(s)) {
 											modelsArray.add(s);
 											ArrayList<String> nal = new ArrayList<>();
@@ -451,8 +451,8 @@ public abstract class AnvilScreenMixin extends Screen {
 					try {
 						Files.walk(Path.of(configPathModels), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
 							File file = new File(String.valueOf(jsonFile));
-							for (String s : configManager.configRead(file).getName()) {
-								if (Arrays.stream(search(configManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+							for (String s : ConfigManager.configRead(file).getName()) {
+								if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
 									if (!modelsArray.contains(s)) {
 										modelsArray.add(s);
 										ArrayList<String> nal = new ArrayList<>();
@@ -494,7 +494,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				searchTab.active = false;
 				tabNum = 2;
 				if (jsonRenamesFavorite.exists()) {
-					currentRenameList = new Rename(search(configManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
+					currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
 				} else {
 					currentRenameList = new Rename(new String[0]);
 				}
@@ -533,7 +533,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		if (!name.isEmpty()) {
 			File file = new File(configPathFavorite + currentItem + ".json");
 			if (file.exists()) {
-				String[] favoriteName = configManager.configRead(file).getName();
+				String[] favoriteName = ConfigManager.configRead(file).getName();
 				boolean nameExist = false;
 				for (String s : favoriteName) {
 					if (name.equals(s)) {
@@ -728,7 +728,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		File file = new File(configPathFavorite + currentItem + ".json");
 		if (file.exists()) {
 			boolean favorite = false;
-			String[] favoriteList = configManager.configRead(file).getName();
+			String[] favoriteList = ConfigManager.configRead(file).getName();
 			for (String s : favoriteList) {
 				if (text.equals(Text.of(s))) {
 					favorite = true;
@@ -761,13 +761,13 @@ public abstract class AnvilScreenMixin extends Screen {
 
 		if (toolTip.size() > 1) {
 			int n = 0;
-			for (String s : CEM.mobsNames) {
+			for (String s : CEMList.mobsNames) {
 				if (s.equals(toolTip.get(1).getString())) {
 					break;
 				}
 				n++;
 			}
-			settings.add(new ItemStack(CEM.spawnEggItems[n]));
+			settings.add(new ItemStack(CEMList.spawnEggItems[n]));
 		}
 
 		return settings;
