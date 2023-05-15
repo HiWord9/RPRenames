@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.config;
+package com.HiWord9.RPRenames.configGeneration;
 
 import com.HiWord9.RPRenames.Rename;
 import com.google.gson.Gson;
@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class CITConfig {
 
-    public static void propertiesToJson(Properties p) {
+    public static void propertiesToJson(Properties p, String outputPath) {
         String items = p.getProperty("matchItems");
         if (items == null) {
             items = p.getProperty("items");
@@ -42,7 +42,7 @@ public class CITConfig {
 
                 item = Objects.requireNonNull(item).replace("minecraft:", "");
 
-                File currentFile = new File(ConfigManager.configPath + item + ".json");
+                File currentFile = new File(outputPath + item + ".json");
                 if (currentFile.exists() && p.getProperty("nbt.display.Name") != null) {
                     Rename alreadyExist = ConfigManager.configRead(currentFile);
                     String[] ae = alreadyExist.getName();
@@ -71,8 +71,9 @@ public class CITConfig {
                     }
                 } else {
                     if (p.getProperty("nbt.display.Name") != null) {
+                        new File(outputPath).mkdirs();
                         try {
-                            System.out.println("[RPR] Created new file for config: " + ConfigManager.configPath + item + ".json");
+                            System.out.println("[RPR] Created new file for config: " + outputPath + item + ".json");
                             ArrayList<Rename> listNames = new ArrayList<>();
                             Rename name1 = new Rename(new String[]{ConfigManager.getFirstName(p.getProperty("nbt.display.Name"))});
                             listNames.add(name1);

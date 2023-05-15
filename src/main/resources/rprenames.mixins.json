@@ -3,10 +3,11 @@
   "minVersion": "0.8",
   "package": "com.HiWord9.RPRenames.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
   "client": [
     "AnvilScreenMixin",
+    "ClientBuiltinResourcePackProviderMixin",
+    "MinecraftClientMixin",
+    "ResourcePackOrganizerMixin",
     "PackScreenMixin"
   ],
   "injectors": {

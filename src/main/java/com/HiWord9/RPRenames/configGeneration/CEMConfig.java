@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.config;
+package com.HiWord9.RPRenames.configGeneration;
 
 import com.HiWord9.RPRenames.Rename;
 import com.google.gson.Gson;
@@ -11,8 +11,8 @@ import java.util.*;
 
 public class CEMConfig {
 
-    public static void propertiesToJsonModels(Properties p, String fileName) {
-        File currentFile = new File(ConfigManager.configPathModels + fileName + ".json");
+    public static void propertiesToJsonModels(Properties p, String fileName, String outputPath) {
+        File currentFile = new File(outputPath + fileName + ".json");
         if (currentFile.exists()) {
             List<String> namesValues = p.stringPropertyNames().stream().toList();
             ArrayList<String> skins = new ArrayList<>();
@@ -80,7 +80,8 @@ public class CEMConfig {
 
             if (names.length != 0) {
                 try {
-                    System.out.println("[RPR] Created new file for config: " + ConfigManager.configPathModels + fileName + ".json");
+                    new File(outputPath).mkdirs();
+                    System.out.println("[RPR] Created new file for config: " + outputPath + fileName + ".json");
                     FileWriter fileWriter = new FileWriter(currentFile);
                     Gson gson = new Gson();
                     gson.toJson(renameArray, fileWriter);
@@ -92,11 +93,11 @@ public class CEMConfig {
         }
     }
 
-    public static void startPropToJsonModels(String rpPath) {
+    public static void startPropToJsonModels(String rpPath, String outputPath) {
         ArrayList<String> checked = new ArrayList<>();
         String cemPath = "/assets/minecraft/optifine/cem/";
         String randomEntityPath = "/assets/minecraft/optifine/random/entity/";
-        if (rpPath.endsWith(".zip")) {
+        if (new File(rpPath).isFile()) {
             try {
                 FileSystem zip = FileSystems.newFileSystem(Paths.get(rpPath), (ClassLoader) null);
                 Path currentPath = zip.getPath("/assets/minecraft/optifine/");
@@ -120,7 +121,7 @@ public class CEMConfig {
                                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                                     Properties p = new Properties();
                                                     p.load(reader);
-                                                    propertiesToJsonModels(p, CEMList.mobsNames[fc]);
+                                                    propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
                                                 } catch (IOException e) {
                                                     e.printStackTrace();
                                                 }
@@ -147,7 +148,7 @@ public class CEMConfig {
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobsNames[fc]);
+                                propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -160,7 +161,7 @@ public class CEMConfig {
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobsNames[fc]);
+                                propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -190,7 +191,7 @@ public class CEMConfig {
                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                     Properties p = new Properties();
                                     p.load(reader);
-                                    propertiesToJsonModels(p, CEMList.mobsNames[c]);
+                                    propertiesToJsonModels(p, CEMList.mobsNames[c], outputPath);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -214,7 +215,7 @@ public class CEMConfig {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                         Properties p = new Properties();
                         p.load(reader);
-                        propertiesToJsonModels(p, CEMList.mobsNames[c]);
+                        propertiesToJsonModels(p, CEMList.mobsNames[c], outputPath);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
