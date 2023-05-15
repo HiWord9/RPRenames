@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.config;
+package com.HiWord9.RPRenames.configGeneration;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;

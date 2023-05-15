@@ -9,6 +9,16 @@
     "com/HiWord9/RPRenames/mixin/PackScreenMixin": {
       "close": "Lnet/minecraft/class_5375;method_25419()V",
       "init": "Lnet/minecraft/class_5375;method_25426()V"
+    },
+    "com/HiWord9/RPRenames/mixin/ClientBuiltinResourcePackProviderMixin": {
+      "download": "Lnet/minecraft/class_1066;method_4640(Ljava/net/URL;Ljava/lang/String;Z)Ljava/util/concurrent/CompletableFuture;"
+    },
+    "com/HiWord9/RPRenames/mixin/MinecraftClientMixin": {
+      "disconnect*": "Lnet/minecraft/class_310;method_18099()V",
+      "Lnet/minecraft/client/MinecraftClient;disconnect(Lnet/minecraft/client/gui/screen/Screen;)V": "Lnet/minecraft/class_310;method_18096(Lnet/minecraft/class_437;)V"
+    },
+    "com/HiWord9/RPRenames/mixin/ResourcePackOrganizerMixin": {
+      "apply": "Lnet/minecraft/class_5369;method_29642()V"
     }
   },
   "data": {
@@ -22,6 +32,16 @@
       "com/HiWord9/RPRenames/mixin/PackScreenMixin": {
         "close": "Lnet/minecraft/class_5375;method_25419()V",
         "init": "Lnet/minecraft/class_5375;method_25426()V"
+      },
+      "com/HiWord9/RPRenames/mixin/ClientBuiltinResourcePackProviderMixin": {
+        "download": "Lnet/minecraft/class_1066;method_4640(Ljava/net/URL;Ljava/lang/String;Z)Ljava/util/concurrent/CompletableFuture;"
+      },
+      "com/HiWord9/RPRenames/mixin/MinecraftClientMixin": {
+        "disconnect*": "Lnet/minecraft/class_310;method_18099()V",
+        "Lnet/minecraft/client/MinecraftClient;disconnect(Lnet/minecraft/client/gui/screen/Screen;)V": "Lnet/minecraft/class_310;method_18096(Lnet/minecraft/class_437;)V"
+      },
+      "com/HiWord9/RPRenames/mixin/ResourcePackOrganizerMixin": {
+        "apply": "Lnet/minecraft/class_5369;method_29642()V"
       }
     }
   }

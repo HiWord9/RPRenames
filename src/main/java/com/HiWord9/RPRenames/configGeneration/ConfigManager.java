@@ -1,47 +1,54 @@
-package com.HiWord9.RPRenames.config;
+package com.HiWord9.RPRenames.configGeneration;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
+import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.google.common.hash.Hashing;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import net.minecraft.resource.ResourcePackProfile;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
 import java.nio.file.*;
 import java.util.*;
 
 public class ConfigManager {
 
-    private static ArrayList<Rename> theList;
+    public static ArrayList<Rename> theList;
 
-    public static String configPath = RPRenames.configPath;
-    public static File configFolder = RPRenames.configFolder;
-    public static String configPathModels = RPRenames.configPathModels;
-    public static File configFolderModels = RPRenames.configFolderModels;
+    static ModConfig config = ModConfig.INSTANCE;
 
     public static void configUpdate() {
-        if (configFolder.exists()) {
-            System.out.println("[RPR] Config's folder is already exist. Starting recreate");
-            configDeleter(configPath);
-            configDeleter(configPathModels);
-            startConfigCreate();
-            if (Objects.requireNonNull(configFolder.listFiles()).length == 0) {
-                configFolder.delete();
-            }
-            if (Objects.requireNonNull(configFolderModels.listFiles()).length == 0) {
-                configFolderModels.delete();
-            }
-        } else {
-            startConfigCreate();
-        }
+        configUpdate(getPacksFromOptions());
     }
 
-    private static void startConfigCreate() {
-        configFolder.mkdirs();
-        configFolderModels.mkdirs();
+    public static void configUpdate(List<ResourcePackProfile> enabledPacks) {
+        ArrayList<String> packs = new ArrayList<>();
+        for (ResourcePackProfile rpp : enabledPacks) {
+            packs.add(rpp.getName());
+        }
+        configUpdate(packs);
+    }
 
-        String resourcePacks = null;
+    public static void configUpdate(ArrayList<String> enabledPacks) {
+        if (RPRenames.configClientFolder.exists() || RPRenames.configServerFolder.exists()) {
+            System.out.println("[RPR] Config's folder is already exist. Starting deleting.");
+            configDelete(RPRenames.configPathClient);
+            configDelete(RPRenames.configPathServer);
+        }
+        System.out.println("[RPR] Starting creating config for renames.");
+        startConfigCreate(enabledPacks);
+        System.out.println("[RPR] Finished creating config for renames.");
+    }
+
+    public static ArrayList<String> getPacksFromOptions() {
+        ArrayList<String> packs = new ArrayList<>();
+        String resourcePacks = "";
         try {
             File file = new File("options.txt");
             FileReader options;
@@ -54,32 +61,49 @@ public class ConfigManager {
         }
 
         int h = 0;
-        String currentRP = "";
-        while (h < Objects.requireNonNull(resourcePacks).length()) {
-            if (String.valueOf(resourcePacks.charAt(h)).equals("[") || String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
-                h++;
-            } else {
-                if (String.valueOf(resourcePacks.charAt(h - 1)).equals("\"")) {
-                    while (h < resourcePacks.length()) {
-                        currentRP = currentRP + resourcePacks.charAt(h);
+        while (h < resourcePacks.length()) {
+            if (!String.valueOf(resourcePacks.charAt(h)).equals("[") && !String.valueOf(resourcePacks.charAt(h)).equals("]")) {
+                if (String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
+                    int c = h;
+                    h++;
+                    while (!String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
                         h++;
-                        if (String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
-                            if (currentRP.startsWith("file/")) {
-                                currentRP = currentRP.substring(5);
-                                configCreate("resourcepacks/" + currentRP);
-                            }
-                            h = h + 3;
-                            currentRP = "";
-                        }
                     }
+                    String packName = resourcePacks.substring(c + 1,h);
+                    packs.add(packName);
+                }
+            }
+            h++;
+        }
+        if (RPRenames.serverResourcePackURL != null) {
+            packs.add("server");
+        }
+        return packs;
+    }
+
+    public static void startConfigCreate(ArrayList<String> enabledPacks) {
+        for (String s : enabledPacks) {
+            if (s.startsWith("file/")) {
+                String packName = s.substring(5);
+                System.out.println("[RPR] Starting creating config for \"" + packName + "\".");
+                ConfigManager.configCreate("resourcepacks/" + packName, RPRenames.configPathClient);
+            }
+            if (s.equals("server") && config.createConfigServer) {
+                URL url = RPRenames.serverResourcePackURL;
+                if (url != null) {
+                    System.out.println("[RPR] Starting creating config for Server's Resource Pack");
+                    String serverResourcePack = Hashing.sha1().hashString(url.toString(), StandardCharsets.UTF_8).toString();
+                    ConfigManager.configCreate("server-resource-packs/" + serverResourcePack, RPRenames.configPathServer);
+                } else {
+                    System.out.println("[RPR] Unknown error while creating config for Server's Resource Pack");
                 }
             }
         }
     }
 
-    public static void configCreate(String filePath) {
+    public static void configCreate(String filePath, String outputPath) {
         FileSystem zip = null;
-        if (filePath.endsWith(".zip")) {
+        if (new File(filePath).isFile()) {
             try {
                 zip = FileSystems.newFileSystem(Paths.get(filePath), (ClassLoader) null);
             } catch (IOException e) {
@@ -95,7 +119,7 @@ public class ConfigManager {
 
         for (String currentFolder : folders) {
 
-            if (filePath.endsWith(".zip")) {
+            if (new File(filePath).isFile()) {
                 assert zip != null;
                 currentPath = zip.getPath(currentFolder);
             } else {
@@ -118,20 +142,23 @@ public class ConfigManager {
                             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                             Properties p = new Properties();
                             p.load(bufferedReader);
-                            CITConfig.propertiesToJson(p);
+                            CITConfig.propertiesToJson(p, outputPath + RPRenames.configPathNameCIT + "/");
                         } else if (currentFolder.endsWith("/cem/")) {
                             String fileName = propertiesFile.getFileName().toString();
                             if (Arrays.stream(CEMList.models).toList().contains(fileName.substring(0, propertiesFile.getFileName().toString().length() - 4))) {
-                                CEMConfig.startPropToJsonModels(filePath);
+                                CEMConfig.startPropToJsonModels(filePath, outputPath + RPRenames.configPathNameCEM + "/");
                             }
                         }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    } catch (IOException ignored) {}
                 });
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignored) {}
+        }
+        try {
+            if (zip != null) {
+                zip.close();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -149,7 +176,7 @@ public class ConfigManager {
         return theList.get(0);
     }
 
-    public static void configDeleter(String directoryName) {
+    public static void configDelete(String directoryName) {
         File directory = new File(directoryName);
         try {
             FileUtils.deleteDirectory(directory);

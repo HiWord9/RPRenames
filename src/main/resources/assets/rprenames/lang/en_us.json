@@ -1,3 +1,27 @@
 {
-  "rprenames.config.notfound": "No configs were found in path \"%s\". Configs are creating after updating resource packs. Only featured available."
+  "rprenames.renamesconfig.notfound": "No configs were found in path \"%s\". Configs are creating after updating resource packs. Only featured available.",
+  "rprenames.config.title": "RPRenames",
+  "rprenames.config.category.main": "Main",
+  "rprenames.config.createConfigToggle": "Create renames config",
+  "rprenames.config.createConfigToggle.tooltip": "Create or not config on closing pack selection screen,\ncopies checkbox on that screen",
+  "rprenames.config.createConfigServerToggle": "Create renames config for Server's Resource Pack",
+  "rprenames.config.createConfigServerToggle.tooltip": "Create or not config for Server's Resource Pack\non closing pack selection screen.",
+  "rprenames.config.enableAnvilModification": "Show RP Renames button",
+  "rprenames.config.enableAnvilModification.tooltip": "If false, it wont do any modifications of anvil screen.",
+  "rprenames.config.showCreateConfigCheckbox": "Show \"Create config\" Checkbox",
+  "rprenames.config.showCreateConfigCheckbox.tooltip": "If true, shows checkbox on pack selection screen\nthat controls \"Create renames config Toggle\" option.",
+  "rprenames.config.packCheckboxX": "\"Create config\" Checkbox X",
+  "rprenames.config.packCheckboxX.tooltip": "Counts from center to right",
+  "rprenames.config.packCheckboxY": "\"Create config\" Checkbox Y",
+  "rprenames.config.packCheckboxY.tooltip": "Counts from bottom",
+  "rprenames.config.favoriteButtonX": "\"Add to Favorite\" button X",
+  "rprenames.config.favoriteButtonX.tooltip": "Counts from center to right",
+  "rprenames.config.favoriteButtonY": "\"Add to Favorite\" button Y",
+  "rprenames.config.favoriteButtonY.tooltip": "Counts from center to bottom",
+  "rprenames.config.recreateConfig": "Recreate config",
+  "rprenames.config.recreateConfig.tooltip": "If true, recreates config for renames on exiting\nthis settings menu depended on enabled resource packs,\n then sets to false",
+  "rprenames.config.loadModBuiltinResources": "Load Mod's built-in Resource Packs",
+  "rprenames.config.loadModBuiltinResources.tooltip": "If true, adds Mod's built-in Resource Packs\nto pack selection screen. If false, it will not\nshow them. Requires restart.",
+  "rprenames.config.createConfigCheckboxPosition": "\"Create config\" Checkbox Position",
+  "rprenames.config.favoriteButtonPosition": "\"Add to Favorite\" Button Position"
 }

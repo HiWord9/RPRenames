@@ -20,6 +20,8 @@ repositories {
 		name = "CottonMC"
 		url = "https://server.bbkr.space/artifactory/libs-release"
 	}
+	maven { url "https://maven.shedaniel.me/" }
+	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 dependencies {
@@ -36,8 +38,9 @@ dependencies {
 
 	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 
-    // implementation 'com.google.code.gson:gson:2.10.1'
 	modImplementation include("io.github.cottonmc:LibGui:6.4.0+1.19")
+	modApi "com.terraformersmc:modmenu:4.2.0-beta.2"
+	modApi "me.shedaniel.cloth:cloth-config-fabric:8.2.88"
 }
 
 processResources {
