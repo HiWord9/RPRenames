@@ -162,33 +162,30 @@ public abstract class AnvilScreenMixin extends Screen {
 				serverConfigReadable = false;
 			}
 
-			if (!clientConfigReadable && !serverConfigReadable) {
-				Text noConfigText = Text.translatable("rprenames.config.notfound", RPRenames.configPath);
-				opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
-					if (!open) {
-						open = true;
-						page = 0;
-						System.out.println("[RPR] Opened RP Renames Menu");
-						screenUpdate();
-					} else {
-						open = false;
-						clearAll();
-						searchField.setFocused(false);
-						searchField.setFocusUnlocked(false);
-						searchField.setText("");
-						remove(searchField);
-						nameField.setFocused(true);
-						nameField.setFocusUnlocked(false);
-						remove(openerOpened);
-						remove(searchTab);
-						remove(favoriteTab);
-						remove(searchTab2);
-						remove(favoriteTab2);
-						tabNum = 1;
-						System.out.println("[RPR] Closed RP Renames Menu");
-					}
-				});
-			}
+			opener = new TexturedButtonWidget(this.width / 2 - 83, this.height / 2 - 38, 20, 20, 0, 0, 20, RENAMES_BUTTON, 20, 100, (button) -> {
+				if (!open) {
+					open = true;
+					page = 0;
+					System.out.println("[RPR] Opened RP Renames Menu");
+					screenUpdate();
+				} else {
+					open = false;
+					clearAll();
+					searchField.setFocused(false);
+					searchField.setFocusUnlocked(false);
+					searchField.setText("");
+					remove(searchField);
+					nameField.setFocused(true);
+					nameField.setFocusUnlocked(false);
+					remove(openerOpened);
+					remove(searchTab);
+					remove(favoriteTab);
+					remove(searchTab2);
+					remove(favoriteTab2);
+					tabNum = 1;
+					System.out.println("[RPR] Closed RP Renames Menu");
+				}
+			});
 
 			if (!clientConfigReadable && !serverConfigReadable) {
 				Text noConfigText = Text.translatable("rprenames.configrenames.notfound", RPRenames.configPath);
@@ -822,9 +819,6 @@ public abstract class AnvilScreenMixin extends Screen {
 		if (toolTipList.size() > 1) {
 			tp = tp + "\n" + toolTipList.get(1).getString();
 		}
-//		if (toolTipList.size() > 1) {
-//			tp = tp + " (" + toolTipList.get(1).getString() + ")";
-//		}
 		Tooltip tooltip = Tooltip.of(Text.of(tp));
 		tbw.setTooltip(tooltip);
 
