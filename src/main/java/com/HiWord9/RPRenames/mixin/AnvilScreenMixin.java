@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandler;
@@ -48,6 +48,8 @@ public abstract class AnvilScreenMixin extends Screen {
 	boolean isOnServer = !MinecraftClient.getInstance().isInSingleplayer();
 
 	@Shadow private TextFieldWidget nameField;
+
+	@Shadow protected abstract void setup();
 
 	protected AnvilScreenMixin(Text title) {
 		super(title);
@@ -174,6 +176,7 @@ public abstract class AnvilScreenMixin extends Screen {
 					searchField.setFocused(false);
 					searchField.setFocusUnlocked(false);
 					searchField.setText("");
+					searchField.setEditable(false);
 					remove(searchField);
 					nameField.setFocused(true);
 					nameField.setFocusUnlocked(false);
@@ -575,6 +578,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				addDrawableChild(searchField);
 				searchField.setFocusUnlocked(true);
 				searchField.setFocused(true);
+				searchField.setEditable(true);
 				nameField.setFocused(false);
 				nameField.setFocusUnlocked(true);
 				remove(openerOpened);
@@ -626,6 +630,7 @@ public abstract class AnvilScreenMixin extends Screen {
 					searchField.setFocusUnlocked(false);
 					remove(searchField);
 					searchField.setFocused(false);
+					searchField.setEditable(false);
 					screenUpdate();
 				} else {
 					currentItem = stack.getItem().getTranslationKey();
@@ -654,6 +659,7 @@ public abstract class AnvilScreenMixin extends Screen {
 					clearAll();
 					searchField.setText("");
 					searchField.setFocusUnlocked(true);
+					searchField.setEditable(true);
 					tabNum = 1;
 					newNameEntered(nameField.getText(), ci);
 					screenUpdate();
@@ -663,31 +669,31 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	@Inject(at = @At("RETURN"), method = "drawForeground")
-	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
+	private void paintWWidgets(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
 		if (config.enableAnvilModification) {
-			iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);
-			iconSlot2.paint(matrices, -130 + 1, 52 + 1, mouseX, mouseY);
-			iconSlot3.paint(matrices, -130 + 1, 74 + 1, mouseX, mouseY);
-			iconSlot4.paint(matrices, -130 + 1, 96 + 1, mouseX, mouseY);
-			iconSlot5.paint(matrices, -130 + 1, 118 + 1, mouseX, mouseY);
+			iconSlot1.paint(context, -130 + 1, 30 + 1, mouseX, mouseY);
+			iconSlot2.paint(context, -130 + 1, 52 + 1, mouseX, mouseY);
+			iconSlot3.paint(context, -130 + 1, 74 + 1, mouseX, mouseY);
+			iconSlot4.paint(context, -130 + 1, 96 + 1, mouseX, mouseY);
+			iconSlot5.paint(context, -130 + 1, 118 + 1, mouseX, mouseY);
 			pageCount.setHorizontalAlignment(HorizontalAlignment.CENTER);
-			pageCount.paint(matrices, 83 + 10 - 200 + 10 + 30 + 5 - 14, 140 + 4, mouseX, mouseY);
+			pageCount.paint(context, 83 + 10 - 200 + 10 + 30 + 5 - 14, 140 + 4, mouseX, mouseY);
 			pageCount.setSize(12, 30);
-			button1textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 30 + 7 + 1, mouseX, mouseY);
-			button2textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 52 + 7 + 1, mouseX, mouseY);
-			button3textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 74 + 7 + 1, mouseX, mouseY);
-			button4textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 96 + 7 + 1, mouseX, mouseY);
-			button5textShadow.paint(matrices, -130 + 20 + 49 - 10 + 1, 118 + 7 + 1, mouseX, mouseY);
+			button1textShadow.paint(context, -130 + 20 + 49 - 10 + 1, 30 + 7 + 1, mouseX, mouseY);
+			button2textShadow.paint(context, -130 + 20 + 49 - 10 + 1, 52 + 7 + 1, mouseX, mouseY);
+			button3textShadow.paint(context, -130 + 20 + 49 - 10 + 1, 74 + 7 + 1, mouseX, mouseY);
+			button4textShadow.paint(context, -130 + 20 + 49 - 10 + 1, 96 + 7 + 1, mouseX, mouseY);
+			button5textShadow.paint(context, -130 + 20 + 49 - 10 + 1, 118 + 7 + 1, mouseX, mouseY);
 			button1textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button2textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button3textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button4textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button5textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-			button1text.paint(matrices, -130 + 20 + 49 - 10, 30 + 7, mouseX, mouseY);
-			button2text.paint(matrices, -130 + 20 + 49 - 10, 52 + 7, mouseX, mouseY);
-			button3text.paint(matrices, -130 + 20 + 49 - 10, 74 + 7, mouseX, mouseY);
-			button4text.paint(matrices, -130 + 20 + 49 - 10, 96 + 7, mouseX, mouseY);
-			button5text.paint(matrices, -130 + 20 + 49 - 10, 118 + 7, mouseX, mouseY);
+			button1text.paint(context, -130 + 20 + 49 - 10, 30 + 7, mouseX, mouseY);
+			button2text.paint(context, -130 + 20 + 49 - 10, 52 + 7, mouseX, mouseY);
+			button3text.paint(context, -130 + 20 + 49 - 10, 74 + 7, mouseX, mouseY);
+			button4text.paint(context, -130 + 20 + 49 - 10, 96 + 7, mouseX, mouseY);
+			button5text.paint(context, -130 + 20 + 49 - 10, 118 + 7, mouseX, mouseY);
 			button1text.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button2text.setHorizontalAlignment(HorizontalAlignment.CENTER);
 			button3text.setHorizontalAlignment(HorizontalAlignment.CENTER);
