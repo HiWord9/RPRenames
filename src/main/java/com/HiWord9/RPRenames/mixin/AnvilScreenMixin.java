@@ -21,6 +21,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.*;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -40,6 +41,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 @Mixin(AnvilScreen.class)
@@ -66,6 +68,12 @@ public abstract class AnvilScreenMixin extends Screen {
 	int currentRenameListSize;
 
 	String currentItem = null;
+	ArrayList<String> currentItemList = new ArrayList<>();
+	ArrayList<Integer> currentInvOrder = new ArrayList<>();
+	boolean afterInventoryTab = false;
+	int tempPage;
+	int citSizeInventoryTab;
+
 	TexturedButtonWidget background;
 	TexturedButtonWidget opener;
 	TexturedButtonWidget openerOpened;
@@ -178,6 +186,7 @@ public abstract class AnvilScreenMixin extends Screen {
 					} else {
 						open = false;
 						clearAll();
+						page = 0;
 						searchField.setTextFieldFocused(false);
 						searchField.setFocusUnlocked(false);
 						searchField.setText("");
@@ -211,6 +220,7 @@ public abstract class AnvilScreenMixin extends Screen {
 					} else {
 						open = false;
 						clearAll();
+						page = 0;
 						searchField.setTextFieldFocused(false);
 						searchField.setFocusUnlocked(false);
 						searchField.setText("");
@@ -233,7 +243,7 @@ public abstract class AnvilScreenMixin extends Screen {
 
 			addDrawableChild(opener);
 
-			searchTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3, 33, 26, 48 + 4, 88, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			searchTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5, 33, 26, 48 + 4, 88, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
 				tabNum = 1;
 				remove(searchTab2);
 				remove(favoriteTab2);
@@ -241,7 +251,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				addDrawableChild(searchTab2);
 				screenUpdate();
 			});
-			favoriteTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31, 33, 26, 48 + 4, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			favoriteTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5 + 31, 33, 26, 48 + 4, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
 				tabNum = 2;
 				remove(searchTab2);
 				remove(favoriteTab2);
@@ -249,7 +259,7 @@ public abstract class AnvilScreenMixin extends Screen {
 				addDrawableChild(favoriteTab2);
 				screenUpdate();
 			});
-			inventoryTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31 + 31, 33, 26, 48 + 4, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
+			inventoryTab = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5 + 31 + 31, 33, 26, 48 + 4, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
 				tabNum = 3;
 				remove(searchTab2);
 				remove(favoriteTab2);
@@ -257,9 +267,9 @@ public abstract class AnvilScreenMixin extends Screen {
 				addDrawableChild(inventoryTab2);
 				screenUpdate();
 			});
-			searchTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3, 33, 26, 48 + 35 + 2, 88, 0, RENAMES_MENU, menuWidth, menuHeight, null);
-			favoriteTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31, 33, 26, 48 + 35 + 2, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, null);
-			inventoryTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 3 + 31 + 31, 33, 26, 48 + 35 + 2, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, null);
+			searchTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5, 33, 26, 48 + 35 + 2, 88, 0, RENAMES_MENU, menuWidth, menuHeight, null);
+			favoriteTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5 + 31, 33, 26, 48 + 35 + 2, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, null);
+			inventoryTab2 = new TexturedButtonWidget(this.width / 2 - 200 - 28 - 30, this.height / 2 - 83 + 5 + 31 + 31, 33, 26, 48 + 35 + 2, 88 + 26, 0, RENAMES_MENU, menuWidth, menuHeight, null);
 			searchTab2.active = false;
 			favoriteTab2.active = false;
 			inventoryTab2.active = false;
@@ -325,8 +335,11 @@ public abstract class AnvilScreenMixin extends Screen {
 					buttonsDefine();
 					showButtons();
 				}
-				if (tabNum == 2) {
-					screenUpdate();
+				if (tabNum == 2 && open) {
+					screenUpdate(page);
+				}
+				if (tabNum == 3 && open) {
+					screenUpdate(page);
 				}
 			});
 			removeFromFavorite = new TexturedButtonWidget(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY, 9, 9, 43, 88, 0, RENAMES_MENU, menuWidth, menuHeight, button -> {
@@ -375,8 +388,11 @@ public abstract class AnvilScreenMixin extends Screen {
 					buttonsDefine();
 					showButtons();
 				}
-				if (tabNum == 2) {
-					screenUpdate();
+				if (tabNum == 2 && open) {
+					screenUpdate(page);
+				}
+				if (tabNum == 3 && open) {
+					screenUpdate(page);
 				}
 			});
 
@@ -389,9 +405,23 @@ public abstract class AnvilScreenMixin extends Screen {
 	}
 
 	private void screenUpdate() {
+		screenUpdate(null);
+	}
+
+	private void screenUpdate(Integer savedPage) {
+		System.out.println("SU" + afterInventoryTab);
 		clearAll();
+		if (savedPage != null) {
+			page = savedPage;
+		} else {
+			page = 0;
+		}
 		opener.active = true;
 		mobName.clear();
+		if (afterInventoryTab) {
+			tabNum = 3;
+			page = tempPage;
+		}
 		if (currentItem != null) {
 			File jsonRenamesClient = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
 			File jsonRenamesServer = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
@@ -406,6 +436,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			if (!isOnServer) {
 				serverConfigCEMReadable = false;
 			}
+			boolean hasRenames = true;
 			if (clientConfigReadable || serverConfigReadable) {
 				searchTab.active = true;
 				if (tabNum == 1) {
@@ -434,86 +465,59 @@ public abstract class AnvilScreenMixin extends Screen {
 					} else {
 						currentRenameList = new Rename(new String[0]);
 					}
-				} else if (tabNum == 3) {
-					currentRenameList = new Rename(new String[0]);
+				} else if (tabNum == 3  && currentItemList.get(0) != null) { //&& !afterInventoryTab
+					ArrayList<String> checked = new ArrayList<>();
+					ArrayList<String> names = new ArrayList<>();
+					ArrayList<Integer> numInInv = new ArrayList<>();
+					int i = 0;
+					for (String s : currentItemList) {
+						if (!s.equals("air") && !checked.contains(s)) {
+							checked.add(s);
+							if (clientConfigReadable) {
+								File a = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
+								if (a.exists()) {
+									List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+									for (String name : c) {
+										names.add(name);
+										numInInv.add(i);
+									}
+								}
+							}
+							if (serverConfigReadable) {
+								File a = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+								if (a.exists()) {
+									List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+									for (String name : c) {
+										names.add(name);
+										numInInv.add(i);
+									}
+								}
+							}
+							if (s.equals("name_tag")) {
+								List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+								citSizeInventoryTab = names.size();
+								for (String name : settings.get(0)) {
+									names.add(name);
+									numInInv.add(i);
+								}
+							}
+						}
+						i++;
+					}
+					currentRenameList = new Rename(names.toArray(new String[0]));
+					currentInvOrder = numInInv;
 				}
 				if (tabNum == 1 && currentItem.equals("name_tag")) {
-					ArrayList<String> modelsArray = new ArrayList<>();
-					if (clientConfigCEMReadable) {
-						try {
-							Files.walk(Path.of(RPRenames.configPathClient + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-								File file = new File(String.valueOf(jsonFile));
-								for (String s : ConfigManager.configRead(file).getName()) {
-									if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
-										if (!modelsArray.contains(s)) {
-											modelsArray.add(s);
-											ArrayList<String> nal = new ArrayList<>();
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.add(nal);
-										} else {
-											int n = 0;
-											for (String s2 : modelsArray) {
-												if (s2.equals(s)) {
-													break;
-												}
-												n++;
-											}
-											ArrayList<String> nal = mobName.get(n);
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.set(n, nal);
-										}
-									}
-								}
-							});
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					if (serverConfigCEMReadable) {
-						try {
-							Files.walk(Path.of(RPRenames.configPathServer + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-								File file = new File(String.valueOf(jsonFile));
-								for (String s : ConfigManager.configRead(file).getName()) {
-									if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
-										if (!modelsArray.contains(s)) {
-											modelsArray.add(s);
-											ArrayList<String> nal = new ArrayList<>();
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.add(nal);
-										} else {
-											int n = 0;
-											for (String s2 : modelsArray) {
-												if (s2.equals(s)) {
-													break;
-												}
-												n++;
-											}
-											ArrayList<String> nal = mobName.get(n);
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.set(n, nal);
-										}
-									}
-								}
-							});
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					ArrayList<String> citWithoutModels = new ArrayList<>();
-					for (String s : currentRenameList.getName()) {
-						if (!modelsArray.contains(s)) {
-							citWithoutModels.add(s);
-						}
-					}
-					String[] finalList = new String[citWithoutModels.size() + modelsArray.size()];
+					List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+					String[] finalList = new String[settings.get(1).size() + settings.get(0).size()];
 					int g = 0;
-					for (String s : citWithoutModels) {
+					for (String s : settings.get(1)) {
 						finalList[g] = s;
 						g++;
 					}
 					g = 0;
-					for (String s : modelsArray) {
-						finalList[citWithoutModels.size() + g] = s;
+					for (String s : settings.get(0)) {
+						finalList[settings.get(1).size() + g] = s;
 						g++;
 					}
 					if (g != 0) {
@@ -526,77 +530,16 @@ public abstract class AnvilScreenMixin extends Screen {
 				buttonsDefine();
 				clearAll();
 
-			} else if ((!clientConfigReadable && !serverConfigReadable) && (clientConfigCEMReadable || serverConfigCEMReadable) && currentItem.equals("name_tag")) {
+			} else if ((clientConfigCEMReadable || serverConfigCEMReadable) && currentItem.equals("name_tag")) {
 				if (tabNum == 1) {
-					ArrayList<String> modelsArray = new ArrayList<>();
-					if (clientConfigCEMReadable) {
-						try {
-							Files.walk(Path.of(RPRenames.configPathClient + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-								File file = new File(String.valueOf(jsonFile));
-								for (String s : ConfigManager.configRead(file).getName()) {
-									if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
-										if (!modelsArray.contains(s)) {
-											modelsArray.add(s);
-											ArrayList<String> nal = new ArrayList<>();
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.add(nal);
-										} else {
-											int n = 0;
-											for (String s2 : modelsArray) {
-												if (s2.equals(s)) {
-													break;
-												}
-												n++;
-											}
-											ArrayList<String> nal = mobName.get(n);
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.set(n, nal);
-										}
-									}
-								}
-							});
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					if (serverConfigCEMReadable) {
-						try {
-							Files.walk(Path.of(RPRenames.configPathServer + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-								File file = new File(String.valueOf(jsonFile));
-								for (String s : ConfigManager.configRead(file).getName()) {
-									if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
-										if (!modelsArray.contains(s)) {
-											modelsArray.add(s);
-											ArrayList<String> nal = new ArrayList<>();
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.add(nal);
-										} else {
-											int n = 0;
-											for (String s2 : modelsArray) {
-												if (s2.equals(s)) {
-													break;
-												}
-												n++;
-											}
-											ArrayList<String> nal = mobName.get(n);
-											nal.add(file.getName().substring(0, file.getName().length() - 5));
-											mobName.set(n, nal);
-										}
-									}
-								}
-							});
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-					String[] finalList = new String[modelsArray.size()];
+					List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+					String[] finalList = new String[settings.get(0).size()];
 					int g = 0;
-					for (String s : modelsArray) {
+					for (String s : settings.get(0)) {
 						finalList[g] = s;
 						g++;
 					}
 					currentRenameList = new Rename(finalList);
-
 				} else if (tabNum == 2) {
 					if (jsonRenamesFavorite.exists()) {
 						currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
@@ -604,7 +547,26 @@ public abstract class AnvilScreenMixin extends Screen {
 						currentRenameList = new Rename(new String[0]);
 					}
 				} else if (tabNum == 3) {
-					currentRenameList = new Rename(new String[0]);
+					ArrayList<String> checked = new ArrayList<>();
+					ArrayList<String> names = new ArrayList<>();
+					ArrayList<Integer> numInInv = new ArrayList<>();
+					int i = 0;
+					for (String s : currentItemList) {
+						if (!s.equals("air") && !checked.contains(s)) {
+							checked.add(s);
+							if (s.equals("name_tag")) {
+								List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+								citSizeInventoryTab = names.size();
+								for (String name : settings.get(0)) {
+									names.add(name);
+									numInInv.add(i);
+								}
+							}
+						}
+						i++;
+					}
+					currentRenameList = new Rename(names.toArray(new String[0]));
+					currentInvOrder = numInInv;
 				}
 
 				currentRenameListSize = currentRenameList.getName().length;
@@ -612,16 +574,75 @@ public abstract class AnvilScreenMixin extends Screen {
 				buttonsDefine();
 				clearAll();
 			} else {
-				searchTab.active = false;
-				inventoryTab.active = false;
-				tabNum = 2;
-				if (jsonRenamesFavorite.exists()) {
-					currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
-				} else {
-					currentRenameList = new Rename(new String[0]);
+//				searchTab.active = false;
+//				inventoryTab.active = true;
+				hasRenames = false;
+				if (tabNum == 1) {
+					tabNum = 2;
+				}
+				if (tabNum == 2) {
+					if (jsonRenamesFavorite.exists()) {
+						currentRenameList = new Rename(search(ConfigManager.configRead(jsonRenamesFavorite).getName(), searchField.getText()));
+					} else {
+						currentRenameList = new Rename(new String[0]);
+					}
+				}
+				if (tabNum == 3) {
+					ArrayList<String> checked = new ArrayList<>();
+					ArrayList<String> names = new ArrayList<>();
+					ArrayList<Integer> numInInv = new ArrayList<>();
+					int i = 0;
+					for (String s : currentItemList) {
+						if (!s.equals("air") && !checked.contains(s)) {
+//							File jsonRenamesClient = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
+//							File jsonRenamesServer = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
+//							File jsonRenamesFavorite = new File(RPRenames.configPathFavorite + currentItem + ".json");
+//							boolean clientConfigReadable = jsonRenamesClient.exists();
+//							boolean serverConfigReadable = jsonRenamesServer.exists();
+//							if (!isOnServer) {
+//								serverConfigReadable = false;
+//							}
+//							boolean clientConfigCEMReadable = RPRenames.configClientCEMFolder.exists();
+//							boolean serverConfigCEMReadable = RPRenames.configServerCEMFolder.exists();
+//							if (!isOnServer) {
+//								serverConfigCEMReadable = false;
+//							}
+							checked.add(s);
+							if (clientConfigReadable) {
+								File a = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
+								if (a.exists()) {
+									List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+									for (String name : c) {
+										names.add(name);
+										numInInv.add(i);
+									}
+								}
+							}
+							if (serverConfigReadable) {
+								File a = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+								if (a.exists()) {
+									List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+									for (String name : c) {
+										names.add(name);
+										numInInv.add(i);
+									}
+								}
+							}
+							if (s.equals("name_tag")) {
+								List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+								citSizeInventoryTab = names.size();
+								for (String name : settings.get(0)) {
+									names.add(name);
+									numInInv.add(i);
+								}
+							}
+						}
+						i++;
+					}
+					currentRenameList = new Rename(names.toArray(new String[0]));
+					currentInvOrder = numInInv;
 				}
 				currentRenameListSize = currentRenameList.getName().length;
-
 				buttonsDefine();
 				clearAll();
 
@@ -640,11 +661,168 @@ public abstract class AnvilScreenMixin extends Screen {
 				remove(openerOpened);
 				addDrawableChild(openerOpened);
 				tabsUpdate();
+				if (!hasRenames) {
+					searchTab.active = false;
+				}
 			}
 		} else {
-			opener.active = false;
-			remove(openerOpened);
+			if (tabNum == 1 || tabNum == 2) {
+				tabNum = 3;
+			}
+			if (tabNum == 3) {
+				ArrayList<String> checked = new ArrayList<>();
+				ArrayList<String> names = new ArrayList<>();
+				ArrayList<Integer> numInInv = new ArrayList<>();
+				int i = 0;
+				currentItemList = getInventory();
+				for (String s : currentItemList) {
+					if (!s.equals("air") && !checked.contains(s)) {
+						checked.add(s);
+						File jsonRenamesClient = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
+						File jsonRenamesServer = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+						boolean clientConfigReadable = jsonRenamesClient.exists();
+						boolean serverConfigReadable = jsonRenamesServer.exists();
+						if (!isOnServer) {
+							serverConfigReadable = false;
+						}
+						boolean clientConfigCEMReadable = RPRenames.configClientCEMFolder.exists();
+						boolean serverConfigCEMReadable = RPRenames.configServerCEMFolder.exists();
+						if (!isOnServer) {
+							serverConfigCEMReadable = false;
+						}
+						if (clientConfigReadable) {
+							File a = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
+							if (a.exists()) {
+								List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+								for (String name : c) {
+									names.add(name);
+									numInInv.add(i);
+								}
+							}
+						}
+						if (serverConfigReadable) {
+							File a = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+							if (a.exists()) {
+								List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchField.getText())).getName()).toList();
+								for (String name : c) {
+									names.add(name);
+									numInInv.add(i);
+								}
+							}
+						}
+						if (s.equals("name_tag")) {
+							List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable);
+							citSizeInventoryTab = names.size();
+							for (String name : settings.get(0)) {
+								names.add(name);
+								numInInv.add(i);
+							}
+						}
+					}
+					i++;
+				}
+				currentRenameList = new Rename(names.toArray(new String[0]));
+				currentInvOrder = numInInv;
+			}
+//			currentRenameList = new Rename(new String[0]);
+			currentRenameListSize = currentRenameList.getName().length;
+			buttonsDefine();
+			clearAll();
+
+			if (open) {
+				addDrawableChild(background);
+				showButtons();
+				updatePageWidgets();
+				addDrawableChild(searchField);
+				searchField.setFocusUnlocked(true);
+				searchField.setTextFieldFocused(true);
+				nameField.setTextFieldFocused(false);
+				nameField.setFocusUnlocked(true);
+				remove(openerOpened);
+				addDrawableChild(openerOpened);
+				tabsUpdate();
+				searchTab.active = false;
+				favoriteTab.active = false;
+			}
+//			opener.active = false;
+//			remove(openerOpened);
 		}
+	}
+
+	private List getCEM(Rename currentRenameList, boolean clientConfigCEMReadable, boolean serverConfigCEMReadable) {
+		ArrayList<String> modelsArray = new ArrayList<>();
+		if (clientConfigCEMReadable) {
+			try {
+				Files.walk(Path.of(RPRenames.configPathClient + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
+					File file = new File(String.valueOf(jsonFile));
+					for (String s : ConfigManager.configRead(file).getName()) {
+						if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+							if (!modelsArray.contains(s)) {
+								modelsArray.add(s);
+								ArrayList<String> nal = new ArrayList<>();
+								nal.add(file.getName().substring(0, file.getName().length() - 5));
+								mobName.add(nal);
+							} else {
+								int n = 0;
+								for (String s2 : modelsArray) {
+									if (s2.equals(s)) {
+										break;
+									}
+									n++;
+								}
+								ArrayList<String> nal = mobName.get(n);
+								nal.add(file.getName().substring(0, file.getName().length() - 5));
+								mobName.set(n, nal);
+							}
+						}
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (serverConfigCEMReadable) {
+			try {
+				Files.walk(Path.of(RPRenames.configPathServer + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
+					File file = new File(String.valueOf(jsonFile));
+					for (String s : ConfigManager.configRead(file).getName()) {
+						if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchField.getText())).toList().contains(s)) {
+							if (!modelsArray.contains(s)) {
+								modelsArray.add(s);
+								ArrayList<String> nal = new ArrayList<>();
+								nal.add(file.getName().substring(0, file.getName().length() - 5));
+								mobName.add(nal);
+							} else {
+								int n = 0;
+								for (String s2 : modelsArray) {
+									if (s2.equals(s)) {
+										break;
+									}
+									n++;
+								}
+								ArrayList<String> nal = mobName.get(n);
+								nal.add(file.getName().substring(0, file.getName().length() - 5));
+								mobName.set(n, nal);
+							}
+						}
+					}
+				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		ArrayList<String> citWithoutModels = new ArrayList<>();
+		if (currentRenameList != null) {
+			for (String s : currentRenameList.getName()) {
+				if (!modelsArray.contains(s)) {
+					citWithoutModels.add(s);
+				}
+			}
+		}
+		List<ArrayList<String>> settings = new ArrayList<>();
+		settings.add(modelsArray);
+		settings.add(citWithoutModels);
+		return settings;
 	}
 
 	@Inject(at = @At("RETURN"), method = "onRenamed")
@@ -679,14 +857,13 @@ public abstract class AnvilScreenMixin extends Screen {
 	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
 		if (config.enableAnvilModification) {
 			if (slotId == 0) {
+				System.out.println("IU" + afterInventoryTab);
+				if (!afterInventoryTab) {
+					currentItemList = getInventory();
+					currentInvOrder.clear();
+				}
 				if (stack.isEmpty()) {
-					currentItem = null;
-					clearAll();
-					searchField.setText("");
-					searchField.setFocusUnlocked(false);
-					remove(searchField);
-					searchField.setTextFieldFocused(false);
-					screenUpdate();
+					currentItem = null; //TODO AIR???
 				} else {
 					currentItem = stack.getItem().getTranslationKey();
 					int i = 0;
@@ -700,31 +877,103 @@ public abstract class AnvilScreenMixin extends Screen {
 							i++;
 						}
 					}
+				}
 
-					icon1 = new ItemStack(stack.getItem());
-					icon2 = new ItemStack(stack.getItem());
-					icon3 = new ItemStack(stack.getItem());
-					icon4 = new ItemStack(stack.getItem());
-					icon5 = new ItemStack(stack.getItem());
-					iconAfterUpdate1 = new ItemStack(stack.getItem());
-					iconAfterUpdate2 = new ItemStack(stack.getItem());
-					iconAfterUpdate3 = new ItemStack(stack.getItem());
-					iconAfterUpdate4 = new ItemStack(stack.getItem());
-					iconAfterUpdate5 = new ItemStack(stack.getItem());
-					clearAll();
+				if (!afterInventoryTab) { //TODO DEL, ON SU
+					currentItemList.add(currentItem);
+				}
+				if (stack.isEmpty()) {
 					searchField.setText("");
+					searchField.setFocusUnlocked(false);
+					remove(searchField);
+					searchField.setTextFieldFocused(false);
+				} else {
+					icon1 = stack.copy();
+					icon2 = stack.copy();
+					icon3 = stack.copy();
+					icon4 = stack.copy();
+					icon5 = stack.copy();
+					iconAfterUpdate1 = stack.copy();
+					iconAfterUpdate2 = stack.copy();
+					iconAfterUpdate3 = stack.copy();
+					iconAfterUpdate4 = stack.copy();
+					iconAfterUpdate5 = stack.copy();
+//					searchField.setText("");
 					searchField.setFocusUnlocked(true);
 					tabNum = 1;
 					newNameEntered(nameField.getText(), ci);
-					screenUpdate();
 				}
+				screenUpdate(); //TODO ON !BOOL
 			}
+//			screenUpdate(); //TODO ON !BOOL \ tab3, page, currentItem + inv
+			//TODO ON ANY || BUTTON +
 		}
 	}
 
+	private ArrayList<String> getInventory() {
+		ArrayList<String> list = new ArrayList<>();
+		PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
+		int g = 0;
+		while (g < inventory.main.size()) {
+			String s = inventory.main.get(g).getItem().getTranslationKey();
+			int var1 = 0;
+			int var2 = 0;
+			while (var2 != 2) {
+				if (String.valueOf(s.charAt(var1)).equals(".")) {
+					s = s.substring(var1 + 1);
+					var2++;
+					var1 = 0;
+				} else {
+					var1++;
+				}
+			}
+			list.add(s);
+			g++;
+		}
+//		System.out.println(list);
+		return list;
+	}
+
+	ArrayList<String> invChangeHandler = new ArrayList<>();
+
 	@Inject(at = @At("RETURN"), method = "drawForeground")
-	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) {
+	private void paintWWidgets(MatrixStack matrices, int mouseX, int mouseY, CallbackInfo ci) { //TODO UPDATES
 		if (config.enableAnvilModification) {
+			if (tabNum == 3) {
+				if (invChangeHandler.size() == 0) {
+					invChangeHandler = getInventory();
+					if (currentItem != null) {
+						invChangeHandler.add(currentItem);
+					}
+				} else {
+					ArrayList<String> temp = getInventory();
+					if (currentItem != null) {
+						temp.add(currentItem);
+					}
+					int i = 0;
+					boolean equal = true;
+					while (i < temp.size() || i < invChangeHandler.size()) {
+						if (invChangeHandler.size() > i && temp.size() > i) {
+							if (!invChangeHandler.get(i).equals(temp.get(i))) {
+								equal = false;
+								break;
+							}
+						} else {
+							equal = false;
+							break;
+						}
+						i++;
+					}
+					if (!equal) {
+						invChangeHandler = temp;
+						currentItemList = invChangeHandler; //TODO currentItem? +
+						System.out.println("inventory changed");
+//						afterInventoryChanged = true;
+//						tempPage = page;
+						screenUpdate(page);
+					}
+				}
+			}
 			iconSlot1.paint(matrices, -130 + 1, 30 + 1, mouseX, mouseY);
 			iconSlot2.paint(matrices, -130 + 1, 52 + 1, mouseX, mouseY);
 			iconSlot3.paint(matrices, -130 + 1, 74 + 1, mouseX, mouseY);
@@ -823,7 +1072,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		this.remove(pageDown);
 		this.remove(pageUp);
 		pageCount.setText(Text.of(""));
-		page = 0;
+//		page = 0;
 		iconSlot1.setIcon(null);
 		iconSlot2.setIcon(null);
 		iconSlot3.setIcon(null);
@@ -848,6 +1097,21 @@ public abstract class AnvilScreenMixin extends Screen {
 		remove(openerFavoriteOnly);
 	}
 
+	private void sendSwapPackets(int slot1, int slot2, MinecraftClient client) {
+		slot2 = slot2 - 9;
+		if (slot2 > 27) { //TODO
+			slot2 -= 27;
+		} else if (slot2 < 0) {
+			slot2 += 36;
+		}
+		int syncId = client.player.currentScreenHandler.syncId;
+		System.out.println("SSP" + afterInventoryTab);
+		System.out.println("SSP" + slot2);
+		client.interactionManager.clickSlot(syncId, slot2 + 3, 0, SlotActionType.PICKUP, client.player);
+		client.interactionManager.clickSlot(syncId, slot1, 0, SlotActionType.PICKUP, client.player);
+		client.interactionManager.clickSlot(syncId, slot2 + 3, 0, SlotActionType.PICKUP, client.player);
+	}
+
 	private ArrayList<Object> createButton(int order, Text text) {
 		ArrayList<Object> settings = new ArrayList<>();
 		int u = 0;
@@ -867,18 +1131,68 @@ public abstract class AnvilScreenMixin extends Screen {
 				v = 166;
 			}
 		}
-		int citSize = currentRenameList.getName().length - mobName.size();
+
+		int o = (page * 5) + order;
+
+		int citSize = currentRenameList.getName().length - mobName.size(); //-
 		ArrayList<Text> toolTip = new ArrayList<>();
 		toolTip.add(text);
 		boolean isCEM = false;
-		if (currentItem.equals("name_tag") && (page * 5) + order > citSize) {
+		boolean isSameItem = false;
+		PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
+		String currentItem2 = currentItem;
+		if (currentItem2 == null) {
+			currentItem2 = "air";
+		}
+		if (tabNum == 3) {
+			if (currentInvOrder.get(o - 1) != 36) {
+				String item = inventory.main.get(currentInvOrder.get(o - 1)).copy().getItem().getTranslationKey();
+				int i = 0;
+				int t = 0;
+				while (t != 2) {
+					if (String.valueOf(item.charAt(i)).equals(".")) {
+						item = item.substring(i + 1);
+						t++;
+						i = 0;
+					} else {
+						i++;
+					}
+				}
+				isSameItem = currentItem2.equals(item);
+				if (item.equals("name_tag") && (page * 5) + order > citSizeInventoryTab && (page * 5) + order <= citSizeInventoryTab + mobName.size()) {
+					isCEM = true;
+					for (String s : mobName.get((page * 5) + order - 1 - citSizeInventoryTab)) {
+						toolTip.add(Text.of(s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)));
+					}
+				}
+			}
+		}
+		if (currentItem2.equals("name_tag") && (page * 5) + order > citSize) { //TODO ci \ range
 			isCEM = true;
 			for (String s : mobName.get((page * 5) + order - 1 - citSize)) {
 				toolTip.add(Text.of(s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)));
 			}
 		}
 
-		settings.add(new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> nameField.setText(text.getString()), new ButtonWidget.TooltipSupplier() {
+		boolean finalIsSameItem = isSameItem;
+		settings.add(new TexturedButtonWidget(this.width / 2 - 200 + 10 - 28, this.height / 2 - 83 + 30 + ((order - 1) * 22), 118, 20, u, v, 20, RENAMES_MENU, menuWidth, menuHeight, (button) -> {
+			if (tabNum == 3) {
+				if (currentInvOrder.get(o - 1) != 36) {
+					afterInventoryTab = true; //TODO ON SCREEN UPDATE
+					tempPage = page;
+//					String item = currentItemList.get(o - 1);
+//					currentItemList.set(o - 1, currentItemList.get(currentItemList.size() - 1));
+//					currentItemList.set(currentItemList.size() - 1, item);
+					if (!finalIsSameItem) {
+						sendSwapPackets(0, currentInvOrder.get(o - 1), MinecraftClient.getInstance()); //causes screenUpdate
+					}
+					afterInventoryTab = false;
+					System.out.println("CB" + currentInvOrder.get(o - 1));
+					//TODO TABNUM 3, PAGE, SWAPINLIST
+				}
+			}
+			nameField.setText(text.getString());
+		}, new ButtonWidget.TooltipSupplier() {
 			public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
 				renderTooltip(matrixStack, toolTip, i, j);
 			}
@@ -897,6 +1211,12 @@ public abstract class AnvilScreenMixin extends Screen {
 				n++;
 			}
 			settings.add(new ItemStack(CEMList.spawnEggItems[n]));
+		} else {
+			if (tabNum == 3) {
+				if (currentInvOrder.get(o - 1) != 36) {
+					settings.add(inventory.main.get(currentInvOrder.get(o - 1)).copy());
+				}
+			}
 		}
 
 		return settings;
@@ -1067,7 +1387,7 @@ public abstract class AnvilScreenMixin extends Screen {
 			}
 		} else {
 			while (i < length) {
-				if (list[i].startsWith(match)) {
+				if (list[i].toUpperCase(Locale.ROOT).startsWith(match.toUpperCase(Locale.ROOT))) { //TODO by symbol?
 					arrayList.add(list[i]);
 				}
 				i++;
