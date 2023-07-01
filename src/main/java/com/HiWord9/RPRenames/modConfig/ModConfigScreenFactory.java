@@ -5,9 +5,8 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
-import net.minecraft.block.Block;
+import me.shedaniel.math.Color;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -48,6 +47,24 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.showCreateConfigCheckbox)
                 .build();
 
+        AbstractConfigListEntry<Boolean> openByDefault = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.openByDefault"), currentConfig.openByDefault)
+                .setTooltip(Text.translatable("rprenames.config.openByDefault.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.openByDefault = newConfig)
+                .setDefaultValue(defaultConfig.openByDefault)
+                .build();
+
+        AbstractConfigListEntry<Integer> slotHighlightColor = entryBuilder.startColorField(Text.translatable("rprenames.config.slotHighlightColor"), Color.ofTransparent(currentConfig.slotHighlightColorRGB))
+                .setTooltip(Text.translatable("rprenames.config.slotHighlightColor.tooltip"))
+                .setDefaultValue(defaultConfig.slotHighlightColorRGB)
+                .setSaveConsumer(newConfig -> currentConfig.slotHighlightColorRGB = newConfig)
+                .build();
+
+        AbstractConfigListEntry<Integer> slotHighlightALPHA = entryBuilder.startIntSlider(Text.translatable("rprenames.config.slotHighlightALPHA"), currentConfig.slotHighlightColorALPHA, 0, 100)
+                .setTooltip(Text.translatable("rprenames.config.slotHighlightALPHA.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.slotHighlightColorALPHA = newConfig)
+                .setDefaultValue(defaultConfig.slotHighlightColorALPHA)
+                .build();
+
         AbstractConfigListEntry<Integer> packCheckboxX = entryBuilder.startIntField(Text.translatable("rprenames.config.packCheckboxX"), currentConfig.createConfigCheckboxPosX)
                 .setTooltip(Text.translatable("rprenames.config.packCheckboxX.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.createConfigCheckboxPosX = newConfig)
@@ -85,6 +102,10 @@ public class ModConfigScreenFactory {
                 .requireRestart()
                 .build();
 
+        SubCategoryBuilder slotHighlightColorSettings = entryBuilder.startSubCategory(Text.translatable("rprenames.config.slotHighlightColorSettings"));
+        slotHighlightColorSettings.add(0, slotHighlightColor);
+        slotHighlightColorSettings.add(1, slotHighlightALPHA);
+
         SubCategoryBuilder createConfigCheckboxPosition = entryBuilder.startSubCategory(Text.translatable("rprenames.config.createConfigCheckboxPosition"));
         createConfigCheckboxPosition.add(0, packCheckboxX);
         createConfigCheckboxPosition.add(1, packCheckboxY);
@@ -97,6 +118,8 @@ public class ModConfigScreenFactory {
         category.addEntry(createConfigServerToggle);
         category.addEntry(enableAnvilModification);
         category.addEntry(showCreateConfigCheckbox);
+        category.addEntry(openByDefault);
+        category.addEntry(slotHighlightColorSettings.build());
         category.addEntry(createConfigCheckboxPosition.build());
         category.addEntry(favoriteButtonPosition.build());
         category.addEntry(recreateConfig);
