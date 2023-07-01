@@ -10,12 +10,15 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
 
 public class RPRenames implements ClientModInitializer {
 	public static final String MOD_ID = "rprenames";
+	public static final Logger LOGGER = LoggerFactory.getLogger("rprenames");
 
 	public static String configPath = "config/renames/";
 	public static String configPathClient = configPath + "client/";
@@ -38,10 +41,12 @@ public class RPRenames implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
 		configHolder = AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
 		configHolder.registerSaveListener((manager, data) -> ActionResult.SUCCESS);
 		ModConfig config = ModConfig.INSTANCE;
 		if (config.loadModBuiltinResources) {
+			LOGGER.info("Loading RPRenames built-in resource packs");
 			FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
 				ResourceManagerHelper.registerBuiltinResourcePack(asId("vanillish"), container, ResourcePackActivationType.NORMAL);
 				ResourceManagerHelper.registerBuiltinResourcePack(asId("default_dark_mode"), container, ResourcePackActivationType.NORMAL);

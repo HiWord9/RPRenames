@@ -1,5 +1,6 @@
 {
-  "rprenames.renamesconfig.notfound": "No configs were found in path \"%s\". Configs are creating after updating resource packs. Only featured available.",
+  "rprenames.configrenames.notfound": "No configs were found in path \"%s\".\nConfigs are creating on pressing \"Done\" button\non resource pack selection screen. Only featured available.",
+  "rprenames.gui.searchHintText": "Search...",
   "rprenames.config.title": "RPRenames",
   "rprenames.config.category.main": "Main",
   "rprenames.config.createConfigToggle": "Create renames config",
@@ -10,6 +11,12 @@
   "rprenames.config.enableAnvilModification.tooltip": "If false, it wont do any modifications of anvil screen.",
   "rprenames.config.showCreateConfigCheckbox": "Show \"Create config\" Checkbox",
   "rprenames.config.showCreateConfigCheckbox.tooltip": "If true, shows checkbox on pack selection screen\nthat controls \"Create renames config Toggle\" option.",
+  "rprenames.config.openByDefault": "Open by default",
+  "rprenames.config.openByDefault.tooltip": "If true, opens RP Renames menu automatically.",
+  "rprenames.config.slotHighlightColor": "Highlight color",
+  "rprenames.config.slotHighlightColor.tooltip": "Color of highlighted slot that appears on hovering button in Inventory Tab",
+  "rprenames.config.slotHighlightALPHA": "Highlight Alpha",
+  "rprenames.config.slotHighlightALPHA.tooltip": "How opaque the Color of highlighted slot is. In percents [0 - 100]",
   "rprenames.config.packCheckboxX": "\"Create config\" Checkbox X",
   "rprenames.config.packCheckboxX.tooltip": "Counts from center to right",
   "rprenames.config.packCheckboxY": "\"Create config\" Checkbox Y",
@@ -22,6 +29,7 @@
   "rprenames.config.recreateConfig.tooltip": "If true, recreates config for renames on exiting\nthis settings menu depended on enabled resource packs,\n then sets to false",
   "rprenames.config.loadModBuiltinResources": "Load Mod's built-in Resource Packs",
   "rprenames.config.loadModBuiltinResources.tooltip": "If true, adds Mod's built-in Resource Packs\nto pack selection screen. If false, it will not\nshow them. Requires restart.",
+  "rprenames.config.slotHighlightColorSettings": "Color of Highlighted slot",
   "rprenames.config.createConfigCheckboxPosition": "\"Create config\" Checkbox Position",
   "rprenames.config.favoriteButtonPosition": "\"Add to Favorite\" Button Position"
 }
