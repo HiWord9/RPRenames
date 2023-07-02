@@ -1095,11 +1095,14 @@ public abstract class AnvilScreenMixin extends Screen {
 			nameField.setText(text.getString());
 		});
 
-		String tp = tooltipList.get(0).getString();
-		if (tooltipList.size() > 1) {
-			tp = tp + "\n" + tooltipList.get(1).getString();
+		Text tooltipText = tooltipList.get(0);
+		int t = 1;
+		while (tooltipList.size() > t) {
+			tooltipText = tooltipText.copy().append(Text.of("\n" + tooltipList.get(t).getString()).copy().fillStyle(tooltipList.get(t).getStyle()));
+			t++;
 		}
-		Tooltip tooltip = Tooltip.of(Text.of(tp));
+
+		Tooltip tooltip = Tooltip.of(tooltipText);
 		texturedButtonWidget.setTooltip(tooltip);
 
 		settings.add(texturedButtonWidget);
