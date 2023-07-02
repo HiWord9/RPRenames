@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.math.Color;
 import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.FileReader;
@@ -20,6 +21,11 @@ public class ModConfig implements ConfigData {
     public boolean enableAnvilModification = true;
     public boolean showCreateConfigCheckbox = true;
 
+    public boolean openByDefault = false;
+
+    public int slotHighlightColorALPHA = 50;
+    public int slotHighlightColorRGB = 8454143;
+
     public int createConfigCheckboxPosX = 158;
     public int createConfigCheckboxPosY = 48;
 
@@ -29,6 +35,13 @@ public class ModConfig implements ConfigData {
     public boolean recreateConfig = false;
 
     public boolean loadModBuiltinResources = true;
+
+    public int getSlotHighlightRGBA() {
+        int r = Color.ofTransparent(slotHighlightColorRGB).getRed();
+        int g = Color.ofTransparent(slotHighlightColorRGB).getGreen();
+        int b = Color.ofTransparent(slotHighlightColorRGB).getBlue();
+        return Color.ofRGBA(r, g, b, (int) ((float) slotHighlightColorALPHA / 100 * 255)).getColor();
+    }
 
     public static final ModConfig INSTANCE = ModConfig.read();
 

@@ -3,6 +3,8 @@
     "com/HiWord9/RPRenames/mixin/AnvilScreenMixin": {
       "setup": "Lnet/minecraft/class_471;method_25445()V",
       "onRenamed": "Lnet/minecraft/class_471;method_2403(Ljava/lang/String;)V",
+      "resize": "Lnet/minecraft/class_471;method_25410(Lnet/minecraft/class_310;II)V",
+      "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V": "Lnet/minecraft/class_471;method_25423(Lnet/minecraft/class_310;II)V",
       "onSlotUpdate": "Lnet/minecraft/class_471;method_7635(Lnet/minecraft/class_1703;ILnet/minecraft/class_1799;)V",
       "drawForeground": "Lnet/minecraft/class_471;method_2388(Lnet/minecraft/class_332;II)V"
     },
@@ -26,6 +28,8 @@
       "com/HiWord9/RPRenames/mixin/AnvilScreenMixin": {
         "setup": "Lnet/minecraft/class_471;method_25445()V",
         "onRenamed": "Lnet/minecraft/class_471;method_2403(Ljava/lang/String;)V",
+        "resize": "Lnet/minecraft/class_471;method_25410(Lnet/minecraft/class_310;II)V",
+        "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V": "Lnet/minecraft/class_471;method_25423(Lnet/minecraft/class_310;II)V",
         "onSlotUpdate": "Lnet/minecraft/class_471;method_7635(Lnet/minecraft/class_1703;ILnet/minecraft/class_1799;)V",
         "drawForeground": "Lnet/minecraft/class_471;method_2388(Lnet/minecraft/class_332;II)V"
       },
