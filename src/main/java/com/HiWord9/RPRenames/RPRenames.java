@@ -30,6 +30,7 @@ public class RPRenames implements ClientModInitializer {
 	public static File configClientCEMFolder = new File(configPathClient + configPathNameCEM);
 	public static File configServerCITFolder = new File(configPathServer + configPathNameCIT);
 	public static File configServerCEMFolder = new File(configPathServer + configPathNameCEM);
+	public static File configFolderMain = new File(RPRenames.configPath);
 	public static File configClientFolder = new File(RPRenames.configPathClient);
 	public static File configServerFolder = new File(RPRenames.configPathServer);
 

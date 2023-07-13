@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.configGeneration;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
 import com.google.gson.Gson;
 
@@ -73,7 +74,7 @@ public class CITConfig {
                     if (p.getProperty("nbt.display.Name") != null) {
                         new File(outputPath).mkdirs();
                         try {
-                            System.out.println("[RPR] Created new file for config: " + outputPath + item + ".json");
+                            RPRenames.LOGGER.info("Created new file for config: " + outputPath + item + ".json");
                             ArrayList<Rename> listNames = new ArrayList<>();
                             Rename name1 = new Rename(new String[]{ConfigManager.getFirstName(p.getProperty("nbt.display.Name"))});
                             listNames.add(name1);

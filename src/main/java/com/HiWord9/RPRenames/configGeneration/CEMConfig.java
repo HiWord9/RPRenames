@@ -1,11 +1,11 @@
 package com.HiWord9.RPRenames.configGeneration;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
 import com.google.gson.Gson;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.nio.file.FileSystem;
 import java.nio.file.*;
 import java.util.*;
 
@@ -81,7 +81,7 @@ public class CEMConfig {
             if (names.length != 0) {
                 try {
                     new File(outputPath).mkdirs();
-                    System.out.println("[RPR] Created new file for config: " + outputPath + fileName + ".json");
+                    RPRenames.LOGGER.info("Created new file for config: " + outputPath + fileName + ".json");
                     FileWriter fileWriter = new FileWriter(currentFile);
                     Gson gson = new Gson();
                     gson.toJson(renameArray, fileWriter);
@@ -121,7 +121,7 @@ public class CEMConfig {
                                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                                     Properties p = new Properties();
                                                     p.load(reader);
-                                                    propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
+                                                    propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
                                                 } catch (IOException e) {
                                                     e.printStackTrace();
                                                 }
@@ -148,7 +148,7 @@ public class CEMConfig {
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
+                                propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -161,7 +161,7 @@ public class CEMConfig {
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobsNames[fc], outputPath);
+                                propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -191,7 +191,7 @@ public class CEMConfig {
                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                     Properties p = new Properties();
                                     p.load(reader);
-                                    propertiesToJsonModels(p, CEMList.mobsNames[c], outputPath);
+                                    propertiesToJsonModels(p, CEMList.mobs[c].getUntranslatedName(), outputPath);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -215,7 +215,7 @@ public class CEMConfig {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                         Properties p = new Properties();
                         p.load(reader);
-                        propertiesToJsonModels(p, CEMList.mobsNames[c], outputPath);
+                        propertiesToJsonModels(p, CEMList.mobs[c].getUntranslatedName(), outputPath);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

@@ -5,10 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AnvilScreenMixin",
-    "ClientBuiltinResourcePackProviderMixin",
     "MinecraftClientMixin",
-    "ResourcePackOrganizerMixin",
-    "PackScreenMixin"
+    "ServerResourcePackProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

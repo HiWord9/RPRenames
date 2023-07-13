@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.configGeneration.ConfigManager;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import me.shedaniel.autoconfig.ConfigData;
@@ -9,22 +8,13 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.math.Color;
 import org.apache.commons.compress.utils.IOUtils;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
+import java.io.*;
 
 @Config(name = "rprenames")
 public class ModConfig implements ConfigData {
-    public boolean createConfig = true;
-    public boolean createConfigServer = true;
+    public boolean ignoreCEM = false;
 
     public boolean enableAnvilModification = true;
-    public boolean showCreateConfigCheckbox = true;
-
-    public boolean openByDefault = false;
-
-    public int slotHighlightColorALPHA = 50;
-    public int slotHighlightColorRGB = 8454143;
 
     public int createConfigCheckboxPosX = 158;
     public int createConfigCheckboxPosY = 48;
@@ -32,9 +22,36 @@ public class ModConfig implements ConfigData {
     public int favoritePosX = 71;
     public int favoritePosY = -75;
 
-    public boolean recreateConfig = false;
-
     public boolean loadModBuiltinResources = true;
+
+    public boolean openByDefault = false;
+
+    public boolean highlightSlot = true;
+
+    public int slotHighlightColorALPHA = 50;
+    public int slotHighlightColorRGB = 8454143;
+
+    public boolean translateMobNames = true;
+    public boolean translateItemNames = true;
+
+    public boolean enablePreview = true;
+
+    public boolean playerPreviewByDefault = false;
+
+    public boolean spinMobPreview = true;
+    public boolean spinPlayerPreview = false;
+
+    public boolean disableSnowGolemPumpkin = false;
+
+    public double scaleFactorItem = 2.0;
+    public double scaleFactorEntity = 1.0;
+
+    public boolean alwaysAllowPlayerPreviewHead = false;
+
+    public boolean disablePageArrowsTips = false;
+    public boolean disablePlayerPreviewTips = false;
+
+    public boolean updateConfig = true;
 
     public int getSlotHighlightRGBA() {
         int r = Color.ofTransparent(slotHighlightColorRGB).getRed();
@@ -75,14 +92,5 @@ public class ModConfig implements ConfigData {
             IOUtils.closeQuietly(writer);
         }
         return this;
-    }
-
-    public void executesOnExit() {
-        if (this.recreateConfig) {
-            this.recreateConfig = false;
-            System.out.println("[RPR] Executing Recreation of config for renames after closing the ModMenu settings menu.");
-            ConfigManager.configUpdate();
-        }
-        this.write();
     }
 }
