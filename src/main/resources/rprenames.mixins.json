@@ -6,9 +6,7 @@
   "client": [
     "AnvilScreenMixin",
     "ClientBuiltinResourcePackProviderMixin",
-    "MinecraftClientMixin",
-    "ResourcePackOrganizerMixin",
-    "PackScreenMixin"
+    "MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

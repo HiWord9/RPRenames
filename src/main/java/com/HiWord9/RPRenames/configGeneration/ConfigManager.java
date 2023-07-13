@@ -2,11 +2,12 @@ package com.HiWord9.RPRenames.configGeneration;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
-import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.google.common.hash.Hashing;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.util.Util;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -21,10 +22,8 @@ public class ConfigManager {
 
     public static ArrayList<Rename> theList;
 
-    static ModConfig config = ModConfig.INSTANCE;
-
     public static void configUpdate() {
-        configUpdate(getPacksFromOptions());
+        configUpdate(MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().stream().toList());
     }
 
     public static void configUpdate(List<ResourcePackProfile> enabledPacks) {
@@ -37,65 +36,29 @@ public class ConfigManager {
 
     public static void configUpdate(ArrayList<String> enabledPacks) {
         if (RPRenames.configClientFolder.exists() || RPRenames.configServerFolder.exists()) {
-            System.out.println("[RPR] Config's folder is already exist. Starting deleting.");
-            configDelete(RPRenames.configPathClient);
-            configDelete(RPRenames.configPathServer);
+            RPRenames.LOGGER.info("Deleting config");
+            configClear();
         }
-        System.out.println("[RPR] Starting creating config for renames.");
+        RPRenames.LOGGER.info("Starting creating config");
         startConfigCreate(enabledPacks);
-        System.out.println("[RPR] Finished creating config for renames.");
-    }
-
-    public static ArrayList<String> getPacksFromOptions() {
-        ArrayList<String> packs = new ArrayList<>();
-        String resourcePacks = "";
-        try {
-            File file = new File("options.txt");
-            FileReader options;
-            options = new FileReader(file.getAbsolutePath());
-            Properties p = new Properties();
-            p.load(options);
-            resourcePacks = p.getProperty("resourcePacks");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        int h = 0;
-        while (h < resourcePacks.length()) {
-            if (!String.valueOf(resourcePacks.charAt(h)).equals("[") && !String.valueOf(resourcePacks.charAt(h)).equals("]")) {
-                if (String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
-                    int c = h;
-                    h++;
-                    while (!String.valueOf(resourcePacks.charAt(h)).equals("\"")) {
-                        h++;
-                    }
-                    String packName = resourcePacks.substring(c + 1,h);
-                    packs.add(packName);
-                }
-            }
-            h++;
-        }
-        if (RPRenames.serverResourcePackURL != null) {
-            packs.add("server");
-        }
-        return packs;
+        RPRenames.LOGGER.info("Finished creating config");
     }
 
     public static void startConfigCreate(ArrayList<String> enabledPacks) {
         for (String s : enabledPacks) {
             if (s.startsWith("file/")) {
                 String packName = s.substring(5);
-                System.out.println("[RPR] Starting creating config for \"" + packName + "\".");
+                RPRenames.LOGGER.info("Starting creating config for \"" + packName + "\".");
                 ConfigManager.configCreate("resourcepacks/" + packName, RPRenames.configPathClient);
             }
-            if (s.equals("server") && config.createConfigServer) {
+            if (s.equals("server")) {
                 URL url = RPRenames.serverResourcePackURL;
                 if (url != null) {
-                    System.out.println("[RPR] Starting creating config for Server's Resource Pack");
+                    RPRenames.LOGGER.info("Starting creating config for Server's Resource Pack");
                     String serverResourcePack = Hashing.sha1().hashString(url.toString(), StandardCharsets.UTF_8).toString();
                     ConfigManager.configCreate("server-resource-packs/" + serverResourcePack, RPRenames.configPathServer);
                 } else {
-                    System.out.println("[RPR] Unknown error while creating config for Server's Resource Pack");
+                    RPRenames.LOGGER.info("Unknown error while creating config for Server's Resource Pack");
                 }
             }
         }
@@ -245,5 +208,17 @@ public class ConfigManager {
             }
         }
         return nbtDisplayName;
+    }
+
+    public static void configClear() {
+        configDelete(RPRenames.configPathClient);
+        configDelete(RPRenames.configPathServer);
+    }
+
+    public static void openConfigFolder() {
+        if (RPRenames.configFolderMain.mkdirs()) {
+            RPRenames.LOGGER.info("Created config's folder");
+        }
+        Util.getOperatingSystem().open(RPRenames.configFolderMain);
     }
 }
