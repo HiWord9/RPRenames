@@ -2,24 +2,25 @@ package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.Rename;
+import com.HiWord9.RPRenames.RenameButton;
 import com.HiWord9.RPRenames.Tabs;
 import com.HiWord9.RPRenames.configGeneration.CEMList;
 import com.HiWord9.RPRenames.configGeneration.ConfigManager;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.google.gson.Gson;
-import io.github.cottonmc.cotton.gui.widget.WItemSlot;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.data.HorizontalAlignment;
-import io.github.cottonmc.cotton.gui.widget.icon.ItemIcon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -53,9 +54,10 @@ public abstract class AnvilScreenMixin extends Screen {
 	private static final ModConfig config = ModConfig.INSTANCE;
 	boolean isOnServer = !MinecraftClient.getInstance().isInSingleplayer();
 
-	@Shadow private TextFieldWidget nameField;
+	@Shadow
+	private TextFieldWidget nameField;
 
-	protected AnvilScreenMixin(Text title) {
+	AnvilScreenMixin(Text title) {
 		super(title);
 	}
 
@@ -91,16 +93,16 @@ public abstract class AnvilScreenMixin extends Screen {
 	int favoriteButtonWidth = 9;
 	int favoriteButtonHeight = 9;
 
-	int slotSize = 18;
-	int rowSize = 9;
-	int firstSlotX = 7;
-	int firstSlotY = 83;
 	int highlightColor = config.getSlotHighlightRGBA();
+
+	int backgroundWidth = 176;
+	int backgroundHeight = 166;
 
 	int page = 0;
 	int currentRenameListSize;
 
 	String currentItem = "air";
+	ItemStack itemAfterUpdate;
 	ArrayList<String> currentItemList = new ArrayList<>();
 	ArrayList<Integer> currentInvOrder = new ArrayList<>();
 	boolean afterInventoryTab = false;
@@ -112,33 +114,30 @@ public abstract class AnvilScreenMixin extends Screen {
 	TexturedButtonWidget openerOpened;
 	TexturedButtonWidget openerPlus;
 	TexturedButtonWidget openerMinus;
-	TexturedButtonWidget button1;
-	TexturedButtonWidget button2;
-	TexturedButtonWidget button3;
-	TexturedButtonWidget button4;
-	TexturedButtonWidget button5;
+
+	RenameButton button1 = new RenameButton();
+	RenameButton button2 = new RenameButton();
+	RenameButton button3 = new RenameButton();
+	RenameButton button4 = new RenameButton();
+	RenameButton button5 = new RenameButton();
+	ArrayList<RenameButton> buttons = new ArrayList<>();
+
 	TexturedButtonWidget searchTab;
-	TexturedButtonWidget favoriteTab;
-	TexturedButtonWidget inventoryTab;
 	TexturedButtonWidget searchTabActive;
+	TexturedButtonWidget favoriteTab;
 	TexturedButtonWidget favoriteTabActive;
+	TexturedButtonWidget inventoryTab;
 	TexturedButtonWidget inventoryTabActive;
 	Tabs currentTab = Tabs.SEARCH;
+
 	TexturedButtonWidget addToFavorite;
 	TexturedButtonWidget removeFromFavorite;
-	WLabel button1text = new WLabel(Text.of(""),0xffffff);
-	WLabel button2text = new WLabel(Text.of(""),0xffffff);
-	WLabel button3text = new WLabel(Text.of(""),0xffffff);
-	WLabel button4text = new WLabel(Text.of(""),0xffffff);
-	WLabel button5text = new WLabel(Text.of(""),0xffffff);
-	WLabel button1textShadow = new WLabel(Text.of(""),0x3f3f3f);
-	WLabel button2textShadow = new WLabel(Text.of(""),0x3f3f3f);
-	WLabel button3textShadow = new WLabel(Text.of(""),0x3f3f3f);
-	WLabel button4textShadow = new WLabel(Text.of(""),0x3f3f3f);
-	WLabel button5textShadow = new WLabel(Text.of(""),0x3f3f3f);
+
 	TexturedButtonWidget pageDown;
 	TexturedButtonWidget pageUp;
+
 	WLabel pageCount = new WLabel(Text.of(""),0xffffff);
+
 	Rename currentRenameList;
 
 	TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
@@ -148,24 +147,6 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	String searchTag = "";
 
-	WItemSlot iconSlot1 = new WItemSlot(new PlayerInventory(MinecraftClient.getInstance().player),51,1,1,false);
-	WItemSlot iconSlot2 = new WItemSlot(new PlayerInventory(MinecraftClient.getInstance().player),52,1,1,false);
-	WItemSlot iconSlot3 = new WItemSlot(new PlayerInventory(MinecraftClient.getInstance().player),53,1,1,false);
-	WItemSlot iconSlot4 = new WItemSlot(new PlayerInventory(MinecraftClient.getInstance().player),54,1,1,false);
-	WItemSlot iconSlot5 = new WItemSlot(new PlayerInventory(MinecraftClient.getInstance().player),55,1,1,false);
-
-	ItemStack icon1;
-	ItemStack icon2;
-	ItemStack icon3;
-	ItemStack icon4;
-	ItemStack icon5;
-
-	ItemStack iconAfterUpdate1;
-	ItemStack iconAfterUpdate2;
-	ItemStack iconAfterUpdate3;
-	ItemStack iconAfterUpdate4;
-	ItemStack iconAfterUpdate5;
-
 	ArrayList<ArrayList<String>> mobName = new ArrayList<>();
 
 	boolean currentItemHasRenames = true;
@@ -174,6 +155,12 @@ public abstract class AnvilScreenMixin extends Screen {
 	private void init(CallbackInfo ci) {
 		if (config.enableAnvilModification) {
 			RPRenames.LOGGER.info("Starting RPRenames modification on AnvilScreen");
+
+			buttons.add(button1);
+			buttons.add(button2);
+			buttons.add(button3);
+			buttons.add(button4);
+			buttons.add(button5);
 
 			background = new TexturedButtonWidget(this.width / 2 - 228, this.height / 2 - 83, menuWidth, menuHeight, tabWidth * 2, 0, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, null);
 			background.active = false;
@@ -235,26 +222,23 @@ public abstract class AnvilScreenMixin extends Screen {
 
 			searchTab = new TexturedButtonWidget(this.width / 2 - 258, this.height / 2 - 78, tabWidth, tabHeight, 0, 0, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
 				currentTab = Tabs.SEARCH;
-				remove(searchTabActive);
+				reloadButton(searchTabActive);
 				remove(favoriteTabActive);
 				remove(inventoryTabActive);
-				addDrawableChild(searchTabActive);
 				screenUpdate();
 			});
 			favoriteTab = new TexturedButtonWidget(this.width / 2 - 258, this.height / 2 - 78 + (tabHeight + tabOffsetY), tabWidth, tabHeight, 0, tabHeight, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
 				currentTab = Tabs.FAVORITE;
 				remove(searchTabActive);
-				remove(favoriteTabActive);
+				reloadButton(favoriteTabActive);
 				remove(inventoryTabActive);
-				addDrawableChild(favoriteTabActive);
 				screenUpdate();
 			});
 			inventoryTab = new TexturedButtonWidget(this.width / 2 - 258, this.height / 2 - 78 + (tabHeight + tabOffsetY) * 2, tabWidth, tabHeight, 0, tabHeight * 2, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
 				currentTab = Tabs.INVENTORY;
 				remove(searchTabActive);
 				remove(favoriteTabActive);
-				remove(inventoryTabActive);
-				addDrawableChild(inventoryTabActive);
+				reloadButton(inventoryTabActive);
 				screenUpdate();
 			});
 			searchTabActive = new TexturedButtonWidget(this.width / 2 - 258, this.height / 2 - 78, tabWidth, tabHeight, tabWidth, 0, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, null);
@@ -267,58 +251,42 @@ public abstract class AnvilScreenMixin extends Screen {
 			addToFavorite = new TexturedButtonWidget(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY, favoriteButtonWidth, favoriteButtonHeight, 0, favoriteButtonHeight, 0, FAVORITE_BUTTON_TEXTURE, favoriteButtonTextureWidth, favoriteButtonTextureHeight, button -> {
 				String favoriteName = nameField.getText();
 
-				String item = currentItem;
+				String item = cutTranslationKey(currentItem);
 
 				File currentFile = new File(RPRenames.configPathFavorite + item + ".json");
-				boolean nameExist = false;
-				if (currentFile.exists() && favoriteName != null) {
+				boolean nameExist;
+				ArrayList<Rename> listNames = new ArrayList<>();
+				if (currentFile.exists()) {
 					Rename alreadyExist = ConfigManager.configRead(currentFile);
-					String[] ae = alreadyExist.getName();
-					for (String s : ae) {
-						if (favoriteName.equals(s)) {
-							nameExist = true;
-							break;
-						}
-					}
+					nameExist = Arrays.stream(alreadyExist.getName()).toList().contains(favoriteName);
 					if (!nameExist) {
-						int AEsize = ae.length;
-						String[] newConfig = new String[AEsize + 1];
+						String[] newConfig = new String[alreadyExist.getName().length + 1];
 						int h = 0;
-						while (h < AEsize) {
-							newConfig[h] = ae[h];
+						while (h < alreadyExist.getName().length) {
+							newConfig[h] = alreadyExist.getName()[h];
 							h++;
 						}
 						newConfig[h] = favoriteName;
 
 						Rename newRename = new Rename(newConfig);
-						ArrayList<Rename> listFiles = new ArrayList<>();
-						listFiles.add(newRename);
-
-						try {
-							FileWriter fileWriter = new FileWriter(currentFile);
-							Gson gson = new Gson();
-							gson.toJson(listFiles, fileWriter);
-							fileWriter.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						listNames.add(newRename);
 					}
 				} else {
-					if (favoriteName != null) {
-						try {
-							new File(RPRenames.configPathFavorite).mkdirs();
-							System.out.println("[RPR] Created new file for favorites config: " + RPRenames.configPathFavorite + item + ".json");
-							ArrayList<Rename> listNames = new ArrayList<>();
-							Rename name1 = new Rename(new String[]{favoriteName});
-							listNames.add(name1);
-							FileWriter fileWriter = new FileWriter(currentFile);
-							Gson gson = new Gson();
-							gson.toJson(listNames, fileWriter);
-							fileWriter.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+					if (new File(RPRenames.configPathFavorite).mkdirs()) {
+						System.out.println("[RPR] Created folder for favorites config: " + RPRenames.configPathFavorite);
 					}
+					System.out.println("[RPR] Created new file for favorites config: " + RPRenames.configPathFavorite + item + ".json");
+					Rename name1 = new Rename(new String[]{favoriteName});
+					listNames.add(name1);
+				}
+
+				try {
+					FileWriter fileWriter = new FileWriter(currentFile);
+					Gson gson = new Gson();
+					gson.toJson(listNames, fileWriter);
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 
 				featuredButtonsUpdate(nameField.getText());
@@ -329,43 +297,37 @@ public abstract class AnvilScreenMixin extends Screen {
 			removeFromFavorite = new TexturedButtonWidget(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY, favoriteButtonWidth, favoriteButtonHeight, 0, 0, 0, FAVORITE_BUTTON_TEXTURE, favoriteButtonTextureWidth, favoriteButtonTextureHeight, button -> {
 				String favoriteName = nameField.getText();
 
-				String item = currentItem;
+				String item = cutTranslationKey(currentItem);
 
 				File currentFile = new File(RPRenames.configPathFavorite + item + ".json");
 				Rename alreadyExist = ConfigManager.configRead(currentFile);
-				String[] ae = alreadyExist.getName();
-				int n = 0;
-				for (String s : ae) {
-					if (favoriteName.equals(s)) {
-						ae[n] = null;
-					}
-					n++;
-				}
-				int AEsize = ae.length;
-				String[] newConfig = new String[AEsize - 1];
-				int h = 0;
-				int h2 = 0;
-				while (h2 < newConfig.length) {
-					if (ae[h] != null) {
-						newConfig[h2] = ae[h];
-						h++;
-						h2++;
-					} else {
-						h++;
-					}
+				ArrayList<String> alreadyExistList = new ArrayList<>(Arrays.stream(alreadyExist.getName()).toList());
+				alreadyExistList.remove(favoriteName);
+
+				String[] newConfig = new String[alreadyExistList.size()];
+				for (int i = 0; i < alreadyExistList.size(); i++) {
+					newConfig[i] = alreadyExistList.get(i);
 				}
 
-				Rename newRename = new Rename(newConfig);
-				ArrayList<Rename> listFiles = new ArrayList<>();
-				listFiles.add(newRename);
+				if (newConfig.length > 0) {
+					Rename newRename = new Rename(newConfig);
+					ArrayList<Rename> listFiles = new ArrayList<>();
+					listFiles.add(newRename);
 
-				try {
-					FileWriter fileWriter = new FileWriter(currentFile);
-					Gson gson = new Gson();
-					gson.toJson(listFiles, fileWriter);
-					fileWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+					try {
+						FileWriter fileWriter = new FileWriter(currentFile);
+						Gson gson = new Gson();
+						gson.toJson(listFiles, fileWriter);
+						fileWriter.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else {
+					try {
+						Files.deleteIfExists(currentFile.toPath());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 
 				featuredButtonsUpdate(nameField.getText());
@@ -410,7 +372,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		screenUpdate(0);
 	}
 
-	private void screenUpdate(Integer savedPage) {
+	private void screenUpdate(int savedPage) {
 		clearAll();
 		page = savedPage;
 		opener.active = true;
@@ -421,9 +383,9 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 		boolean showOpenerMinus = false;
 		boolean showOpenerPlus = false;
-		File jsonRenamesClient = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
-		File jsonRenamesServer = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + currentItem + ".json");
-		File jsonRenamesFavorite = new File(RPRenames.configPathFavorite + currentItem + ".json");
+		File jsonRenamesClient = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + cutTranslationKey(currentItem) + ".json");
+		File jsonRenamesServer = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + cutTranslationKey(currentItem) + ".json");
+		File jsonRenamesFavorite = new File(RPRenames.configPathFavorite + cutTranslationKey(currentItem) + ".json");
 		boolean clientConfigReadable = jsonRenamesClient.exists();
 		boolean serverConfigReadable = jsonRenamesServer.exists();
 		boolean clientConfigCEMReadable = RPRenames.configClientCEMFolder.exists();
@@ -457,7 +419,7 @@ public abstract class AnvilScreenMixin extends Screen {
 						n++;
 					}
 					currentRenameList = new Rename(list3);
-					if (currentItem.equals("name_tag")) {
+					if (cutTranslationKey(currentItem).equals("name_tag") && !config.ignoreCEM) {
 						citSize = currentRenameList.getName().length;
 						List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable, actualSearch);
 						String[] finalList = new String[settings.get(1).size() + settings.get(0).size()];
@@ -476,7 +438,7 @@ public abstract class AnvilScreenMixin extends Screen {
 						}
 					}
 				}
-			} else if ((clientConfigCEMReadable || serverConfigCEMReadable) && currentItem.equals("name_tag")) {
+			} else if ((clientConfigCEMReadable || serverConfigCEMReadable) && cutTranslationKey(currentItem).equals("name_tag") && !config.ignoreCEM) {
 				if (currentTab == Tabs.SEARCH) {
 					citSize = 0;
 					List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadable, serverConfigCEMReadable, actualSearch);
@@ -507,9 +469,10 @@ public abstract class AnvilScreenMixin extends Screen {
 			currentInvOrder.clear();
 			ArrayList<String> checked = new ArrayList<>();
 			for (String s : currentItemList) {
-				if (!s.equals("air") && !checked.contains(s)) {
-					File jsonRenamesClientLocal = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
-					File jsonRenamesServerLocal = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+				String item = cutTranslationKey(s);
+				if (!item.equals("air") && !checked.contains(item)) {
+					File jsonRenamesClientLocal = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + item + ".json");
+					File jsonRenamesServerLocal = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + item + ".json");
 					boolean clientConfigReadableLocal = jsonRenamesClientLocal.exists();
 					boolean serverConfigReadableLocal = jsonRenamesServerLocal.exists();
 					boolean clientConfigCEMReadableLocal = RPRenames.configClientCEMFolder.exists();
@@ -518,11 +481,11 @@ public abstract class AnvilScreenMixin extends Screen {
 						serverConfigReadableLocal = false;
 						serverConfigCEMReadableLocal = false;
 					}
-					if (!s.equals("name_tag")) {
+					if (!item.equals("name_tag")) {
 						clientConfigCEMReadableLocal = false;
 						serverConfigCEMReadableLocal = false;
 					}
-					checked.add(s);
+					checked.add(item);
 					if (clientConfigReadableLocal || serverConfigReadableLocal || clientConfigCEMReadableLocal || serverConfigCEMReadableLocal) {
 						showOpenerPlus = true;
 						break;
@@ -540,19 +503,19 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 		if (currentTab == Tabs.INVENTORY) {
 			currentItemList = getInventory();
-			currentInvOrder.clear();
 			ArrayList<String> checked = new ArrayList<>();
 			ArrayList<String> names = new ArrayList<>();
 			ArrayList<Integer> numInInv = new ArrayList<>();
 			int i = 0;
 			for (String s : currentItemList) {
+				String item = cutTranslationKey(s);
 				String itemSearchTag = "";
 				if (searchField.getText().startsWith("+")) {
 					itemSearchTag = searchField.getText().substring(1);
 				}
-				if (!s.equals("air") && !checked.contains(s) && s.toUpperCase(Locale.ROOT).contains(itemSearchTag.toUpperCase(Locale.ROOT))) {
-					File jsonRenamesClientLocal = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
-					File jsonRenamesServerLocal = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
+				if (!item.equals("air") && !checked.contains(item) && item.toUpperCase(Locale.ROOT).contains(itemSearchTag.toUpperCase(Locale.ROOT))) {
+					File jsonRenamesClientLocal = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + item + ".json");
+					File jsonRenamesServerLocal = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + item + ".json");
 					boolean clientConfigReadableLocal = jsonRenamesClientLocal.exists();
 					boolean serverConfigReadableLocal = jsonRenamesServerLocal.exists();
 					boolean clientConfigCEMReadableLocal = RPRenames.configClientCEMFolder.exists();
@@ -561,28 +524,22 @@ public abstract class AnvilScreenMixin extends Screen {
 						serverConfigReadableLocal = false;
 						serverConfigCEMReadableLocal = false;
 					}
-					checked.add(s);
+					checked.add(item);
 					if (clientConfigReadableLocal) {
-						File a = new File(RPRenames.configPathClient + RPRenames.configPathNameCIT + "/" + s + ".json");
-						if (a.exists()) {
-							List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchTag)).getName()).toList();
-							for (String name : c) {
-								names.add(name);
-								numInInv.add(i);
-							}
+						List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(jsonRenamesClientLocal).getName(), searchTag)).getName()).toList();
+						for (String name : c) {
+							names.add(name);
+							numInInv.add(i);
 						}
 					}
 					if (serverConfigReadableLocal) {
-						File a = new File(RPRenames.configPathServer + RPRenames.configPathNameCIT + "/" + s + ".json");
-						if (a.exists()) {
-							List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(a).getName(), searchTag)).getName()).toList();
-							for (String name : c) {
-								names.add(name);
-								numInInv.add(i);
-							}
+						List<String> c = Arrays.stream(new Rename(search(ConfigManager.configRead(jsonRenamesServerLocal).getName(), searchTag)).getName()).toList();
+						for (String name : c) {
+							names.add(name);
+							numInInv.add(i);
 						}
 					}
-					if (s.equals("name_tag")) {
+					if (item.equals("name_tag") && !config.ignoreCEM) {
 						List<ArrayList<String>> settings = getCEM(currentRenameList, clientConfigCEMReadableLocal, serverConfigCEMReadableLocal, searchTag);
 						citSize = names.size();
 						for (String name : settings.get(0)) {
@@ -607,19 +564,15 @@ public abstract class AnvilScreenMixin extends Screen {
 		buttonsDefine();
 		clearAll();
 		if (showOpenerMinus) {
-			remove(openerMinus);
-			addDrawableChild(openerMinus);
+			reloadButton(openerMinus);
 		}
 		if (showOpenerPlus) {
-			remove(openerPlus);
-			addDrawableChild(openerPlus);
+			reloadButton(openerPlus);
 		}
 
 		if (open) {
-			remove(background);
-			addDrawableChild(background);
-			remove(openerOpened);
-			addDrawableChild(openerOpened);
+			reloadButton(background);
+			reloadButton(openerOpened);
 			showButtons();
 			updatePageWidgets();
 			addDrawableChild(searchField);
@@ -630,64 +583,19 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
+	ArrayList<String> modelsArray = new ArrayList<>();
+
 	private List<ArrayList<String>> getCEM(Rename currentRenameList, boolean clientConfigCEMReadable, boolean serverConfigCEMReadable, String searchTag) {
-		ArrayList<String> modelsArray = new ArrayList<>();
 		if (clientConfigCEMReadable) {
 			try {
-				Files.walk(Path.of(RPRenames.configPathClient + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-					File file = new File(String.valueOf(jsonFile));
-					for (String s : ConfigManager.configRead(file).getName()) {
-						if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchTag)).toList().contains(s)) {
-							if (!modelsArray.contains(s)) {
-								modelsArray.add(s);
-								ArrayList<String> nal = new ArrayList<>();
-								nal.add(file.getName().substring(0, file.getName().length() - 5));
-								mobName.add(nal);
-							} else {
-								int n = 0;
-								for (String s2 : modelsArray) {
-									if (s2.equals(s)) {
-										break;
-									}
-									n++;
-								}
-								ArrayList<String> nal = mobName.get(n);
-								nal.add(file.getName().substring(0, file.getName().length() - 5));
-								mobName.set(n, nal);
-							}
-						}
-					}
-				});
+				Files.walk(Path.of(RPRenames.configPathClient + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach((jsonFile) -> addToMobName(jsonFile, searchTag));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		if (serverConfigCEMReadable) {
 			try {
-				Files.walk(Path.of(RPRenames.configPathServer + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach(jsonFile -> {
-					File file = new File(String.valueOf(jsonFile));
-					for (String s : ConfigManager.configRead(file).getName()) {
-						if (Arrays.stream(search(ConfigManager.configRead(file).getName(), searchTag)).toList().contains(s)) {
-							if (!modelsArray.contains(s)) {
-								modelsArray.add(s);
-								ArrayList<String> nal = new ArrayList<>();
-								nal.add(file.getName().substring(0, file.getName().length() - 5));
-								mobName.add(nal);
-							} else {
-								int n = 0;
-								for (String s2 : modelsArray) {
-									if (s2.equals(s)) {
-										break;
-									}
-									n++;
-								}
-								ArrayList<String> nal = mobName.get(n);
-								nal.add(file.getName().substring(0, file.getName().length() - 5));
-								mobName.set(n, nal);
-							}
-						}
-					}
-				});
+				Files.walk(Path.of(RPRenames.configPathServer + RPRenames.configPathNameCEM), new FileVisitOption[0]).filter(path -> path.toString().endsWith(".json")).forEach((jsonFile) -> addToMobName(jsonFile, searchTag));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -701,9 +609,42 @@ public abstract class AnvilScreenMixin extends Screen {
 			}
 		}
 		List<ArrayList<String>> settings = new ArrayList<>();
-		settings.add(modelsArray);
+		settings.add(new ArrayList<>(modelsArray));
 		settings.add(citWithoutModels);
+		modelsArray.clear();
 		return settings;
+	}
+
+	private void addToMobName(Path jsonFile, String searchTag) {
+		File file = new File(String.valueOf(jsonFile));
+		boolean isValid = false;
+		for (EntityType<?> entityType : CEMList.mobs) {
+			if (entityType.getUntranslatedName().equals(file.getName().substring(0, file.getName().length() - 5))) {
+				isValid = true;
+			}
+		}
+		if (!isValid) {
+			return;
+		}
+		for (String s : search(ConfigManager.configRead(file).getName(), searchTag)) {
+			if (!modelsArray.contains(s)) {
+				modelsArray.add(s);
+				ArrayList<String> mob = new ArrayList<>();
+				mob.add(file.getName().substring(0, file.getName().length() - 5));
+				mobName.add(mob);
+			} else {
+				int n = 0;
+				for (String s2 : modelsArray) {
+					if (s2.equals(s)) {
+						break;
+					}
+					n++;
+				}
+				ArrayList<String> mob = mobName.get(n);
+				mob.add(file.getName().substring(0, file.getName().length() - 5));
+				mobName.set(n, mob);
+			}
+		}
 	}
 
 	@Inject(at = @At("RETURN"), method = "onRenamed")
@@ -717,7 +658,7 @@ public abstract class AnvilScreenMixin extends Screen {
 		remove(addToFavorite);
 		remove(removeFromFavorite);
 		if (!name.isEmpty()) {
-			File file = new File(RPRenames.configPathFavorite + currentItem + ".json");
+			File file = new File(RPRenames.configPathFavorite + cutTranslationKey(currentItem) + ".json");
 			if (file.exists()) {
 				String[] favoriteName = ConfigManager.configRead(file).getName();
 				boolean nameExist = false;
@@ -749,68 +690,22 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	@Inject(at = @At("RETURN"), method = "onSlotUpdate")
-	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z"), method = "keyPressed")
+	private boolean onKeyPressed(TextFieldWidget instance, int keyCode, int scanCode, int modifiers) {
 		if (config.enableAnvilModification) {
-			if (slotId == 0) {
-				if (stack.isEmpty()) {
-					currentItem = "air";
-					searchField.setText("");
-					searchField.setFocusUnlocked(false);
-					remove(searchField);
-					searchField.setFocused(false);
-				} else {
-					currentItem = cutTranslationKey(stack.getItem().getTranslationKey());
-					icon1 = stack.copy();
-					icon2 = stack.copy();
-					icon3 = stack.copy();
-					icon4 = stack.copy();
-					icon5 = stack.copy();
-					iconAfterUpdate1 = stack.copy();
-					iconAfterUpdate2 = stack.copy();
-					iconAfterUpdate3 = stack.copy();
-					iconAfterUpdate4 = stack.copy();
-					iconAfterUpdate5 = stack.copy();
-					searchField.setFocusUnlocked(true);
-					currentTab = Tabs.SEARCH;
-					featuredButtonsUpdate(nameField.getText());
-				}
-				screenUpdate();
-			}
+			searchField.keyPressed(keyCode, scanCode, modifiers);
+			return instance.isActive() || searchField.isActive();
 		}
-	}
-
-	private ArrayList<String> getInventory() {
-		ArrayList<String> inventoryList = new ArrayList<>();
-		assert MinecraftClient.getInstance().player != null;
-		PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
-		int g = 0;
-		while (g < inventory.main.size()) {
-			String s = inventory.main.get(g).getItem().getTranslationKey();
-			int var1 = 0;
-			int var2 = 0;
-			while (var2 != 2) {
-				if (String.valueOf(s.charAt(var1)).equals(".")) {
-					s = s.substring(var1 + 1);
-					var2++;
-					var1 = 0;
-				} else {
-					var1++;
-				}
-			}
-			inventoryList.add(s);
-			g++;
-		}
-		inventoryList.add(currentItem);
-		return inventoryList;
+		return instance.isActive();
 	}
 
 	ArrayList<String> invChangeHandler = new ArrayList<>();
 
-	@Inject(at = @At("RETURN"), method = "drawForeground")
-	private void frameUpdate(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
+	@Inject(at = @At("RETURN"), method = "handledScreenTick")
+	private void onHandledScreenTick(CallbackInfo ci) {
 		if (config.enableAnvilModification) {
-			if (invChangeHandler.size() == 0) {
+			searchField.tick();
+			if (invChangeHandler.isEmpty()) {
 				invChangeHandler = getInventory();
 			} else {
 				ArrayList<String> temp = getInventory();
@@ -834,62 +729,89 @@ public abstract class AnvilScreenMixin extends Screen {
 					screenUpdate(page);
 				}
 			}
-			if (open) {
-				iconSlot1.paint(context, -129, 31, mouseX, mouseY);
-				iconSlot2.paint(context, -129, 31 + (buttonHeight + 2), mouseX, mouseY);
-				iconSlot3.paint(context, -129, 31 + (buttonHeight + 2) * 2, mouseX, mouseY);
-				iconSlot4.paint(context, -129, 31 + (buttonHeight + 2) * 3, mouseX, mouseY);
-				iconSlot5.paint(context, -129, 31 + (buttonHeight + 2) * 4, mouseX, mouseY);
-				pageCount.setSize(12, 30);
-				pageCount.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				pageCount.paint(context, -76, 144, mouseX, mouseY);
-				button1textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button2textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button3textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button4textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button5textShadow.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button1textShadow.paint(context, -70, 38, mouseX, mouseY);
-				button2textShadow.paint(context, -70, 38 + (buttonHeight + 2), mouseX, mouseY);
-				button3textShadow.paint(context, -70, 38 + (buttonHeight + 2) * 2, mouseX, mouseY);
-				button4textShadow.paint(context, -70, 38 + (buttonHeight + 2) * 3, mouseX, mouseY);
-				button5textShadow.paint(context, -70, 38 + (buttonHeight + 2) * 4, mouseX, mouseY);
-				button1text.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button2text.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button3text.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button4text.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button5text.setHorizontalAlignment(HorizontalAlignment.CENTER);
-				button1text.paint(context, -71, 37, mouseX, mouseY);
-				button2text.paint(context, -71, 37 + (buttonHeight + 2), mouseX, mouseY);
-				button3text.paint(context, -71, 37 + (buttonHeight + 2) * 2, mouseX, mouseY);
-				button4text.paint(context, -71, 37 + (buttonHeight + 2) * 3, mouseX, mouseY);
-				button5text.paint(context, -71, 37 + (buttonHeight + 2) * 4, mouseX, mouseY);
-				if (!searchField.isFocused() && searchField.getText().isEmpty()) {
-					context.drawTextWithShadow(renderer, SEARCH_HINT_TEXT, -116, 15, -1);
+		}
+	}
+
+	@Inject(at = @At("RETURN"), method = "onSlotUpdate")
+	private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
+		if (config.enableAnvilModification) {
+			if (slotId == 0) {
+				if (stack.isEmpty()) {
+					currentItem = "air";
+					searchField.setText("");
+					searchField.setFocusUnlocked(false);
+					remove(searchField);
+					searchField.setFocused(false);
+				} else {
+					currentItem = stack.getItem().getTranslationKey();
+					itemAfterUpdate = stack.copy();
+					searchField.setFocusUnlocked(true);
+					currentTab = Tabs.SEARCH;
+					featuredButtonsUpdate(nameField.getText());
 				}
-				if (currentTab == Tabs.INVENTORY) {
-					if (button1 != null) {
-						if (button1.isHovered()) {
-							highlightSlot(context, 1);
-						}
+				screenUpdate();
+			}
+		}
+	}
+
+	private ArrayList<String> getInventory() {
+		ArrayList<String> inventoryList = new ArrayList<>();
+		assert MinecraftClient.getInstance().player != null;
+		PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
+		for (ItemStack itemStack : inventory.main) {
+			inventoryList.add(itemStack.getItem().getTranslationKey());
+		}
+		inventoryList.add(currentItem);
+		return inventoryList;
+	}
+
+	@Inject(at = @At("RETURN"), method = "drawForeground")
+	private void frameUpdate (DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
+		if (config.enableAnvilModification) {
+			if (open) {
+				int xScreenOffset = (this.width - backgroundWidth) / 2;
+				int yScreenOffset = (this.height - backgroundHeight) / 2;
+				for (int n = 0; n < 5; n++) {
+					buttons.get(n).drawElements(context, mouseX, mouseY);
+				}
+				pageCount.setSize(12, 30);
+				pageCount.setHorizontalAlignment(HorizontalAlignment.CENTER).paint(context, -76, 144, mouseX, mouseY);
+				if (searchField != null) {
+					if (!searchField.isFocused() && searchField.getText().isEmpty()) {
+						context.drawTextWithShadow(renderer, SEARCH_HINT_TEXT, -116, 15, -1);
 					}
-					if (button2 != null) {
-						if (button2.isHovered()) {
-							highlightSlot(context, 2);
-						}
+				}
+
+				if (!config.disablePageArrowsTips && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
+					if (pageUp.isMouseOver(mouseX, mouseY) && pageUp.isHovered()) {
+						context.drawTooltip(renderer, Text.translatable("rprenames.gui.pageUp.toLast.tooltip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX - xScreenOffset, mouseY - yScreenOffset);
+					} else if (pageDown.isMouseOver(mouseX, mouseY) && pageDown.isHovered()) {
+						context.drawTooltip(renderer, Text.translatable("rprenames.gui.pageDown.toFirst.tooltip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX - xScreenOffset, mouseY - yScreenOffset);
 					}
-					if (button3 != null) {
-						if (button3.isHovered()) {
-							highlightSlot(context, 3);
-						}
-					}
-					if (button4 != null) {
-						if (button4.isHovered()) {
-							highlightSlot(context, 4);
-						}
-					}
-					if (button5 != null) {
-						if (button5.isHovered()) {
-							highlightSlot(context, 5);
+				}
+
+				for (int n = 0; n < 5; n++) {
+					if (buttons.get(n).getButton() != null) {
+						if (buttons.get(n).getButton().isMouseOver(mouseX, mouseY) && buttons.get(n).getButton().isHovered() && buttons.get(n).isActive()) {
+							ArrayList<Text> lines = new ArrayList<>(buttons.get(n).getTooltip());
+							if (!buttons.get(n).isCEM() && config.enablePreview) {
+								if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) && !config.playerPreviewByDefault) {
+									if (!config.disablePlayerPreviewTips) {
+										lines.add(Text.translatable("rprenames.gui.playerPreviewTip.holdShift").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
+									}
+								} else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) != config.playerPreviewByDefault) {
+									if (!config.disablePlayerPreviewTips) {
+										lines.add(Text.translatable("rprenames.gui.playerPreviewTip.pressF").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
+									}
+								}
+							}
+							context.drawTooltip(renderer, lines, mouseX - xScreenOffset, mouseY - yScreenOffset);
+							if (currentTab == Tabs.INVENTORY && config.slotHighlightColorALPHA > 0) {
+								buttons.get(n).highlightSlot(context, currentInvOrder, getInventory(), currentItem, highlightColor);
+							}
+							if (config.enablePreview) {
+								buttons.get(n).drawPreview(context, mouseX - xScreenOffset, mouseY - yScreenOffset, 52, 52, config.scaleFactorItem, config.scaleFactorEntity);
+							}
 						}
 					}
 				}
@@ -899,115 +821,32 @@ public abstract class AnvilScreenMixin extends Screen {
 		}
 	}
 
-	private void highlightSlot(DrawContext context, int orderOnPage) {
-		int orderInList = (page * 5) + orderOnPage;
-		int slotNum = currentInvOrder.get(orderInList - 1);
-		int x;
-		int y;
-		if (!getInventory().get(slotNum).equals(currentItem)) {
-			boolean isOnHotBar = false;
-			if (slotNum < rowSize) {
-				slotNum += rowSize * 3;
-				isOnHotBar = true;
-			} else {
-				slotNum -= rowSize;
-			}
-			int orderInRow = slotNum % rowSize;
-			int row = slotNum / rowSize;
-			x = firstSlotX + (slotSize * orderInRow);
-			y = firstSlotY + (slotSize * row);
-			if (isOnHotBar) {
-				y += 4;
-			}
-		} else {
-			x = 26;
-			y = 46;
-		}
-		context.fill(x, y, x + slotSize, y + slotSize, highlightColor);
-	}
-
 	private void showButtons() {
-		if (page * 5 <= currentRenameListSize - 1) {
-			this.addDrawableChild(button1);
-			iconSlot1.setIcon(new ItemIcon(icon1));
-			button1text.setText(Text.of(shortText(Text.of(currentRenameList.getName(page * 5)))));
-			button1textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(page * 5)))));
-		}
-		if (1 + page * 5 <= currentRenameListSize - 1) {
-			this.addDrawableChild(button2);
-			iconSlot2.setIcon(new ItemIcon(icon2));
-			button2text.setText(Text.of(shortText(Text.of(currentRenameList.getName(1 + page * 5)))));
-			button2textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(1 + page * 5)))));
-		}
-		if (2 + page * 5 <= currentRenameListSize - 1) {
-			this.addDrawableChild(button3);
-			iconSlot3.setIcon(new ItemIcon(icon3));
-			button3text.setText(Text.of(shortText(Text.of(currentRenameList.getName(2 + page * 5)))));
-			button3textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(2 + page * 5)))));
-		}
-		if (3 + page * 5 <= currentRenameListSize - 1) {
-			this.addDrawableChild(button4);
-			iconSlot4.setIcon(new ItemIcon(icon4));
-			button4text.setText(Text.of(shortText(Text.of(currentRenameList.getName(3 + page * 5)))));
-			button4textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(3 + page * 5)))));
-		}
-		if (4 + page * 5 <= currentRenameListSize - 1) {
-			this.addDrawableChild(button5);
-			iconSlot5.setIcon(new ItemIcon(icon5));
-			button5text.setText(Text.of(shortText(Text.of(currentRenameList.getName(4 + page * 5)))));
-			button5textShadow.setText(Text.of(shortText(Text.of(currentRenameList.getName(4 + page * 5)))));
+		for (int n = 0; n < 5; n++) {
+			if (n + page * 5 <= currentRenameListSize - 1) {
+				addDrawableChild(buttons.get(n).getButton());
+				buttons.get(n).setActive(true);
+			}
 		}
 	}
 
 	private void hideButtons() {
 		this.remove(background);
-		this.remove(button1);
-		this.remove(button2);
-		this.remove(button3);
-		this.remove(button4);
-		this.remove(button5);
-		iconSlot1.setIcon(null);
-		iconSlot2.setIcon(null);
-		iconSlot3.setIcon(null);
-		iconSlot4.setIcon(null);
-		iconSlot5.setIcon(null);
-		button1text.setText(Text.of(""));
-		button2text.setText(Text.of(""));
-		button3text.setText(Text.of(""));
-		button4text.setText(Text.of(""));
-		button5text.setText(Text.of(""));
-		button1textShadow.setText(Text.of(""));
-		button2textShadow.setText(Text.of(""));
-		button3textShadow.setText(Text.of(""));
-		button4textShadow.setText(Text.of(""));
-		button5textShadow.setText(Text.of(""));
+		for (int n = 0; n < 5; n++) {
+			remove(buttons.get(n).getButton());
+			buttons.get(n).setActive(false);
+		}
 	}
 
 	private void clearAll() {
 		this.remove(background);
-		this.remove(button1);
-		this.remove(button2);
-		this.remove(button3);
-		this.remove(button4);
-		this.remove(button5);
 		this.remove(pageDown);
 		this.remove(pageUp);
+		for (int n = 0; n < 5; n++) {
+			remove(buttons.get(n).getButton());
+			buttons.get(n).setActive(false);
+		}
 		pageCount.setText(Text.of(""));
-		iconSlot1.setIcon(null);
-		iconSlot2.setIcon(null);
-		iconSlot3.setIcon(null);
-		iconSlot4.setIcon(null);
-		iconSlot5.setIcon(null);
-		button1text.setText(Text.of(""));
-		button2text.setText(Text.of(""));
-		button3text.setText(Text.of(""));
-		button4text.setText(Text.of(""));
-		button5text.setText(Text.of(""));
-		button1textShadow.setText(Text.of(""));
-		button2textShadow.setText(Text.of(""));
-		button3textShadow.setText(Text.of(""));
-		button4textShadow.setText(Text.of(""));
-		button5textShadow.setText(Text.of(""));
 		remove(searchTab);
 		remove(favoriteTab);
 		remove(inventoryTab);
@@ -1018,75 +857,56 @@ public abstract class AnvilScreenMixin extends Screen {
 		remove(openerPlus);
 	}
 
-	private void sendSwapPackets(int slot1, int slot2, MinecraftClient client) {
-		slot2 = slot2 - 9;
-		if (slot2 > 27) {
-			slot2 -= 27;
-		} else if (slot2 < 0) {
-			slot2 += 36;
+	private void reloadButton(ClickableWidget button) {
+		remove(button);
+		addDrawableChild(button);
+	}
+
+	private void putInAnvil(int slotInInventory, MinecraftClient client) {
+		slotInInventory = slotInInventory - 9;
+		if (slotInInventory > 27) {
+			slotInInventory -= 27;
+		} else if (slotInInventory < 0) {
+			slotInInventory += 36;
 		}
 		assert client.player != null;
 		int syncId = client.player.currentScreenHandler.syncId;
 		assert client.interactionManager != null;
-		client.interactionManager.clickSlot(syncId, slot2 + 3, 0, SlotActionType.PICKUP, client.player);
-		client.interactionManager.clickSlot(syncId, slot1, 0, SlotActionType.PICKUP, client.player);
-		client.interactionManager.clickSlot(syncId, slot2 + 3, 0, SlotActionType.PICKUP, client.player);
+		client.interactionManager.clickSlot(syncId, slotInInventory + 3, 0, SlotActionType.PICKUP, client.player);
+		client.interactionManager.clickSlot(syncId, 0, 0, SlotActionType.PICKUP, client.player);
+		client.interactionManager.clickSlot(syncId, slotInInventory + 3, 0, SlotActionType.PICKUP, client.player);
 	}
 
-	private ArrayList<Object> createButton(int orderOnPage, Text text) {
-		ArrayList<Object> settings = new ArrayList<>();
+	private void createButton(int orderOnPage, Text text) {
 		int orderInList = (page * 5) + orderOnPage;
 		assert MinecraftClient.getInstance().player != null;
 		PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
-		String item;
-		if (currentTab == Tabs.INVENTORY && currentInvOrder.get(orderInList - 1) != 36) {
-			item = cutTranslationKey(inventory.main.get(currentInvOrder.get(orderInList - 1)).copy().getItem().getTranslationKey());
-		} else {
-			item = currentItem;
-		}
+		String item = currentTab == Tabs.INVENTORY && currentInvOrder.get(orderInList) != 36 ? inventory.main.get(currentInvOrder.get(orderInList)).copy().getItem().getTranslationKey() : currentItem;
+		boolean favorite = RenameButton.calcFavorite(cutTranslationKey(item), text.getString());
+		int v = favorite ? buttonHeight * 2 : 0;
 
-		int u = 0;
-		int v = 0;
-		File file = new File(RPRenames.configPathFavorite + item + ".json");
-		if (file.exists()) {
-			boolean favorite = false;
-			String[] favoriteList = ConfigManager.configRead(file).getName();
-			for (String s : favoriteList) {
-				if (text.equals(Text.of(s))) {
-					favorite = true;
-					break;
-				}
-			}
-			if (favorite) {
-				v = buttonHeight * 2;
-			}
-		}
-		int tooltipStartCEM = 1;
-		ArrayList<Text> tooltipList = new ArrayList<>();
-		tooltipList.add(text);
+		ArrayList<Text> tooltip = new ArrayList<>();
+		tooltip.add(text);
 		boolean isCEM = false;
-		boolean isSameItem = false;
+		String firstMob = null;
 		if (currentTab == Tabs.INVENTORY) {
-			tooltipList.add(Text.of(item).copy().fillStyle(Style.EMPTY.withColor(Formatting.DARK_AQUA)));
-			tooltipStartCEM++;
-			isSameItem = currentItem.equals(item);
+			tooltip.add(Text.of(config.translateItemNames ? Text.translatable(item).getString() : cutTranslationKey(item)).copy().fillStyle(Style.EMPTY.withColor(Formatting.DARK_AQUA)));
 		}
-		if (item.equals("name_tag") && orderInList > citSize && orderInList <= citSize + mobName.size()) {
+		if (cutTranslationKey(item).equals("name_tag") && orderInList + 1 > citSize && orderInList + 1 <= citSize + mobName.size()) {
 			isCEM = true;
-			for (String s : mobName.get(orderInList - 1 - citSize)) {
-				tooltipList.add(Text.of(s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)));
+			firstMob = mobName.get(orderInList - citSize).get(0);
+			for (String s : mobName.get(orderInList - citSize)) {
+				tooltip.add(Text.of(config.translateMobNames ? Text.translatable("entity.minecraft." + s).getString() : s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)));
 			}
 		}
 
-		boolean finalIsSameItem = isSameItem;
-
-		TexturedButtonWidget texturedButtonWidget = new TexturedButtonWidget(this.width / 2 - 218, this.height / 2 - 53 + ((orderOnPage - 1) * (buttonHeight + buttonOffsetY)), buttonWidth, buttonHeight, u, v, buttonHeight, BUTTON_TEXTURE, buttonTextureWidth, buttonTextureHeight, (button) -> {
+		TexturedButtonWidget texturedButtonWidget = new TexturedButtonWidget(this.width / 2 - 218, this.height / 2 - 53 + (orderOnPage * (buttonHeight + buttonOffsetY)), buttonWidth, buttonHeight, 0, v, buttonHeight, BUTTON_TEXTURE, buttonTextureWidth, buttonTextureHeight, (button) -> {
 			if (currentTab == Tabs.INVENTORY) {
-				if (currentInvOrder.get(orderInList - 1) != 36) {
+				if (currentInvOrder.get(orderInList) != 36) {
 					afterInventoryTab = true;
 					tempPage = page;
-					if (!finalIsSameItem) {
-						sendSwapPackets(0, currentInvOrder.get(orderInList - 1), MinecraftClient.getInstance());
+					if (!currentItem.equals(item)) {
+						putInAnvil(currentInvOrder.get(orderInList), MinecraftClient.getInstance());
 					}
 					afterInventoryTab = false;
 				}
@@ -1094,136 +914,52 @@ public abstract class AnvilScreenMixin extends Screen {
 			nameField.setText(text.getString());
 		});
 
-		Text tooltipText = tooltipList.get(0);
-		int t = 1;
-		while (tooltipList.size() > t) {
-			tooltipText = tooltipText.copy().append(Text.of("\n" + tooltipList.get(t).getString()).copy().fillStyle(tooltipList.get(t).getStyle()));
-			t++;
-		}
-
-		Tooltip tooltip = Tooltip.of(tooltipText);
-		texturedButtonWidget.setTooltip(tooltip);
-
-		settings.add(texturedButtonWidget);
-
+		ItemStack itemStack = itemAfterUpdate == null ? null : itemAfterUpdate.copy();
+		int mobInList = -1;
 		if (isCEM) {
 			int n = 0;
-			for (String s : CEMList.mobsNames) {
-				if (s.equals(tooltipList.get(tooltipStartCEM).getString())) {
+			for (EntityType<?> entityType : CEMList.mobs) {
+				String s = entityType.getUntranslatedName();
+				if (s.equals(firstMob)) {
 					break;
 				}
 				n++;
 			}
-			settings.add(new ItemStack(CEMList.spawnEggItems[n]));
+			mobInList = n;
+ 			itemStack = new ItemStack(CEMList.spawnEggItems[n]);
 		} else {
 			if (currentTab == Tabs.INVENTORY) {
-				if (currentInvOrder.get(orderInList - 1) != 36) {
-					settings.add(inventory.main.get(currentInvOrder.get(orderInList - 1)).copy());
+				if (currentInvOrder.get(orderInList) != 36) {
+					itemStack = inventory.main.get(currentInvOrder.get(orderInList)).copy();
 				}
 			}
 		}
-		return settings;
+
+		buttons.get(orderOnPage).setParameters(texturedButtonWidget, text, itemStack, page, orderOnPage, isCEM, mobInList, tooltip);
 	}
 
 	private void buttonsDefine() {
-		remove(button1);
-		remove(button2);
-		remove(button3);
-		remove(button4);
-		remove(button5);
-		icon1 = iconAfterUpdate1;
-		icon2 = iconAfterUpdate2;
-		icon3 = iconAfterUpdate3;
-		icon4 = iconAfterUpdate4;
-		icon5 = iconAfterUpdate5;
-		if (page * 5 <= currentRenameListSize - 1) {
-			Text text = Text.of(currentRenameList.getName(page * 5));
-			String shortText = shortText(text);
-			ArrayList<Object> settings = createButton(1, text);
-			button1 = (TexturedButtonWidget) settings.get(0);
-			if (settings.size() > 1) {
-				icon1 = (ItemStack) settings.get(1);
+		for (int n = 0; n < 5; n++) {
+			remove(buttons.get(n).getButton());
+			buttons.get(n).setActive(false);
+			if (n + page * 5 <= currentRenameListSize - 1) {
+				createButton(n, Text.of(currentRenameList.getName(n + page * 5)));
 			}
-			button1text.setText(Text.of(shortText));
-			button1textShadow.setText(Text.of(shortText));
-			iconSlot1.setIcon(new ItemIcon(icon1));
-			icon1.setCustomName(text);
-		}
-
-		if (1 + page * 5 <= currentRenameListSize - 1) {
-			Text text = Text.of(currentRenameList.getName(1 + page * 5));
-			String shortText = shortText(text);
-			ArrayList<Object> settings = createButton(2, text);
-			button2 = (TexturedButtonWidget) settings.get(0);
-			if (settings.size() > 1) {
-				icon2 = (ItemStack) settings.get(1);
-			}
-			button2text.setText(Text.of(shortText));
-			button2textShadow.setText(Text.of(shortText));
-			iconSlot2.setIcon(new ItemIcon(icon2));
-			icon2.setCustomName(text);
-		}
-
-		if (2 + page * 5 <= currentRenameListSize - 1) {
-			Text text = Text.of(currentRenameList.getName(2 + page * 5));
-			String shortText = shortText(text);
-			ArrayList<Object> settings = createButton(3, text);
-			button3 = (TexturedButtonWidget) settings.get(0);
-			if (settings.size() > 1) {
-				icon3 = (ItemStack) settings.get(1);
-			}
-			button3text.setText(Text.of(shortText));
-			button3textShadow.setText(Text.of(shortText));
-			iconSlot3.setIcon(new ItemIcon(icon3));
-			icon3.setCustomName(text);
-		}
-
-		if (3 + page * 5 <= currentRenameListSize - 1) {
-			Text text = Text.of(currentRenameList.getName(3 + page * 5));
-			String shortText = shortText(text);
-			ArrayList<Object> settings = createButton(4, text);
-			button4 = (TexturedButtonWidget) settings.get(0);
-			if (settings.size() > 1) {
-				icon4 = (ItemStack) settings.get(1);
-			}
-			button4text.setText(Text.of(shortText));
-			button4textShadow.setText(Text.of(shortText));
-			iconSlot4.setIcon(new ItemIcon(icon4));
-			icon4.setCustomName(text);
-		}
-
-		if (4 + page * 5 <= currentRenameListSize - 1) {
-			Text text = Text.of(currentRenameList.getName(4 + page * 5));
-			String shortText = shortText(text);
-			ArrayList<Object> settings = createButton(5, text);
-			button5 = (TexturedButtonWidget) settings.get(0);
-			if (settings.size() > 1) {
-				icon5 = (ItemStack) settings.get(1);
-			}
-			button5text.setText(Text.of(shortText));
-			button5textShadow.setText(Text.of(shortText));
-			iconSlot5.setIcon(new ItemIcon(icon5));
-			icon5.setCustomName(text);
 		}
 	}
 
 	private void updatePageWidgets() {
-		remove(pageUp);
-		remove(pageDown);
-		addDrawableChild(pageUp);
-		addDrawableChild(pageDown);
+		reloadButton(pageUp);
+		reloadButton(pageDown);
 		pageDown.active = page != 0;
 		pageUp.active = 5 + page * 5 <= currentRenameListSize - 1;
 		pageCount.setText(Text.of(page + 1 + "/" + (currentRenameList.getName().length + 4) / 5));
 	}
 
 	private void tabsUpdate() {
-		remove(searchTab);
-		remove(favoriteTab);
-		remove(inventoryTab);
-		addDrawableChild(searchTab);
-		addDrawableChild(favoriteTab);
-		addDrawableChild(inventoryTab);
+		reloadButton(searchTab);
+		reloadButton(favoriteTab);
+		reloadButton(inventoryTab);
 		remove(searchTabActive);
 		remove(favoriteTabActive);
 		remove(inventoryTabActive);
@@ -1258,28 +994,15 @@ public abstract class AnvilScreenMixin extends Screen {
 		screenUpdate();
 	}
 
-	private String shortText(Text text) {
-		String shortText;
-		shortText = text.getString();
-		if (renderer.getWidth(shortText) > 92 - 5) {
-			while (renderer.getWidth(shortText) > 92 - 5) {
-				shortText = shortText.substring(0, shortText.length() - 1);
-			}
-			return shortText + "...";
-		}
-		return shortText;
-	}
-
 	private String cutTranslationKey(String translationKey) {
-		int i = 0;
-		int t = 0;
-		while (t != 2) {
-			if (String.valueOf(translationKey.charAt(i)).equals(".")) {
-				translationKey = translationKey.substring(i + 1);
-				t++;
-				i = 0;
-			} else {
-				i++;
+		int i = translationKey.length() - 1;
+		if (translationKey.contains(".")) {
+			while (true) {
+				if (String.valueOf(translationKey.charAt(i)).equals(".")) {
+					return translationKey.substring(i + 1);
+				} else {
+					i--;
+				}
 			}
 		}
 		return translationKey;
@@ -1287,7 +1010,6 @@ public abstract class AnvilScreenMixin extends Screen {
 
 	private String[] search(String[] list, String match) {
 		ArrayList<String> arrayList = new ArrayList<>();
-		int length = list.length;
 		int i = 0;
 		int g = 0;
 		if (match.contains("*")) {
@@ -1295,23 +1017,17 @@ public abstract class AnvilScreenMixin extends Screen {
 				g++;
 			}
 			int h = g;
-			while (true) {
+			do {
 				h++;
-				if (String.valueOf(match.charAt(h - 1)).equals("*") && h == match.length()) {
-					break;
-				}
-				if (!String.valueOf(match.charAt(h)).equals("*")) {
-					break;
-				}
-			}
-			while (i < length) {
+			} while ((!String.valueOf(match.charAt(h - 1)).equals("*") || h != match.length()) && (String.valueOf(match.charAt(h)).equals("*")));
+			while (i < list.length) {
 				if (list[i].startsWith(match.substring(0,g)) && list[i].contains(match.substring(h))) {
 					arrayList.add(list[i]);
 				}
 				i++;
 			}
 		} else {
-			while (i < length) {
+			while (i < list.length) {
 				if (list[i].toUpperCase(Locale.ROOT).startsWith(match.toUpperCase(Locale.ROOT))) {
 					arrayList.add(list[i]);
 				}
