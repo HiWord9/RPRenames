@@ -16,9 +16,10 @@ public abstract class ClientBuiltinResourcePackProviderMixin {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     @Inject(at = @At("RETURN"), method = "download")
-    private void serverResourcePackConfigCreator(URL url, String packSha1, boolean closeAfterDownload, CallbackInfoReturnable<CompletableFuture<?>> cir){
+    private void serverResourcePackConfigCreator(URL url, String packSha1, boolean closeAfterDownload, CallbackInfoReturnable<CompletableFuture<?>> cir) {
         if (config.updateConfig) {
             RPRenames.serverResourcePackURL = url;
+            RPRenames.joiningServer = true;
         }
     }
 }

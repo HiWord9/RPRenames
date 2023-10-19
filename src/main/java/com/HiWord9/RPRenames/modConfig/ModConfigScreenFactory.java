@@ -1,7 +1,8 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.configGeneration.ConfigManager;
+import com.HiWord9.RPRenames.util.config.ConfigManager;
+import com.HiWord9.RPRenames.util.gui.RenameButton;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -41,18 +42,6 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.enableAnvilModification)
                 .build();
 
-        AbstractConfigListEntry<Integer> packCheckboxX = entryBuilder.startIntField(Text.translatable("rprenames.config.general.packCheckboxX"), currentConfig.createConfigCheckboxPosX)
-                .setTooltip(Text.translatable("rprenames.config.general.packCheckboxX.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.createConfigCheckboxPosX = newConfig)
-                .setDefaultValue(defaultConfig.createConfigCheckboxPosX)
-                .build();
-
-        AbstractConfigListEntry<Integer> packCheckboxY = entryBuilder.startIntField(Text.translatable("rprenames.config.general.packCheckboxY"), currentConfig.createConfigCheckboxPosY)
-                .setTooltip(Text.translatable("rprenames.config.general.packCheckboxY.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.createConfigCheckboxPosY = newConfig)
-                .setDefaultValue(defaultConfig.createConfigCheckboxPosY)
-                .build();
-
         AbstractConfigListEntry<Integer> favoriteButtonX = entryBuilder.startIntField(Text.translatable("rprenames.config.general.favoriteButtonX"), currentConfig.favoritePosX)
                 .setTooltip(Text.translatable("rprenames.config.general.favoriteButtonX.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.favoritePosX = newConfig)
@@ -76,6 +65,31 @@ public class ModConfigScreenFactory {
                 .setTooltip(Text.translatable("rprenames.config.gui.openByDefault.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.openByDefault = newConfig)
                 .setDefaultValue(defaultConfig.openByDefault)
+                .build();
+
+        AbstractConfigListEntry<RenameButton.ViewMode> viewMode = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.viewMode"), RenameButton.ViewMode.class, currentConfig.viewMode)
+                .setTooltip(Text.translatable("rprenames.config.gui.viewMode.tooltip"))
+                .setEnumNameProvider(value -> {
+                    if (value == RenameButton.ViewMode.LIST) {
+                        return Text.translatable("rprenames.config.gui.viewMode.list");
+                    } else {
+                        return Text.translatable("rprenames.config.gui.viewMode.grid");
+                    }
+                })
+                .setSaveConsumer(newConfig -> currentConfig.viewMode = newConfig)
+                .setDefaultValue(defaultConfig.viewMode)
+                .build();
+
+        AbstractConfigListEntry<Boolean> showPackName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.showPackName"), currentConfig.showPackName)
+                .setTooltip(Text.translatable("rprenames.config.gui.showPackName.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.showPackName = newConfig)
+                .setDefaultValue(defaultConfig.showPackName)
+                .build();
+
+        AbstractConfigListEntry<Boolean> showExtraProperties = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.showExtraProperties"), currentConfig.showExtraProperties)
+                .setTooltip(Text.translatable("rprenames.config.gui.showExtraProperties.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.showExtraProperties = newConfig)
+                .setDefaultValue(defaultConfig.showExtraProperties)
                 .build();
 
         AbstractConfigListEntry<Boolean> highlightSlot = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.highlightSlot"), currentConfig.highlightSlot)
@@ -118,6 +132,21 @@ public class ModConfigScreenFactory {
                 .setTooltip(Text.translatable("rprenames.config.gui.enablePreview.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.enablePreview = newConfig)
                 .setDefaultValue(defaultConfig.enablePreview)
+                .build();
+
+        AbstractConfigListEntry<RenameButton.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewPos"), RenameButton.PreviewPos.class, currentConfig.previewPos)
+                .setTooltip(Text.translatable("rprenames.config.gui.previewPos.tooltip"))
+                .setEnumNameProvider(value -> {
+                    if (value == RenameButton.PreviewPos.BOTTOM) {
+                        return Text.translatable("rprenames.config.gui.previewPos.bottom");
+                    } else if (value == RenameButton.PreviewPos.LEFT) {
+                        return Text.translatable("rprenames.config.gui.previewPos.left");
+                    } else {
+                        return Text.translatable("rprenames.config.gui.previewPos.top");
+                    }
+                })
+                .setSaveConsumer(newConfig -> currentConfig.previewPos = newConfig)
+                .setDefaultValue(defaultConfig.previewPos)
                 .build();
 
         AbstractConfigListEntry<Boolean> playerPreviewByDefault = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.playerPreviewByDefault"), currentConfig.playerPreviewByDefault)
@@ -207,22 +236,17 @@ public class ModConfigScreenFactory {
                 })
                 .build();
 
-        final PrevToggle prevToggleOpenConfigFolder = new PrevToggle();
-        AbstractConfigListEntry<Boolean> openConfigFolder = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.openConfigFolder"), false)
-                .setTooltip(Text.translatable("rprenames.config.debug.openConfigFolder.tooltip"))
-                .setYesNoTextSupplier((bl) -> {
-                    if (bl != prevToggleOpenConfigFolder.bl) {
-                        RPRenames.LOGGER.info("Opening config folder manually");
-                        ConfigManager.openConfigFolder();
-                        prevToggleOpenConfigFolder.bl = bl;
-                    }
-                    return Text.translatable("rprenames.config.debug.openConfigFolder.title").fillStyle(Style.EMPTY.withColor(Formatting.AQUA));
-                })
+        AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNbtDisplayName)
+                .setTooltip(Text.translatable("rprenames.config.debug.showNbtDisplayName.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.showNbtDisplayName = newConfig)
+                .setDefaultValue(defaultConfig.showNbtDisplayName)
                 .build();
 
-        SubCategoryBuilder createConfigCheckboxPosition = entryBuilder.startSubCategory(Text.translatable("rprenames.config.general.subCategory.createConfigCheckboxPosition"));
-        createConfigCheckboxPosition.add(0, packCheckboxX);
-        createConfigCheckboxPosition.add(1, packCheckboxY);
+        AbstractConfigListEntry<Boolean> showOriginalProperties = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showOriginalProperties"), currentConfig.showOriginalProperties)
+                .setTooltip(Text.translatable("rprenames.config.debug.showOriginalProperties.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.showOriginalProperties = newConfig)
+                .setDefaultValue(defaultConfig.showOriginalProperties)
+                .build();
 
         SubCategoryBuilder favoriteButtonPosition = entryBuilder.startSubCategory(Text.translatable("rprenames.config.general.subCategory.favoriteButtonPosition"));
         favoriteButtonPosition.add(0, favoriteButtonX);
@@ -242,14 +266,17 @@ public class ModConfigScreenFactory {
 
         general.addEntry(ignoreCEM);
         general.addEntry(enableAnvilModification);
-        general.addEntry(createConfigCheckboxPosition.build());
         general.addEntry(favoriteButtonPosition.build());
         general.addEntry(loadModBuiltinResources);
         gui.addEntry(openByDefault);
+        gui.addEntry(viewMode);
+        gui.addEntry(showPackName);
+        gui.addEntry(showExtraProperties);
         gui.addEntry(highlightSlot);
         gui.addEntry(slotHighlightColorSettings.build());
         gui.addEntry(tooltipTranslations.build());
         gui.addEntry(enablePreview);
+        gui.addEntry(previewPos);
         gui.addEntry(playerPreviewByDefault);
         gui.addEntry(spinMobPreview);
         gui.addEntry(spinPlayerPreview);
@@ -261,7 +288,8 @@ public class ModConfigScreenFactory {
         debug.addEntry(updateConfig);
         debug.addEntry(recreateConfig);
         debug.addEntry(clearConfig);
-        debug.addEntry(openConfigFolder);
+        debug.addEntry(showNbtDisplayName);
+        debug.addEntry(showOriginalProperties);
 
         return builder.build();
     }

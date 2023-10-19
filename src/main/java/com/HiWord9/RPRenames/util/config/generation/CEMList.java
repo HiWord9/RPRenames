@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.configGeneration;
+package com.HiWord9.RPRenames.util.config.generation;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -452,4 +452,24 @@ public class CEMList {
             Items.ZOMBIE_VILLAGER_SPAWN_EGG,
             Items.ZOMBIE_VILLAGER_SPAWN_EGG
     };
+
+    public static Item iconFromName(String untranslatedName) {
+        int n = 0;
+        for (Item i : spawnEggItems) {
+            if (mobs[n].getUntranslatedName().equals(untranslatedName)) {
+                return i;
+            }
+            n++;
+        }
+        return null;
+    }
+
+    public static EntityType<?> EntityFromName(String untranslatedName) {
+        for (EntityType<?> entityType : mobs) {
+            if (entityType.getUntranslatedName().equals(untranslatedName)) {
+                return entityType;
+            }
+        }
+        return null;
+    }
 }
