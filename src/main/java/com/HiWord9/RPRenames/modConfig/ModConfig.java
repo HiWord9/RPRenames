@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.RenameButton;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import me.shedaniel.autoconfig.ConfigData;
@@ -8,7 +9,9 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.math.Color;
 import org.apache.commons.compress.utils.IOUtils;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
 
 @Config(name = "rprenames")
 public class ModConfig implements ConfigData {
@@ -16,15 +19,16 @@ public class ModConfig implements ConfigData {
 
     public boolean enableAnvilModification = true;
 
-    public int createConfigCheckboxPosX = 158;
-    public int createConfigCheckboxPosY = 48;
-
     public int favoritePosX = 71;
     public int favoritePosY = -75;
 
     public boolean loadModBuiltinResources = true;
 
     public boolean openByDefault = false;
+    public RenameButton.ViewMode viewMode = RenameButton.ViewMode.GRID;
+
+    public boolean showPackName = true;
+    public boolean showExtraProperties = true;
 
     public boolean highlightSlot = true;
 
@@ -35,6 +39,7 @@ public class ModConfig implements ConfigData {
     public boolean translateItemNames = true;
 
     public boolean enablePreview = true;
+    public RenameButton.PreviewPos previewPos = RenameButton.PreviewPos.BOTTOM;
 
     public boolean playerPreviewByDefault = false;
 
@@ -52,6 +57,8 @@ public class ModConfig implements ConfigData {
     public boolean disablePlayerPreviewTips = false;
 
     public boolean updateConfig = true;
+    public boolean showNbtDisplayName = false;
+    public boolean showOriginalProperties = false;
 
     public int getSlotHighlightRGBA() {
         int r = Color.ofTransparent(slotHighlightColorRGB).getRed();

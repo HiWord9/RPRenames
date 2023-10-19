@@ -6,6 +6,7 @@
   "client": [
     "AnvilScreenMixin",
     "MinecraftClientMixin",
+    "ReloadableResourceManagerImplMixin",
     "ServerResourcePackProviderMixin"
   ],
   "injectors": {

@@ -11,7 +11,16 @@
   "contact": {
     "homepage": "https://modrinth.com/mod/rp-renames",
     "sources": "https://github.com/HiWord9/RPRenames-fabric",
-    "issues": "https://github.com/HiWord9/RPRenames-fabric/issues"
+    "issues": "https://github.com/HiWord9/RPRenames-fabric/issues",
+    "discord": "https://discord.gg/vaD7pC4E"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/vaD7pC4E"
+      }
+    }
   },
 
   "license": "MIT License",
@@ -33,7 +42,7 @@
   "depends": {
     "fabricloader": ">=0.14.18",
     "fabric-api": "*",
-    "minecraft": "1.20.x",
+    "minecraft": ["1.20.0","1.20.1"],
     "java": ">=17",
     "cloth-config": ">=7"
   },

@@ -1,99 +1,58 @@
-package com.HiWord9.RPRenames.configGeneration;
+package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.Rename;
+import com.HiWord9.RPRenames.util.config.ConfigManager;
+import com.HiWord9.RPRenames.util.config.Rename;
 import com.google.gson.Gson;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.file.FileSystem;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
 
 public class CEMConfig {
+    public static void propertiesToRenameMob(Properties p, String packName, String path, String fileName) {
+        List<String> namesValues = p.stringPropertyNames().stream().toList();
+        ArrayList<String> skins = new ArrayList<>();
+        for (String s : namesValues) {
+            if (s.startsWith("name.")) {
+                if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
+                    skins.add(p.getProperty("skins." + s.substring(5)));
+                    String name = ConfigManager.getFirstName(p.getProperty(s));
+                    if (name != null) {
+                        ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, "name_tag");
+                        Rename rename;
+                        Rename renameNameOnly = new Rename(name, "name_tag");
+                        Rename.Mob mob = new Rename.Mob(fileName, ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)), p, path.replaceAll("\\\\", "/"));
+                        if (renameNameOnly.isContainedIn(alreadyExist, true)) {
+                            Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
+                            alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
+                            rename = new Rename(renameForItem.getName(), renameForItem.getItem(), renameForItem.getPackName(), renameForItem.getPath(), renameForItem.getStackSize(), renameForItem.getDamage(), renameForItem.getEnchantment(), renameForItem.getEnchantmentLevel(), renameForItem.getProperties(), mob);
+                        } else {
+                            rename = new Rename(name, "name_tag", packName,
+                                    null, null, null, null, null, null, mob);
+                        }
+                        if (!rename.isContainedIn(alreadyExist)) {
+                            ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
+                            newConfig.add(rename);
 
-    public static void propertiesToJsonModels(Properties p, String fileName, String outputPath) {
-        File currentFile = new File(outputPath + fileName + ".json");
-        if (currentFile.exists()) {
-            List<String> namesValues = p.stringPropertyNames().stream().toList();
-            ArrayList<String> skins = new ArrayList<>();
-            for (String s : namesValues) {
-                if (s.startsWith("name.")) {
-                    if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
-                        skins.add(p.getProperty("skins." + s.substring(5)));
-                        String name = ConfigManager.getFirstName(p.getProperty(s));
-                        if (currentFile.exists() && name != null) {
-                            Rename alreadyExist = ConfigManager.configRead(currentFile);
-                            String[] ae = alreadyExist.getName();
-                            if (!Arrays.stream(ae).toList().contains(name)) {
-                                int AEsize = ae.length;
-                                String[] newConfig = new String[AEsize + 1];
-                                int h = 0;
-                                while (h < AEsize) {
-                                    newConfig[h] = ae[h];
-                                    h++;
-                                }
-                                newConfig[h] = name;
-
-                                Rename newRename = new Rename(newConfig);
-                                ArrayList<Rename> listFiles = new ArrayList<>();
-                                listFiles.add(newRename);
-
-                                try {
-                                    FileWriter fileWriter = new FileWriter(currentFile);
-                                    Gson gson = new Gson();
-                                    gson.toJson(listFiles, fileWriter);
-                                    fileWriter.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                            if (packName.equals("server")) {
+                                RPRenames.renamesServer.put("name_tag", newConfig);
+                            } else {
+                                RPRenames.renames.put("name_tag", newConfig);
                             }
                         }
                     }
                 }
             }
-        } else {
-            ArrayList<String> namesArray = new ArrayList<>();
-            List<String> namesValues = p.stringPropertyNames().stream().toList();
-            ArrayList<String> skins = new ArrayList<>();
-            for (String s : namesValues) {
-                if (s.startsWith("name.")) {
-                    if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
-                        skins.add(p.getProperty("skins." + s.substring(5)));
-                        String name = ConfigManager.getFirstName(p.getProperty(s));
-                        if (!namesArray.contains(name)) {
-                            namesArray.add(name);
-                        }
-                    }
-                }
-            }
-            String[] names = new String[namesArray.size()];
-            int i = 0;
-
-            for (String s : namesArray) {
-                names[i] = s;
-                i++;
-            }
-
-            Rename rename = new Rename(names);
-            ArrayList<Rename> renameArray = new ArrayList<>();
-            renameArray.add(rename);
-
-            if (names.length != 0) {
-                try {
-                    new File(outputPath).mkdirs();
-                    RPRenames.LOGGER.info("Created new file for config: " + outputPath + fileName + ".json");
-                    FileWriter fileWriter = new FileWriter(currentFile);
-                    Gson gson = new Gson();
-                    gson.toJson(renameArray, fileWriter);
-                    fileWriter.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
-    public static void startPropToJsonModels(String rpPath, String outputPath) {
+    public static void startPropToRenameMob(String packName, String rpPath) {
         ArrayList<String> checked = new ArrayList<>();
         String cemPath = "/assets/minecraft/optifine/cem/";
         String randomEntityPath = "/assets/minecraft/optifine/random/entity/";
@@ -101,10 +60,9 @@ public class CEMConfig {
             try {
                 FileSystem zip = FileSystems.newFileSystem(Paths.get(rpPath), (ClassLoader) null);
                 Path currentPath = zip.getPath("/assets/minecraft/optifine/");
-                int c = 0;
-                while (c < CEMList.models.length) {
-                    int fc = c;
-                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + CEMList.models[fc] + ".jem")).forEach(jemFile -> {
+                for (int c = 0; c < CEMList.models.length; c++) {
+                    int finalC = c;
+                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + CEMList.models[finalC] + ".jem")).forEach(jemFile -> {
                         String obj = getObjFromBF(jemFile).toString();
                         ArrayList<String> jpmList = getParamListFromObj(obj, "model=");
                         for (String jpmFileName : jpmList) {
@@ -121,7 +79,7 @@ public class CEMConfig {
                                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                                     Properties p = new Properties();
                                                     p.load(reader);
-                                                    propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
+                                                    propertiesToRenameMob(p, packName, propFile.toString(), CEMList.mobs[finalC].getUntranslatedName());
                                                 } catch (IOException e) {
                                                     e.printStackTrace();
                                                 }
@@ -136,45 +94,41 @@ public class CEMConfig {
                             }
                         }
                     });
-                    c++;
                 }
-                c = 0;
-                while (c < CEMList.textures.length) {
-                    int fc = c;
-                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + CEMList.textures[fc] + ".properties")).forEach(propFile -> {
+                for (int c = 0; c < CEMList.textures.length; c++) {
+                    int finalC = c;
+                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + CEMList.textures[finalC] + ".properties")).forEach(propFile -> {
                         if (!checked.contains(String.valueOf(propFile))) {
                             try {
                                 InputStream inputStream = Files.newInputStream(propFile);
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
+                                propertiesToRenameMob(p, packName, propFile.toString(), CEMList.mobs[finalC].getUntranslatedName());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + getLastPathPart(CEMList.textures[fc]) + ".properties")).forEach(propFile -> {
+                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + getLastPathPart(CEMList.textures[finalC]) + ".properties")).forEach(propFile -> {
                         if (!checked.contains(String.valueOf(propFile))) {
                             try {
                                 InputStream inputStream = Files.newInputStream(propFile);
                                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                 Properties p = new Properties();
                                 p.load(reader);
-                                propertiesToJsonModels(p, CEMList.mobs[fc].getUntranslatedName(), outputPath);
+                                propertiesToRenameMob(p, packName, propFile.toString(), CEMList.mobs[finalC].getUntranslatedName());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     });
-                    c++;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            int c = 0;
-            while (c < CEMList.models.length) {
+            for (int c = 0; c < CEMList.models.length; c++) {
                 File currentJem = new File(rpPath + cemPath + CEMList.models[c] + ".jem");
                 if (currentJem.exists()) {
                     String obj = getObjFromBF(currentJem.toPath()).toString();
@@ -191,7 +145,7 @@ public class CEMConfig {
                                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                                     Properties p = new Properties();
                                     p.load(reader);
-                                    propertiesToJsonModels(p, CEMList.mobs[c].getUntranslatedName(), outputPath);
+                                    propertiesToRenameMob(p, packName, propertiesFile.toString(), CEMList.mobs[c].getUntranslatedName());
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -199,10 +153,8 @@ public class CEMConfig {
                         }
                     }
                 }
-                c++;
             }
-            c = 0;
-            while (c < CEMList.textures.length) {
+            for (int c = 0; c < CEMList.textures.length; c++) {
                 File propertiesFile = null;
                 if (new File(rpPath + randomEntityPath + CEMList.textures[c] + ".properties").exists()) {
                     propertiesFile = new File(rpPath + randomEntityPath + CEMList.textures[c] + ".properties");
@@ -215,28 +167,25 @@ public class CEMConfig {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                         Properties p = new Properties();
                         p.load(reader);
-                        propertiesToJsonModels(p, CEMList.mobs[c].getUntranslatedName(), outputPath);
+                        propertiesToRenameMob(p, packName, propertiesFile.toString(), CEMList.mobs[c].getUntranslatedName());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                c++;
             }
         }
     }
 
     public static ArrayList<String> getParamListFromObj(String obj, String parName) {
         ArrayList<String> list = new ArrayList<>();
-        int i = 0;
-        while (i < obj.length() - parName.length()) {
-            if (obj.startsWith(parName, i) && !String.valueOf(obj.charAt(i - 1)).equals("b")){
+        for (int i = 0; i < obj.length() - parName.length(); i++) {
+            if (obj.startsWith(parName, i) && !String.valueOf(obj.charAt(i - 1)).equals("b")) {
                 int o = i + parName.length();
                 while (!String.valueOf(obj.charAt(o)).equals(",")) {
                     o++;
                 }
                 list.add(obj.substring(i + parName.length(), o));
             }
-            i++;
         }
         return list;
     }

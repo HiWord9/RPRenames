@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.configGeneration;
+package com.HiWord9.RPRenames.util.config.generation;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -20,7 +20,7 @@ public class CEMList {
             "parrot", "parrot", "parrot", "parrot", "parrot", "phantom", "pig", "piglin", "piglin_brute", "zombified_piglin",
             "rabbit", "rabbit", "rabbit", "rabbit", "rabbit", "rabbit", "rabbit",
             "sheep", "sheep_wool", "shulker", "silverfish", "skeleton", "stray", "wither_skeleton",
-            "magma_cube", "slime", "snow_golem", "cave_spider", "spider", "glow_squid", "squid", "strider", "strider",
+            "magma_cube", "slime", "sniffer", "snow_golem", "cave_spider", "spider", "glow_squid", "squid", "strider", "strider",
             "tadpole", "turtle",
             "villager", "villager", "villager", "villager", "villager", "villager", "villager", "villager", "villager",
             "villager", "villager", "villager", "villager", "villager", "villager", "villager", "villager", "villager",
@@ -61,7 +61,7 @@ public class CEMList {
             "rabbit/black", "rabbit/brown", "rabbit/gold", "rabbit/salt", "rabbit/toast", "rabbit/white", "rabbit/white_splotched",
             "sheep/sheep", "sheep/sheep_fur", "shulker/shulker", "silverfish",
             "skeleton/skeleton", "skeleton/stray", "skeleton/wither_skeleton",
-            "slime/magmacube", "slime/slime", "snow_golem", "spider/cave_spider", "spider/spider", "squid/glow_squid", "squid/squid",
+            "slime/magmacube", "slime/slime", "sniffer/sniffer", "snow_golem", "spider/cave_spider", "spider/spider", "squid/glow_squid", "squid/squid",
             "strider/strider", "strider/strider_cold", "tadpole/tadpole", "turtle/big_sea_turtle",
             "villager/profession/armorer", "villager/profession/butcher", "villager/profession/cartographer", "villager/profession/cleric",
             "villager/profession/farmer", "villager/profession/fisherman", "villager/profession/fletcher",
@@ -200,6 +200,7 @@ public class CEMList {
             EntityType.WITHER_SKELETON,
             EntityType.MAGMA_CUBE,
             EntityType.SLIME,
+            EntityType.SNIFFER,
             EntityType.SNOW_GOLEM,
             EntityType.CAVE_SPIDER,
             EntityType.SPIDER,
@@ -386,6 +387,7 @@ public class CEMList {
             Items.WITHER_SKELETON_SPAWN_EGG,
             Items.MAGMA_CUBE_SPAWN_EGG,
             Items.SLIME_SPAWN_EGG,
+            Items.SNIFFER_SPAWN_EGG,
             Items.SNOW_BLOCK,
             Items.CAVE_SPIDER_SPAWN_EGG,
             Items.SPIDER_SPAWN_EGG,
@@ -452,4 +454,24 @@ public class CEMList {
             Items.ZOMBIE_VILLAGER_SPAWN_EGG,
             Items.ZOMBIE_VILLAGER_SPAWN_EGG
     };
+
+    public static Item iconFromName(String untranslatedName) {
+        int n = 0;
+        for (Item i : spawnEggItems) {
+            if (mobs[n].getUntranslatedName().equals(untranslatedName)) {
+                return i;
+            }
+            n++;
+        }
+        return null;
+    }
+
+    public static EntityType<?> EntityFromName(String untranslatedName) {
+        for (EntityType<?> entityType : mobs) {
+            if (entityType.getUntranslatedName().equals(untranslatedName)) {
+                return entityType;
+            }
+        }
+        return null;
+    }
 }
