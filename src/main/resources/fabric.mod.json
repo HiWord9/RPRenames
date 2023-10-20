@@ -23,7 +23,7 @@
     }
   },
 
-  "license": "MIT License",
+  "license": "AGPL-3.0-only",
   "icon": "assets/rprenames/icon.png",
 
   "environment": "*",
