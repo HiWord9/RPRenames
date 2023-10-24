@@ -19,35 +19,46 @@ public class CEMConfig {
         List<String> namesValues = p.stringPropertyNames().stream().toList();
         ArrayList<String> skins = new ArrayList<>();
         for (String s : namesValues) {
-            if (s.startsWith("name.")) {
-                if (!skins.contains(p.getProperty("skins." + s.substring(5)))) {
-                    skins.add(p.getProperty("skins." + s.substring(5)));
-                    String name = ConfigManager.getFirstName(p.getProperty(s));
-                    if (name != null) {
-                        ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, "name_tag");
-                        Rename rename;
-                        Rename renameNameOnly = new Rename(name, "name_tag");
-                        Rename.Mob mob = new Rename.Mob(fileName, ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)), p, path.replaceAll("\\\\", "/"));
-                        if (renameNameOnly.isContainedIn(alreadyExist, true)) {
-                            Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
-                            alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
-                            rename = new Rename(renameForItem.getName(), renameForItem.getItem(), renameForItem.getPackName(), renameForItem.getPath(), renameForItem.getStackSize(), renameForItem.getDamage(), renameForItem.getEnchantment(), renameForItem.getEnchantmentLevel(), renameForItem.getProperties(), mob);
-                        } else {
-                            rename = new Rename(name, "name_tag", packName,
-                                    null, null, null, null, null, null, mob);
-                        }
-                        if (!rename.isContainedIn(alreadyExist)) {
-                            ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
-                            newConfig.add(rename);
+            
+            if (!s.startsWith("name.")) return;
+            if (!skins.contains(p.getProperty("skins." + s.substring(5)))) return;
 
-                            if (packName.equals("server")) {
-                                RPRenames.renamesServer.put("name_tag", newConfig);
-                            } else {
-                                RPRenames.renames.put("name_tag", newConfig);
-                            }
-                        }
-                    }
-                }
+            skins.add(p.getProperty("skins." + s.substring(5)));
+            String name = ConfigManager.getFirstName(p.getProperty(s));
+            
+            if (name == null) return;
+    
+            ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, "name_tag");
+            Rename rename;
+            Rename renameNameOnly = new Rename(name, "name_tag");
+            Rename.Mob mob = new Rename.Mob(fileName, ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)), p, path.replaceAll("\\\\", "/"));
+            
+            if (renameNameOnly.isContainedIn(alreadyExist, true)) {
+                Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
+                alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
+                rename = new Rename(renameForItem.getName(), 
+                                    renameForItem.getItem(), 
+                                    renameForItem.getPackName(), 
+                                    renameForItem.getPath(), 
+                                    renameForItem.getStackSize(), 
+                                    renameForItem.getDamage(), 
+                                    renameForItem.getEnchantment(), 
+                                    renameForItem.getEnchantmentLevel(), 
+                                    renameForItem.getProperties(), mob);
+            } else {
+                rename = new Rename(name, "name_tag", packName,
+                        null, null, null, null, null, null, mob);
+            }
+            
+            if (rename.isContainedIn(alreadyExist)) return;
+
+            ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
+            newConfig.add(rename);
+
+            if (packName.equals("server")) {
+                RPRenames.renamesServer.put("name_tag", newConfig);
+            } else {
+                RPRenames.renames.put("name_tag", newConfig);
             }
         }
     }
@@ -56,6 +67,7 @@ public class CEMConfig {
         ArrayList<String> checked = new ArrayList<>();
         String cemPath = "/assets/minecraft/optifine/cem/";
         String randomEntityPath = "/assets/minecraft/optifine/random/entity/";
+        
         if (new File(rpPath).isFile()) {
             try {
                 FileSystem zip = FileSystems.newFileSystem(Paths.get(rpPath), (ClassLoader) null);
@@ -66,31 +78,30 @@ public class CEMConfig {
                         String obj = getObjFromBF(jemFile).toString();
                         ArrayList<String> jpmList = getParamListFromObj(obj, "model=");
                         for (String jpmFileName : jpmList) {
-                            if (jpmFileName != null && jpmFileName.endsWith(".jpm")) {
-                                try {
-                                    Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + jpmFileName)).forEach(jpmFile -> {
-                                        String jpmObj = getObjFromBF(jpmFile).toString();
-                                        String textureName = getPropPathInRandom(Objects.requireNonNull(getParamListFromObj(jpmObj, "texture=").get(0)));
-                                        try {
-                                            Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + textureName + ".properties")).forEach(propFile -> {
-                                                try {
-                                                    checked.add(String.valueOf(propFile));
-                                                    InputStream inputStream = Files.newInputStream(propFile);
-                                                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                                                    Properties p = new Properties();
-                                                    p.load(reader);
-                                                    propertiesToRenameMob(p, packName, propFile.toString(), CEMList.mobs[finalC].getUntranslatedName());
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            });
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                            if (!(jpmFileName != null && jpmFileName.endsWith(".jpm"))) return; // По нормальному тут надо еще скобки развернуть но мне лень
+                            try {
+                                Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(cemPath + jpmFileName)).forEach(jpmFile -> {
+                                    String jpmObj = getObjFromBF(jpmFile).toString();
+                                    String textureName = getPropPathInRandom(Objects.requireNonNull(getParamListFromObj(jpmObj, "texture=").get(0)));
+                                    try {
+                                        Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().equals(randomEntityPath + textureName + ".properties")).forEach(propFile -> {
+                                            try {
+                                                checked.add(String.valueOf(propFile));
+                                                InputStream inputStream = Files.newInputStream(propFile);
+                                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                                                Properties p = new Properties();
+                                                p.load(reader);
+                                                propertiesToRenameMob(p, packName, propFile.toString(), CEMList.mobs[finalC].getUntranslatedName());
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                        });
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
                     });
