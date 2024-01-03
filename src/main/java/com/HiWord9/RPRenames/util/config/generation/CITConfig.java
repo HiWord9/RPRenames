@@ -7,11 +7,10 @@ import com.HiWord9.RPRenames.util.config.Rename;
 import java.util.Properties;
 
 public class CITConfig {
-
     public static void propertiesToRename(Properties p, String packName, String path) {
         String items = p.getProperty("matchItems") == null ? p.getProperty("items") : p.getProperty("matchItems");
         if (items != null) {
-            while (items.endsWith(" ")) {
+            while (items.endsWith(" ") || items.endsWith("\t")) {
                 items = items.substring(0, items.length() - 1);
             }
             int start = 0;

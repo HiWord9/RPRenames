@@ -39,16 +39,20 @@ public class ConfigManager {
 
     public static void configUpdateServer() {
         RPRenames.renamesServer.clear();
+        long startTime = System.currentTimeMillis();
         RPRenames.LOGGER.info("Starting creating config server");
         startConfigCreateServer();
-        RPRenames.LOGGER.info("Finished creating config server");
+        long finishTime = System.currentTimeMillis() - startTime;
+        RPRenames.LOGGER.info("Finished creating config server [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
     }
 
     public static void configUpdate(ArrayList<String> enabledPacks) {
         configClear();
+        long startTime = System.currentTimeMillis();
         RPRenames.LOGGER.info("Starting creating config");
         startConfigCreate(enabledPacks);
-        RPRenames.LOGGER.info("Finished creating config");
+        long finishTime = System.currentTimeMillis() - startTime;
+        RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
     }
 
     public static void startConfigCreate(ArrayList<String> enabledPacks) {

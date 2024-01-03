@@ -1,5 +1,4 @@
 {
-  "rprenames.gui.configNotFound": "No configs were found in path \"%s\".\nConfigs are creating after updating Resource Packs.\nOnly featured available",
   "rprenames.gui.searchHintText": "Search...",
   "rprenames.gui.noRenamesFound": "No Renames Found!",
   "rprenames.gui.noFavoriteRenamesFound": "No Favorites yet!",

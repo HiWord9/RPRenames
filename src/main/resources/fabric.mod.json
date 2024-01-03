@@ -11,14 +11,14 @@
   "contact": {
     "homepage": "https://modrinth.com/mod/rp-renames",
     "sources": "https://github.com/HiWord9/RPRenames-fabric",
-    "issues": "https://github.com/HiWord9/RPRenames-fabric/issues",
-    "discord": "https://discord.gg/vaD7pC4E"
+    "issues": "https://github.com/HiWord9/RPRenames-fabric/issues"
   },
-
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/vaD7pC4E"
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/rp-renames",
+        "modmenu.modrinth": "https://modrinth.com/mod/rp-renames",
+        "modmenu.donate": "https://paypal.me/hiword9"
       }
     }
   },
