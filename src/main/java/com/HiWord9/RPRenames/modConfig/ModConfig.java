@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.gui.RenameButton;
+import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import me.shedaniel.autoconfig.ConfigData;
@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 
-@Config(name = "rprenames")
+@Config(name = RPRenames.MOD_ID)
 public class ModConfig implements ConfigData {
     public boolean ignoreCEM = false;
 
@@ -25,7 +25,7 @@ public class ModConfig implements ConfigData {
     public boolean loadModBuiltinResources = true;
 
     public boolean openByDefault = false;
-    public RenameButton.ViewMode viewMode = RenameButton.ViewMode.GRID;
+    public RenameButtonHolder.ViewMode viewMode = RenameButtonHolder.ViewMode.GRID;
 
     public boolean showPackName = true;
     public boolean showExtraProperties = true;
@@ -39,7 +39,7 @@ public class ModConfig implements ConfigData {
     public boolean translateItemNames = true;
 
     public boolean enablePreview = true;
-    public RenameButton.PreviewPos previewPos = RenameButton.PreviewPos.BOTTOM;
+    public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.BOTTOM;
 
     public boolean playerPreviewByDefault = false;
 

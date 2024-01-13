@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.ConfigManager;
 import com.HiWord9.RPRenames.util.config.Rename;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
+import com.HiWord9.RPRenames.util.gui.button.RenameButton;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
@@ -12,9 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -29,12 +28,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-public class RenameButton extends Screen {
-
+public class RenameButtonHolder extends Screen {
     private final ModConfig config = ModConfig.INSTANCE;
 
     ViewMode viewMode;
-    TexturedButtonWidget button;
+    RenameButton button;
     boolean CEM = false;
     LivingEntity entity = null;
     Rename rename;
@@ -59,7 +57,7 @@ public class RenameButton extends Screen {
     final int backgroundWidth = Graphics.backgroundWidth;
     final int backgroundHeight = Graphics.backgroundHeight;
 
-    public RenameButton(ViewMode viewMode, int orderOnPage) {
+    public RenameButtonHolder(ViewMode viewMode, int orderOnPage) {
         super(null);
         this.viewMode = viewMode;
         if (viewMode == ViewMode.LIST) {
@@ -72,51 +70,48 @@ public class RenameButton extends Screen {
         this.orderOnPage = orderOnPage;
     }
 
-    public void drawElements(DrawContext context, int menuWidth, int menuXOffset, int buttonXOffset) {
+    public void drawElements(DrawContext context) {
         if (active) {
             if (viewMode == ViewMode.LIST) {
-                Graphics.renderStack(context, icon, -menuWidth + menuXOffset + buttonXOffset + 2, 32 + ((buttonHeight + 2) * orderOnPage));
-                Graphics.renderText(context, displayText, Graphics.DEFAULT_TEXT_COLOR, -menuWidth + menuXOffset + buttonXOffset + (button.getWidth() - 20) / 2 + 20, 37 + (buttonHeight + buttonOffsetY) * orderOnPage, true, true);
+                Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
+                Graphics.renderText(context, displayText, Graphics.DEFAULT_TEXT_COLOR, button.getX() + (button.getWidth() - 20) / 2 + 20, button.getY() + 7, true, true);
             } else {
-                int x = -menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * button.getWidth());
-                int y = 31 + (orderOnPage / 5 * buttonHeight);
-                Graphics.renderStack(context, icon, x + 4, y + 4);
+                Graphics.renderStack(context, icon, button.getX() + 4, button.getY() + 4);
             }
         }
     }
 
     public void highlightSlot(DrawContext context, ArrayList<String> inventory, String currentItem, int highlightColor) {
         int slotNum = inventory.indexOf(rename.getItem());
-        if (slotNum > -1) {
-            int x;
-            int y;
-            if (!inventory.get(slotNum).equals(currentItem)) {
-                boolean isOnHotBar = false;
-                if (slotNum < rowSize) {
-                    slotNum += rowSize * 3;
-                    isOnHotBar = true;
-                } else {
-                    slotNum -= rowSize;
-                }
-                int orderInRow = slotNum % rowSize;
-                int row = slotNum / rowSize;
-                x = firstSlotX + (slotSize * orderInRow);
-                y = firstSlotY + (slotSize * row);
-                if (isOnHotBar) {
-                    y += 4;
-                }
+        if (slotNum <= -1) return;
+        int x;
+        int y;
+        if (!inventory.get(slotNum).equals(currentItem)) {
+            boolean isOnHotBar = false;
+            if (slotNum < rowSize) {
+                slotNum += rowSize * 3;
+                isOnHotBar = true;
             } else {
-                x = 26;
-                y = 46;
+                slotNum -= rowSize;
             }
-            RenderSystem.enableDepthTest();
-            context.fillGradient(x, y, x + slotSize, y + slotSize, 10, highlightColor, highlightColor);
+            int orderInRow = slotNum % rowSize;
+            int row = slotNum / rowSize;
+            x = firstSlotX + (slotSize * orderInRow);
+            y = firstSlotY + (slotSize * row);
+            if (isOnHotBar) {
+                y += 4;
+            }
+        } else {
+            x = 26;
+            y = 46;
         }
+        RenderSystem.enableDepthTest();
+        context.fillGradient(x, y, x + slotSize, y + slotSize, 10, highlightColor, highlightColor);
     }
 
     public void drawPreview(DrawContext context, int mouseX, int mouseY, int width, int height, double scaleFactorItem, double scaleFactorEntity) {
         if (!CEM) {
-            if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) != config.playerPreviewByDefault) {
+            if (hasShiftDown() != config.playerPreviewByDefault) {
                 playerPreview(context, mouseX, mouseY, (int) (width * scaleFactorEntity), (int) (height * scaleFactorEntity), (int) (32 * scaleFactorEntity), config.spinPlayerPreview, item);
             } else {
                 itemPreview(context, mouseX, mouseY, (int) (width / 2 * scaleFactorItem), (int) (height / 2 * scaleFactorItem), (int) (16 * scaleFactorItem), item);
@@ -146,29 +141,27 @@ public class RenameButton extends Screen {
             x -= (5 + width);
             y -= 16;
 
-            int bgOffsetHeight = ((this.height - backgroundHeight) / 2);
-            if (bgOffsetHeight + y + height > this.height) {
-                y = this.height - bgOffsetHeight - height;
+            if (y + height > this.height) {
+                y = this.height - height;
             }
         } else {
             x += 8;
-            int bgOffsetHeight = ((this.height - backgroundHeight) / 2);
             int yOffset = 2;
             int rows = tooltip.size();
-            if (config.enablePreview && !CEM && !config.disablePlayerPreviewTips && (!config.playerPreviewByDefault || !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT))) {
+            if (config.enablePreview && !CEM && !config.disablePlayerPreviewTips && (!config.playerPreviewByDefault || !hasShiftDown())) {
                 rows++;
             }
             if (rows > 1) {
                 yOffset += 10 * (rows - 1) + 2;
             }
             if (config.previewPos == PreviewPos.BOTTOM) {
-                if (bgOffsetHeight + y + yOffset + height > this.height && ((y - (height + 18) + bgOffsetHeight) > height / -2)) {
+                if (y + yOffset + height > this.height && ((y - (height + 18)) > height / -2)) {
                     y -= (height + 18);
                 } else {
                     y += yOffset;
                 }
             } else if (config.previewPos == PreviewPos.TOP) {
-                if (y - (height + 18) + bgOffsetHeight < 0 && (bgOffsetHeight + y + yOffset + height - this.height < height / 2)) {
+                if (y - (height + 18) < 0 && (y + yOffset + height - this.height < height / 2)) {
                     y += yOffset;
                 } else {
                     y -= (height + 18);
@@ -298,7 +291,7 @@ public class RenameButton extends Screen {
         }
     }
 
-    public TexturedButtonWidget getButton() {
+    public RenameButton getButton() {
         return button;
     }
 
@@ -322,7 +315,7 @@ public class RenameButton extends Screen {
         return active;
     }
 
-    public void setParameters(TexturedButtonWidget button, Rename rename, int page, ArrayList<Text> tooltip) {
+    public void setParameters(RenameButton button, Rename rename, int page, ArrayList<Text> tooltip) {
         this.button = button;
         this.rename = rename;
         this.CEM = rename.isCEM();

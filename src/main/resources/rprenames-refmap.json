@@ -3,8 +3,8 @@
     "com/HiWord9/RPRenames/mixin/AnvilScreenMixin": {
       "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V": "Lnet/minecraft/class_471;method_25423(Lnet/minecraft/class_310;II)V",
       "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z": "Lnet/minecraft/class_342;method_20315()Z",
+      "drawBackground": "Lnet/minecraft/class_471;method_2389(Lnet/minecraft/class_332;FII)V",
       "drawForeground": "Lnet/minecraft/class_471;method_2388(Lnet/minecraft/class_332;II)V",
-      "handledScreenTick": "Lnet/minecraft/class_471;method_37432()V",
       "keyPressed": "Lnet/minecraft/class_471;method_25404(III)Z",
       "onRenamed": "Lnet/minecraft/class_471;method_2403(Ljava/lang/String;)V",
       "onSlotUpdate": "Lnet/minecraft/class_471;method_7635(Lnet/minecraft/class_1703;ILnet/minecraft/class_1799;)V",
@@ -27,8 +27,8 @@
       "com/HiWord9/RPRenames/mixin/AnvilScreenMixin": {
         "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V": "Lnet/minecraft/class_471;method_25423(Lnet/minecraft/class_310;II)V",
         "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z": "Lnet/minecraft/class_342;method_20315()Z",
+        "drawBackground": "Lnet/minecraft/class_471;method_2389(Lnet/minecraft/class_332;FII)V",
         "drawForeground": "Lnet/minecraft/class_471;method_2388(Lnet/minecraft/class_332;II)V",
-        "handledScreenTick": "Lnet/minecraft/class_471;method_37432()V",
         "keyPressed": "Lnet/minecraft/class_471;method_25404(III)Z",
         "onRenamed": "Lnet/minecraft/class_471;method_2403(Ljava/lang/String;)V",
         "onSlotUpdate": "Lnet/minecraft/class_471;method_7635(Lnet/minecraft/class_1703;ILnet/minecraft/class_1799;)V",

@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.mixin;
 
+import com.HiWord9.RPRenames.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.Tabs;
@@ -7,7 +8,8 @@ import com.HiWord9.RPRenames.util.config.ConfigManager;
 import com.HiWord9.RPRenames.util.config.Rename;
 import com.HiWord9.RPRenames.util.gui.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.RenameButton;
+import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
+import com.HiWord9.RPRenames.util.gui.button.*;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -15,10 +17,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -33,7 +32,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,8 +47,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 @Mixin(AnvilScreen.class)
-public abstract class AnvilScreenMixin extends Screen {
-
+public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixinAccessor {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     protected AnvilScreenMixin(Text title) {
@@ -60,45 +57,17 @@ public abstract class AnvilScreenMixin extends Screen {
     @Shadow
     private TextFieldWidget nameField;
 
-    boolean open = config.openByDefault;
+    boolean open;
 
     private static final Identifier MENU_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/menu.png");
-    int menuTextureWidth = 213;
+
     int menuTextureHeight = 166;
     int menuWidth = 147;
     int menuHeight = menuTextureHeight;
     int menuXOffset = -1;
-    int tabWidth = 33;
-    int tabHeight = 26;
     int tabOffsetY = 6;
     int startTabOffsetY = 6;
-    private static final Identifier OPENER_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/opener.png");
-    int openerTextureWidth = 22;
-    int openerTextureHeight = 88;
-    int openerWidth = 22;
-    int openerHeight = 22;
-    private static final Identifier BUTTON_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/button.png");
-    int buttonTextureWidth = 127;
-    int buttonTextureHeight = 80;
-    int buttonWidth = buttonTextureWidth;
-    int buttonHeight = 20;
     int buttonOffsetY = 2;
-    private static final Identifier BUTTON_TEXTURE_GRID = new Identifier(RPRenames.MOD_ID, "textures/gui/button_grid.png");
-    int buttonGridTextureWidth = 50;
-    int buttonGridTextureHeight = 50;
-    int buttonGridWidth = 25;
-    int buttonGridHeight = 25;
-    private static final Identifier PAGE_ARROWS_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
-    int pageArrowsTextureWidth = 60;
-    int pageArrowsTextureHeight = 48;
-    int pageArrowsWidth = 30;
-    int pageArrowsHeight = 16;
-    private static final Identifier FAVORITE_BUTTON_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
-    int favoriteButtonTextureWidth = 9;
-    int favoriteButtonTextureHeight = 18;
-    int favoriteButtonWidth = 9;
-    int favoriteButtonHeight = 9;
-
     int buttonXOffset = 10;
 
     int highlightColor = config.getSlotHighlightRGBA();
@@ -116,22 +85,20 @@ public abstract class AnvilScreenMixin extends Screen {
     boolean afterGlobalTab = false;
     int tempPage;
 
-    TexturedButtonWidget opener;
-    TexturedButtonWidget openerOpened;
+    OpenerButton opener;
 
-    ArrayList<RenameButton> buttons = new ArrayList<>();
+    ArrayList<RenameButtonHolder> buttons = new ArrayList<>();
 
-    TexturedButtonWidget searchTab;
-    TexturedButtonWidget favoriteTab;
-    TexturedButtonWidget inventoryTab;
-    TexturedButtonWidget globalTab;
+    TabButton searchTab;
+    TabButton favoriteTab;
+    TabButton inventoryTab;
+    TabButton globalTab;
     Tabs currentTab = Tabs.SEARCH;
 
-    TexturedButtonWidget addToFavorite;
-    TexturedButtonWidget removeFromFavorite;
+    FavoriteButton favoriteButton;
 
-    TexturedButtonWidget pageDown;
-    TexturedButtonWidget pageUp;
+    PageButton pageDown;
+    PageButton pageUp;
     Text pageCount = Text.empty();
 
     GhostCraft ghostCraft = new GhostCraft();
@@ -147,123 +114,178 @@ public abstract class AnvilScreenMixin extends Screen {
 
     String searchTag = "";
 
-    @Inject(at = @At("RETURN"), method = "setup")
+    @Inject(at = @At("HEAD"), method = "setup")
     private void init(CallbackInfo ci) {
-        if (config.enableAnvilModification) {
-            RPRenames.LOGGER.info("Starting RPRenames modification on AnvilScreen");
+        if (!config.enableAnvilModification) return;
+        RPRenames.LOGGER.info("Starting RPRenames modification on AnvilScreen");
 
-            int pageButtonsY = this.height / 2 + 57;
-            if (config.viewMode == RenameButton.ViewMode.GRID) {
-                pageButtonsY -= 4;
-                maxPageElements = 20;
-            }
+        int pageButtonsY = this.height / 2 + 57;
+        if (config.viewMode == RenameButtonHolder.ViewMode.GRID) {
+            pageButtonsY -= 4;
+            maxPageElements = 20;
+        }
 
-            for (int i = 0; i < maxPageElements; i++) {
-                buttons.add(new RenameButton(config.viewMode, i));
-            }
+        for (int i = 0; i < maxPageElements; i++) {
+            buttons.add(new RenameButtonHolder(config.viewMode, i));
+        }
 
-            pageDown = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset, pageButtonsY, pageArrowsWidth, pageArrowsHeight, 0, 0, pageArrowsHeight, PAGE_ARROWS_TEXTURE, pageArrowsTextureWidth, pageArrowsTextureHeight, (button -> {
-                if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
-                    page = 0;
-                } else {
-                    page--;
-                }
-                defineButtons();
-                showButtons();
-                tabsUpdate();
-                updatePageWidgets();
-                if (page == 0) {
-                    button.active = false;
-                }
-                pageUp.active = true;
-            }));
-            pageUp = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 + menuXOffset - buttonXOffset - pageArrowsWidth, pageButtonsY, pageArrowsWidth, pageArrowsHeight, pageArrowsWidth, 0, pageArrowsHeight, PAGE_ARROWS_TEXTURE, pageArrowsTextureWidth, pageArrowsTextureHeight, (button -> {
-                if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
-                    page = ((currentRenameList.size() + maxPageElements - 1) / maxPageElements - 1);
-                } else {
-                    page++;
-                }
-                defineButtons();
-                showButtons();
-                tabsUpdate();
-                updatePageWidgets();
-                pageDown.active = true;
-                if ((page + 1) * maxPageElements > currentRenameListSize - 1) {
-                    button.active = false;
-                }
-            }));
+        pageDown = new PageButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
+        pageUp = new PageButton(this.width / 2 - backgroundWidth / 2 + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
 
-            opener = new TexturedButtonWidget(this.width / 2 - 85, this.height / 2 - 39, openerWidth, openerHeight, 0, 0, 22, OPENER_TEXTURE, openerTextureWidth, openerTextureHeight, (button) -> switchOpen());
-            openerOpened = new TexturedButtonWidget(this.width / 2 - 85, this.height / 2 - 39, openerWidth, openerHeight, 0, openerHeight * 2, openerHeight, OPENER_TEXTURE, openerTextureWidth, openerTextureHeight, null);
+        opener = new OpenerButton(this.width / 2 - 85, this.height / 2 - 39);
 
-            addDrawableChild(opener);
+        searchTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY, Tabs.SEARCH);
+        favoriteTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
+        inventoryTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
+        globalTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
 
-            searchTab = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (tabWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY, tabWidth, tabHeight, 0, 0, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
-                currentTab = Tabs.SEARCH;
-                screenUpdate();
-            });
-            favoriteTab = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (tabWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (tabHeight + tabOffsetY), tabWidth, tabHeight, 0, tabHeight, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
-                currentTab = Tabs.FAVORITE;
-                screenUpdate();
-            });
-            inventoryTab = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (tabWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (tabHeight + tabOffsetY) * 2, tabWidth, tabHeight, 0, tabHeight * 2, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
-                currentTab = Tabs.INVENTORY;
-                screenUpdate();
-            });
-            globalTab = new TexturedButtonWidget(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (tabWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (tabHeight + tabOffsetY) * 4, tabWidth, tabHeight, 0, tabHeight * 3, 0, MENU_TEXTURE, menuTextureWidth, menuTextureHeight, button -> {
-                currentTab = Tabs.GLOBAL;
-                screenUpdate();
-            });
+        favoriteButton = new FavoriteButton(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY);
 
-            addToFavorite = new TexturedButtonWidget(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY, favoriteButtonWidth, favoriteButtonHeight, 0, favoriteButtonHeight, 0, FAVORITE_BUTTON_TEXTURE, favoriteButtonTextureWidth, favoriteButtonTextureHeight, button -> {
-                String favoriteName = nameField.getText();
+        searchField = new TextFieldWidget(renderer, this.width / 2 - (backgroundWidth / 2) - menuWidth + menuXOffset + searchFieldXOffset, this.height / 2 - 68, menuWidth - 38, 10, Text.of(""));
+        searchField.setChangedListener(this::onSearch);
+        searchField.setDrawsBackground(false);
+        searchField.setMaxLength(1024);
+    }
 
-                String item = currentItem;
-                if (item.equals("air") && !ghostCraft.slot1.isEmpty()) {
-                    item = ConfigManager.getIdAndPath(ghostCraft.slot1.getItem());
-                }
-                if (!item.equals("air")) {
-                    ConfigManager.addToFavorites(favoriteName, item);
-                    favoriteButtonsUpdate(nameField.getText());
-                    if (open) {
-                        screenUpdate(page);
-                    }
-                }
-            });
-            removeFromFavorite = new TexturedButtonWidget(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY, favoriteButtonWidth, favoriteButtonHeight, 0, 0, 0, FAVORITE_BUTTON_TEXTURE, favoriteButtonTextureWidth, favoriteButtonTextureHeight, button -> {
-                String favoriteName = nameField.getText();
-
-                String item = currentItem;
-                if (item.equals("air") && !ghostCraft.slot1.isEmpty()) {
-                    item = ConfigManager.getIdAndPath(ghostCraft.slot1.getItem());
-                }
-                if (!item.equals("air")) {
-                    ConfigManager.removeFromFavorites(favoriteName, item);
-                    favoriteButtonsUpdate(nameField.getText());
-                    if (open) {
-                        screenUpdate(page);
-                    }
-                }
-            });
-
-            searchField = new TextFieldWidget(renderer, this.width / 2 - (backgroundWidth / 2) - menuWidth + menuXOffset + searchFieldXOffset, this.height / 2 - 68, menuWidth - 38, 10, Text.of(""));
-            searchField.setChangedListener(this::onSearch);
-            searchField.setDrawsBackground(false);
-            searchField.setMaxLength(1024);
-            if (open) {
-                openMenu();
-            } else {
-                screenUpdate();
-            }
+    @Inject(at = @At("TAIL"), method = "setup")
+    private void initTail(CallbackInfo ci) {
+        if (!config.enableAnvilModification) return;
+        if (config.openByDefault) {
+            openMenu();
+        } else {
+            screenUpdate();
         }
     }
 
-    private void switchOpen() {
+    public void switchOpen() {
         if (!open) {
             openMenu();
         } else {
             closeMenu();
         }
+    }
+
+    public void addOrRemoveFavorite(boolean add) {
+        String favoriteName = nameField.getText();
+
+        String item = currentItem;
+        if (item.equals("air") && !ghostCraft.slot1.isEmpty()) {
+            item = ConfigManager.getIdAndPath(ghostCraft.slot1.getItem());
+        }
+        if (!item.equals("air")) {
+            if (add) {
+                ConfigManager.addToFavorites(favoriteName, item);
+            } else {
+                ConfigManager.removeFromFavorites(favoriteName, item);
+            }
+            favoriteButtonsUpdate(nameField.getText());
+            if (open) {
+                screenUpdate(page);
+            }
+        }
+    }
+
+    public void onPageDown() {
+        if (hasShiftDown()) {
+            page = 0;
+        } else {
+            page--;
+        }
+        updateWidgets();
+        if (page == 0) {
+            pageDown.active = false;
+        }
+        pageUp.active = true;
+    }
+
+    public void onPageUp() {
+        if (hasShiftDown()) {
+            page = ((currentRenameList.size() + maxPageElements - 1) / maxPageElements - 1);
+        } else {
+            page++;
+        }
+        updateWidgets();
+        pageDown.active = true;
+        if ((page + 1) * maxPageElements > currentRenameListSize - 1) {
+            pageUp.active = false;
+        }
+    }
+
+    public void setTab(Tabs tab) {
+        if (tab == currentTab) return;
+        currentTab = tab;
+        screenUpdate();
+    }
+
+    public Tabs getCurrentTab() {
+        return currentTab;
+    }
+
+    public void onRenameButton(int indexInInventory, boolean isInInventory, boolean asCurrentItem, PlayerInventory inventory, Rename rename, boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
+        ghostCraft.reset();
+        if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
+            if (indexInInventory != 36 && isInInventory) {
+                if (currentTab == Tabs.INVENTORY) {
+                    afterInventoryTab = true;
+                } else {
+                    afterGlobalTab = true;
+                }
+                tempPage = page;
+                if (!asCurrentItem) {
+                    putInAnvil(indexInInventory, MinecraftClient.getInstance());
+                }
+                afterInventoryTab = false;
+                afterGlobalTab = false;
+            } else if (indexInInventory != 36) {
+                assert (client != null ? client.player : null) != null;
+                for (int s = 0; s < 2; s++) {
+                    moveToInventory(s, inventory);
+                }
+
+                ItemStack ghostSource = new ItemStack(ConfigManager.itemFromName(rename.getItem()));
+                ghostSource.setCount(rename.getStackSize());
+                ghostSource.setDamage(rename.getDamage());
+
+                ItemStack ghostEnchant = ItemStack.EMPTY;
+                if (rename.getEnchantment() != null) {
+                    ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
+                    ghostEnchant.getOrCreateNbt();
+                    assert ghostEnchant.getNbt() != null;
+                    if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
+                        ghostEnchant.getNbt().put("Enchantments", new NbtList());
+                    }
+                    NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
+                    nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+                }
+
+                ItemStack ghostResult = RenameButtonHolder.createItem(rename);
+
+                ghostCraft.setSlots(ghostSource, ghostEnchant, ghostResult);
+                ghostCraft.setRender(true);
+            } else {
+                moveToInventory(1, inventory);
+            }
+        }
+        if (currentTab == Tabs.SEARCH || isInInventory) {
+            if (!enoughStackSize || !enoughDamage) {
+                ghostCraft.setForceRenderBG(true, null, true);
+                ghostCraft.setRender(true);
+            }
+            if (!hasEnchant || !hasEnoughLevels) {
+                ItemStack ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
+                ghostEnchant.getOrCreateNbt();
+                assert ghostEnchant.getNbt() != null;
+                if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
+                    ghostEnchant.getNbt().put("Enchantments", new NbtList());
+                }
+                NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
+                nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+                ghostCraft.setSlots(ItemStack.EMPTY, ghostEnchant, ItemStack.EMPTY);
+                ghostCraft.setForceRenderBG(null, null, true);
+                ghostCraft.setRender(true);
+            }
+        }
+        nameField.setText(rename.getName());
     }
 
     private void openMenu() {
@@ -286,9 +308,15 @@ public abstract class AnvilScreenMixin extends Screen {
         remove(searchField);
         nameField.setFocused(true);
         nameField.setFocusUnlocked(false);
-        remove(openerOpened);
+        opener.setOpen(open);
         currentTab = Tabs.SEARCH;
         RPRenames.LOGGER.info("Closing RPRenames Menu");
+    }
+
+    private void updateWidgets() {
+        defineButtons();
+        showButtons();
+        updatePageWidgets();
     }
 
     private void screenUpdate() {
@@ -310,12 +338,11 @@ public abstract class AnvilScreenMixin extends Screen {
         if (open) {
             removeWidgets();
             updateSearchRequest(page);
-            reloadButton(openerOpened);
+            opener.setOpen(open);
             addDrawableChild(searchField);
             searchField.setFocusUnlocked(true);
             nameField.setFocused(false);
             nameField.setFocusUnlocked(true);
-            tabsUpdate();
         }
     }
 
@@ -358,54 +385,48 @@ public abstract class AnvilScreenMixin extends Screen {
         }
         currentRenameListSize = currentRenameList.size();
 
-        updatePageWidgets();
-
         defineButtons();
         showButtons();
+        updatePageWidgets();
     }
 
     @Inject(at = @At("RETURN"), method = "onRenamed")
     private void newNameEntered(String name, CallbackInfo ci) {
-        if (config.enableAnvilModification) {
-            favoriteButtonsUpdate(name);
-        }
+        if (!config.enableAnvilModification) return;
+        favoriteButtonsUpdate(name);
     }
 
     private void favoriteButtonsUpdate(String name) {
-        remove(addToFavorite);
-        remove(removeFromFavorite);
         if (!name.isEmpty()) {
+            favoriteButton.active = true;
             boolean favorite = Rename.isFavorite(currentItem.equals("air") ? ghostCraft.slot1.isEmpty() ? "air" : ConfigManager.getIdAndPath(ghostCraft.slot1.getItem()) : currentItem, name);
-            if (favorite) {
-                addDrawableChild(removeFromFavorite);
-            } else {
-                addDrawableChild(addToFavorite);
-            }
+            favoriteButton.setFavorite(favorite);
+        } else {
+            favoriteButton.active = false;
         }
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"), method = "resize")
     private void onResize(AnvilScreen instance, MinecraftClient client, int width, int height) {
-        if (config.enableAnvilModification) {
-            buttons.clear();
-            String tempSearchFieldText = searchField.getText();
+        if (!config.enableAnvilModification) {
             instance.init(client, width, height);
-            searchField.setText(tempSearchFieldText);
-        } else {
-            instance.init(client, width, height);
+            return;
         }
+        buttons.clear();
+        String tempSearchFieldText = searchField.getText();
+        instance.init(client, width, height);
+        searchField.setText(tempSearchFieldText);
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z"), method = "keyPressed")
     private boolean onKeyPressedNameFieldIsActive(TextFieldWidget instance, int keyCode, int scanCode, int modifiers) {
-        if (config.enableAnvilModification) {
-            searchField.keyPressed(keyCode, scanCode, modifiers);
-            return instance.isActive() || searchField.isActive();
-        }
-        return instance.isActive();
+        if (!config.enableAnvilModification) return instance.isActive();
+        searchField.keyPressed(keyCode, scanCode, modifiers);
+        return instance.isActive() || searchField.isActive();
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!config.enableAnvilModification) return super.mouseClicked(mouseX, mouseY, button);
         int xScreenOffset = (this.width - backgroundWidth) / 2;
         int yScreenOffset = (this.height - backgroundHeight) / 2;
         if (ghostCraft.doRender) {
@@ -417,81 +438,85 @@ public abstract class AnvilScreenMixin extends Screen {
             }
         }
         if (open) {
-            for (RenameButton renameButton : buttons) {
-                if (renameButton.isActive()) {
-                    renameButton.getButton().mouseClicked(mouseX, mouseY, button);
+            for (RenameButtonHolder renameButtonHolder : buttons) {
+                if (renameButtonHolder.isActive()) {
+                    renameButtonHolder.getButton().mouseClicked(mouseX, mouseY, button);
                 }
             }
             pageDown.mouseClicked(mouseX, mouseY, button);
             pageUp.mouseClicked(mouseX, mouseY, button);
+
+            searchTab.mouseClicked(mouseX, mouseY, button);
+            favoriteTab.mouseClicked(mouseX, mouseY, button);
+            inventoryTab.mouseClicked(mouseX, mouseY, button);
+            globalTab.mouseClicked(mouseX, mouseY, button);
         }
+
+        opener.mouseClicked(mouseX, mouseY, button);
+        favoriteButton.mouseClicked(mouseX, mouseY, button);
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     ArrayList<String> invChangeHandler = new ArrayList<>();
 
-    @Inject(at = @At("RETURN"), method = "handledScreenTick")
-    private void onHandledScreenTick(CallbackInfo ci) {
-        if (config.enableAnvilModification) {
-            searchField.tick();
-            if (invChangeHandler.isEmpty()) {
-                invChangeHandler = getInventory();
+    @Inject(at = @At("RETURN"), method = "drawBackground")
+    private void onDrawBackground(CallbackInfo ci) {
+        if (!config.enableAnvilModification) return;
+        if (invChangeHandler.isEmpty()) {
+            invChangeHandler = getInventory();
+            return;
+        }
+        ArrayList<String> temp = getInventory();
+        int i = 0;
+        boolean equal = true;
+        while (i < temp.size() || i < invChangeHandler.size()) {
+            if (invChangeHandler.size() > i && temp.size() > i) {
+                if (!invChangeHandler.get(i).equals(temp.get(i))) {
+                    equal = false;
+                    break;
+                }
             } else {
-                ArrayList<String> temp = getInventory();
-                int i = 0;
-                boolean equal = true;
-                while (i < temp.size() || i < invChangeHandler.size()) {
-                    if (invChangeHandler.size() > i && temp.size() > i) {
-                        if (!invChangeHandler.get(i).equals(temp.get(i))) {
-                            equal = false;
-                            break;
-                        }
-                    } else {
-                        equal = false;
-                        break;
-                    }
-                    i++;
-                }
-                if (!equal) {
-                    invChangeHandler = temp;
-                    if (open) {
-                        screenUpdate(page);
-                    }
-                }
+                equal = false;
+                break;
+            }
+            i++;
+        }
+        if (!equal) {
+            invChangeHandler = temp;
+            if (open) {
+                screenUpdate(page);
             }
         }
     }
 
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
     private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
-        if (config.enableAnvilModification) {
-            if (slotId == 0 || slotId == 1) {
-                ghostCraft.reset();
+        if (!config.enableAnvilModification) return;
+        if (slotId == 0 || slotId == 1) {
+            ghostCraft.reset();
+        }
+        if (slotId != 0) return;
+        if (stack.isEmpty()) {
+            currentItem = "air";
+            searchField.setText("");
+            searchField.setFocusUnlocked(false);
+            remove(searchField);
+            searchField.setFocused(false);
+        } else {
+            currentItem = ConfigManager.getIdAndPath(stack.getItem());
+            itemAfterUpdate = stack.copy();
+            searchField.setFocusUnlocked(true);
+            currentTab = Tabs.SEARCH;
+            favoriteButtonsUpdate(nameField.getText());
+        }
+        if (open) {
+            if (currentTab != Tabs.GLOBAL) {
+                screenUpdate();
+            } else {
+                updateSearchRequest();
             }
-            if (slotId == 0) {
-                if (stack.isEmpty()) {
-                    currentItem = "air";
-                    searchField.setText("");
-                    searchField.setFocusUnlocked(false);
-                    remove(searchField);
-                    searchField.setFocused(false);
-                } else {
-                    currentItem = ConfigManager.getIdAndPath(stack.getItem());
-                    itemAfterUpdate = stack.copy();
-                    searchField.setFocusUnlocked(true);
-                    currentTab = Tabs.SEARCH;
-                    favoriteButtonsUpdate(nameField.getText());
-                }
-                if (open) {
-                    if (currentTab != Tabs.GLOBAL) {
-                        screenUpdate();
-                    } else {
-                        updateSearchRequest();
-                    }
-                } else {
-                    screenUpdate();
-                }
-            }
+        } else {
+            screenUpdate();
         }
     }
 
@@ -508,135 +533,102 @@ public abstract class AnvilScreenMixin extends Screen {
 
     @Inject(at = @At("HEAD"), method = "drawForeground")
     private void frameUpdate(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
-        if (config.enableAnvilModification) {
-            if (open) {
-                int xScreenOffset = (this.width - backgroundWidth) / 2;
-                int yScreenOffset = (this.height - backgroundHeight) / 2;
-                RenderSystem.enableDepthTest();
-                context.drawTexture(MENU_TEXTURE, -menuWidth + menuXOffset, 0, 0, tabWidth * 2, 0, menuWidth, menuHeight, menuTextureWidth, menuTextureHeight);
-                int i = 0;
-                while (currentTab != Tabs.values()[i]) {
-                    i++;
-                }
-                i = i == 3 ? i + 1 : i;
-                context.drawTexture(MENU_TEXTURE, -menuWidth + menuXOffset - tabWidth + 3, startTabOffsetY + (tabHeight + tabOffsetY) * i, 0, tabWidth, tabHeight * (i == 4 ? 3 : i), tabWidth, tabHeight, menuTextureWidth, menuTextureHeight);
+        if (!config.enableAnvilModification) return;
+        int xScreenOffset = (this.width - backgroundWidth) / 2;
+        int yScreenOffset = (this.height - backgroundHeight) / 2;
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(-xScreenOffset, -yScreenOffset, 0);
+        opener.render(context, mouseX, mouseY, 0);
+        favoriteButton.render(context, mouseX, mouseY, 0);
+        matrices.pop();
+        if (!open) {
+            searchField.setFocused(false);
+            return;
+        }
+        RenderSystem.enableDepthTest();
+        context.drawTexture(MENU_TEXTURE, -menuWidth + menuXOffset, 0, 0, 0, 0, menuWidth, menuHeight, menuWidth, menuHeight);
+        matrices.push();
+        matrices.translate(-xScreenOffset, -yScreenOffset, 0);
+        for (RenameButtonHolder renameButtonHolder : buttons) {
+            if (renameButtonHolder.isActive()) {
+                renameButtonHolder.getButton().render(context, mouseX, mouseY, 0);
+                renameButtonHolder.drawElements(context);
+            }
+        }
+        searchTab.render(context, mouseX, mouseY, 0);
+        favoriteTab.render(context, mouseX, mouseY, 0);
+        inventoryTab.render(context, mouseX, mouseY, 0);
+        globalTab.render(context, mouseX, mouseY, 0);
 
-                MatrixStack matrices = context.getMatrices();
-                matrices.push();
-                matrices.translate(-xScreenOffset, -yScreenOffset, 0);
-                for (RenameButton renameButton : buttons) {
-                    if (renameButton.isActive()) {
-                        renameButton.getButton().render(context, mouseX, mouseY, 0);
-                    }
-                }
-                pageDown.render(context, mouseX, mouseY, 0);
-                pageUp.render(context, mouseX, mouseY, 0);
-                matrices.pop();
+        pageDown.render(context, mouseX, mouseY, 0);
+        pageUp.render(context, mouseX, mouseY, 0);
+        matrices.pop();
 
-                Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, backgroundHeight - (config.viewMode == RenameButton.ViewMode.GRID ? 26 : 22), false, true);
-                if (searchField != null) {
-                    if (!searchField.isFocused() && searchField.getText().isEmpty()) {
-                        Graphics.renderText(context, SEARCH_HINT_TEXT, -1, -menuWidth + searchFieldXOffset, searchFieldXOffset - 8, true, false);
-                    }
-                }
+        Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, backgroundHeight - (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 26 : 22), false, true);
+        if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
+            Graphics.renderText(context, SEARCH_HINT_TEXT, -1, -menuWidth + searchFieldXOffset, searchFieldXOffset - 8, true, false);
+        }
+        ghostCraft.render(context, mouseX - xScreenOffset, mouseY - yScreenOffset);
 
-                ghostCraft.render(context, mouseX - xScreenOffset, mouseY - yScreenOffset);
-
-                if (currentRenameList.isEmpty()) {
-                    String s;
-                    if (currentItem.equals("air") && (currentTab == Tabs.FAVORITE || currentTab == Tabs.SEARCH)) {
-                        s = "rprenames.gui.putItem";
-                    } else {
-                        if (currentTab == Tabs.FAVORITE) {
-                            s = "rprenames.gui.noFavoriteRenamesFound";
-                        } else {
-                            s = "rprenames.gui.noRenamesFound";
-                        }
-                    }
-                    Graphics.renderText(context, Text.translatable(s).copy().fillStyle(Style.EMPTY.withItalic(true).withColor(Formatting.GRAY)), -1, (-menuWidth + menuXOffset) / 2, 37, true, true);
-                } else {
-                    for (RenameButton renameButton : buttons) {
-                        renameButton.drawElements(context, menuWidth, menuXOffset, buttonXOffset);
-                    }
-
-                    MinecraftClient client = MinecraftClient.getInstance();
-                    if (!config.disablePageArrowsTips && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT)) {
-                        matrices.push();
-                        matrices.translate(-xScreenOffset, -yScreenOffset, 0);
-                        if (pageUp.isMouseOver(mouseX, mouseY) && pageUp.isHovered()) {
-                            context.drawTooltip(client.textRenderer, Text.translatable("rprenames.gui.pageUp.toLast.tooltip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX, mouseY);
-                        } else if (pageDown.isMouseOver(mouseX, mouseY) && pageDown.isHovered()) {
-                            context.drawTooltip(client.textRenderer, Text.translatable("rprenames.gui.pageDown.toFirst.tooltip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX, mouseY);
-                        }
-                        matrices.pop();
-                    }
-
-                    for (RenameButton renameButton : buttons) {
-                        if (renameButton.getButton() != null) {
-                            if (renameButton.getButton().isMouseOver(mouseX, mouseY) && renameButton.getButton().isHovered() && renameButton.isActive()) {
-                                ArrayList<Text> lines = new ArrayList<>(renameButton.getTooltip());
-                                if (!renameButton.isCEM() && config.enablePreview) {
-                                    if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) && !config.playerPreviewByDefault) {
-                                        if (!config.disablePlayerPreviewTips) {
-                                            lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
-                                        }
-                                    } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) != config.playerPreviewByDefault) {
-                                        searchField.setFocused(false);
-                                        if (!config.disablePlayerPreviewTips) {
-                                            lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
-                                        }
-                                    }
-                                }
-                                matrices.push();
-                                matrices.translate(-xScreenOffset, -yScreenOffset, 0);
-                                context.drawTooltip(client.textRenderer, lines, mouseX, mouseY);
-                                matrices.pop();
-                                if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
-                                    renameButton.highlightSlot(context, getInventory(), currentItem, highlightColor);
-                                }
-                                if (config.enablePreview) {
-                                    renameButton.drawPreview(context, mouseX - xScreenOffset, mouseY - yScreenOffset, 52, 52, config.scaleFactorItem, config.scaleFactorEntity);
-                                }
+        if (currentRenameList.isEmpty()) {
+            String key;
+            if (currentItem.equals("air") && (currentTab == Tabs.FAVORITE || currentTab == Tabs.SEARCH)) {
+                key = "putItem";
+            } else {
+                key = currentTab == Tabs.FAVORITE ? "noFavoriteRenamesFound" : "noRenamesFound";
+            }
+            Graphics.renderText(context, Text.translatable("rprenames.gui." + key).copy().fillStyle(Style.EMPTY.withItalic(true).withColor(Formatting.GRAY)), -1, (-menuWidth + menuXOffset) / 2, 37, true, true);
+        } else {
+            for (RenameButtonHolder renameButtonHolder : buttons) {
+                if (renameButtonHolder.getButton() != null && renameButtonHolder.getButton().isMouseOver(mouseX, mouseY) && renameButtonHolder.isActive()) {
+                    ArrayList<Text> lines = new ArrayList<>(renameButtonHolder.getTooltip());
+                    if (!renameButtonHolder.isCEM() && config.enablePreview) {
+                        if (!hasShiftDown() && !config.playerPreviewByDefault) {
+                            if (!config.disablePlayerPreviewTips) {
+                                lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
+                            }
+                        } else if (hasShiftDown() != config.playerPreviewByDefault) {
+                            searchField.setFocused(false);
+                            if (!config.disablePlayerPreviewTips) {
+                                lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
                             }
                         }
                     }
+                    if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
+                        renameButtonHolder.highlightSlot(context, getInventory(), currentItem, highlightColor);
+                    }
+                    matrices.push();
+                    matrices.translate(-xScreenOffset, -yScreenOffset, 0);
+                    context.drawTooltip(MinecraftClient.getInstance().textRenderer, lines, mouseX, mouseY);
+                    if (config.enablePreview) {
+                        renameButtonHolder.drawPreview(context, mouseX, mouseY, 52, 52, config.scaleFactorItem, config.scaleFactorEntity);
+                    }
+                    matrices.pop();
                 }
-                RenderSystem.disableDepthTest();
-            } else {
-                searchField.setFocused(false);
             }
         }
+        RenderSystem.disableDepthTest();
     }
 
     private void showButtons() {
-        for (RenameButton renameButton : buttons) {
-            int orderOnPage = renameButton.getOrderOnPage();
+        for (RenameButtonHolder renameButtonHolder : buttons) {
+            int orderOnPage = renameButtonHolder.getOrderOnPage();
             if (orderOnPage + page * maxPageElements <= currentRenameListSize - 1) {
-                renameButton.setActive(true);
+                renameButtonHolder.setActive(true);
             }
         }
     }
 
     private void hideButtons() {
-        for (RenameButton renameButton : buttons) {
-            renameButton.setActive(false);
+        for (RenameButtonHolder renameButtonHolder : buttons) {
+            renameButtonHolder.setActive(false);
         }
     }
 
     private void removeWidgets() {
-        for (RenameButton renameButton : buttons) {
-            renameButton.setActive(false);
-        }
+        hideButtons();
         pageCount = Text.empty();
-        remove(searchTab);
-        remove(favoriteTab);
-        remove(inventoryTab);
-        remove(globalTab);
-    }
-
-    private void reloadButton(ClickableWidget button) {
-        remove(button);
-        addDrawableChild(button);
     }
 
     private static void putInAnvil(int slotInInventory, MinecraftClient client) {
@@ -803,106 +795,21 @@ public abstract class AnvilScreenMixin extends Screen {
                 tooltip.add(Text.of("nbt.display.Name=" + rename.getOriginalNbtDisplayName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));
             }
         }
-
-        boolean finalHasEnchant = hasEnchant;
-        boolean finalHasEnoughLevels = hasEnoughLevels;
         int x;
         int y;
-        int width;
-        int height;
-        int u;
-        int v;
-        Identifier texture;
-        int textureWidth;
-        int textureHeight;
-        if (config.viewMode == RenameButton.ViewMode.LIST) {
+        if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
             x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset;
-            y = this.height / 2 - 53 + (orderOnPage * (buttonHeight + buttonOffsetY));
-            width = buttonWidth;
-            height = buttonHeight;
-            u = 0;
-            v = favorite ? buttonHeight * 2 : 0;
-            texture = BUTTON_TEXTURE;
-            textureWidth = buttonTextureWidth;
-            textureHeight = buttonTextureHeight;
+            y = this.height / 2 - 53 + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));
         } else {
-            x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * buttonGridWidth);
-            y = this.height / 2 - backgroundHeight / 2 + 31 + (orderOnPage / 5 * buttonGridHeight);
-            width = buttonGridWidth;
-            height = buttonGridHeight;
-            u = favorite ? buttonGridWidth : 0;
-            v = 0;
-            texture = BUTTON_TEXTURE_GRID;
-            textureWidth = buttonGridTextureWidth;
-            textureHeight = buttonGridTextureHeight;
+            x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
+            y = this.height / 2 - backgroundHeight / 2 + 31 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
         }
-        TexturedButtonWidget texturedButtonWidget = new TexturedButtonWidget(x, y, width, height, u, v, height, texture, textureWidth, textureHeight, (button) -> {
-            ghostCraft.reset();
-            if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
-                if (indexInInventory != 36 && isInInventory) {
-                    if (currentTab == Tabs.INVENTORY) {
-                        afterInventoryTab = true;
-                    } else {
-                        afterGlobalTab = true;
-                    }
-                    tempPage = page;
-                    if (!asCurrentItem) {
-                        putInAnvil(indexInInventory, MinecraftClient.getInstance());
-                    }
-                    afterInventoryTab = false;
-                    afterGlobalTab = false;
-                } else if (indexInInventory != 36) {
-                    assert (client != null ? client.player : null) != null;
-                    for (int s = 0; s < 2; s++) {
-                        moveToInventory(s, inventory);
-                    }
-
-                    ItemStack ghostSource = new ItemStack(ConfigManager.itemFromName(rename.getItem()));
-                    ghostSource.setCount(rename.getStackSize());
-                    ghostSource.setDamage(rename.getDamage());
-
-                    ItemStack ghostEnchant = ItemStack.EMPTY;
-                    if (rename.getEnchantment() != null) {
-                        ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
-                        ghostEnchant.getOrCreateNbt();
-                        assert ghostEnchant.getNbt() != null;
-                        if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
-                            ghostEnchant.getNbt().put("Enchantments", new NbtList());
-                        }
-                        NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
-                        nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
-                    }
-
-                    ItemStack ghostResult = RenameButton.createItem(rename);
-
-                    ghostCraft.setSlots(ghostSource, ghostEnchant, ghostResult);
-                    ghostCraft.setRender(true);
-                } else {
-                    moveToInventory(1, inventory);
-                }
-            }
-            if (currentTab == Tabs.SEARCH || isInInventory) {
-                if (!enoughStackSize || !enoughDamage) {
-                    ghostCraft.setForceRenderBG(true, null, true);
-                    ghostCraft.setRender(true);
-                }
-                if (!finalHasEnchant || !finalHasEnoughLevels) {
-                    ItemStack ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
-                    ghostEnchant.getOrCreateNbt();
-                    assert ghostEnchant.getNbt() != null;
-                    if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
-                        ghostEnchant.getNbt().put("Enchantments", new NbtList());
-                    }
-                    NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
-                    nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
-                    ghostCraft.setSlots(ItemStack.EMPTY, ghostEnchant, ItemStack.EMPTY);
-                    ghostCraft.setForceRenderBG(null, null, true);
-                    ghostCraft.setRender(true);
-                }
-            }
-            nameField.setText(rename.getName());
-        });
-        buttons.get(orderOnPage).setParameters(texturedButtonWidget, rename, page, tooltip);
+        RenameButton renameButton = new RenameButton(x, y, config.viewMode, favorite,
+                indexInInventory, isInInventory, asCurrentItem,
+                inventory, rename,
+                enoughStackSize, enoughDamage,
+                hasEnchant, hasEnoughLevels);
+        buttons.get(orderOnPage).setParameters(renameButton, rename, page, tooltip);
     }
 
     private void defineButtons() {
@@ -918,26 +825,6 @@ public abstract class AnvilScreenMixin extends Screen {
         pageDown.active = page != 0;
         pageUp.active = (page + 1) * maxPageElements <= currentRenameListSize - 1;
         pageCount = Text.of(page + 1 + "/" + (currentRenameList.size() + maxPageElements - 1) / maxPageElements);
-    }
-
-    private void tabsUpdate() {
-        reloadButton(searchTab);
-        reloadButton(favoriteTab);
-        reloadButton(inventoryTab);
-        reloadButton(globalTab);
-        searchTab.active = true;
-        favoriteTab.active = true;
-        inventoryTab.active = true;
-        globalTab.active = true;
-        if (currentTab == Tabs.SEARCH) {
-            searchTab.active = false;
-        } else if (currentTab == Tabs.FAVORITE) {
-            favoriteTab.active = false;
-        } else if (currentTab == Tabs.INVENTORY) {
-            inventoryTab.active = false;
-        } else if (currentTab == Tabs.GLOBAL) {
-            globalTab.active = false;
-        }
     }
 
     private void onSearch(String search) {

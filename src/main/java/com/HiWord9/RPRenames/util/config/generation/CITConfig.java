@@ -20,6 +20,9 @@ public class CITConfig {
                 if (item.startsWith("minecraft:")) {
                     item = item.substring(10);
                 }
+                if (item.equals("air")) {
+                    continue;
+                }
 
                 String nbtNamePattern = p.getProperty("nbt.display.Name");
 

@@ -150,6 +150,7 @@ public class RPRenamesCommand {
                     nbtName = nbtName.substring(8);
                     nbtName = nbtName.replace("*", ".*").replace("?", ".+");
                 }
+                nbtName = ConfigManager.parseEscapes(nbtName);
                 Pattern pattern = Pattern.compile(caseInsensitive ? nbtName.toUpperCase(Locale.ROOT) : nbtName);
                 nameValid = pattern.matcher(caseInsensitive ? name.toUpperCase(Locale.ROOT) : name).matches();
             } else {

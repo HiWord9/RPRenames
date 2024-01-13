@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.gui.RenameButton;
+import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -67,10 +67,10 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.openByDefault)
                 .build();
 
-        AbstractConfigListEntry<RenameButton.ViewMode> viewMode = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.viewMode"), RenameButton.ViewMode.class, currentConfig.viewMode)
+        AbstractConfigListEntry<RenameButtonHolder.ViewMode> viewMode = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.viewMode"), RenameButtonHolder.ViewMode.class, currentConfig.viewMode)
                 .setTooltip(Text.translatable("rprenames.config.gui.viewMode.tooltip"))
                 .setEnumNameProvider(value -> {
-                    if (value == RenameButton.ViewMode.LIST) {
+                    if (value == RenameButtonHolder.ViewMode.LIST) {
                         return Text.translatable("rprenames.config.gui.viewMode.list");
                     } else {
                         return Text.translatable("rprenames.config.gui.viewMode.grid");
@@ -134,12 +134,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.enablePreview)
                 .build();
 
-        AbstractConfigListEntry<RenameButton.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewPos"), RenameButton.PreviewPos.class, currentConfig.previewPos)
+        AbstractConfigListEntry<RenameButtonHolder.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewPos"), RenameButtonHolder.PreviewPos.class, currentConfig.previewPos)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewPos.tooltip"))
                 .setEnumNameProvider(value -> {
-                    if (value == RenameButton.PreviewPos.BOTTOM) {
+                    if (value == RenameButtonHolder.PreviewPos.BOTTOM) {
                         return Text.translatable("rprenames.config.gui.previewPos.bottom");
-                    } else if (value == RenameButton.PreviewPos.LEFT) {
+                    } else if (value == RenameButtonHolder.PreviewPos.LEFT) {
                         return Text.translatable("rprenames.config.gui.previewPos.left");
                     } else {
                         return Text.translatable("rprenames.config.gui.previewPos.top");
