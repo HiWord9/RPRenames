@@ -40,13 +40,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
-@Mixin(AnvilScreen.class)
+@Mixin(value = AnvilScreen.class, priority = 1200)
 public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixinAccessor {
     private static final ModConfig config = ModConfig.INSTANCE;
 
@@ -79,7 +76,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     int maxPageElements = 5;
     int currentRenameListSize;
 
-    String currentItem = "air";
+    String nullItem = "air";
+    String currentItem = nullItem;
     ItemStack itemAfterUpdate;
     boolean afterInventoryTab = false;
     boolean afterGlobalTab = false;
@@ -169,10 +167,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         String favoriteName = nameField.getText();
 
         String item = currentItem;
-        if (item.equals("air") && !ghostCraft.slot1.isEmpty()) {
+        if (item.equals(nullItem) && !ghostCraft.slot1.isEmpty()) {
             item = ConfigManager.getIdAndPath(ghostCraft.slot1.getItem());
         }
-        if (!item.equals("air")) {
+        if (!item.equals(nullItem)) {
             if (add) {
                 ConfigManager.addToFavorites(favoriteName, item);
             } else {
@@ -291,7 +289,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void openMenu() {
         open = true;
         RPRenames.LOGGER.info("Opening RPRenames Menu");
-        if (currentItem.equals("air")) {
+        if (currentItem.equals(nullItem)) {
             currentTab = Tabs.GLOBAL;
         } else {
             currentTab = Tabs.SEARCH;
@@ -356,7 +354,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             ArrayList<String> checked = new ArrayList<>();
             ArrayList<Rename> names = new ArrayList<>();
             for (String item : currentInvList) {
-                if (!item.equals("air") && !checked.contains(item)) {
+                if (!item.equals(nullItem) && !checked.contains(item)) {
                     checked.add(item);
                     ArrayList<Rename> renames = ConfigManager.getAllRenames(item);
                     names.addAll(renames);
@@ -374,7 +372,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void updateSearchRequest(int page) {
         hideButtons();
-        currentRenameList = search(originalRenameList, searchTag);
+        currentRenameList = ConfigManager.search(originalRenameList, searchTag);
 
         this.page = page;
         if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {
@@ -399,7 +397,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void favoriteButtonsUpdate(String name) {
         if (!name.isEmpty()) {
             favoriteButton.active = true;
-            boolean favorite = Rename.isFavorite(currentItem.equals("air") ? ghostCraft.slot1.isEmpty() ? "air" : ConfigManager.getIdAndPath(ghostCraft.slot1.getItem()) : currentItem, name);
+            boolean favorite = Rename.isFavorite(currentItem.equals(nullItem) ? ghostCraft.slot1.isEmpty() ? nullItem : ConfigManager.getIdAndPath(ghostCraft.slot1.getItem()) : currentItem, name);
             favoriteButton.setFavorite(favorite);
         } else {
             favoriteButton.active = false;
@@ -432,7 +430,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if (ghostCraft.doRender) {
             if ((mouseX - xScreenOffset >= 26 && mouseX - xScreenOffset <= 151) && (mouseY - yScreenOffset >= 46 && mouseY - yScreenOffset <= 64)) {
                 ghostCraft.reset();
-                if (currentItem.equals("air")) {
+                if (currentItem.equals(nullItem)) {
                     nameField.setText("");
                 }
             }
@@ -497,7 +495,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
         if (slotId != 0) return;
         if (stack.isEmpty()) {
-            currentItem = "air";
+            currentItem = nullItem;
             searchField.setText("");
             searchField.setFocusUnlocked(false);
             remove(searchField);
@@ -573,7 +571,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (currentRenameList.isEmpty()) {
             String key;
-            if (currentItem.equals("air") && (currentTab == Tabs.FAVORITE || currentTab == Tabs.SEARCH)) {
+            if (currentItem.equals(nullItem) && (currentTab == Tabs.FAVORITE || currentTab == Tabs.SEARCH)) {
                 key = "putItem";
             } else {
                 key = currentTab == Tabs.FAVORITE ? "noFavoriteRenamesFound" : "noRenamesFound";
@@ -832,126 +830,5 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if (open) {
             updateSearchRequest();
         }
-    }
-
-    private ArrayList<Rename> search(ArrayList<Rename> list, String match) {
-        ArrayList<Rename> cutList = new ArrayList<>();
-        if (match.startsWith("#")) {
-            String matchTag = match.substring(1);
-            if (matchTag.contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
-                matchTag = matchTag.substring(0, matchTag.indexOf(" "));
-            } else if (matchTag.contains(" #")) {
-                matchTag = matchTag.substring(0, matchTag.indexOf(" #"));
-            }
-            if (matchTag.toUpperCase(Locale.ROOT).startsWith("REGEX:") || matchTag.toUpperCase(Locale.ROOT).startsWith("IREGEX:")) {
-                String regex = matchTag;
-                boolean caseInsensitive = false;
-                if (matchTag.toUpperCase(Locale.ROOT).startsWith("I")) {
-                    regex = regex.substring(1);
-                    caseInsensitive = true;
-                }
-                regex = regex.substring(6);
-
-                boolean isRegex;
-                try {
-                    Pattern.compile(regex);
-                    isRegex = true;
-                } catch (PatternSyntaxException e) {
-                    isRegex = false;
-                }
-
-                if (isRegex) {
-                    for (Rename r : list) {
-                        if (caseInsensitive ? r.getName().toUpperCase(Locale.ROOT).matches(regex.toUpperCase(Locale.ROOT)) : r.getName().matches(regex)) {
-                            cutList.add(r);
-                        }
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("PACK:") || matchTag.toUpperCase(Locale.ROOT).startsWith("PACKNAME:")) {
-                String packName = matchTag.substring(4);
-                while (packName.charAt(0) != ':') {
-                    packName = packName.substring(1);
-                }
-                packName = packName.substring(1);
-                for (Rename r : list) {
-                    if (r.getPackName() != null && r.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT).contains(packName.toUpperCase(Locale.ROOT))) {
-                        cutList.add(r);
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ITEM:")) {
-                String itemName = matchTag.substring(5);
-                for (Rename r : list) {
-                    if (r.getItem() != null && r.getItem().toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
-                        cutList.add(r);
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("STACKSIZE:") || matchTag.toUpperCase(Locale.ROOT).startsWith("STACK:") || matchTag.toUpperCase(Locale.ROOT).startsWith("SIZE:")) {
-                String stackSize = matchTag.toUpperCase(Locale.ROOT).substring(4);
-                while (stackSize.charAt(0) != ':') {
-                    stackSize = stackSize.substring(1);
-                }
-                stackSize = stackSize.substring(1);
-                if (stackSize.matches("[0-9]+")) {
-                    for (Rename r : list) {
-                        if (Rename.isInBounds(Integer.parseInt(stackSize), r.getOriginalStackSize())) {
-                            cutList.add(r);
-                        }
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("DAMAGE:")) {
-                String damage = matchTag.substring(7);
-                if (damage.matches("[0-9]+")) {
-                    for (Rename r : list) {
-                        if (Rename.isInBounds(Integer.parseInt(damage), r.getOriginalDamage(), r.getItem())) {
-                            cutList.add(r);
-                        }
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ENCH:") || matchTag.toUpperCase(Locale.ROOT).startsWith("ENCHANT:") || matchTag.toUpperCase(Locale.ROOT).startsWith("ENCHANTMENT:")) {
-                String enchant = matchTag.toUpperCase(Locale.ROOT).substring(4);
-                while (enchant.charAt(0) != ':') {
-                    enchant = enchant.substring(1);
-                }
-                enchant = enchant.substring(1);
-                for (Rename r : list) {
-                    if (r.getEnchantment() != null) {
-                        ArrayList<String> split = Rename.split(r.getOriginalEnchantment());
-                        for (String s : split) {
-                            if (s.toUpperCase(Locale.ROOT).contains(enchant)) {
-                                cutList.add(r);
-                                break;
-                            }
-                        }
-                    }
-                }
-            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
-                for (Rename r : list) {
-                    if (Rename.isFavorite(r.getItem(), r.getName())) {
-                        cutList.add(r);
-                    }
-                }
-            }
-            if (match.substring(1).contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
-                cutList = search(cutList, match.substring(match.indexOf(" ") + 1));
-            } else if (match.substring(1).contains(" #")) {
-                cutList = search(cutList, match.substring(match.indexOf(" #") + 1));
-            }
-        } else {
-            if (match.startsWith("\\#")) {
-                match = match.substring(1);
-            }
-            boolean isRegex = false;
-            try {
-                Pattern.compile(match);
-                isRegex = true;
-            } catch (Exception ignored) {
-            }
-            for (Rename r : list) {
-                if (r.getName().toUpperCase(Locale.ROOT).contains(match.toUpperCase(Locale.ROOT)) || (isRegex && r.getName().toUpperCase(Locale.ROOT).matches(match.toUpperCase(Locale.ROOT)))) {
-                    cutList.add(r);
-                }
-            }
-        }
-        return cutList;
     }
 }

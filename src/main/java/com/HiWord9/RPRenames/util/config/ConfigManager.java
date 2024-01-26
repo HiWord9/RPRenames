@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.*;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class ConfigManager {
@@ -447,6 +448,127 @@ public class ConfigManager {
             return idAndPath.substring(10);
         }
         return idAndPath;
+    }
+
+    public static ArrayList<Rename> search(ArrayList<Rename> list, String match) {
+        ArrayList<Rename> cutList = new ArrayList<>();
+        if (match.startsWith("#")) {
+            String matchTag = match.substring(1);
+            if (matchTag.contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
+                matchTag = matchTag.substring(0, matchTag.indexOf(" "));
+            } else if (matchTag.contains(" #")) {
+                matchTag = matchTag.substring(0, matchTag.indexOf(" #"));
+            }
+            if (matchTag.toUpperCase(Locale.ROOT).startsWith("REGEX:") || matchTag.toUpperCase(Locale.ROOT).startsWith("IREGEX:")) {
+                String regex = matchTag;
+                boolean caseInsensitive = false;
+                if (matchTag.toUpperCase(Locale.ROOT).startsWith("I")) {
+                    regex = regex.substring(1);
+                    caseInsensitive = true;
+                }
+                regex = regex.substring(6);
+
+                boolean isRegex;
+                try {
+                    Pattern.compile(regex);
+                    isRegex = true;
+                } catch (PatternSyntaxException e) {
+                    isRegex = false;
+                }
+
+                if (isRegex) {
+                    for (Rename r : list) {
+                        if (caseInsensitive ? r.getName().toUpperCase(Locale.ROOT).matches(regex.toUpperCase(Locale.ROOT)) : r.getName().matches(regex)) {
+                            cutList.add(r);
+                        }
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("PACK:") || matchTag.toUpperCase(Locale.ROOT).startsWith("PACKNAME:")) {
+                String packName = matchTag.substring(4);
+                while (packName.charAt(0) != ':') {
+                    packName = packName.substring(1);
+                }
+                packName = packName.substring(1);
+                for (Rename r : list) {
+                    if (r.getPackName() != null && r.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT).contains(packName.toUpperCase(Locale.ROOT))) {
+                        cutList.add(r);
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ITEM:")) {
+                String itemName = matchTag.substring(5);
+                for (Rename r : list) {
+                    if (r.getItem() != null && r.getItem().toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
+                        cutList.add(r);
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("STACKSIZE:") || matchTag.toUpperCase(Locale.ROOT).startsWith("STACK:") || matchTag.toUpperCase(Locale.ROOT).startsWith("SIZE:")) {
+                String stackSize = matchTag.toUpperCase(Locale.ROOT).substring(4);
+                while (stackSize.charAt(0) != ':') {
+                    stackSize = stackSize.substring(1);
+                }
+                stackSize = stackSize.substring(1);
+                if (stackSize.matches("[0-9]+")) {
+                    for (Rename r : list) {
+                        if (Rename.isInBounds(Integer.parseInt(stackSize), r.getOriginalStackSize())) {
+                            cutList.add(r);
+                        }
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("DAMAGE:")) {
+                String damage = matchTag.substring(7);
+                if (damage.matches("[0-9]+")) {
+                    for (Rename r : list) {
+                        if (Rename.isInBounds(Integer.parseInt(damage), r.getOriginalDamage(), r.getItem())) {
+                            cutList.add(r);
+                        }
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ENCH:") || matchTag.toUpperCase(Locale.ROOT).startsWith("ENCHANT:") || matchTag.toUpperCase(Locale.ROOT).startsWith("ENCHANTMENT:")) {
+                String enchant = matchTag.toUpperCase(Locale.ROOT).substring(4);
+                while (enchant.charAt(0) != ':') {
+                    enchant = enchant.substring(1);
+                }
+                enchant = enchant.substring(1);
+                for (Rename r : list) {
+                    if (r.getEnchantment() != null) {
+                        ArrayList<String> split = Rename.split(r.getOriginalEnchantment());
+                        for (String s : split) {
+                            if (s.toUpperCase(Locale.ROOT).contains(enchant)) {
+                                cutList.add(r);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
+                for (Rename r : list) {
+                    if (Rename.isFavorite(r.getItem(), r.getName())) {
+                        cutList.add(r);
+                    }
+                }
+            }
+            if (match.substring(1).contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
+                cutList = search(cutList, match.substring(match.indexOf(" ") + 1));
+            } else if (match.substring(1).contains(" #")) {
+                cutList = search(cutList, match.substring(match.indexOf(" #") + 1));
+            }
+        } else {
+            if (match.startsWith("\\#")) {
+                match = match.substring(1);
+            }
+            boolean isRegex = false;
+            try {
+                Pattern.compile(match);
+                isRegex = true;
+            } catch (Exception ignored) {
+            }
+            for (Rename r : list) {
+                if (r.getName().toUpperCase(Locale.ROOT).contains(match.toUpperCase(Locale.ROOT)) || (isRegex && r.getName().toUpperCase(Locale.ROOT).matches(match.toUpperCase(Locale.ROOT)))) {
+                    cutList.add(r);
+                }
+            }
+        }
+        return cutList;
     }
 
     public static void configClear() {

@@ -33,6 +33,7 @@ public class CITConfig {
                 String damageProp = p.getProperty("damage");
                 String firstDamage = Rename.getFirstValue(damageProp == null ? "" : damageProp);
                 Integer damage;
+                //TODO damage percent
                 if (firstDamage.contains("%")) {
                     damage = Rename.parseDamagePercent(firstDamage, item);
                 } else {
