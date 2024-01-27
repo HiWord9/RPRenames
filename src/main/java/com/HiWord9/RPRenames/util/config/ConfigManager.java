@@ -216,7 +216,7 @@ public class ConfigManager {
         return getFirstName(nbtDisplayName, null);
     }
 
-    public static String getFirstName(String nbtDisplayName, @Nullable String item) {
+    public static String getFirstName(String nbtDisplayName, @Nullable ArrayList<String> items) {
         nbtDisplayName = parseEscapes(nbtDisplayName);
         if (nbtDisplayName.startsWith("pattern:") || nbtDisplayName.startsWith("ipattern:")) {
             if (nbtDisplayName.startsWith("i")) {
@@ -237,7 +237,7 @@ public class ConfigManager {
             nbtDisplayName = solveRegex(nbtDisplayName);
             try {
                 if (!nbtDisplayName.matches(originalRegex)) {
-                    RPRenames.LOGGER.error("Couldn't get valid string from regex" + (item != null ? " for " + item : ""));
+                    RPRenames.LOGGER.error("Couldn't get valid string from regex" + (items != null ? " for " + items : ""));
                     RPRenames.LOGGER.error("regex:" + originalRegex);
                     RPRenames.LOGGER.error("received string:" + nbtDisplayName);
                 }
@@ -402,11 +402,12 @@ public class ConfigManager {
 
     public static ArrayList<Rename> getAllRenames() {
         ArrayList<Rename> names = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<Rename>> entry : RPRenames.renames.entrySet()) {
-            names.addAll(entry.getValue());
-        }
-        for (Map.Entry<String, ArrayList<Rename>> entry : RPRenames.renamesServer.entrySet()) {
-            names.addAll(entry.getValue());
+        for (Map<String, ArrayList<Rename>> map : List.of(RPRenames.renames, RPRenames.renamesServer)) {
+            for (Map.Entry<String, ArrayList<Rename>> entry : map.entrySet()) {
+                for (Rename r : entry.getValue()) {
+                    if (!names.contains(r)) names.add(r);
+                }
+            }
         }
         return names;
     }
@@ -431,7 +432,7 @@ public class ConfigManager {
 
     public static void renamesAdd(Map<String, ArrayList<Rename>> map, String item, Rename rename) {
         if (map.containsKey(item)) {
-            Rename simplifiedRename = new Rename(rename.getName(), item, null, null, rename.getStackSize(), rename.getDamage(), rename.getEnchantment(), rename.getEnchantmentLevel(), null, null);
+            Rename simplifiedRename = new Rename(rename.getName(), rename.getItems(), null, null, rename.getStackSize(), rename.getDamage(), rename.getEnchantment(), rename.getEnchantmentLevel(), null, null);
             if (!simplifiedRename.isContainedIn(map.get(item), true)) {
                 map.get(item).add(rename);
             }
@@ -497,8 +498,12 @@ public class ConfigManager {
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ITEM:")) {
                 String itemName = matchTag.substring(5);
                 for (Rename r : list) {
-                    if (r.getItem() != null && r.getItem().toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
-                        cutList.add(r);
+                    if (r.getItems() == null) break;
+                    for (String item : r.getItems()) {
+                        if (item.toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
+                            cutList.add(r);
+                            break;
+                        }
                     }
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("STACKSIZE:") || matchTag.toUpperCase(Locale.ROOT).startsWith("STACK:") || matchTag.toUpperCase(Locale.ROOT).startsWith("SIZE:")) {
@@ -518,8 +523,11 @@ public class ConfigManager {
                 String damage = matchTag.substring(7);
                 if (damage.matches("[0-9]+")) {
                     for (Rename r : list) {
-                        if (Rename.isInBounds(Integer.parseInt(damage), r.getOriginalDamage(), r.getItem())) {
-                            cutList.add(r);
+                        for (String item : r.getItems()) {
+                            if (Rename.isInBounds(Integer.parseInt(damage), r.getOriginalDamage(), item)) {
+                                cutList.add(r);
+                                break;
+                            }
                         }
                     }
                 }
@@ -542,8 +550,11 @@ public class ConfigManager {
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
                 for (Rename r : list) {
-                    if (Rename.isFavorite(r.getItem(), r.getName())) {
-                        cutList.add(r);
+                    for (String item : r.getItems()) {
+                        if (Rename.isFavorite(item, r.getName())) {
+                            cutList.add(r);
+                            break;
+                        }
                     }
                 }
             }

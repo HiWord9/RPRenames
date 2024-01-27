@@ -240,9 +240,11 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     moveToInventory(s, inventory);
                 }
 
-                ItemStack ghostSource = new ItemStack(ConfigManager.itemFromName(rename.getItem()));
+                ItemStack ghostSource = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(0)));
                 ghostSource.setCount(rename.getStackSize());
-                ghostSource.setDamage(rename.getDamage());
+                if (rename.getDamage() != null) {
+                    ghostSource.setDamage(rename.getDamage().getParsedDamage(ghostSource.getItem()));
+                }
 
                 ItemStack ghostEnchant = ItemStack.EMPTY;
                 if (rename.getEnchantment() != null) {
@@ -357,7 +359,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 if (!item.equals(nullItem) && !checked.contains(item)) {
                     checked.add(item);
                     ArrayList<Rename> renames = ConfigManager.getAllRenames(item);
-                    names.addAll(renames);
+                    for (Rename r : renames) {
+                        if (!names.contains(r)) names.add(r);
+                    }
                 }
             }
             originalRenameList = names;
@@ -653,19 +657,46 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void createButton(int orderOnPage, Rename rename) {
         assert MinecraftClient.getInstance().player != null;
-        PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
-        String item = rename.getItem();
-        boolean isInInventory = getInventory().contains(item);
-        int indexInInventory = getInventory().indexOf(item);
+        PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
+        ArrayList<String> inventory = getInventory();
+        String item = rename.getItems().get(0);
+        for (String s : rename.getItems()) {
+            if (inventory.contains(s)) {
+                item = s;
+                break;
+            }
+        }
         boolean asCurrentItem = item.equals(currentItem);
-        boolean favorite = Rename.isFavorite(item, rename.getName());
+        boolean isInInventory = inventory.contains(item);
+        int indexInInventory = inventory.indexOf(item);
+        boolean favorite = false;
+        if (currentTab != Tabs.SEARCH) {
+            for (String s : rename.getItems()) {
+                if (Rename.isFavorite(s, rename.getName())) {
+                    favorite = true;
+                    break;
+                }
+            }
+        } else {
+            favorite = Rename.isFavorite(item, rename.getName());
+        }
 
         ArrayList<Text> tooltip = new ArrayList<>();
         tooltip.add(Text.of(rename.getName()));
-        if (currentTab == Tabs.INVENTORY) {
-            tooltip.add(Text.of(config.translateItemNames ? Text.translatable(Registries.ITEM.get(new Identifier(item)).getTranslationKey()).getString() : item).copy().fillStyle(Style.EMPTY.withColor(Formatting.DARK_AQUA)));
-        } else if (currentTab == Tabs.GLOBAL) {
-            tooltip.add(Text.of(config.translateItemNames ? Text.translatable(Registries.ITEM.get(new Identifier(item)).getTranslationKey()).getString() : item).copy().fillStyle(Style.EMPTY.withColor(getInventory().contains(item) ? Formatting.DARK_AQUA : Formatting.RED)));
+        if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
+            int lines = 0;
+            for (String s : rename.getItems()) { //TODO
+                if (lines >= 5) {
+                    int i = rename.getItems().toArray().length - 5;
+                    if (i > 1) {
+                        tooltip.add(Text.of("And " + i + " more...").copy().fillStyle(Style.EMPTY.withItalic(true))); //TODO translate
+                        break;
+                    }
+                }
+                tooltip.add(Text.of(config.translateItemNames ? Text.translatable(Registries.ITEM.get(new Identifier(s)).getTranslationKey()).getString() : s)
+                        .copy().fillStyle(Style.EMPTY.withColor(getInventory().contains(s) ? Formatting.DARK_AQUA : Formatting.RED)));
+                lines++;
+            }
         }
         if (item.equals(ConfigManager.getIdAndPath(Items.NAME_TAG)) && rename.isCEM()) {
             Identifier mob = new Identifier(rename.getMob().entity());
@@ -673,22 +704,16 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             tooltip.add(Text.of(config.translateMobNames ? Text.translatable(entityType.getTranslationKey()).getString() : rename.getMob().entity()).copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
         }
 
-        boolean enoughStackSize;
-        boolean enoughDamage;
+        boolean enoughStackSize = true;
+        boolean enoughDamage = true;
         boolean hasEnchant = false;
         boolean hasEnoughLevels = false;
 
         if (rename.getStackSize() != null && rename.getStackSize() > 1) {
-            if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
-                if (asCurrentItem) {
-                    enoughStackSize = Rename.isInBounds(itemAfterUpdate.getCount(), rename.getOriginalStackSize());
-                } else if (isInInventory) {
-                    enoughStackSize = Rename.isInBounds(inventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
-                } else {
-                    enoughStackSize = true;
-                }
-            } else {
+            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
                 enoughStackSize = Rename.isInBounds(itemAfterUpdate.getCount(), rename.getOriginalStackSize());
+            } else if (isInInventory) {
+                enoughStackSize = Rename.isInBounds(playerInventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
             }
 
             if (config.showExtraProperties) {
@@ -700,46 +725,40 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     tooltip.add(Text.of(Text.translatable("rprenames.gui.tooltipHint.stackSize").getString() + " " + rename.getStackSize()).copy().fillStyle(Style.EMPTY.withColor(enoughStackSize ? Formatting.GRAY : Formatting.DARK_RED)));
                 }
             }
-        } else {
-            enoughStackSize = true;
         }
 
-        if (rename.getDamage() != null && rename.getDamage() > 0) {
-            if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
-                if (asCurrentItem) {
-                    enoughDamage = Rename.isInBounds(itemAfterUpdate.getDamage(), rename.getOriginalDamage(), item);
-                } else if (isInInventory) {
-                    enoughDamage = Rename.isInBounds(inventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
-                } else {
-                    enoughDamage = true;
-                }
-            } else {
-                enoughDamage = Rename.isInBounds(itemAfterUpdate.getDamage(), rename.getOriginalStackSize());
+        if (rename.getDamage() != null && rename.getDamage().damage > 0) {
+            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
+                enoughDamage = Rename.isInBounds(itemAfterUpdate.getDamage(), rename.getOriginalDamage(), item);
+            } else if (isInInventory) {
+                enoughDamage = Rename.isInBounds(playerInventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
             }
+
             if (config.showExtraProperties) {
                 if (config.showOriginalProperties) {
                     tooltip.add(Text.of("damage").copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
                             .append(Text.of("=").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
                             .append(Text.of(rename.getOriginalDamage()).copy().fillStyle(Style.EMPTY.withColor(enoughDamage ? Formatting.GREEN : Formatting.DARK_RED))));
                 } else {
-                    tooltip.add(Text.of(Text.translatable("rprenames.gui.tooltipHint.damage").getString() + " " + rename.getDamage()).copy().fillStyle(Style.EMPTY.withColor(enoughDamage ? Formatting.GRAY : Formatting.DARK_RED)));
+                    tooltip.add(Text.of(Text.translatable("rprenames.gui.tooltipHint.damage").getString() + " " +
+                                    rename.getDamage().damage + (rename.getDamage().percent ? "%" : ""))
+                            .copy().fillStyle(Style.EMPTY.withColor(enoughDamage ? Formatting.GRAY : Formatting.DARK_RED)));
                 }
             }
-        } else {
-            enoughDamage = true;
         }
 
-        if (rename.getEnchantment() != null) {
+        if (rename.getEnchantment() == null) {
+            hasEnchant = true;
+            hasEnoughLevels = true;
+        } else {
             Map<Enchantment, Integer> enchantments = Maps.newLinkedHashMap();
-            if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
-                if (asCurrentItem) {
-                    enchantments = EnchantmentHelper.fromNbt(itemAfterUpdate.getEnchantments());
-                } else if (isInInventory) {
-                    enchantments = EnchantmentHelper.fromNbt(inventory.main.get(indexInInventory).getEnchantments());
-                }
-            } else {
+
+            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
                 enchantments = EnchantmentHelper.fromNbt(itemAfterUpdate.getEnchantments());
+            } else if (isInInventory) {
+                enchantments = EnchantmentHelper.fromNbt(playerInventory.main.get(indexInInventory).getEnchantments());
             }
+
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 Enchantment enchantment = entry.getKey();
                 String enchantName = rename.getEnchantment();
@@ -777,22 +796,15 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     tooltip.add(Text.of(Text.translatable("rprenames.gui.tooltipHint.enchantment").getString() + " " + translatedEnchant.getString() + " " + translatedEnchantLevel.getString()).copy().fillStyle(Style.EMPTY.withColor(hasEnchant && hasEnoughLevels ? Formatting.GRAY : Formatting.DARK_RED)));
                 }
             }
-        } else {
-            hasEnchant = true;
-            hasEnoughLevels = true;
         }
 
-        if (config.showPackName) {
-            if (rename.getPackName() != null) {
-                tooltip.add(Text.of(rename.getPackName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
-            }
+        if (config.showPackName && rename.getPackName() != null) {
+            tooltip.add(Text.of(rename.getPackName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
+        }
+        if (config.showNbtDisplayName && currentTab != Tabs.FAVORITE && rename.getOriginalNbtDisplayName() != null) {
+            tooltip.add(Text.of("nbt.display.Name=" + rename.getOriginalNbtDisplayName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));
         }
 
-        if (config.showNbtDisplayName && currentTab != Tabs.FAVORITE) {
-            if (rename.getOriginalNbtDisplayName() != null) {
-                tooltip.add(Text.of("nbt.display.Name=" + rename.getOriginalNbtDisplayName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));
-            }
-        }
         int x;
         int y;
         if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
@@ -802,11 +814,13 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
             y = this.height / 2 - backgroundHeight / 2 + 31 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
         }
+
         RenameButton renameButton = new RenameButton(x, y, config.viewMode, favorite,
                 indexInInventory, isInInventory, asCurrentItem,
-                inventory, rename,
+                playerInventory, rename,
                 enoughStackSize, enoughDamage,
                 hasEnchant, hasEnoughLevels);
+
         buttons.get(orderOnPage).setParameters(renameButton, rename, page, tooltip);
     }
 

@@ -82,10 +82,15 @@ public class RenameButtonHolder extends Screen {
     }
 
     public void highlightSlot(DrawContext context, ArrayList<String> inventory, String currentItem, int highlightColor) {
-        int slotNum = inventory.indexOf(rename.getItem());
+        int slotNum = -1;
+        for (String item : rename.getItems()) {
+            slotNum = inventory.indexOf(item);
+            if (slotNum >= 0) break;
+        }
         if (slotNum <= -1) return;
-        int x;
-        int y;
+
+        int x = 26;
+        int y = 46;
         if (!inventory.get(slotNum).equals(currentItem)) {
             boolean isOnHotBar = false;
             if (slotNum < rowSize) {
@@ -101,9 +106,6 @@ public class RenameButtonHolder extends Screen {
             if (isOnHotBar) {
                 y += 4;
             }
-        } else {
-            x = 26;
-            y = 46;
         }
         RenderSystem.enableDepthTest();
         context.fillGradient(x, y, x + slotSize, y + slotSize, 10, highlightColor, highlightColor);
@@ -348,10 +350,12 @@ public class RenameButtonHolder extends Screen {
     }
 
     public static ItemStack createItem(Rename rename) {
-        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItem()));
+        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(0)));
         item.setCustomName(Text.of(rename.getName()));
         item.setCount(rename.getStackSize());
-        item.setDamage(rename.getDamage());
+        if (rename.getDamage() != null) {
+            item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
+        }
         if (rename.getEnchantment() != null) {
             item.getOrCreateNbt();
             assert item.getNbt() != null;

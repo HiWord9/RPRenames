@@ -15,6 +15,9 @@ import java.util.Objects;
 import java.util.Properties;
 
 public class CEMConfig {
+
+    public static String defaultModItem = "name_tag";
+
     public static void propertiesToRenameMob(Properties p, String packName, String path, String fileName) {
         List<String> namesValues = p.stringPropertyNames().stream().toList();
         ArrayList<String> skins = new ArrayList<>();
@@ -24,26 +27,25 @@ public class CEMConfig {
                     skins.add(p.getProperty("skins." + s.substring(5)));
                     String name = ConfigManager.getFirstName(p.getProperty(s));
                     if (name != null) {
-                        ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, "name_tag");
+                        ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, defaultModItem);
                         Rename rename;
-                        Rename renameNameOnly = new Rename(name, "name_tag");
+                        Rename renameNameOnly = new Rename(name, defaultModItem);
                         Rename.Mob mob = new Rename.Mob(fileName, ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)), p, path.replaceAll("\\\\", "/"));
                         if (renameNameOnly.isContainedIn(alreadyExist, true)) {
                             Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
                             alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
-                            rename = new Rename(renameForItem.getName(), renameForItem.getItem(), renameForItem.getPackName(), renameForItem.getPath(), renameForItem.getStackSize(), renameForItem.getDamage(), renameForItem.getEnchantment(), renameForItem.getEnchantmentLevel(), renameForItem.getProperties(), mob);
+                            rename = new Rename(renameForItem.getName(), renameForItem.getItems(), renameForItem.getPackName(), renameForItem.getPath(), renameForItem.getStackSize(), renameForItem.getDamage(), renameForItem.getEnchantment(), renameForItem.getEnchantmentLevel(), renameForItem.getProperties(), mob);
                         } else {
-                            rename = new Rename(name, "name_tag", packName,
-                                    null, null, null, null, null, null, mob);
+                            rename = new Rename(name, packName, mob);
                         }
                         if (!rename.isContainedIn(alreadyExist)) {
                             ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
                             newConfig.add(rename);
 
                             if (packName.equals("server")) {
-                                RPRenames.renamesServer.put("name_tag", newConfig);
+                                RPRenames.renamesServer.put(defaultModItem, newConfig);
                             } else {
-                                RPRenames.renames.put("name_tag", newConfig);
+                                RPRenames.renames.put(defaultModItem, newConfig);
                             }
                         }
                     }

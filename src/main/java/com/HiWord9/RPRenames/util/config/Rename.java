@@ -1,19 +1,18 @@
 package com.HiWord9.RPRenames.util.config;
 
+import com.HiWord9.RPRenames.util.config.generation.CEMConfig;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class Rename {
     private final String name;
-    private final String item;
+    private final ArrayList<String> items;
     private final String packName;
     private final String path;
     private final Integer stackSize;
-    private final Integer damage;
+    private final Damage damage;
     private final String enchantment;
     private final Integer enchantmentLevel;
     private final Properties properties;
@@ -25,21 +24,31 @@ public class Rename {
     }
 
     public Rename(String name, String item) {
-        this(name, item, null, null, null, null, null, null, null, null);
+        this(name, new ArrayList<>(List.of(item)));
+    }
+
+    public Rename(String name, ArrayList<String> items) {
+        this(name, items, null, null, null, null, null, null, null, null);
     }
 
     public Rename(String name,
-                  String item,
+                  String packName,
+                  Mob mob) {
+        this(name, new ArrayList<>(List.of(CEMConfig.defaultModItem)), packName, null, null, null, null, null, null, mob);
+    }
+
+    public Rename(String name,
+                  ArrayList<String> items,
                   String packName,
                   String path,
                   Integer stackSize,
-                  Integer damage,
+                  Damage damage,
                   String enchantment,
                   Integer enchantmentLevel,
                   Properties properties,
                   @Nullable Mob mob) {
         this.name = name;
-        this.item = item;
+        this.items = items;
         this.packName = packName;
         this.path = path == null ? null : path.replace("\\", "/");
         this.stackSize = stackSize;
@@ -60,8 +69,8 @@ public class Rename {
         return properties == null ? cem ? mob.getPropName() : null : properties.getProperty("nbt.display.Name");
     }
 
-    public String getItem() {
-        return item;
+    public ArrayList<String> getItems() {
+        return items;
     }
 
     public String getPackName() {
@@ -80,8 +89,8 @@ public class Rename {
         return properties == null ? null : properties.getProperty("stackSize");
     }
 
-    public Integer getDamage() {
-        return damage == null ? 0 : damage;
+    public Damage getDamage() {
+        return damage;
     }
 
     public String getOriginalDamage() {
@@ -181,30 +190,39 @@ public class Rename {
     }
 
     public static boolean isInBounds(int n, String list, @Nullable String damagedItem) {
-        if (list == null) {
-            return true;
-        }
-        if (!list.contains(" ") && !list.contains("-") && !list.contains("%")) {
-            return n == Integer.parseInt(getFirstValue(list));
-        }
+        if (list == null) return damagedItem == null;
+        if (!list.contains(" ") && !list.contains("-") && !list.contains("%")) return n == Integer.parseInt(getFirstValue(list));
 
         for (String s : split(list)) {
             if (s.contains("-")) {
+                assert damagedItem != null;
                 if (s.indexOf("-") == s.length() - 1) {
-                    assert damagedItem != null;
-                    if (n >= (s.substring(0, s.length() - 1).endsWith("%") ? Rename.parseDamagePercent(s.substring(0, s.length() - 1), damagedItem) : Integer.parseInt(s.substring(0, s.length() - 1)))) {
-                        return true;
+                    String min = s.substring(0, s.length() - 1);
+                    if (min.endsWith("%")) {
+                        min = min.substring(0, min.length() - 1);
+
+                        Damage minDamage = new Damage(Integer.parseInt(min), true);
+
+                        if (n >= minDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))) return true;
+                    } else {
+                        if (n >= Integer.parseInt(min)) return true;
                     }
                 } else {
-                    int i = 0;
-                    while (s.charAt(i) != '-') {
-                        i++;
-                    }
+                    int i = s.indexOf('-');
                     String min = s.substring(0, i);
                     String max = s.substring(i + 1);
-                    assert damagedItem != null;
-                    if ((n >= (min.endsWith("%") ? Rename.parseDamagePercent(min, damagedItem) : Integer.parseInt(min))) && (n <= (max.endsWith("%") ? Rename.parseDamagePercent(max, damagedItem) : Integer.parseInt(max)))) {
-                        return true;
+                    if (max.endsWith("%")) {
+                        max = max.replace("%", "");
+
+                        Damage minDamage = new Damage(Integer.parseInt(min), true);
+                        Damage maxDamage = new Damage(Integer.parseInt(max), true);
+
+                        if (n >= minDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))
+                                && n <= maxDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))) {
+                            return true;
+                        }
+                    } else {
+                        if (n >= Integer.parseInt(min) && n <= Integer.parseInt(max)) return true;
                     }
                 }
             } else if (n == Integer.parseInt(s)) {
@@ -232,9 +250,7 @@ public class Rename {
         return split;
     }
 
-    public static int parseDamagePercent(String string, String itemName) {
-        int percent = Integer.parseInt(string.substring(0, string.length() - 1));
-        Item item = ConfigManager.itemFromName(itemName);
+    public static int parseDamagePercent(int percent, Item item) {
         int maxDamage = item.getMaxDamage();
         return maxDamage * percent / 100;
     }
@@ -264,6 +280,21 @@ public class Rename {
             }
         }
         return false;
+    }
+
+    public static class Damage {
+        public int damage;
+        public boolean percent;
+
+        public Damage(Integer damage, boolean percent) {
+            this.damage = damage;
+            this.percent = percent;
+        }
+
+        public int getParsedDamage(Item item) {
+            if (!percent) return damage;
+            return parseDamagePercent(damage, item);
+        }
     }
 
     public static class Mob {

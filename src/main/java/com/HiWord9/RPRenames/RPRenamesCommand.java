@@ -198,8 +198,8 @@ public class RPRenamesCommand {
             ItemStack itemStack = new ItemStack(item);
             itemStack.setCustomName(Text.of(r.getName()));
             itemStack.setCount(r.getStackSize());
-            if (r.getDamage() != 0) {
-                itemStack.setDamage(r.getDamage());
+            if (r.getDamage() != null && r.getDamage().damage != 0) {
+                itemStack.setDamage(r.getDamage().getParsedDamage(item));
             }
             if (r.getEnchantment() != null) {
                 itemStack.getOrCreateNbt();
