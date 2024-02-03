@@ -347,26 +347,25 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     }
 
     private void calcRenameList() {
-        if (currentTab == Tabs.SEARCH) {
-            originalRenameList = ConfigManager.getAllRenames(currentItem);
-        } else if (currentTab == Tabs.FAVORITE) {
-            originalRenameList = ConfigManager.getFavorites(currentItem);
-        } else if (currentTab == Tabs.INVENTORY) {
-            ArrayList<String> currentInvList = getInventory();
-            ArrayList<String> checked = new ArrayList<>();
-            ArrayList<Rename> names = new ArrayList<>();
-            for (String item : currentInvList) {
-                if (!item.equals(nullItem) && !checked.contains(item)) {
-                    checked.add(item);
-                    ArrayList<Rename> renames = ConfigManager.getAllRenames(item);
-                    for (Rename r : renames) {
-                        if (!names.contains(r)) names.add(r);
+        switch (currentTab) {
+            case SEARCH -> originalRenameList = ConfigManager.getAllRenames(currentItem);
+            case FAVORITE -> originalRenameList = ConfigManager.getFavorites(currentItem);
+            case INVENTORY -> {
+                ArrayList<String> currentInvList = getInventory();
+                ArrayList<String> checked = new ArrayList<>();
+                ArrayList<Rename> names = new ArrayList<>();
+                for (String item : currentInvList) {
+                    if (!item.equals(nullItem) && !checked.contains(item)) {
+                        checked.add(item);
+                        ArrayList<Rename> renames = ConfigManager.getAllRenames(item);
+                        for (Rename r : renames) {
+                            if (!names.contains(r)) names.add(r);
+                        }
                     }
                 }
+                originalRenameList = names;
             }
-            originalRenameList = names;
-        } else if (currentTab == Tabs.GLOBAL) {
-            originalRenameList = ConfigManager.getAllRenames();
+            case GLOBAL -> originalRenameList = ConfigManager.getAllRenames();
         }
     }
 
@@ -798,8 +797,21 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             }
         }
 
+        if (rename.getDescription() != null) {
+            ArrayList<Text> lines = ConfigManager.parseCustomDescription(rename.getDescription());
+            tooltip.addAll(lines);
+        }
+
         if (config.showPackName && rename.getPackName() != null) {
-            tooltip.add(Text.of(rename.getPackName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
+            String packName = rename.getPackName();
+            if (packName.endsWith(".zip")) {
+                tooltip.add(Text.of(packName.substring(0, packName.length() - 4))
+                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
+                        .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
+                );
+            } else {
+                tooltip.add(Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
+            }
         }
         if (config.showNbtDisplayName && currentTab != Tabs.FAVORITE && rename.getOriginalNbtDisplayName() != null) {
             tooltip.add(Text.of("nbt.display.Name=" + rename.getOriginalNbtDisplayName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));

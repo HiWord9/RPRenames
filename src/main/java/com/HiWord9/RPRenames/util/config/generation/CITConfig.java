@@ -10,7 +10,8 @@ import java.util.Properties;
 public class CITConfig {
 
     public static void propertiesToRename(Properties p, String packName, String path) {
-        String matchItems = p.getProperty("matchItems") == null ? p.getProperty("items") : p.getProperty("matchItems");
+        String matchItems = p.getProperty("matchItems");
+        if (matchItems == null) matchItems = p.getProperty("items");
         if (matchItems == null) return;
 
         while (matchItems.endsWith(" ") || matchItems.endsWith("\t")) {
@@ -48,6 +49,9 @@ public class CITConfig {
         String firstEnchantLvl = Rename.getFirstValue(enchantLvlProp == null ? "" : enchantLvlProp);
         Integer enchantLvl = firstEnchantLvl.isEmpty() ? null : Integer.parseInt(firstEnchantLvl) <= 0 ? null : Integer.parseInt(firstEnchantLvl);
 
+        String description = p.getProperty("rpr.description");
+        if (description == null) description = p.getProperty("description");
+
         if (nbtNamePattern != null) {
             Rename rename = new Rename(ConfigManager.getFirstName(nbtNamePattern, items),
                     items,
@@ -58,9 +62,11 @@ public class CITConfig {
                     firstEnchantId,
                     enchantLvl,
                     p,
+                    description,
                     null);
+
             for (String item : items) {
-                ConfigManager.renamesAdd(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, item, rename);
+                ConfigManager.addRenames(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, item, rename);
             }
         }
     }

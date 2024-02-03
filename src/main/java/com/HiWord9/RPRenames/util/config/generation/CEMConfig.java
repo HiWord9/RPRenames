@@ -27,14 +27,24 @@ public class CEMConfig {
                     skins.add(p.getProperty("skins." + s.substring(5)));
                     String name = ConfigManager.getFirstName(p.getProperty(s));
                     if (name != null) {
-                        ArrayList<Rename> alreadyExist = ConfigManager.renamesGet(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, defaultModItem);
+                        ArrayList<Rename> alreadyExist = ConfigManager.getRenames(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, defaultModItem);
                         Rename rename;
                         Rename renameNameOnly = new Rename(name, defaultModItem);
                         Rename.Mob mob = new Rename.Mob(fileName, ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)), p, path.replaceAll("\\\\", "/"));
                         if (renameNameOnly.isContainedIn(alreadyExist, true)) {
                             Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
                             alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
-                            rename = new Rename(renameForItem.getName(), renameForItem.getItems(), renameForItem.getPackName(), renameForItem.getPath(), renameForItem.getStackSize(), renameForItem.getDamage(), renameForItem.getEnchantment(), renameForItem.getEnchantmentLevel(), renameForItem.getProperties(), mob);
+                            rename = new Rename(renameForItem.getName(),
+                                    renameForItem.getItems(),
+                                    renameForItem.getPackName(),
+                                    renameForItem.getPath(),
+                                    renameForItem.getStackSize(),
+                                    renameForItem.getDamage(),
+                                    renameForItem.getEnchantment(),
+                                    renameForItem.getEnchantmentLevel(),
+                                    renameForItem.getProperties(),
+                                    renameForItem.getDescription(),
+                                    mob);
                         } else {
                             rename = new Rename(name, packName, mob);
                         }

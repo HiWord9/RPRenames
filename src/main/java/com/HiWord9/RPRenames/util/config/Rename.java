@@ -16,11 +16,12 @@ public class Rename {
     private final String enchantment;
     private final Integer enchantmentLevel;
     private final Properties properties;
+    private final String description;
     private final Mob mob;
     private final boolean cem;
 
     public Rename(String name) {
-        this(name, null, null, null, null, null, null, null, null, null);
+        this(name, null, null, null, null, null, null, null, null, null, null);
     }
 
     public Rename(String name, String item) {
@@ -28,13 +29,13 @@ public class Rename {
     }
 
     public Rename(String name, ArrayList<String> items) {
-        this(name, items, null, null, null, null, null, null, null, null);
+        this(name, items, null, null, null, null, null, null, null, null, null);
     }
 
     public Rename(String name,
                   String packName,
                   Mob mob) {
-        this(name, new ArrayList<>(List.of(CEMConfig.defaultModItem)), packName, null, null, null, null, null, null, mob);
+        this(name, new ArrayList<>(List.of(CEMConfig.defaultModItem)), packName, null, null, null, null, null, null, null, mob);
     }
 
     public Rename(String name,
@@ -46,6 +47,7 @@ public class Rename {
                   String enchantment,
                   Integer enchantmentLevel,
                   Properties properties,
+                  String description,
                   @Nullable Mob mob) {
         this.name = name;
         this.items = items;
@@ -56,6 +58,7 @@ public class Rename {
         this.enchantment = enchantment;
         this.enchantmentLevel = enchantmentLevel;
         this.properties = properties;
+        this.description = description;
         this.mob = mob;
         this.cem = mob != null;
     }
@@ -115,6 +118,10 @@ public class Rename {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public Mob getMob() {

@@ -10,9 +10,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
-import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -260,7 +264,7 @@ public class ConfigManager {
                         unicode = (char) Integer.parseInt(unicodeNumbers, 16);
                     } catch (Exception e) {
                         stringBuilder.append(chars[i]);
-                        System.out.println("Invalid unicode \"" + unicodeNumbers + "\" for String: " + string);
+                        RPRenames.LOGGER.warn("Invalid unicode \"" + unicodeNumbers + "\" for String: " + string);
                         continue;
                     }
                     i += 5;
@@ -413,8 +417,8 @@ public class ConfigManager {
     }
 
     public static ArrayList<Rename> getAllRenames(String item) {
-        ArrayList<Rename> names = new ArrayList<>(renamesGet(RPRenames.renames, item));
-        for (Rename r : renamesGet(RPRenames.renamesServer, item)) {
+        ArrayList<Rename> names = new ArrayList<>(getRenames(RPRenames.renames, item));
+        for (Rename r : getRenames(RPRenames.renamesServer, item)) {
             if (!names.contains(r)) {
                 names.add(r);
             }
@@ -422,7 +426,7 @@ public class ConfigManager {
         return names;
     }
 
-    public static ArrayList<Rename> renamesGet(Map<String, ArrayList<Rename>> map, String item) {
+    public static ArrayList<Rename> getRenames(Map<String, ArrayList<Rename>> map, String item) {
         if (map.containsKey(item)) {
             return map.get(item);
         } else {
@@ -430,9 +434,19 @@ public class ConfigManager {
         }
     }
 
-    public static void renamesAdd(Map<String, ArrayList<Rename>> map, String item, Rename rename) {
+    public static void addRenames(Map<String, ArrayList<Rename>> map, String item, Rename rename) {
         if (map.containsKey(item)) {
-            Rename simplifiedRename = new Rename(rename.getName(), rename.getItems(), null, null, rename.getStackSize(), rename.getDamage(), rename.getEnchantment(), rename.getEnchantmentLevel(), null, null);
+            Rename simplifiedRename = new Rename(rename.getName(),
+                    rename.getItems(),
+                    null,
+                    null,
+                    rename.getStackSize(),
+                    rename.getDamage(),
+                    rename.getEnchantment(),
+                    rename.getEnchantmentLevel(),
+                    null,
+                    null,
+                    null);
             if (!simplifiedRename.isContainedIn(map.get(item), true)) {
                 map.get(item).add(rename);
             }
@@ -580,6 +594,52 @@ public class ConfigManager {
             }
         }
         return cutList;
+    }
+
+    public static ArrayList<Text> parseCustomDescription(String description) {
+        ArrayList<Text> lines = new ArrayList<>();
+        String[] splited = description
+                .replaceAll("\\\\&", String.valueOf(Formatting.FORMATTING_CODE_PREFIX))
+                .split("\n");
+
+        for (String s : splited) {
+            MutableText line = Text.empty();
+            char[] chars = s.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                MutableText text = Text.empty();
+
+                if (chars[i] == '\\'
+                        && i != chars.length - 1
+                        && chars[i + 1] == '#'
+                        && i + 7 < chars.length) {
+                    StringBuilder color = new StringBuilder();
+                    for (int j = 2; j < 8; j++) {
+                        color.append(chars[i + j]);
+                    }
+                    if (color.toString().matches("[0-9a-fA-F]*")) {
+                        text.fillStyle(Style.EMPTY.withColor(Integer.parseInt(color.toString(), 16)));
+                    } else {
+                        text.append("\\#" + color);
+                    }
+                    i += 8;
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                while (i < chars.length) {
+                    if (chars[i] == '\\' && chars[i + 1] == '#') {
+                        i--;
+                        break;
+                    }
+                    stringBuilder.append(chars[i]);
+                    i++;
+                }
+
+                text.append(Text.translatable(stringBuilder.toString()));
+                line.append(text);
+            }
+            lines.add(line);
+        }
+        return lines;
     }
 
     public static void configClear() {
