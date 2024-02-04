@@ -36,7 +36,6 @@ public class ModConfig implements ConfigData {
     public int slotHighlightColorRGB = 8454143;
 
     public boolean translateMobNames = true;
-    public boolean translateItemNames = true;
 
     public boolean enablePreview = true;
     public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.BOTTOM;

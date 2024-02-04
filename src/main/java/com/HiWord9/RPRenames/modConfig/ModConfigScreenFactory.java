@@ -122,12 +122,6 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.translateMobNames)
                 .build();
 
-        AbstractConfigListEntry<Boolean> translateItemNames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.translateItemNames"), currentConfig.translateItemNames)
-                .setTooltip(Text.translatable("rprenames.config.gui.translateItemNames.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.translateItemNames = newConfig)
-                .setDefaultValue(defaultConfig.translateItemNames)
-                .build();
-
         AbstractConfigListEntry<Boolean> enablePreview = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.enablePreview"), currentConfig.enablePreview)
                 .setTooltip(Text.translatable("rprenames.config.gui.enablePreview.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.enablePreview = newConfig)
@@ -257,8 +251,7 @@ public class ModConfigScreenFactory {
         slotHighlightColorSettings.add(1, slotHighlightALPHA);
 
         SubCategoryBuilder tooltipTranslations = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.tooltipTranslations"));
-        tooltipTranslations.add(0, translateItemNames);
-        tooltipTranslations.add(1, translateMobNames);
+        tooltipTranslations.add(0, translateMobNames);
 
         SubCategoryBuilder previewScale = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.previewScale"));
         previewScale.add(0, scaleFactorItem);
