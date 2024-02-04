@@ -60,6 +60,8 @@ public class ModConfig implements ConfigData {
     public boolean showNbtDisplayName = false;
     public boolean showOriginalProperties = false;
 
+    public boolean showDescription = true;
+
     public int getSlotHighlightRGBA() {
         int r = Color.ofTransparent(slotHighlightColorRGB).getRed();
         int g = Color.ofTransparent(slotHighlightColorRGB).getGreen();

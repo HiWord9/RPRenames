@@ -6,10 +6,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import static com.HiWord9.RPRenames.util.gui.Graphics.*;
+
 public class GhostCraft {
-    final int slotSize = 18;
-    final int highlightColor = 822018048;
-    final int secondaryHighlightColor = 822018303;
     final MinecraftClient client = MinecraftClient.getInstance();
 
     public ItemStack slot1 = ItemStack.EMPTY;
@@ -55,12 +54,12 @@ public class GhostCraft {
     }
 
     public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
-        if (mouseY >= eachSlotY && mouseY <= eachSlotY + slotSize) {
-            if (!slot1.isEmpty() && (mouseX >= slot1x && mouseX <= slot1x + slotSize)) {
+        if (mouseY >= eachSlotY && mouseY <= eachSlotY + SLOT_SIZE) {
+            if (!slot1.isEmpty() && (mouseX >= slot1x && mouseX < slot1x + SLOT_SIZE)) {
                 context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, slot1), mouseX, mouseY);
-            } else if (!slot2.isEmpty() && (mouseX >= slot2x && mouseX <= slot2x + slotSize)) {
+            } else if (!slot2.isEmpty() && (mouseX >= slot2x && mouseX < slot2x + SLOT_SIZE)) {
                 context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, slot2), mouseX, mouseY);
-            } else if (!slot3.isEmpty() && (mouseX >= slot3x && mouseX <= slot3x + slotSize)) {
+            } else if (!slot3.isEmpty() && (mouseX >= slot3x && mouseX < slot3x + SLOT_SIZE)) {
                 context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, slot3), mouseX, mouseY);
             }
         }
@@ -71,19 +70,19 @@ public class GhostCraft {
             Graphics.renderStack(context, slot1, slot1x + 1, eachSlotY + 1);
         }
         if (!slot1.isEmpty() || forceRenderBG1) {
-            context.fill(slot1x, eachSlotY, slot1x + slotSize, eachSlotY + slotSize, forceRenderBG1 ? secondaryHighlightColor : highlightColor);
+            context.fill(slot1x, eachSlotY, slot1x + SLOT_SIZE, eachSlotY + SLOT_SIZE, forceRenderBG1 ? HIGHLIGHT_COLOR_SECOND : HIGHLIGHT_COLOR_WRONG);
         }
         if (!slot2.isEmpty()) {
             Graphics.renderStack(context, slot2, slot2x + 1, eachSlotY + 1);
         }
         if (!slot2.isEmpty() || forceRenderBG2) {
-            context.fill(slot2x, eachSlotY, slot2x + slotSize, eachSlotY + slotSize, forceRenderBG2 ? secondaryHighlightColor : highlightColor);
+            context.fill(slot2x, eachSlotY, slot2x + SLOT_SIZE, eachSlotY + SLOT_SIZE, forceRenderBG2 ? HIGHLIGHT_COLOR_SECOND : HIGHLIGHT_COLOR_WRONG);
         }
         if (!slot3.isEmpty()) {
             Graphics.renderStack(context, slot3, slot3x + 1, eachSlotY + 1);
         }
         if (!slot3.isEmpty() || forceRenderBG3) {
-            context.fill(slot3x, eachSlotY, slot3x + slotSize, eachSlotY + slotSize, forceRenderBG3 ? secondaryHighlightColor : highlightColor);
+            context.fill(slot3x, eachSlotY, slot3x + SLOT_SIZE, eachSlotY + SLOT_SIZE, forceRenderBG3 ? HIGHLIGHT_COLOR_SECOND : HIGHLIGHT_COLOR_WRONG);
         }
     }
 

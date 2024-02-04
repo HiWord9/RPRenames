@@ -24,19 +24,27 @@ public class CITConfig {
 
         String stackSizeProp = p.getProperty("stackSize");
         String firstStackSize = Rename.getFirstValue(stackSizeProp == null ? "" : stackSizeProp);
-        Integer stackSize = firstStackSize.isEmpty() ? null : Integer.parseInt(firstStackSize) > 64 || Integer.parseInt(firstStackSize) <= 0 ? null : Integer.parseInt(firstStackSize);
+        Integer stackSize = null;
+        if (!firstStackSize.isEmpty()) {
+            int i = Integer.parseInt(firstStackSize);
+            if (i <= 64 && i > 0) {
+                stackSize = i;
+            }
+        }
 
         String damageProp = p.getProperty("damage");
-        String firstDamage = Rename.getFirstValue(damageProp == null ? "" : damageProp);
         Rename.Damage damage = null;
+        if (damageProp != null) {
+            String firstDamage = Rename.getFirstValue(damageProp);
 
-        if (!firstDamage.isEmpty()) {
-            try {
-                int d = Integer.parseInt(firstDamage);
-                if (d > 0) {
+            if (!firstDamage.isEmpty()) {
+                try {
+                    int d = Integer.parseInt(firstDamage);
                     damage = new Rename.Damage(d, firstDamage.contains("%"));
+                } catch (NumberFormatException ignored) {
+                    RPRenames.LOGGER.warn("Could not get valid damage value for " + path);
                 }
-            } catch (NumberFormatException ignored) {}
+            }
         }
 
         String enchantIdProp = p.getProperty("enchantmentIDs");
@@ -53,7 +61,8 @@ public class CITConfig {
         if (description == null) description = p.getProperty("description");
 
         if (nbtNamePattern != null) {
-            Rename rename = new Rename(ConfigManager.getFirstName(nbtNamePattern, items),
+            Rename rename = new Rename(
+                    ConfigManager.getFirstName(nbtNamePattern, items),
                     items,
                     packName,
                     path,
@@ -63,7 +72,8 @@ public class CITConfig {
                     enchantLvl,
                     p,
                     description,
-                    null);
+                    null
+            );
 
             for (String item : items) {
                 ConfigManager.addRenames(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, item, rename);

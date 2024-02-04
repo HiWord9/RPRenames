@@ -221,35 +221,35 @@ public class ConfigManager {
     }
 
     public static String getFirstName(String nbtDisplayName, @Nullable ArrayList<String> items) {
-        nbtDisplayName = parseEscapes(nbtDisplayName);
-        if (nbtDisplayName.startsWith("pattern:") || nbtDisplayName.startsWith("ipattern:")) {
-            if (nbtDisplayName.startsWith("i")) {
-                nbtDisplayName = nbtDisplayName.substring(1);
+        String name = parseEscapes(nbtDisplayName);
+        if (name.startsWith("pattern:") || name.startsWith("ipattern:")) {
+            if (name.startsWith("i")) {
+                name = name.substring(1);
             }
-            nbtDisplayName = nbtDisplayName.replaceFirst("pattern:", "");
-            nbtDisplayName = nbtDisplayName.replace("*", "");
-            nbtDisplayName = nbtDisplayName.replace("?", "_");
-        } else if (nbtDisplayName.startsWith("regex:") || nbtDisplayName.startsWith("iregex")) {
-            if (nbtDisplayName.startsWith("i")) {
-                nbtDisplayName = nbtDisplayName.substring(1);
+            name = name.replaceFirst("pattern:", "");
+            name = name.replace("*", "");
+            name = name.replace("?", "_");
+        } else if (name.startsWith("regex:") || name.startsWith("iregex")) {
+            if (name.startsWith("i")) {
+                name = name.substring(1);
             }
-            nbtDisplayName = nbtDisplayName.replaceFirst("regex:", "");
-            nbtDisplayName = nbtDisplayName.replace(".*", "");
-            nbtDisplayName = nbtDisplayName.replace(".+", "_");
+            name = name.replaceFirst("regex:", "");
+            name = name.replace(".*", "");
+            name = name.replace(".+", "_");
 
-            String originalRegex = nbtDisplayName;
-            nbtDisplayName = solveRegex(nbtDisplayName);
+            String originalRegex = name;
+            name = solveRegex(name);
             try {
-                if (!nbtDisplayName.matches(originalRegex)) {
+                if (!name.matches(originalRegex)) {
                     RPRenames.LOGGER.error("Couldn't get valid string from regex" + (items != null ? " for " + items : ""));
                     RPRenames.LOGGER.error("regex:" + originalRegex);
-                    RPRenames.LOGGER.error("received string:" + nbtDisplayName);
+                    RPRenames.LOGGER.error("received string:" + name);
                 }
             } catch (PatternSyntaxException e) {
                 RPRenames.LOGGER.error("INVALID REGEX");
             }
         }
-        return nbtDisplayName;
+        return name;
     }
 
     public static String parseEscapes(String string) {

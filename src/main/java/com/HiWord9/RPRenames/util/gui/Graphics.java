@@ -1,10 +1,13 @@
 package com.HiWord9.RPRenames.util.gui;
 
+import com.HiWord9.RPRenames.DrawContextMixinAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,14 +17,20 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
+import java.util.List;
+
 public class Graphics extends Screen {
+    static public final int SLOT_SIZE = 18;
+
+    static final int HIGHLIGHT_COLOR_WRONG = 822018048;
+    static final int HIGHLIGHT_COLOR_SECOND = 822018303;
+
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
-    static public final int backgroundWidth = 176;
-    static public final int backgroundHeight = 166;
+    static public final int BACKGROUND_WIDTH = 176;
+    static public final int BACKGROUND_HEIGHT = 166;
 
     protected Graphics() {
         super(null);
@@ -42,14 +51,14 @@ public class Graphics extends Screen {
     }
 
     public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y) {
-        renderStack(context, itemStack, x, y, null, 16);
+        renderStack(context, itemStack, x, y, 0, 16);
     }
 
-    public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y, @Nullable Integer z, int size) {
+    public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y, int z, int size) {
         float scale = size != 16 ? ((float) size / 16f) : 1f;
         MatrixStack matrices = context.getMatrices();
         matrices.push();
-        matrices.translate(x, y, z == null ? 0 : z);
+        matrices.translate(x, y, z);
         matrices.scale(scale, scale, 1);
         context.drawItemWithoutEntity(itemStack, 0, 0);
         matrices.pop();
@@ -158,5 +167,11 @@ public class Graphics extends Screen {
 
     public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, int z) {
         TooltipBackgroundRenderer.render(context, x + 4, y + 4, width - 8, height - 8, z);
+    }
+
+    public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
+        if (context instanceof DrawContextMixinAccessor drawContextMixinAccessor) {
+            drawContextMixinAccessor.accessedDrawTooltip(textRenderer, components, x, y, positioner);
+        }
     }
 }

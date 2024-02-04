@@ -8,6 +8,8 @@ import com.HiWord9.RPRenames.util.config.ConfigManager;
 import com.HiWord9.RPRenames.util.config.Rename;
 import com.HiWord9.RPRenames.util.gui.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.Graphics;
+import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent.TooltipItem;
 import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.HiWord9.RPRenames.util.gui.button.*;
 import com.google.common.collect.Maps;
@@ -17,6 +19,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -43,6 +47,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.HiWord9.RPRenames.util.gui.Graphics.BACKGROUND_HEIGHT;
+import static com.HiWord9.RPRenames.util.gui.Graphics.BACKGROUND_WIDTH;
+
 @Mixin(value = AnvilScreen.class, priority = 1200)
 public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixinAccessor {
     private static final ModConfig config = ModConfig.INSTANCE;
@@ -58,19 +65,16 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private static final Identifier MENU_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/menu.png");
 
-    int menuTextureHeight = 166;
-    int menuWidth = 147;
-    int menuHeight = menuTextureHeight;
-    int menuXOffset = -1;
-    int tabOffsetY = 6;
-    int startTabOffsetY = 6;
-    int buttonOffsetY = 2;
-    int buttonXOffset = 10;
+    final int menuTextureHeight = 166;
+    final int menuWidth = 147;
+    final int menuHeight = menuTextureHeight;
+    final int menuXOffset = -1;
+    final int tabOffsetY = 6;
+    final int startTabOffsetY = 6;
+    final int buttonOffsetY = 2;
+    final int buttonXOffset = 10;
 
-    int highlightColor = config.getSlotHighlightRGBA();
-
-    final int backgroundWidth = Graphics.backgroundWidth;
-    final int backgroundHeight = Graphics.backgroundHeight;
+    final int highlightColor = config.getSlotHighlightRGBA();
 
     int page = 0;
     int maxPageElements = 5;
@@ -127,19 +131,19 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             buttons.add(new RenameButtonHolder(config.viewMode, i));
         }
 
-        pageDown = new PageButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
-        pageUp = new PageButton(this.width / 2 - backgroundWidth / 2 + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
+        pageDown = new PageButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
+        pageUp = new PageButton(this.width / 2 - BACKGROUND_WIDTH / 2 + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
 
         opener = new OpenerButton(this.width / 2 - 85, this.height / 2 - 39);
 
-        searchTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY, Tabs.SEARCH);
-        favoriteTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
-        inventoryTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
-        globalTab = new TabButton(this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - backgroundHeight / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
+        searchTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY, Tabs.SEARCH);
+        favoriteTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
+        inventoryTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
+        globalTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
 
         favoriteButton = new FavoriteButton(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY);
 
-        searchField = new TextFieldWidget(renderer, this.width / 2 - (backgroundWidth / 2) - menuWidth + menuXOffset + searchFieldXOffset, this.height / 2 - 68, menuWidth - 38, 10, Text.of(""));
+        searchField = new TextFieldWidget(renderer, this.width / 2 - (BACKGROUND_WIDTH / 2) - menuWidth + menuXOffset + searchFieldXOffset, this.height / 2 - 68, menuWidth - 38, 10, Text.of(""));
         searchField.setChangedListener(this::onSearch);
         searchField.setDrawsBackground(false);
         searchField.setMaxLength(1024);
@@ -428,8 +432,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!config.enableAnvilModification) return super.mouseClicked(mouseX, mouseY, button);
-        int xScreenOffset = (this.width - backgroundWidth) / 2;
-        int yScreenOffset = (this.height - backgroundHeight) / 2;
+        int xScreenOffset = (this.width - BACKGROUND_WIDTH) / 2;
+        int yScreenOffset = (this.height - BACKGROUND_HEIGHT) / 2;
         if (ghostCraft.doRender) {
             if ((mouseX - xScreenOffset >= 26 && mouseX - xScreenOffset <= 151) && (mouseY - yScreenOffset >= 46 && mouseY - yScreenOffset <= 64)) {
                 ghostCraft.reset();
@@ -535,8 +539,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     @Inject(at = @At("HEAD"), method = "drawForeground")
     private void frameUpdate(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
-        int xScreenOffset = (this.width - backgroundWidth) / 2;
-        int yScreenOffset = (this.height - backgroundHeight) / 2;
+        int xScreenOffset = (this.width - BACKGROUND_WIDTH) / 2;
+        int yScreenOffset = (this.height - BACKGROUND_HEIGHT) / 2;
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(-xScreenOffset, -yScreenOffset, 0);
@@ -566,7 +570,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         pageUp.render(context, mouseX, mouseY, 0);
         matrices.pop();
 
-        Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, backgroundHeight - (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 26 : 22), false, true);
+        Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, BACKGROUND_HEIGHT - (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 26 : 22), false, true);
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(context, SEARCH_HINT_TEXT, -1, -menuWidth + searchFieldXOffset, searchFieldXOffset - 8, true, false);
         }
@@ -583,16 +587,22 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         } else {
             for (RenameButtonHolder renameButtonHolder : buttons) {
                 if (renameButtonHolder.getButton() != null && renameButtonHolder.getButton().isMouseOver(mouseX, mouseY) && renameButtonHolder.isActive()) {
-                    ArrayList<Text> lines = new ArrayList<>(renameButtonHolder.getTooltip());
+                    ArrayList<TooltipComponent> tooltip = new ArrayList<>(renameButtonHolder.getTooltip());
                     if (!renameButtonHolder.isCEM() && config.enablePreview) {
                         if (!hasShiftDown() && !config.playerPreviewByDefault) {
                             if (!config.disablePlayerPreviewTips) {
-                                lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
+                                tooltip.add(TooltipComponent.of(
+                                        Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift")
+                                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                                                .asOrderedText()));
                             }
                         } else if (hasShiftDown() != config.playerPreviewByDefault) {
                             searchField.setFocused(false);
                             if (!config.disablePlayerPreviewTips) {
-                                lines.add(Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)));
+                                tooltip.add(TooltipComponent.of(
+                                        Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF")
+                                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                                                .asOrderedText()));
                             }
                         }
                     }
@@ -601,7 +611,13 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     }
                     matrices.push();
                     matrices.translate(-xScreenOffset, -yScreenOffset, 0);
-                    context.drawTooltip(MinecraftClient.getInstance().textRenderer, lines, mouseX, mouseY);
+                    Graphics.drawTooltip(
+                            context,
+                            MinecraftClient.getInstance().textRenderer,
+                            tooltip,
+                            mouseX, mouseY,
+                            HoveredTooltipPositioner.INSTANCE
+                    );
                     if (config.enablePreview) {
                         renameButtonHolder.drawPreview(context, mouseX, mouseY, 52, 52, config.scaleFactorItem, config.scaleFactorEntity);
                     }
@@ -680,23 +696,23 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             favorite = Rename.isFavorite(item, rename.getName());
         }
 
-        ArrayList<Text> tooltip = new ArrayList<>();
+        ArrayList<Object> tooltip = new ArrayList<>();
         tooltip.add(Text.of(rename.getName()));
-        if (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) {
-            int lines = 0;
-            for (String s : rename.getItems()) { //TODO
-                if (lines >= 5) {
-                    int i = rename.getItems().toArray().length - 5;
-                    if (i > 1) {
-                        tooltip.add(Text.of("And " + i + " more...").copy().fillStyle(Style.EMPTY.withItalic(true))); //TODO translate
-                        break;
-                    }
-                }
-                tooltip.add(Text.of(config.translateItemNames ? Text.translatable(Registries.ITEM.get(new Identifier(s)).getTranslationKey()).getString() : s)
-                        .copy().fillStyle(Style.EMPTY.withColor(getInventory().contains(s) ? Formatting.DARK_AQUA : Formatting.RED)));
-                lines++;
-            }
+
+        if (rename.getDescription() != null && config.showDescription) {
+            ArrayList<Text> lines = ConfigManager.parseCustomDescription(rename.getDescription());
+            tooltip.addAll(lines);
         }
+
+        if (rename.getItems() != null && (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
+            ArrayList<TooltipItem> tooltipItems = new ArrayList<>();
+            for (int i = 0; i < rename.getItems().size(); i++) {
+                ItemStack itemStack = RenameButtonHolder.createItem(rename, false, i);
+                tooltipItems.add(new TooltipItem(itemStack, inventory.contains(rename.getItems().get(i))));
+            }
+            tooltip.add(new MultiItemTooltipComponent(tooltipItems));
+        }
+
         if (item.equals(ConfigManager.getIdAndPath(Items.NAME_TAG)) && rename.isCEM()) {
             Identifier mob = new Identifier(rename.getMob().entity());
             var entityType = Registries.ENTITY_TYPE.get(mob);
@@ -797,11 +813,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             }
         }
 
-        if (rename.getDescription() != null) {
-            ArrayList<Text> lines = ConfigManager.parseCustomDescription(rename.getDescription());
-            tooltip.addAll(lines);
-        }
-
         if (config.showPackName && rename.getPackName() != null) {
             String packName = rename.getPackName();
             if (packName.endsWith(".zip")) {
@@ -820,11 +831,20 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         int x;
         int y;
         if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
-            x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset;
+            x = this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset + buttonXOffset;
             y = this.height / 2 - 53 + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));
         } else {
-            x = this.width / 2 - backgroundWidth / 2 - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
-            y = this.height / 2 - backgroundHeight / 2 + 31 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
+            x = this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
+            y = this.height / 2 - BACKGROUND_HEIGHT / 2 + 31 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
+        }
+
+        ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
+        for (Object o : tooltip) {
+            if (o instanceof Text) {
+                tooltipComponents.add(TooltipComponent.of(((Text) o).asOrderedText()));
+            } else if (o instanceof TooltipComponent tooltipComponent) {
+                tooltipComponents.add(tooltipComponent);
+            }
         }
 
         RenameButton renameButton = new RenameButton(x, y, config.viewMode, favorite,
@@ -833,7 +853,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 enoughStackSize, enoughDamage,
                 hasEnchant, hasEnoughLevels);
 
-        buttons.get(orderOnPage).setParameters(renameButton, rename, page, tooltip);
+        buttons.get(orderOnPage).setParameters(renameButton, rename, page, tooltipComponents);
     }
 
     private void defineButtons() {

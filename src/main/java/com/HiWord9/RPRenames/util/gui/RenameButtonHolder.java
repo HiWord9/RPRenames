@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
@@ -28,6 +29,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
+import static com.HiWord9.RPRenames.util.gui.Graphics.SLOT_SIZE;
+
 public class RenameButtonHolder extends Screen {
     private final ModConfig config = ModConfig.INSTANCE;
 
@@ -40,7 +43,7 @@ public class RenameButtonHolder extends Screen {
     ItemStack icon;
     Text displayText = Text.empty();
     int orderOnPage;
-    ArrayList<Text> tooltip = new ArrayList<>();
+    ArrayList<TooltipComponent> tooltip = new ArrayList<>();
     int page;
     boolean active;
 
@@ -49,13 +52,9 @@ public class RenameButtonHolder extends Screen {
     int buttonHeight;
     int buttonOffsetY;
 
-    int slotSize = 18;
     int rowSize = 9;
     int firstSlotX = 7;
     int firstSlotY = 83;
-
-    final int backgroundWidth = Graphics.backgroundWidth;
-    final int backgroundHeight = Graphics.backgroundHeight;
 
     public RenameButtonHolder(ViewMode viewMode, int orderOnPage) {
         super(null);
@@ -101,14 +100,14 @@ public class RenameButtonHolder extends Screen {
             }
             int orderInRow = slotNum % rowSize;
             int row = slotNum / rowSize;
-            x = firstSlotX + (slotSize * orderInRow);
-            y = firstSlotY + (slotSize * row);
+            x = firstSlotX + (SLOT_SIZE * orderInRow);
+            y = firstSlotY + (SLOT_SIZE * row);
             if (isOnHotBar) {
                 y += 4;
             }
         }
         RenderSystem.enableDepthTest();
-        context.fillGradient(x, y, x + slotSize, y + slotSize, 10, highlightColor, highlightColor);
+        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, highlightColor, highlightColor);
     }
 
     public void drawPreview(DrawContext context, int mouseX, int mouseY, int width, int height, double scaleFactorItem, double scaleFactorEntity) {
@@ -148,14 +147,18 @@ public class RenameButtonHolder extends Screen {
             }
         } else {
             x += 8;
-            int yOffset = 2;
-            int rows = tooltip.size();
+            int yOffset = 0;
+            int tooltipHeight = 3 + 3;
+            for (TooltipComponent component : tooltip) {
+                tooltipHeight += component.getHeight();
+            }
+            if (tooltip.size() > 1) {
+                tooltipHeight += 2;
+            }
             if (config.enablePreview && !CEM && !config.disablePlayerPreviewTips && (!config.playerPreviewByDefault || !hasShiftDown())) {
-                rows++;
+                tooltipHeight += 10;
             }
-            if (rows > 1) {
-                yOffset += 10 * (rows - 1) + 2;
-            }
+            yOffset += tooltipHeight + 2 - 16;
             if (config.previewPos == PreviewPos.BOTTOM) {
                 if (y + yOffset + height > this.height && ((y - (height + 18)) > height / -2)) {
                     y -= (height + 18);
@@ -301,7 +304,7 @@ public class RenameButtonHolder extends Screen {
         return orderOnPage;
     }
 
-    public ArrayList<Text> getTooltip() {
+    public ArrayList<TooltipComponent> getTooltip() {
         return tooltip;
     }
 
@@ -317,7 +320,7 @@ public class RenameButtonHolder extends Screen {
         return active;
     }
 
-    public void setParameters(RenameButton button, Rename rename, int page, ArrayList<Text> tooltip) {
+    public void setParameters(RenameButton button, Rename rename, int page, ArrayList<TooltipComponent> tooltip) {
         this.button = button;
         this.rename = rename;
         this.CEM = rename.isCEM();
@@ -350,8 +353,12 @@ public class RenameButtonHolder extends Screen {
     }
 
     public static ItemStack createItem(Rename rename) {
-        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(0)));
-        item.setCustomName(Text.of(rename.getName()));
+        return createItem(rename, true, 0);
+    }
+
+    public static ItemStack createItem(Rename rename, boolean withCustomName, int itemIndex) {
+        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex)));
+        if (withCustomName) item.setCustomName(Text.of(rename.getName()));
         item.setCount(rename.getStackSize());
         if (rename.getDamage() != null) {
             item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
