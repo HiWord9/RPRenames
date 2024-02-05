@@ -4,11 +4,14 @@ import com.HiWord9.RPRenames.util.config.generation.CEMConfig;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 public class Rename {
     private final String name;
-    private final ArrayList<String> items;
+    private ArrayList<String> items;
     private final String packName;
     private final String path;
     private final Integer stackSize;
@@ -74,6 +77,10 @@ public class Rename {
 
     public ArrayList<String> getItems() {
         return items;
+    }
+
+    public void setItems(ArrayList<String> items) {
+        this.items = items;
     }
 
     public String getPackName() {
@@ -197,12 +204,14 @@ public class Rename {
     }
 
     public static boolean isInBounds(int n, String list, @Nullable String damagedItem) {
-        if (list == null) return damagedItem == null;
-        if (!list.contains(" ") && !list.contains("-") && !list.contains("%")) return n == Integer.parseInt(getFirstValue(list));
+        if (list == null) return true;
+        if (!list.contains(" ") && !list.contains("-") && !list.contains("%"))
+            return n == Integer.parseInt(getFirstValue(list));
 
         for (String s : split(list)) {
             if (s.contains("-")) {
                 assert damagedItem != null;
+                Item item = ConfigManager.itemFromName(damagedItem);
                 if (s.indexOf("-") == s.length() - 1) {
                     String min = s.substring(0, s.length() - 1);
                     if (min.endsWith("%")) {
@@ -210,7 +219,7 @@ public class Rename {
 
                         Damage minDamage = new Damage(Integer.parseInt(min), true);
 
-                        if (n >= minDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))) return true;
+                        if (n >= minDamage.getParsedDamage(item)) return true;
                     } else {
                         if (n >= Integer.parseInt(min)) return true;
                     }
@@ -224,8 +233,8 @@ public class Rename {
                         Damage minDamage = new Damage(Integer.parseInt(min), true);
                         Damage maxDamage = new Damage(Integer.parseInt(max), true);
 
-                        if (n >= minDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))
-                                && n <= maxDamage.getParsedDamage(ConfigManager.itemFromName(damagedItem))) {
+                        if (n >= minDamage.getParsedDamage(item)
+                                && n <= maxDamage.getParsedDamage(item)) {
                             return true;
                         }
                     } else {
@@ -304,35 +313,7 @@ public class Rename {
         }
     }
 
-    public static class Mob {
-        public final String entity;
-        public final String icon;
-        public final Properties properties;
-        public final String path;
-
-        public Mob(String entity, String icon, Properties properties, String path) {
-            this.entity = entity;
-            this.icon = icon;
-            this.properties = properties;
-            this.path = path;
-        }
-
-        public String entity() {
-            return entity;
-        }
-
-        public String icon() {
-            return icon;
-        }
-
-        public Properties properties() {
-            return properties;
-        }
-
-        public String path() {
-            return path;
-        }
-
+    public record Mob(String entity, String icon, Properties properties, String path) {
         public String getPropName() {
             Set<String> propertyNames = properties.stringPropertyNames();
             for (String s : propertyNames) {

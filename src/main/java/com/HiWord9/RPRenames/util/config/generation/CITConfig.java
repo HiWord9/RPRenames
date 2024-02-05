@@ -39,10 +39,10 @@ public class CITConfig {
 
             if (!firstDamage.isEmpty()) {
                 try {
-                    int d = Integer.parseInt(firstDamage);
+                    int d = Integer.parseInt(firstDamage.replace("%", ""));
                     damage = new Rename.Damage(d, firstDamage.contains("%"));
                 } catch (NumberFormatException ignored) {
-                    RPRenames.LOGGER.warn("Could not get valid damage value for " + path);
+                    RPRenames.LOGGER.warn("Could not get valid damage value " + firstDamage + " for " + path);
                 }
             }
         }

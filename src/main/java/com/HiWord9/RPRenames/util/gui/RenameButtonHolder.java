@@ -81,33 +81,32 @@ public class RenameButtonHolder extends Screen {
     }
 
     public void highlightSlot(DrawContext context, ArrayList<String> inventory, String currentItem, int highlightColor) {
-        int slotNum = -1;
+        int slotNum;
         for (String item : rename.getItems()) {
             slotNum = inventory.indexOf(item);
-            if (slotNum >= 0) break;
-        }
-        if (slotNum <= -1) return;
+            if (slotNum < 0) continue;
 
-        int x = 26;
-        int y = 46;
-        if (!inventory.get(slotNum).equals(currentItem)) {
-            boolean isOnHotBar = false;
-            if (slotNum < rowSize) {
-                slotNum += rowSize * 3;
-                isOnHotBar = true;
-            } else {
-                slotNum -= rowSize;
+            int x = 26;
+            int y = 46;
+            if (!inventory.get(slotNum).equals(currentItem)) {
+                boolean isOnHotBar = false;
+                if (slotNum < rowSize) {
+                    slotNum += rowSize * 3;
+                    isOnHotBar = true;
+                } else {
+                    slotNum -= rowSize;
+                }
+                int orderInRow = slotNum % rowSize;
+                int row = slotNum / rowSize;
+                x = firstSlotX + (SLOT_SIZE * orderInRow);
+                y = firstSlotY + (SLOT_SIZE * row);
+                if (isOnHotBar) {
+                    y += 4;
+                }
             }
-            int orderInRow = slotNum % rowSize;
-            int row = slotNum / rowSize;
-            x = firstSlotX + (SLOT_SIZE * orderInRow);
-            y = firstSlotY + (SLOT_SIZE * row);
-            if (isOnHotBar) {
-                y += 4;
-            }
+            RenderSystem.enableDepthTest();
+            context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, highlightColor, highlightColor);
         }
-        RenderSystem.enableDepthTest();
-        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, highlightColor, highlightColor);
     }
 
     public void drawPreview(DrawContext context, int mouseX, int mouseY, int width, int height, double scaleFactorItem, double scaleFactorEntity) {

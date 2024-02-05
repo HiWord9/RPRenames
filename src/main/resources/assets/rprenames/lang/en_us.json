@@ -40,6 +40,10 @@
   "rprenames.config.gui.showExtraProperties.tooltip": "If false, Extra Properties in Rename's tooltip won't be shown",
   "rprenames.config.gui.highlightSlot": "Highlight Slot",
   "rprenames.config.gui.highlightSlot.tooltip": "If true, Slot that contains hovered button's Item will be Highlighted",
+  "rprenames.config.gui.highlightTooltipSlotWrong": "Highlight missing items",
+  "rprenames.config.gui.highlightTooltipSlotWrong.tooltip": "If false, missing items wont be highlighted in Rename's Tooltip",
+  "rprenames.config.gui.highlightTooltipSlotSelected": "Highlight selected item",
+  "rprenames.config.gui.highlightTooltipSlotSelected.tooltip": "If true, selected item will be highlighted in Rename's Tooltip",
   "rprenames.config.gui.slotHighlightColor": "Highlight color",
   "rprenames.config.gui.slotHighlightColor.tooltip": "Color of highlighted slot that appears on hovering button in Inventory Tab",
   "rprenames.config.gui.slotHighlightALPHA": "Highlight Alpha",
@@ -91,6 +95,7 @@
   "rprenames.config.general.subCategory.createConfigCheckboxPosition": "\"Create config\" Checkbox Position",
   "rprenames.config.general.subCategory.favoriteButtonPosition": "\"Add to Favorite\" Button Position",
   "rprenames.config.gui.subCategory.slotHighlightColorSettings": "Color of Highlighted slot",
+  "rprenames.config.gui.subCategory.tooltipSlotHighlightSettings": "Tooltip Slots",
   "rprenames.config.gui.subCategory.tooltipTranslations": "Translations in Tooltips",
   "rprenames.config.gui.subCategory.previewScale": "Scale of Preview"
 }

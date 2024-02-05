@@ -44,6 +44,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -674,11 +675,25 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         assert MinecraftClient.getInstance().player != null;
         PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
         ArrayList<String> inventory = getInventory();
-        String item = rename.getItems().get(0);
-        for (String s : rename.getItems()) {
-            if (inventory.contains(s)) {
-                item = s;
-                break;
+        String item;
+        if (currentTab == Tabs.SEARCH) {
+            item = currentItem;
+        } else if (rename.getItems() != null) {
+            item = rename.getItems().get(0);
+            for (String s : rename.getItems()) {
+                if (inventory.contains(s)) {
+                    item = s;
+                    break;
+                }
+            }
+        } else {
+            RPRenames.LOGGER.error("Trying to create button for Rename without item for \"" + rename.getName() + "\" in tab " + currentTab.toString());
+            item = currentItem;
+            rename.setItems(new ArrayList<>(List.of(currentItem)));
+            if (currentTab == Tabs.FAVORITE) {
+                RPRenames.LOGGER.warn("Fixing Favorite Renames file for current item for \"" + rename.getName() + "\". Issue may be due to changed Rename class format in 0.8.0!");
+                ConfigManager.removeFromFavorites(rename.getName(), currentItem);
+                ConfigManager.addToFavorites(rename.getName(), currentItem);
             }
         }
         boolean asCurrentItem = item.equals(currentItem);
@@ -704,7 +719,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             tooltip.addAll(lines);
         }
 
-        if (rename.getItems() != null && (currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
+        if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
             ArrayList<TooltipItem> tooltipItems = new ArrayList<>();
             for (int i = 0; i < rename.getItems().size(); i++) {
                 ItemStack itemStack = RenameButtonHolder.createItem(rename, false, i);

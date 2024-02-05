@@ -35,6 +35,9 @@ public class ModConfig implements ConfigData {
     public int slotHighlightColorALPHA = 50;
     public int slotHighlightColorRGB = 8454143;
 
+    public boolean highlightTooltipSlotWrong = true;
+    public boolean highlightTooltipSlotSelected = false;
+
     public boolean translateMobNames = true;
 
     public boolean enablePreview = true;

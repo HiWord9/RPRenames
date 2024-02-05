@@ -48,16 +48,20 @@ public class RPRenamesCommand {
             source.sendFeedback(Text.of("Hold Renamed Item to view its Rename Properties!").copy()
                     .fillStyle(Style.EMPTY.withColor(Formatting.RED).withItalic(true)));
         }
+
         Rename matchRename = null;
+        String itemId = ConfigManager.getIdAndPath(itemStack.getItem());
 
-        Text name = itemStack.getName();
-        int stackSize = itemStack.getCount();
-        int damage = itemStack.getDamage();
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.fromNbt(itemStack.getEnchantments());
-
-        ArrayList<Rename> renames = ConfigManager.getAllRenames(ConfigManager.getIdAndPath(itemStack.getItem()));
+        ArrayList<Rename> renames = ConfigManager.getAllRenames(itemId);
         if (!renames.isEmpty()) {
-            matchRename = getMatch(renames, name.getString(), stackSize, damage, enchantments, ConfigManager.getIdAndPath(itemStack.getItem()));
+            matchRename = getMatch(
+                    renames,
+                    itemStack.getName().getString(),
+                    itemStack.getCount(),
+                    itemStack.getDamage(),
+                    EnchantmentHelper.fromNbt(itemStack.getEnchantments()),
+                    itemId
+            );
         }
 
         if (matchRename == null) {
@@ -81,7 +85,7 @@ public class RPRenamesCommand {
             printProperties(matchRename.getMob().properties(), source);
             if (matchRename.getPackName() != null) {
                 if (matchRename.getMob().path() != null) {
-                    printPath(matchRename.getMob().path, matchRename.getPackName(), source);
+                    printPath(matchRename.getMob().path(), matchRename.getPackName(), source);
                 }
             }
         }
@@ -118,7 +122,7 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int solveRegex(FabricClientCommandSource source, String regex) {
+    private static int solveRegex(FabricClientCommandSource source, String regex) {
         String result = ConfigManager.solveRegex(ConfigManager.parseEscapes(regex));
         Pattern pattern = Pattern.compile(regex);
         if (pattern.matcher(result).matches()) {
@@ -167,14 +171,12 @@ public class RPRenamesCommand {
             if (enchantName != null) {
                 for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                     Enchantment enchantment = entry.getKey();
-                    if (enchantName.contains(":")) {
-                        int t = 0;
-                        while (enchantName.charAt(t) != ':') {
-                            t++;
-                        }
-                        enchantName = enchantName.substring(t);
+                    if (!enchantName.contains(":")) {
+                        enchantName = new Identifier(enchantName).toString();
                     }
-                    if (Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).toString().equals(enchantName)) {
+                    Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
+                    if (identifier == null) continue;
+                    if (identifier.toString().equals(enchantName)) {
                         enchantmentValid = true;
                         if (Rename.isInBounds(entry.getValue(), r.getOriginalEnchantmentLevel())) {
                             enchantmentLevelValid = true;

@@ -98,6 +98,18 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.highlightSlot)
                 .build();
 
+        AbstractConfigListEntry<Boolean> highlightTooltipSlotWrong = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.highlightTooltipSlotWrong"), currentConfig.highlightTooltipSlotWrong)
+                .setTooltip(Text.translatable("rprenames.config.gui.highlightTooltipSlotWrong.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.highlightTooltipSlotWrong = newConfig)
+                .setDefaultValue(defaultConfig.highlightTooltipSlotWrong)
+                .build();
+
+        AbstractConfigListEntry<Boolean> highlightTooltipSlotSelected = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.highlightTooltipSlotSelected"), currentConfig.highlightTooltipSlotSelected)
+                .setTooltip(Text.translatable("rprenames.config.gui.highlightTooltipSlotSelected.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.highlightTooltipSlotSelected = newConfig)
+                .setDefaultValue(defaultConfig.highlightTooltipSlotSelected)
+                .build();
+
         AbstractConfigListEntry<Integer> slotHighlightColor = entryBuilder.startColorField(Text.translatable("rprenames.config.gui.slotHighlightColor"), Color.ofTransparent(currentConfig.slotHighlightColorRGB))
                 .setTooltip(Text.translatable("rprenames.config.gui.slotHighlightColor.tooltip"))
                 .setDefaultValue(defaultConfig.slotHighlightColorRGB)
@@ -250,6 +262,10 @@ public class ModConfigScreenFactory {
         slotHighlightColorSettings.add(0, slotHighlightColor);
         slotHighlightColorSettings.add(1, slotHighlightALPHA);
 
+        SubCategoryBuilder tooltipSlotHighlightSettings = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.tooltipSlotHighlightSettings"));
+        tooltipSlotHighlightSettings.add(0, highlightTooltipSlotWrong);
+        tooltipSlotHighlightSettings.add(1, highlightTooltipSlotSelected);
+
         SubCategoryBuilder tooltipTranslations = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.tooltipTranslations"));
         tooltipTranslations.add(0, translateMobNames);
 
@@ -267,6 +283,7 @@ public class ModConfigScreenFactory {
         gui.addEntry(showExtraProperties);
         gui.addEntry(highlightSlot);
         gui.addEntry(slotHighlightColorSettings.build());
+        gui.addEntry(tooltipSlotHighlightSettings.build());
         gui.addEntry(tooltipTranslations.build());
         gui.addEntry(enablePreview);
         gui.addEntry(previewPos);
