@@ -15,6 +15,8 @@
   "rprenames.gui.tooltipHint.damage": "Damage:",
   "rprenames.gui.tooltipHint.enchantment": "Enchantment:",
 
+  "rprenames.item_group": "Resource Pack Renames",
+
   "rprenames.config.title": "RPRenames",
 
   "rprenames.config.general": "General",
@@ -29,6 +31,8 @@
   "rprenames.config.general.favoriteButtonX.tooltip": "Counts from center to right",
   "rprenames.config.general.favoriteButtonY": "\"Add to Favorite\" button Y",
   "rprenames.config.general.favoriteButtonY.tooltip": "Counts from center to bottom",
+  "rprenames.config.gui.compareItemGroupRenames": "Compare Renames in Item Group",
+  "rprenames.config.gui.compareItemGroupRenames.tooltip": "If true, Renames with multiple matching items\nwill be shown once in RPRenames Creative Tab",
   "rprenames.config.general.loadModBuiltinResources": "Load Mod's built-in Resource Packs",
   "rprenames.config.general.loadModBuiltinResources.tooltip": "If true, adds Mod's built-in Resource Packs\nto pack selection screen. If false, it will not\nshow them. Requires restart",
 
@@ -53,10 +57,6 @@
   "rprenames.config.gui.slotHighlightALPHA": "Highlight Alpha",
   "rprenames.config.gui.slotHighlightALPHA.tooltip": "How opaque the Color of highlighted slot is. In percents [0 - 100]",
   "rprenames.config.gui.slotHighlightALPHA.off": "OFF",
-  "rprenames.config.gui.translateMobNames": "Translate Mob Names",
-  "rprenames.config.gui.translateMobNames.tooltip": "If false, Mob Names in name tag's tooltips will be shown as its ID",
-  "rprenames.config.gui.translateItemNames": "Translate Item Names",
-  "rprenames.config.gui.translateItemNames.tooltip": "If false, Item Names in item's tooltips will be shown as its ID",
   "rprenames.config.gui.enablePreview": "Enable Preview",
   "rprenames.config.gui.enablePreview.tooltip": "If false, Preview wont be shown",
   "rprenames.config.gui.previewPos": "Preview Position",
@@ -100,6 +100,5 @@
   "rprenames.config.general.subCategory.favoriteButtonPosition": "\"Add to Favorite\" Button Position",
   "rprenames.config.gui.subCategory.slotHighlightColorSettings": "Color of Highlighted slot",
   "rprenames.config.gui.subCategory.tooltipSlotHighlightSettings": "Tooltip Slots",
-  "rprenames.config.gui.subCategory.tooltipTranslations": "Translations in Tooltips",
   "rprenames.config.gui.subCategory.previewScale": "Scale of Preview"
 }

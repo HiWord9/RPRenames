@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.config.ConfigManager;
 import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -29,6 +30,12 @@ public class ModConfig implements ConfigData {
 
     public boolean showPackName = true;
     public boolean showExtraProperties = true;
+
+    public boolean compareItemGroupRenames = true;
+    public void setCompareItemGroupRenames(boolean compareItemGroupRenames) {
+        this.changedCompareItemGroupRenames = compareItemGroupRenames != this.compareItemGroupRenames;
+        this.compareItemGroupRenames = compareItemGroupRenames;
+    }
 
     public boolean highlightSlot = true;
 
@@ -88,7 +95,12 @@ public class ModConfig implements ConfigData {
         }
     }
 
+    private Boolean changedCompareItemGroupRenames = null;
+
     public ModConfig write() {
+        if (changedCompareItemGroupRenames != null && changedCompareItemGroupRenames) ConfigManager.updateItemGroup();
+        changedCompareItemGroupRenames = null;
+
         Gson gson = new Gson();
         JsonWriter writer = null;
         try {

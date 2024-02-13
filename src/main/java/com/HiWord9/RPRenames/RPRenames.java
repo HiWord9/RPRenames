@@ -9,10 +9,20 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -34,6 +44,8 @@ public class RPRenames implements ClientModInitializer {
 
     public static Map<String, ArrayList<Rename>> renames = new HashMap<>();
     public static Map<String, ArrayList<Rename>> renamesServer = new HashMap<>();
+
+    public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
 
     public static URL serverResourcePackURL = null;
     public static boolean joiningServer = false;
@@ -58,6 +70,8 @@ public class RPRenames implements ClientModInitializer {
                 ResourceManagerHelper.registerBuiltinResourcePack(asId("high_contrasted"), container, ResourcePackActivationType.NORMAL);
             });
         }
+
+        registerItemGroup();
     }
 
     public static Identifier asId(String path) {
@@ -66,5 +80,36 @@ public class RPRenames implements ClientModInitializer {
 
     public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         RPRenamesCommand.register(dispatcher, registryAccess);
+    }
+
+    public static void registerItemGroup() {
+        Registry.register(
+                Registries.ITEM_GROUP,
+                new Identifier(MOD_ID, "item_group"),
+                ((ItemGroupBuilderMixinAccessor) FabricItemGroup.builder()
+                        .displayName(Text.translatable("rprenames.item_group"))
+                        .icon(RPRenames::getItemGroupIcon))
+                        .setType(ItemGroup.Type.HOTBAR)
+                        .build()
+        );
+    }
+
+    private static ItemStack getItemGroupIcon() {
+        ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
+        stack.getOrCreateNbt();
+        assert stack.getNbt() != null;
+        if (!stack.getNbt().contains("Enchantments", 9)) {
+            stack.getNbt().put("Enchantments", new NbtList());
+        }
+        NbtList nbtList = stack.getNbt().getList("Enchantments", NbtElement.COMPOUND_TYPE);
+        nbtList.add(EnchantmentHelper.createNbt(new Identifier("mending"), 1));
+        stack.getOrCreateSubNbt(MOD_ID);
+        return stack;
+    }
+
+    public static boolean verifyItemGroup(ItemGroup itemGroup) {
+        ItemStack icon = itemGroup.getIcon();
+        icon.getOrCreateNbt();
+        return icon.getSubNbt(MOD_ID) != null;
     }
 }

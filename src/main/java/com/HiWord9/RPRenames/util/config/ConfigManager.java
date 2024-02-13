@@ -1,15 +1,18 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.generation.CEMConfig;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
 import com.HiWord9.RPRenames.util.config.generation.CITConfig;
+import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.google.common.hash.Hashing;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.MutableText;
@@ -30,6 +33,8 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class ConfigManager {
+    private static final ModConfig config = ModConfig.INSTANCE;
+
     public static void configUpdate() {
         configUpdate(MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().stream().toList());
     }
@@ -57,7 +62,31 @@ public class ConfigManager {
         RPRenames.LOGGER.info("Starting creating config");
         startConfigCreate(enabledPacks);
         long finishTime = System.currentTimeMillis() - startTime;
+        updateItemGroup();
         RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
+    }
+
+    public static void updateItemGroup() {
+        System.out.println("updating item group");
+        RPRenames.renamedItemStacks.clear();
+        ArrayList<ItemStack> list = new ArrayList<>();
+        ArrayList<Rename> parsedRenames = new ArrayList<>();
+        for (String key : RPRenames.renames.keySet()) {
+            for (Rename r : RPRenames.renames.get(key)) {
+                if (parsedRenames.contains(r)) continue;
+                parsedRenames.add(r);
+                if (!config.compareItemGroupRenames) {
+                    for (int i = 0; i < r.getItems().size(); i++) {
+                        ItemStack stack = RenameButtonHolder.createItem(r, true, i);
+                        list.add(stack);
+                    }
+                } else {
+                    ItemStack stack = RenameButtonHolder.createItem(r);
+                    list.add(stack);
+                }
+            }
+        }
+        RPRenames.renamedItemStacks.addAll(list);
     }
 
     public static void startConfigCreate(ArrayList<String> enabledPacks) {

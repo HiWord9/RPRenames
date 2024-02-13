@@ -54,6 +54,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.favoritePosY)
                 .build();
 
+        AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
+                .setTooltip(Text.translatable("rprenames.config.gui.compareItemGroupRenames.tooltip"))
+                .setSaveConsumer(currentConfig::setCompareItemGroupRenames)
+                .setDefaultValue(defaultConfig.compareItemGroupRenames)
+                .build();
+
         AbstractConfigListEntry<Boolean> loadModBuiltinResources = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.loadModBuiltinResources"), currentConfig.loadModBuiltinResources)
                 .setTooltip(Text.translatable("rprenames.config.general.loadModBuiltinResources.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.loadModBuiltinResources = newConfig)
@@ -126,12 +132,6 @@ public class ModConfigScreenFactory {
                     }
                     return Text.of(percent.toString());
                 })
-                .build();
-
-        AbstractConfigListEntry<Boolean> translateMobNames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.translateMobNames"), currentConfig.translateMobNames)
-                .setTooltip(Text.translatable("rprenames.config.gui.translateMobNames.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.translateMobNames = newConfig)
-                .setDefaultValue(defaultConfig.translateMobNames)
                 .build();
 
         AbstractConfigListEntry<Boolean> enablePreview = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.enablePreview"), currentConfig.enablePreview)
@@ -266,9 +266,6 @@ public class ModConfigScreenFactory {
         tooltipSlotHighlightSettings.add(0, highlightTooltipSlotWrong);
         tooltipSlotHighlightSettings.add(1, highlightTooltipSlotSelected);
 
-        SubCategoryBuilder tooltipTranslations = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.tooltipTranslations"));
-        tooltipTranslations.add(0, translateMobNames);
-
         SubCategoryBuilder previewScale = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.subCategory.previewScale"));
         previewScale.add(0, scaleFactorItem);
         previewScale.add(1, scaleFactorEntity);
@@ -276,6 +273,7 @@ public class ModConfigScreenFactory {
         general.addEntry(ignoreCEM);
         general.addEntry(enableAnvilModification);
         general.addEntry(favoriteButtonPosition.build());
+        general.addEntry(compareItemGroupRenames);
         general.addEntry(loadModBuiltinResources);
         gui.addEntry(openByDefault);
         gui.addEntry(viewMode);
@@ -284,7 +282,6 @@ public class ModConfigScreenFactory {
         gui.addEntry(highlightSlot);
         gui.addEntry(slotHighlightColorSettings.build());
         gui.addEntry(tooltipSlotHighlightSettings.build());
-        gui.addEntry(tooltipTranslations.build());
         gui.addEntry(enablePreview);
         gui.addEntry(previewPos);
         gui.addEntry(playerPreviewByDefault);
