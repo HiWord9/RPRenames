@@ -678,22 +678,13 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         String item;
         if (currentTab == Tabs.SEARCH) {
             item = currentItem;
-        } else if (rename.getItems() != null) {
+        } else {
             item = rename.getItems().get(0);
             for (String s : rename.getItems()) {
                 if (inventory.contains(s)) {
                     item = s;
                     break;
                 }
-            }
-        } else {
-            RPRenames.LOGGER.error("Trying to create button for Rename without item for \"" + rename.getName() + "\" in tab " + currentTab.toString());
-            item = currentItem;
-            rename.setItems(new ArrayList<>(List.of(currentItem)));
-            if (currentTab == Tabs.FAVORITE) {
-                RPRenames.LOGGER.warn("Fixing Favorite Renames file for current item for \"" + rename.getName() + "\". Issue may be due to changed Rename class format in 0.8.0!");
-                ConfigManager.removeFromFavorites(rename.getName(), currentItem);
-                ConfigManager.addToFavorites(rename.getName(), currentItem);
             }
         }
         boolean asCurrentItem = item.equals(currentItem);

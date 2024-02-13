@@ -178,7 +178,7 @@ public class ConfigManager {
 
     public static ArrayList<Rename> getFavorites(String item) {
         ArrayList<Rename> renames = new ArrayList<>();
-        File favoritesFile = new File(RPRenames.configPathFavorite + "/" + item.replaceAll(":", ".") + ".json");
+        File favoritesFile = new File(RPRenames.configPathFavorite + "/" + item.replace(":", ".") + ".json");
         if (favoritesFile.exists()) {
             try {
                 FileReader fileReader = new FileReader(favoritesFile);
@@ -191,7 +191,26 @@ public class ConfigManager {
                 e.printStackTrace();
             }
         }
+
+        fixRenameItemsIfNeeded(renames, item);
+
         return renames;
+    }
+
+    private static void fixRenameItemsIfNeeded(ArrayList<Rename> renames, String item) {
+        boolean fix = false;
+        for (Rename rename : renames) {
+            if (rename.getItems() != null) continue;
+            RPRenames.LOGGER.error("Fixing items list for favorite Rename \"" + rename.getName() + "\". Looks like it was created in ver <0.8.0");
+            rename.setItems(new ArrayList<>(List.of(item)));
+            fix = true;
+        }
+        if (!fix) return;
+        RPRenames.LOGGER.warn("Recreating Favorite Renames List File for \"" + item + "\" with fixed Items.");
+        deleteFavoriteConfigFile(item);
+        for (Rename rename : renames) {
+            ConfigManager.addToFavorites(rename.getName(), item);
+        }
     }
 
     public static void addToFavorites(String favoriteName, String item) {
@@ -237,11 +256,15 @@ public class ConfigManager {
                 e.printStackTrace();
             }
         } else {
-            try {
-                Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            deleteFavoriteConfigFile(item);
+        }
+    }
+
+    private static void deleteFavoriteConfigFile(String item) {
+        try {
+            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
