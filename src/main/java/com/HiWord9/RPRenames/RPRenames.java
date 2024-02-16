@@ -16,6 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtElement;
@@ -89,7 +90,8 @@ public class RPRenames implements ClientModInitializer {
                 ((ItemGroupBuilderMixinAccessor) FabricItemGroup.builder()
                         .displayName(Text.translatable("rprenames.item_group"))
                         .icon(RPRenames::getItemGroupIcon))
-                        .setType(ItemGroup.Type.HOTBAR)
+                        .setType(ItemGroup.Type.SEARCH)
+                        .texture("item_search.png")
                         .build()
         );
     }
