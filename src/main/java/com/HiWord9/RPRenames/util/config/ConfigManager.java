@@ -176,6 +176,18 @@ public class ConfigManager {
         }
     }
 
+    public static Map<String, ArrayList<Rename>> getAllFavorites() {
+        Map<String, ArrayList<Rename>> favoriteRenames = new HashMap<>();
+        File[] files = RPRenames.configPathFavorite.toFile().listFiles();
+        if (files == null) return favoriteRenames;
+        for (File file : files) {
+            String fileName = file.getName();
+            String item = fileName.substring(0, fileName.length() - 5);
+            favoriteRenames.put(item.replace(".", ":"), getFavorites(item));
+        }
+        return favoriteRenames;
+    }
+
     public static ArrayList<Rename> getFavorites(String item) {
         ArrayList<Rename> renames = new ArrayList<>();
         File favoritesFile = new File(RPRenames.configPathFavorite + "/" + item.replace(":", ".") + ".json");
