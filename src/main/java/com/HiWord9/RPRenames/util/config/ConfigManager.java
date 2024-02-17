@@ -11,8 +11,16 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.text.MutableText;
@@ -67,7 +75,6 @@ public class ConfigManager {
     }
 
     public static void updateItemGroup() {
-        System.out.println("updating item group");
         RPRenames.renamedItemStacks.clear();
         ArrayList<ItemStack> list = new ArrayList<>();
         ArrayList<Rename> parsedRenames = new ArrayList<>();
@@ -75,13 +82,13 @@ public class ConfigManager {
             for (Rename r : RPRenames.renames.get(key)) {
                 if (parsedRenames.contains(r)) continue;
                 parsedRenames.add(r);
-                if (!config.compareItemGroupRenames) {
+                if (r.getItems().size() > 1 && !config.compareItemGroupRenames) {
                     for (int i = 0; i < r.getItems().size(); i++) {
-                        ItemStack stack = RenameButtonHolder.createItem(r, true, i);
+                        ItemStack stack = createItem(r, true, i);
                         list.add(stack);
                     }
                 } else {
-                    ItemStack stack = RenameButtonHolder.createItem(r);
+                    ItemStack stack = createItemOrSpawnEgg(r);
                     list.add(stack);
                 }
             }
@@ -519,6 +526,49 @@ public class ConfigManager {
             arrayList.add(rename);
             map.put(item, arrayList);
         }
+    }
+
+    public static ItemStack createItemOrSpawnEgg(Rename rename) {
+        if (rename.isCEM() && config.generateSpawnEggsInItemGroup) return createSpawnEgg(rename);
+        return createItem(rename);
+    }
+
+    public static ItemStack createItem(Rename rename) {
+        return createItem(rename, true, 0);
+    }
+
+    public static ItemStack createItem(Rename rename, boolean withCustomName, int itemIndex) {
+        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex)));
+        if (withCustomName) item.setCustomName(Text.of(rename.getName()));
+        item.setCount(rename.getStackSize());
+        if (rename.getDamage() != null) {
+            item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
+        }
+        if (rename.getEnchantment() != null) {
+            item.getOrCreateNbt();
+            assert item.getNbt() != null;
+            if (!item.getNbt().contains("Enchantments", 9)) {
+                item.getNbt().put("Enchantments", new NbtList());
+            }
+            NbtList nbtList = item.getNbt().getList("Enchantments", 10);
+            nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+        }
+        return item;
+    }
+
+    public static ItemStack createSpawnEgg(Rename rename) {
+        Item item = SpawnEggItem.forEntity(CEMList.EntityFromName(rename.getMob().entity()));
+        ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
+        spawnEgg.setCustomName(Text.of(rename.getName()));
+        NbtCompound nbt = spawnEgg.getOrCreateNbt();
+        NbtCompound nbtName = new NbtCompound();
+        nbtName.putString("CustomName", rename.getName());
+        nbt.put("EntityTag", nbtName);
+        if (item == null) {
+            NbtCompound nbt2 = nbt.getCompound("EntityTag");
+            nbt2.putString("id", rename.getMob().entity());
+        }
+        return spawnEgg;
     }
 
     public static String getIdAndPath(Item item) {

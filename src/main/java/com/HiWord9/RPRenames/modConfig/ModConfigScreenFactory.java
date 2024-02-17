@@ -60,6 +60,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.compareItemGroupRenames)
                 .build();
 
+        AbstractConfigListEntry<Boolean> generateSpawnEggsInItemGroup = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.generateSpawnEggsInItemGroup"), currentConfig.generateSpawnEggsInItemGroup)
+                .setTooltip(Text.translatable("rprenames.config.gui.generateSpawnEggsInItemGroup.tooltip"))
+                .setSaveConsumer(currentConfig::setGenerateSpawnEggsInItemGroup)
+                .setDefaultValue(defaultConfig.generateSpawnEggsInItemGroup)
+                .build();
+
         AbstractConfigListEntry<Boolean> loadModBuiltinResources = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.loadModBuiltinResources"), currentConfig.loadModBuiltinResources)
                 .setTooltip(Text.translatable("rprenames.config.general.loadModBuiltinResources.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.loadModBuiltinResources = newConfig)
@@ -274,6 +280,7 @@ public class ModConfigScreenFactory {
         general.addEntry(enableAnvilModification);
         general.addEntry(favoriteButtonPosition.build());
         general.addEntry(compareItemGroupRenames);
+        general.addEntry(generateSpawnEggsInItemGroup);
         general.addEntry(loadModBuiltinResources);
         gui.addEntry(openByDefault);
         gui.addEntry(viewMode);

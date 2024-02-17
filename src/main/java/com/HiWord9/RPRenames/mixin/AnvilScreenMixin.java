@@ -262,7 +262,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
                 }
 
-                ItemStack ghostResult = RenameButtonHolder.createItem(rename);
+                ItemStack ghostResult = ConfigManager.createItem(rename);
 
                 ghostCraft.setSlots(ghostSource, ghostEnchant, ghostResult);
                 ghostCraft.setRender(true);
@@ -712,7 +712,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
             ArrayList<TooltipItem> tooltipItems = new ArrayList<>();
             for (int i = 0; i < rename.getItems().size(); i++) {
-                ItemStack itemStack = RenameButtonHolder.createItem(rename, false, i);
+                ItemStack itemStack = ConfigManager.createItem(rename, false, i);
                 tooltipItems.add(new TooltipItem(itemStack, inventory.contains(rename.getItems().get(i))));
             }
             tooltip.add(new MultiItemTooltipComponent(tooltipItems));

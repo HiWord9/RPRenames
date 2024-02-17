@@ -67,21 +67,22 @@ public abstract class CreativeInventoryScreenMixin {
                     handler.itemList.add(ItemStack.EMPTY);
                 }
 
-                ItemStack itemStack = new ItemStack(Items.PAPER);
-                itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
-                itemStack.setCustomName(Text.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
-                handler.itemList.add(itemStack);
+                handler.itemList.add(getFavoriteItem());
                 for (int i = 0; i < 8; i++) {
                     handler.itemList.add(ItemStack.EMPTY);
                 }
 
-                Map<String, ArrayList<Rename>> favoriteRenames = ConfigManager.getAllFavorites();
                 ArrayList<ItemStack> list = new ArrayList<>();
+                Map<String, ArrayList<Rename>> favoriteRenames = ConfigManager.getAllFavorites();
                 for (String key : favoriteRenames.keySet()) {
                     for (Rename r : favoriteRenames.get(key)) {
-                        for (int i = 0; i < r.getItems().size(); i++) {
-                            ItemStack stack = RenameButtonHolder.createItem(r, true, i);
-                            list.add(stack);
+                        if (r.getItems().size() > 1) {
+                            for (int i = 0; i < r.getItems().size(); i++) {
+                                ItemStack stack = ConfigManager.createItem(r, true, i);
+                                list.add(stack);
+                            }
+                        } else {
+                            list.add(ConfigManager.createItemOrSpawnEgg(r));
                         }
                     }
                 }
@@ -111,6 +112,13 @@ public abstract class CreativeInventoryScreenMixin {
         ItemStack itemStack = new ItemStack(Items.PAPER);
         itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
         itemStack.setCustomName(Text.translatable("rprenames.gui.noRenamesFound"));
+        return itemStack;
+    }
+
+    private ItemStack getFavoriteItem() {
+        ItemStack itemStack = new ItemStack(Items.PAPER);
+        itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
+        itemStack.setCustomName(Text.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
         return itemStack;
     }
 }

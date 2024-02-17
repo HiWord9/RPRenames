@@ -15,16 +15,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -327,7 +324,7 @@ public class RenameButtonHolder extends Screen {
             displayText = shortText(Text.of(this.rename.getName()), button.getWidth() - 32);
         }
 
-        this.item = createItem(rename);
+        this.item = ConfigManager.createItem(rename);
 
         if (CEM) {
             var entityType = CEMList.EntityFromName(rename.getMob().entity());
@@ -349,29 +346,6 @@ public class RenameButtonHolder extends Screen {
         assert client.currentScreen != null;
         this.height = client.currentScreen.height;
         this.width = client.currentScreen.width;
-    }
-
-    public static ItemStack createItem(Rename rename) {
-        return createItem(rename, true, 0);
-    }
-
-    public static ItemStack createItem(Rename rename, boolean withCustomName, int itemIndex) {
-        ItemStack item = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex)));
-        if (withCustomName) item.setCustomName(Text.of(rename.getName()));
-        item.setCount(rename.getStackSize());
-        if (rename.getDamage() != null) {
-            item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
-        }
-        if (rename.getEnchantment() != null) {
-            item.getOrCreateNbt();
-            assert item.getNbt() != null;
-            if (!item.getNbt().contains("Enchantments", 9)) {
-                item.getNbt().put("Enchantments", new NbtList());
-            }
-            NbtList nbtList = item.getNbt().getList("Enchantments", 10);
-            nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
-        }
-        return item;
     }
 
     private Text shortText(Text text, int length) {

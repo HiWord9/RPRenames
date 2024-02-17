@@ -33,8 +33,18 @@ public class ModConfig implements ConfigData {
 
     public boolean compareItemGroupRenames = true;
     public void setCompareItemGroupRenames(boolean compareItemGroupRenames) {
-        this.changedCompareItemGroupRenames = compareItemGroupRenames != this.compareItemGroupRenames;
+        if (shouldUpdateItemGroup == null || !shouldUpdateItemGroup) {
+            this.shouldUpdateItemGroup = compareItemGroupRenames != this.compareItemGroupRenames;
+        }
         this.compareItemGroupRenames = compareItemGroupRenames;
+    }
+
+    public boolean generateSpawnEggsInItemGroup = true;
+    public void setGenerateSpawnEggsInItemGroup(boolean generateSpawnEggsInItemGroup) {
+        if (shouldUpdateItemGroup == null || !shouldUpdateItemGroup) {
+            this.shouldUpdateItemGroup = generateSpawnEggsInItemGroup != this.generateSpawnEggsInItemGroup;
+        }
+        this.generateSpawnEggsInItemGroup = generateSpawnEggsInItemGroup;
     }
 
     public boolean highlightSlot = true;
@@ -95,11 +105,11 @@ public class ModConfig implements ConfigData {
         }
     }
 
-    private Boolean changedCompareItemGroupRenames = null;
+    private Boolean shouldUpdateItemGroup = null;
 
     public ModConfig write() {
-        if (changedCompareItemGroupRenames != null && changedCompareItemGroupRenames) ConfigManager.updateItemGroup();
-        changedCompareItemGroupRenames = null;
+        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) ConfigManager.updateItemGroup();
+        shouldUpdateItemGroup = null;
 
         Gson gson = new Gson();
         JsonWriter writer = null;

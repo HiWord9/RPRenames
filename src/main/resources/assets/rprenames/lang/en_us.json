@@ -33,6 +33,8 @@
   "rprenames.config.general.favoriteButtonY.tooltip": "Counts from center to bottom",
   "rprenames.config.gui.compareItemGroupRenames": "Compare Renames in Item Group",
   "rprenames.config.gui.compareItemGroupRenames.tooltip": "If true, Renames with multiple matching items\nwill be shown once in RPRenames Creative Tab",
+  "rprenames.config.gui.generateSpawnEggsInItemGroup": "Convert CEM Renames to Spawn Eggs",
+  "rprenames.config.gui.generateSpawnEggsInItemGroup.tooltip": "If true, CEM Renames will be displayed as Spawn Eggs\nin RPRenames Creative Tab, otherwise, as Name Tags",
   "rprenames.config.general.loadModBuiltinResources": "Load Mod's built-in Resource Packs",
   "rprenames.config.general.loadModBuiltinResources.tooltip": "If true, adds Mod's built-in Resource Packs\nto pack selection screen. If false, it will not\nshow them. Requires restart",
 
