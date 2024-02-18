@@ -38,7 +38,7 @@ public class Rename {
     public Rename(String name,
                   String packName,
                   Mob mob) {
-        this(name, new ArrayList<>(List.of(CEMConfig.defaultModItem)), packName, null, null, null, null, null, null, null, mob);
+        this(name, new ArrayList<>(List.of(CEMConfig.DEFAULT_MOB_ITEM)), packName, null, null, null, null, null, null, null, mob);
     }
 
     public Rename(String name,

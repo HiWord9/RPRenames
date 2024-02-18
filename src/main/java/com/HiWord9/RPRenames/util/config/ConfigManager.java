@@ -133,13 +133,10 @@ public class ConfigManager {
 
         Path currentPath;
 
-        ArrayList<String> folders = new ArrayList<>();
-        folders.add("/assets/minecraft/optifine/cit/");
-        folders.add("/assets/minecraft/optifine/cem/");
+        String[] folders = new String[]{"/assets/minecraft/optifine/cit/", "/assets/minecraft/optifine/cem/"};
 
         for (String currentFolder : folders) {
-            if (new File(filePath).isFile()) {
-                assert zip != null;
+            if (zip != null) {
                 currentPath = zip.getPath(currentFolder);
             } else {
                 currentPath = Path.of(filePath + currentFolder);
@@ -154,25 +151,19 @@ public class ConfigManager {
             String fileType = FT;
 
             try {
-                Files.walk(currentPath, new FileVisitOption[0]).filter(path -> path.toString().endsWith(fileType)).forEach(propertiesFile -> {
-                    try {
-                        if (currentFolder.endsWith("/cit/")) {
-                            InputStream inputStream = Files.newInputStream(propertiesFile);
-                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                            Properties p = new Properties();
-                            p.load(bufferedReader);
-                            CITConfig.propertiesToRename(p, packName, propertiesFile.toString());
-                        } else if (currentFolder.endsWith("/cem/")) {
-                            String fileName = propertiesFile.getFileName().toString();
-                            if (Arrays.stream(CEMList.models).toList().contains(fileName.substring(0, propertiesFile.getFileName().toString().length() - 4))) {
-                                CEMConfig.startPropToRenameMob(packName, filePath);
+                Files.walk(currentPath, new FileVisitOption[0])
+                        .filter(path -> path.toString().endsWith(fileType))
+                        .forEach(propertiesFile -> {
+                            if (currentFolder.endsWith("/cit/")) {
+                                CITConfig.propertiesToRename(getPropFromPath(propertiesFile), packName, propertiesFile.toString());
+                            } else if (currentFolder.endsWith("/cem/")) {
+                                String fileName = propertiesFile.getFileName().toString();
+                                if (Arrays.stream(CEMList.models).toList().contains(fileName.substring(0, fileName.length() - 4))) {
+                                    CEMConfig.startPropToRenameMob(packName, filePath);
+                                }
                             }
-                        }
-                    } catch (IOException ignored) {
-                    }
                 });
-            } catch (IOException ignored) {
-            }
+            } catch (IOException ignored) {}
         }
         try {
             if (zip != null) {
@@ -181,6 +172,18 @@ public class ConfigManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Properties getPropFromPath(Path propFile) {
+        Properties p = new Properties();
+        try {
+            InputStream inputStream = Files.newInputStream(propFile);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            p.load(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return p;
     }
 
     public static Map<String, ArrayList<Rename>> getAllFavorites() {
