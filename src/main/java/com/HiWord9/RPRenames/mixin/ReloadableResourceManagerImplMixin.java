@@ -22,17 +22,16 @@ public class ReloadableResourceManagerImplMixin {
 
     @Inject(method = "reload", at = @At("RETURN"))
     public void onReload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs, CallbackInfoReturnable<ResourceReload> cir) {
-        if (config.updateConfig) {
-            if (RPRenames.joiningServer) {
-                RPRenames.LOGGER.info("Starting recreating RPR Config for Server");
-                new Thread(ConfigManager::configUpdateServer).start();
-                RPRenames.joiningServer = false;
-            } else if (RPRenames.leavingServer) {
-                RPRenames.leavingServer = false;
-            } else {
-                RPRenames.LOGGER.info("Starting recreating RPR Config");
-                new Thread(ConfigManager::configUpdate).start();
-            }
+        if (!config.updateConfig) return;
+        if (RPRenames.joiningServer) {
+            RPRenames.LOGGER.info("Starting recreating RPR Config for Server");
+            new Thread(ConfigManager::configUpdateServer).start();
+            RPRenames.joiningServer = false;
+        } else if (RPRenames.leavingServer) {
+            RPRenames.leavingServer = false;
+        } else {
+            RPRenames.LOGGER.info("Starting recreating RPR Config");
+            new Thread(ConfigManager::configUpdate).start();
         }
     }
 }

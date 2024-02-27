@@ -721,7 +721,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if (item.equals(ConfigManager.getIdAndPath(Items.NAME_TAG)) && rename.isCEM()) {
             Identifier mob = new Identifier(rename.getMob().entity());
             var entityType = Registries.ENTITY_TYPE.get(mob);
-            tooltip.add(Text.of(config.translateMobNames ? Text.translatable(entityType.getTranslationKey()).getString() : rename.getMob().entity()).copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
+            tooltip.add(Text.translatable(entityType.getTranslationKey()).copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
         }
 
         boolean enoughStackSize = true;

@@ -14,12 +14,11 @@ public abstract class MinecraftClientMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;disconnect(Lnet/minecraft/client/gui/screen/Screen;)V"), method = "disconnect*")
     private void serverResourcePackConfigDeleter(CallbackInfo ci) {
-        if (config.updateConfig) {
-            RPRenames.renamesServer.clear();
-            if (RPRenames.serverResourcePackURL != null) {
-                RPRenames.serverResourcePackURL = null;
-                RPRenames.leavingServer = true;
-            }
+        if (!config.updateConfig) return;
+        RPRenames.renamesServer.clear();
+        if (RPRenames.serverResourcePackURL != null) {
+            RPRenames.serverResourcePackURL = null;
+            RPRenames.leavingServer = true;
         }
     }
 }

@@ -55,8 +55,6 @@ public class ModConfig implements ConfigData {
     public boolean highlightTooltipSlotWrong = true;
     public boolean highlightTooltipSlotSelected = false;
 
-    public boolean translateMobNames = true;
-
     public boolean enablePreview = true;
     public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.BOTTOM;
 

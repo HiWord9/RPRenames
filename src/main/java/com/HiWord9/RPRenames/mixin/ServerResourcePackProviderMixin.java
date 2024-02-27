@@ -17,9 +17,8 @@ public abstract class ServerResourcePackProviderMixin {
 
     @Inject(at = @At("RETURN"), method = "download")
     private void serverResourcePackConfigCreator(URL url, String packSha1, boolean closeAfterDownload, CallbackInfoReturnable<CompletableFuture<?>> cir) {
-        if (config.updateConfig) {
-            RPRenames.serverResourcePackURL = url;
-            RPRenames.joiningServer = true;
-        }
+        if (!config.updateConfig) return;
+        RPRenames.serverResourcePackURL = url;
+        RPRenames.joiningServer = true;
     }
 }
