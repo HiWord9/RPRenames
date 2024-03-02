@@ -249,23 +249,15 @@ public class RPRenamesCommand {
     }
 
     private static void printPath(String path, String packName, FabricClientCommandSource source) {
-        int i = path.length() - 1;
-        if (path.contains("/")) {
-            i = path.lastIndexOf("/");
-        }
-        String dirPath = path.substring(0, i + 1);
-        //todo fix paths
+        String dirPath = path.substring(0, path.lastIndexOf("/"));
         source.sendFeedback(Text.of("Located in: ").copy()
-                .append(Text.of((packName.endsWith(".zip") ? packName : "") + (path.startsWith("resourcepacks/") ? path.substring(14) : path)).copy()
-                        .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW).withUnderline(true)
-                                .withClickEvent(
-                                        new ClickEvent(ClickEvent.Action.OPEN_FILE, (
-                                                packName.startsWith("server-resource-packs/") ? "server-resource-packs/" : packName.endsWith(".zip") ? "resourcepacks/" + packName : dirPath
-                                        ))
-                                )
-                        )
-                )
+                .append(Text.of(path).copy()
+                .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW).withUnderline(true)
+                        .withClickEvent(new ClickEvent(
+                                ClickEvent.Action.OPEN_FILE,
+                                (packName.equals("server") ? "server-resource-packs/" : "resourcepacks/" + (packName.endsWith(".zip") ? packName : dirPath))
+                        ))
+                ))
         );
-
     }
 }
