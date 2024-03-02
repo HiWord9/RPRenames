@@ -352,7 +352,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void calcRenameList() {
         switch (currentTab) {
-            case SEARCH -> originalRenameList = ConfigManager.getAllRenames(currentItem);
+            case SEARCH -> originalRenameList = ConfigManager.getRenames(currentItem);
             case FAVORITE -> originalRenameList = ConfigManager.getFavorites(currentItem);
             case INVENTORY -> {
                 ArrayList<String> currentInvList = getInventory();
@@ -361,7 +361,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 for (String item : currentInvList) {
                     if (!item.equals(nullItem) && !checked.contains(item)) {
                         checked.add(item);
-                        ArrayList<Rename> renames = ConfigManager.getAllRenames(item);
+                        ArrayList<Rename> renames = ConfigManager.getRenames(item);
                         for (Rename r : renames) {
                             if (!names.contains(r)) names.add(r);
                         }

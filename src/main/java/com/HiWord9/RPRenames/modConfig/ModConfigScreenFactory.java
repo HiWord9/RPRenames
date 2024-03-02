@@ -228,7 +228,7 @@ public class ModConfigScreenFactory {
                 .setYesNoTextSupplier((bl) -> {
                     if (bl != prevToggleRecreateConfig.bl) {
                         RPRenames.LOGGER.info("Recreating config manually");
-                        ConfigManager.configUpdate();
+                        ConfigManager.parseRenames();
                         prevToggleRecreateConfig.bl = bl;
                     }
                     return Text.translatable("rprenames.config.debug.recreateConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.GOLD));

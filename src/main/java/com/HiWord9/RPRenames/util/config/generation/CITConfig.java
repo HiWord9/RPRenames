@@ -3,11 +3,41 @@ package com.HiWord9.RPRenames.util.config.generation;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.ConfigManager;
 import com.HiWord9.RPRenames.util.config.Rename;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.profiler.Profiler;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import static com.HiWord9.RPRenames.util.config.ConfigManager.*;
+
 public class CITConfig {
+
+    private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
+
+    public static void parseCITs(ResourceManager resourceManager, Profiler profiler) {
+        profiler.push("rprenames:collecting_cit_renames");
+        for (String root : ROOTS) {
+            for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
+                try {
+                    String packName = validatePackName(entry.getValue().getResourcePackName());
+                    CITConfig.propertiesToRename(
+                            getPropFromResource(entry.getValue()),
+                            packName,
+                            getFullPathFromIdentifier(packName, entry.getKey())
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        profiler.pop();
+    }
 
     public static void propertiesToRename(Properties p, String packName, String path) {
         String matchItems = p.getProperty("matchItems");
@@ -76,7 +106,7 @@ public class CITConfig {
             );
 
             for (String item : items) {
-                ConfigManager.addRenames(packName.equals("server") ? RPRenames.renamesServer : RPRenames.renames, item, rename);
+                ConfigManager.addRename(item, rename);
             }
         }
     }

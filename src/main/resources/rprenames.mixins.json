@@ -5,12 +5,10 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AnvilScreenMixin",
-    "ItemGroupBuilderMixin",
     "CreativeInventoryScreenMixin",
     "DrawContextMixin",
-    "MinecraftClientMixin",
-    "ReloadableResourceManagerImplMixin",
-    "ServerResourcePackProviderMixin"
+    "ItemGroupBuilderMixin",
+    "ModelLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

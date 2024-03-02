@@ -44,13 +44,13 @@ public class RPRenames implements ClientModInitializer {
     public static Path configPathFavorite = Path.of(configPath + "/favorite");
 
     public static Map<String, ArrayList<Rename>> renames = new HashMap<>();
-    public static Map<String, ArrayList<Rename>> renamesServer = new HashMap<>();
+//    public static Map<String, ArrayList<Rename>> renamesServer = new HashMap<>();
 
     public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
 
-    public static URL serverResourcePackURL = null;
-    public static boolean joiningServer = false;
-    public static boolean leavingServer = false;
+//    public static URL serverResourcePackURL = null;
+//    public static boolean joiningServer = false;
+//    public static boolean leavingServer = false;
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 

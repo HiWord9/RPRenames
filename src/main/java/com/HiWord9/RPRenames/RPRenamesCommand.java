@@ -52,7 +52,7 @@ public class RPRenamesCommand {
         Rename matchRename = null;
         String itemId = ConfigManager.getIdAndPath(itemStack.getItem());
 
-        ArrayList<Rename> renames = ConfigManager.getAllRenames(itemId);
+        ArrayList<Rename> renames = ConfigManager.getRenames(itemId);
         if (!renames.isEmpty()) {
             matchRename = getMatch(
                     renames,
@@ -107,7 +107,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<Rename> renames = ConfigManager.getAllRenames(ConfigManager.getIdAndPath(item));
+        ArrayList<Rename> renames = ConfigManager.getRenames(ConfigManager.getIdAndPath(item));
         if (!renames.isEmpty()) {
             source.sendFeedback(Text.of("Found following Renames for ").copy()
                     .append(Text.translatable(item.getTranslationKey()))
@@ -251,15 +251,21 @@ public class RPRenamesCommand {
     private static void printPath(String path, String packName, FabricClientCommandSource source) {
         int i = path.length() - 1;
         if (path.contains("/")) {
-            while (path.charAt(i) != '/') {
-                i--;
-            }
+            i = path.lastIndexOf("/");
         }
         String dirPath = path.substring(0, i + 1);
+        //todo fix paths
         source.sendFeedback(Text.of("Located in: ").copy()
                 .append(Text.of((packName.endsWith(".zip") ? packName : "") + (path.startsWith("resourcepacks/") ? path.substring(14) : path)).copy()
                         .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW).withUnderline(true)
-                                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, (packName.startsWith("server-resource-packs/") ? "server-resource-packs/" : packName.endsWith(".zip") ? "resourcepacks/" + packName : dirPath))))));
+                                .withClickEvent(
+                                        new ClickEvent(ClickEvent.Action.OPEN_FILE, (
+                                                packName.startsWith("server-resource-packs/") ? "server-resource-packs/" : packName.endsWith(".zip") ? "resourcepacks/" + packName : dirPath
+                                        ))
+                                )
+                        )
+                )
+        );
 
     }
 }
