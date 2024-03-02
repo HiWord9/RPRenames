@@ -17,7 +17,6 @@ import java.util.Properties;
 import static com.HiWord9.RPRenames.util.config.ConfigManager.*;
 
 public class CITConfig {
-
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
 
     public static void parseCITs(ResourceManager resourceManager, Profiler profiler) {
@@ -39,7 +38,7 @@ public class CITConfig {
         profiler.pop();
     }
 
-    public static void propertiesToRename(Properties p, String packName, String path) {
+    private static void propertiesToRename(Properties p, String packName, String path) {
         String matchItems = p.getProperty("matchItems");
         if (matchItems == null) matchItems = p.getProperty("items");
         if (matchItems == null) return;

@@ -11,15 +11,12 @@
       "resize": "Lnet/minecraft/class_471;method_25410(Lnet/minecraft/class_310;II)V",
       "setup": "Lnet/minecraft/class_471;method_25445()V"
     },
-    "com/HiWord9/RPRenames/mixin/MinecraftClientMixin": {
-      "Lnet/minecraft/client/MinecraftClient;disconnect(Lnet/minecraft/client/gui/screen/Screen;)V": "Lnet/minecraft/class_310;method_18096(Lnet/minecraft/class_437;)V",
-      "disconnect*": "Lnet/minecraft/class_310;method_18099()V"
+    "com/HiWord9/RPRenames/mixin/CreativeInventoryScreenMixin": {
+      "search": "Lnet/minecraft/class_481;method_2464()V"
     },
-    "com/HiWord9/RPRenames/mixin/ReloadableResourceManagerImplMixin": {
-      "reload": "Lnet/minecraft/class_3304;method_18232(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/concurrent/CompletableFuture;Ljava/util/List;)Lnet/minecraft/class_4011;"
-    },
-    "com/HiWord9/RPRenames/mixin/ServerResourcePackProviderMixin": {
-      "download": "Lnet/minecraft/class_1066;method_4640(Ljava/net/URL;Ljava/lang/String;Z)Ljava/util/concurrent/CompletableFuture;"
+    "com/HiWord9/RPRenames/mixin/ModelLoaderMixin": {
+      "<init>": "Lnet/minecraft/class_1088;<init>(Lnet/minecraft/class_324;Lnet/minecraft/class_3695;Ljava/util/Map;Ljava/util/Map;)V",
+      "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V": "Lnet/minecraft/class_3695;method_15396(Ljava/lang/String;)V"
     }
   },
   "data": {
@@ -35,15 +32,12 @@
         "resize": "Lnet/minecraft/class_471;method_25410(Lnet/minecraft/class_310;II)V",
         "setup": "Lnet/minecraft/class_471;method_25445()V"
       },
-      "com/HiWord9/RPRenames/mixin/MinecraftClientMixin": {
-        "Lnet/minecraft/client/MinecraftClient;disconnect(Lnet/minecraft/client/gui/screen/Screen;)V": "Lnet/minecraft/class_310;method_18096(Lnet/minecraft/class_437;)V",
-        "disconnect*": "Lnet/minecraft/class_310;method_18099()V"
+      "com/HiWord9/RPRenames/mixin/CreativeInventoryScreenMixin": {
+        "search": "Lnet/minecraft/class_481;method_2464()V"
       },
-      "com/HiWord9/RPRenames/mixin/ReloadableResourceManagerImplMixin": {
-        "reload": "Lnet/minecraft/class_3304;method_18232(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/concurrent/CompletableFuture;Ljava/util/List;)Lnet/minecraft/class_4011;"
-      },
-      "com/HiWord9/RPRenames/mixin/ServerResourcePackProviderMixin": {
-        "download": "Lnet/minecraft/class_1066;method_4640(Ljava/net/URL;Ljava/lang/String;Z)Ljava/util/concurrent/CompletableFuture;"
+      "com/HiWord9/RPRenames/mixin/ModelLoaderMixin": {
+        "<init>": "Lnet/minecraft/class_1088;<init>(Lnet/minecraft/class_324;Lnet/minecraft/class_3695;Ljava/util/Map;Ljava/util/Map;)V",
+        "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V": "Lnet/minecraft/class_3695;method_15396(Ljava/lang/String;)V"
       }
     }
   }

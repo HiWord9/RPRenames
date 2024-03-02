@@ -37,148 +37,27 @@ import java.util.regex.PatternSyntaxException;
 public class ConfigManager {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-//    public static void parseRenames(ResourceManager resourceManager, Profiler profiler) {
-////        configUpdate(MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().stream().toList());
-//        ArrayList<String> packs = new ArrayList<>();
-//        for (ResourcePackProfile rpp : MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().stream().toList()) {
-//            packs.add(rpp.getName());
-//        }
-////        configUpdate(packs);
-//        configClear();
-//        long startTime = System.currentTimeMillis();
-//        RPRenames.LOGGER.info("Starting creating config");
-////        startConfigCreate(packs);
-//        for (String s : packs) {
-//            if (s.startsWith("file/")) {
-//                String packName = s.substring(5);
-//                RPRenames.LOGGER.info("Starting creating config for \"" + packName + "\".");
-//                configCreate(packName);
-//            }
-//            if (s.equals("server")) {
-//                startConfigCreateServer();
-//            }
-//        }
-//        long finishTime = System.currentTimeMillis() - startTime;
-//        updateItemGroup();
-//        RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
-//
-//    }
-
     public static void parseRenames() {
         MinecraftClient client = MinecraftClient.getInstance();
         parseRenames(client.getResourceManager(), client.getProfiler());
     }
 
     public static void parseRenames(ResourceManager resourceManager, Profiler profiler) {
-////        List<CIT<?>> cits = new ArrayList<>();
-//        profiler.push("rprenames:collecting_cit_renames");
-//        for (String root : ROOTS) {
-//            for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
-////                String packName = null;
-////                try {
-////                    cits.add(
-////                            parseCIT(
-////                                    PropertyGroup.tryParseGroup(
-////                                            packName = entry.getValue().getResourcePackName(),
-////                                            entry.getKey(),
-////                                            entry.getValue().getInputStream()),
-////                                    resourceManager
-////                            )
-////                    );
-//                Properties prop = new Properties();
-//                try {
-//                    prop.load(entry.getValue().getInputStream());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    continue;
-//                }
-//                CITConfig.propertiesToRename(
-//                        prop,
-//                        entry.getValue().getResourcePackName(),
-//                        entry.getKey().getPath()
-//                );
-//
-////                } catch (CITParsingException e) {
-////                    CITResewn.logErrorLoading(e.getMessage());
-////                } catch (Exception e) {
-////                    CITResewn.logErrorLoading("Errored while loading cit: " + entry.getKey() + (packName == null ? "" : " from " + packName));
-////                    e.printStackTrace();
-////                }
-//            }
-////            for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cem", s -> s.getPath().endsWith(".jem")).entrySet()) {
-////                String packName = entry.getValue().getResourcePackName();
-////                String filePath = packName.startsWith("server-resource-packs/") ? packName : "resourcepacks/" + packName;
-////            }
-//        }
-//        profiler.pop();
-////
-////        return cits;
+        profiler.push("rprenames:reloading_renames");
 
         configClear();
         long startTime = System.currentTimeMillis();
-        RPRenames.LOGGER.info("Starting creating config");
-//        startConfigCreateServer();
+        RPRenames.LOGGER.info("Starting collecting renames");
+
         CITConfig.parseCITs(resourceManager, profiler);
         CEMConfig.parseCEMs(resourceManager, profiler);
 
         long finishTime = System.currentTimeMillis() - startTime;
         updateItemGroup();
-        RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
+        RPRenames.LOGGER.info("Finished collecting renames [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
+
+        profiler.pop();
     }
-
-//    public static void configUpdate(List<ResourcePackProfile> enabledPacks) {
-//        ArrayList<String> packs = new ArrayList<>();
-//        for (ResourcePackProfile rpp : enabledPacks) {
-//            packs.add(rpp.getName());
-//        }
-////        configUpdate(packs);
-//        configClear();
-//        long startTime = System.currentTimeMillis();
-//        RPRenames.LOGGER.info("Starting creating config");
-////        startConfigCreate(packs);
-//        for (String s : packs) {
-//            if (s.startsWith("file/")) {
-//                String packName = s.substring(5);
-//                RPRenames.LOGGER.info("Starting creating config for \"" + packName + "\".");
-//                configCreate(packName);
-//            }
-//            if (s.equals("server")) {
-//                startConfigCreateServer();
-//            }
-//        }
-//        long finishTime = System.currentTimeMillis() - startTime;
-//        updateItemGroup();
-//        RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
-//    }
-
-    public static void configUpdateServer() {
-//        RPRenames.renamesServer.clear();
-//        long startTime = System.currentTimeMillis();
-//        RPRenames.LOGGER.info("Starting creating config server");
-//        startConfigCreateServer();
-//        long finishTime = System.currentTimeMillis() - startTime;
-//        RPRenames.LOGGER.info("Finished creating config server [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
-    }
-
-//    public static void configUpdate(ArrayList<String> packs) {
-//        configClear();
-//        long startTime = System.currentTimeMillis();
-//        RPRenames.LOGGER.info("Starting creating config");
-////        startConfigCreate(packs);
-//        for (String s : packs) {
-//            if (s.startsWith("file/")) {
-//                String packName = s.substring(5);
-//                RPRenames.LOGGER.info("Starting creating config for \"" + packName + "\".");
-//                configCreate(packName);
-//            }
-//            if (s.equals("server")) {
-//                startConfigCreateServer();
-//            }
-//        }
-//        long finishTime = System.currentTimeMillis() - startTime;
-//        updateItemGroup();
-//        RPRenames.LOGGER.info("Finished creating config [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
-//    }
 
     public static void updateItemGroup() {
         RPRenames.renamedItemStacks.clear();
@@ -202,85 +81,6 @@ public class ConfigManager {
         RPRenames.renamedItemStacks.addAll(list);
     }
 
-//    public static void startConfigCreate(ArrayList<String> enabledPacks) {
-//        for (String s : enabledPacks) {
-//            if (s.startsWith("file/")) {
-//                String packName = s.substring(5);
-//                RPRenames.LOGGER.info("Starting creating config for \"" + packName + "\".");
-//                configCreate(packName);
-//            }
-//            if (s.equals("server")) {
-//                startConfigCreateServer();
-//            }
-//        }
-//    }
-
-//    public static void startConfigCreateServer() {
-//        URL url = RPRenames.serverResourcePackURL;
-//        if (url != null) {
-//            RPRenames.LOGGER.info("Starting creating config for Server's Resource Pack");
-//            String serverResourcePack = Hashing.sha1().hashString(url.toString(), StandardCharsets.UTF_8).toString();
-//            ConfigManager.configCreate("server-resource-packs/" + serverResourcePack);
-//        } else {
-//            RPRenames.LOGGER.info("Unknown error while creating config for Server's Resource Pack");
-//        }
-//    }
-
-//    public static void configCreate(String packName) { //todo delete
-//        String filePath = packName.startsWith("server-resource-packs/") ? packName : "resourcepacks/" + packName;
-//        FileSystem zip = null;
-//        if (new File(filePath).isFile()) {
-//            try {
-//                zip = FileSystems.newFileSystem(Paths.get(filePath), (ClassLoader) null);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        Path currentPath;
-//
-//        String[] folders = new String[]{"/assets/minecraft/optifine/cit/", "/assets/minecraft/optifine/cem/"};
-//
-//        for (String currentFolder : folders) {
-//            if (zip != null) {
-//                currentPath = zip.getPath(currentFolder);
-//            } else {
-//                currentPath = Path.of(filePath + currentFolder);
-//            }
-//
-//            String FT = null;
-//            if (currentFolder.endsWith("/cit/")) {
-//                FT = ".properties";
-//            } else if (currentFolder.endsWith("/cem/")) {
-//                FT = ".jem";
-//            }
-//            String fileType = FT;
-//
-//            try {
-//                Files.walk(currentPath, new FileVisitOption[0])
-//                        .filter(path -> path.toString().endsWith(fileType))
-//                        .forEach(propertiesFile -> {
-//                            if (currentFolder.endsWith("/cit/")) {
-//                                CITConfig.propertiesToRename(getPropFromPath(propertiesFile), packName, propertiesFile.toString());
-//                            } else if (currentFolder.endsWith("/cem/")) {
-//                                String fileName = propertiesFile.getFileName().toString();
-//                                if (Arrays.stream(CEMList.models).toList().contains(fileName.substring(0, fileName.length() - 4))) {
-//                                    CEMConfig.startPropToRenameMob(packName, filePath);
-//                                }
-//                            }
-//                        });
-//            } catch (IOException ignored) {
-//            }
-//        }
-//        try {
-//            if (zip != null) {
-//                zip.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public static Properties getPropFromResource(Resource resource) throws IOException {
         Properties prop = new Properties();
         prop.load(resource.getInputStream());
@@ -294,18 +94,6 @@ public class ConfigManager {
     public static String validatePackName(String packName) {
         return packName.startsWith("file/") ? packName.substring(5) : packName;
     }
-
-//    public static Properties getPropFromPath(Path propFile) {
-//        Properties p = new Properties();
-//        try {
-//            InputStream inputStream = Files.newInputStream(propFile);
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//            p.load(reader);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return p;
-//    }
 
     public static Map<String, ArrayList<Rename>> getAllFavorites() {
         Map<String, ArrayList<Rename>> favoriteRenames = new HashMap<>();
