@@ -54,14 +54,14 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.favoritePosY)
                 .build();
 
-        AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
-                .setTooltip(Text.translatable("rprenames.config.gui.compareItemGroupRenames.tooltip"))
+        AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
+                .setTooltip(Text.translatable("rprenames.config.general.compareItemGroupRenames.tooltip"))
                 .setSaveConsumer(currentConfig::setCompareItemGroupRenames)
                 .setDefaultValue(defaultConfig.compareItemGroupRenames)
                 .build();
 
-        AbstractConfigListEntry<Boolean> generateSpawnEggsInItemGroup = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.generateSpawnEggsInItemGroup"), currentConfig.generateSpawnEggsInItemGroup)
-                .setTooltip(Text.translatable("rprenames.config.gui.generateSpawnEggsInItemGroup.tooltip"))
+        AbstractConfigListEntry<Boolean> generateSpawnEggsInItemGroup = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.generateSpawnEggsInItemGroup"), currentConfig.generateSpawnEggsInItemGroup)
+                .setTooltip(Text.translatable("rprenames.config.general.generateSpawnEggsInItemGroup.tooltip"))
                 .setSaveConsumer(currentConfig::setGenerateSpawnEggsInItemGroup)
                 .setDefaultValue(defaultConfig.generateSpawnEggsInItemGroup)
                 .build();
@@ -102,6 +102,12 @@ public class ModConfigScreenFactory {
                 .setTooltip(Text.translatable("rprenames.config.gui.showExtraProperties.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showExtraProperties = newConfig)
                 .setDefaultValue(defaultConfig.showExtraProperties)
+                .build();
+
+        AbstractConfigListEntry<Boolean> renderMobRenamesAsEntities = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderMobRenamesAsEntities"), currentConfig.renderMobRenamesAsEntities)
+                .setTooltip(Text.translatable("rprenames.config.gui.renderMobRenamesAsEntities.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.renderMobRenamesAsEntities = newConfig)
+                .setDefaultValue(defaultConfig.renderMobRenamesAsEntities)
                 .build();
 
         AbstractConfigListEntry<Boolean> highlightSlot = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.highlightSlot"), currentConfig.highlightSlot)
@@ -286,6 +292,7 @@ public class ModConfigScreenFactory {
         gui.addEntry(viewMode);
         gui.addEntry(showPackName);
         gui.addEntry(showExtraProperties);
+        gui.addEntry(renderMobRenamesAsEntities);
         gui.addEntry(highlightSlot);
         gui.addEntry(slotHighlightColorSettings.build());
         gui.addEntry(tooltipSlotHighlightSettings.build());

@@ -23,14 +23,6 @@ public class ModConfig implements ConfigData {
     public int favoritePosX = 71;
     public int favoritePosY = -75;
 
-    public boolean loadModBuiltinResources = true;
-
-    public boolean openByDefault = false;
-    public RenameButtonHolder.ViewMode viewMode = RenameButtonHolder.ViewMode.GRID;
-
-    public boolean showPackName = true;
-    public boolean showExtraProperties = true;
-
     public boolean compareItemGroupRenames = true;
     public void setCompareItemGroupRenames(boolean compareItemGroupRenames) {
         if (shouldUpdateItemGroup == null || !shouldUpdateItemGroup) {
@@ -46,6 +38,16 @@ public class ModConfig implements ConfigData {
         }
         this.generateSpawnEggsInItemGroup = generateSpawnEggsInItemGroup;
     }
+
+    public boolean loadModBuiltinResources = true;
+
+    public boolean openByDefault = false;
+    public RenameButtonHolder.ViewMode viewMode = RenameButtonHolder.ViewMode.GRID;
+
+    public boolean showPackName = true;
+    public boolean showExtraProperties = true;
+
+    public boolean renderMobRenamesAsEntities = true;
 
     public boolean highlightSlot = true;
 

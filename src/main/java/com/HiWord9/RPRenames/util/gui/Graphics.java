@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.DrawContextMixinAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SquidEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.joml.Quaternionf;
@@ -31,6 +33,8 @@ public class Graphics extends Screen {
 
     static public final int BACKGROUND_WIDTH = 176;
     static public final int BACKGROUND_HEIGHT = 166;
+
+    static public final int TOOLTIP_CORNER = 2;
 
     protected Graphics() {
         super(null);
@@ -64,7 +68,20 @@ public class Graphics extends Screen {
         matrices.pop();
     }
 
-    public static void renderEntity(DrawContext context, int x, int y, int size, Entity entity, boolean spin) {
+    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, int size, Entity entity, boolean spin) {
+        renderEntityInBox(context, rect, corner, size, entity, spin, 500);
+    }
+
+    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, int size, Entity entity, boolean spin, int z) {
+        context.enableScissor(
+                rect.getLeft() + corner, rect.getTop() + corner,
+                rect.getRight() - corner, rect.getBottom() - corner
+        );
+        renderEntity(context, rect.getLeft() + rect.width() / 2, (int) ((rect.getTop() + rect.height() / 2) + (size * entity.getHeight()) / 2), z, size, entity, spin);
+        context.disableScissor();
+    }
+
+    public static void renderEntity(DrawContext context, int x, int y, int z, int size, Entity entity, boolean spin) {
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
         if (entity instanceof SquidEntity) {
@@ -75,7 +92,7 @@ public class Graphics extends Screen {
         if (entity instanceof LivingEntity living && living.isBaby()) {
             size /= 1.7;
         }
-        context.getMatrices().translate(x, y, 1500);
+        context.getMatrices().translate(x, y, 1000 + z);
         context.getMatrices().scale(1f, 1f, -1);
         context.getMatrices().translate(0, 0, 1000);
         context.getMatrices().scale(size, size, size);
@@ -87,8 +104,10 @@ public class Graphics extends Screen {
             entity.setPos(MinecraftClient.getInstance().cameraEntity.getX(), MinecraftClient.getInstance().cameraEntity.getY(), MinecraftClient.getInstance().cameraEntity.getZ());
         }
 
-        assert MinecraftClient.getInstance().player != null;
-        entity.age = MinecraftClient.getInstance().player.age;
+        if (!(entity instanceof PlayerEntity)) {
+            assert MinecraftClient.getInstance().player != null;
+            entity.age = MinecraftClient.getInstance().player.age;
+        }
         setupAngles(entity, spin);
 
         var entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
@@ -102,51 +121,6 @@ public class Graphics extends Screen {
         );
         immediate.draw();
         entityRenderDispatcher.setRenderShadows(true);
-        context.getMatrices().pop();
-        DiffuseLighting.enableGuiDepthLighting();
-    }
-
-    public static void renderPlayer(DrawContext context, int x, int y, int size, LivingEntity entity, boolean spin) {
-        DiffuseLighting.disableGuiDepthLighting();
-        context.getMatrices().push();
-        context.getMatrices().translate(x, y, 1500);
-        context.getMatrices().scale(1f, 1f, -1);
-        context.getMatrices().translate(0, 0, 1000);
-        context.getMatrices().scale(size, size, size);
-        var quaternion = (new Quaternionf()).rotateZ(3.1415927F);
-        var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
-        quaternion.mul(quaternion2);
-        context.getMatrices().multiply(quaternion);
-        if (MinecraftClient.getInstance().cameraEntity != null) {
-            entity.setPos(MinecraftClient.getInstance().cameraEntity.getX(), MinecraftClient.getInstance().cameraEntity.getY(), MinecraftClient.getInstance().cameraEntity.getZ());
-        }
-
-        float h = entity.bodyYaw;
-        float i = entity.getYaw();
-        float j = entity.getPitch();
-        float k = entity.prevHeadYaw;
-        float l = entity.headYaw;
-
-        setupAngles(entity, spin);
-
-        var entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        quaternion2.conjugate();
-        entityRenderDispatcher.setRotation(quaternion2);
-        entityRenderDispatcher.setRenderShadows(false);
-        var immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-
-        entityRenderDispatcher.render(entity, 0, 0, 0, 0.f, 1.f, context.getMatrices(), immediate,
-                LightmapTextureManager.MAX_LIGHT_COORDINATE
-        );
-        immediate.draw();
-        entityRenderDispatcher.setRenderShadows(true);
-
-        entity.bodyYaw = h;
-        entity.setYaw(i);
-        entity.setPitch(j);
-        entity.prevHeadYaw = k;
-        entity.headYaw = l;
-
         context.getMatrices().pop();
         DiffuseLighting.enableGuiDepthLighting();
     }

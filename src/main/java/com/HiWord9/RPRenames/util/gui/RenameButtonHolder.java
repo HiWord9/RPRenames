@@ -12,9 +12,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -72,7 +74,13 @@ public class RenameButtonHolder extends Screen {
                 Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
                 Graphics.renderText(context, displayText, Graphics.DEFAULT_TEXT_COLOR, button.getX() + (button.getWidth() - 20) / 2 + 20, button.getY() + 7, true, true);
             } else {
-                Graphics.renderStack(context, icon, button.getX() + 4, button.getY() + 4);
+                if (CEM && config.renderMobRenamesAsEntities) {
+                    Graphics.renderEntityInBox(context,
+                            new ScreenRect(button.getX(), button.getY(), button.getWidth() - 1, button.getHeight() - 1), 1,
+                            (int) (14 / (Math.max(entity.getHeight(), entity.getWidth()))), entity, false, 200);
+                } else {
+                    Graphics.renderStack(context, icon, button.getX() + 4, button.getY() + 4);
+                }
             }
         }
     }
@@ -186,13 +194,15 @@ public class RenameButtonHolder extends Screen {
         Graphics.renderStack(context, itemStack, newX, newY, 400, size);
     }
 
-    private void entityPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, boolean spin, LivingEntity entity) {
-        assert entity != null;
-        entity.setCustomName(Text.of(rename.getName()));
+    private void prepareEntity(Entity entity) {
+        if (entity == null) return;
         if (entity instanceof SnowGolemEntity) {
             ((SnowGolemEntity) entity).setHasPumpkin(!config.disableSnowGolemPumpkin);
         }
+        entity.setCustomName(Text.of(rename.getName()));
+    }
 
+    private void entityPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, boolean spin, LivingEntity entity) {
         int newWidth = (int) (width + size * entity.getWidth() - 1);
         int newHeight = (int) (height + size * entity.getHeight() - 1);
 
@@ -201,7 +211,9 @@ public class RenameButtonHolder extends Screen {
         int y = pos[1];
 
         Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight);
-        Graphics.renderEntity(context, x + newWidth / 2, (int) (y + newHeight - size * 0.75), size, entity, spin);
+        Graphics.renderEntityInBox(context,
+                new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
+                size, entity, spin);
     }
 
     private void playerPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, boolean spin, ItemStack item) {
@@ -282,8 +294,23 @@ public class RenameButtonHolder extends Screen {
         int x = pos[0];
         int y = pos[1];
 
+        float h = entity.bodyYaw;
+        float i = entity.getYaw();
+        float j = entity.getPitch();
+        float k = entity.prevHeadYaw;
+        float l = entity.headYaw;
+
+
         Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight);
-        Graphics.renderPlayer(context, x + newWidth / 2, (int) (y + newHeight - size * 0.75), size, entity, spin);
+        Graphics.renderEntityInBox(context,
+                new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
+                size, entity, spin);
+
+        entity.bodyYaw = h;
+        entity.setYaw(i);
+        entity.setPitch(j);
+        entity.prevHeadYaw = k;
+        entity.headYaw = l;
 
         if (isArmor) {
             entity.getInventory().armor.set(armorSlot, temp);
@@ -331,6 +358,7 @@ public class RenameButtonHolder extends Screen {
             var client = MinecraftClient.getInstance();
             assert entityType != null;
             this.entity = (LivingEntity) entityType.create(client.world);
+            prepareEntity(entity);
         }
         if (CEM && rename.getProperties() == null) {
             this.icon = new ItemStack(ConfigManager.itemFromName(rename.getMob().icon()));
