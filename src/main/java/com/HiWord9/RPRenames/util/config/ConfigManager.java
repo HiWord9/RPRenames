@@ -109,7 +109,7 @@ public class ConfigManager {
 
     public static ArrayList<Rename> getFavorites(String item) {
         ArrayList<Rename> renames = new ArrayList<>();
-        File favoritesFile = new File(RPRenames.configPathFavorite + "/" + item.replace(":", ".") + ".json");
+        File favoritesFile = new File(RPRenames.configPathFavorite + File.separator + item.replace(":", ".") + ".json");
         if (favoritesFile.exists()) {
             try {
                 FileReader fileReader = new FileReader(favoritesFile);
@@ -156,12 +156,12 @@ public class ConfigManager {
             if (RPRenames.configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: " + RPRenames.configPathFavorite);
             }
-            RPRenames.LOGGER.info("Created new file for favorites config: " + RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json");
+            RPRenames.LOGGER.info("Created new file for favorites config: " + RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
             listNames.add(rename);
         }
 
         try {
-            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json");
+            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(listNames, fileWriter);
             fileWriter.close();
@@ -179,7 +179,7 @@ public class ConfigManager {
 
         if (renamesList.size() > 0) {
             try {
-                FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json");
+                FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json");
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 gson.toJson(renamesList, fileWriter);
                 fileWriter.close();
@@ -193,7 +193,7 @@ public class ConfigManager {
 
     private static void deleteFavoriteConfigFile(String item) {
         try {
-            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + "\\" + item.replaceAll(":", ".") + ".json"));
+            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json"));
         } catch (IOException e) {
             e.printStackTrace();
         }
