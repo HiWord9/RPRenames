@@ -44,6 +44,8 @@
   "rprenames.config.gui.viewMode.tooltip": "How Renames should be viewed in Menu",
   "rprenames.config.gui.viewMode.list": "List",
   "rprenames.config.gui.viewMode.grid": "Grid",
+  "rprenames.config.gui.offsetMenu": "Offset Menu",
+  "rprenames.config.gui.offsetMenu.tooltip": "If false, Gui will not be centered on screen",
   "rprenames.config.gui.showPackName": "Show Pack name",
   "rprenames.config.gui.showPackName.tooltip": "If false, Pack name in Rename's tooltip won't be shown",
   "rprenames.config.gui.showExtraProperties": "Show Extra Properties",

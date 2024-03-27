@@ -44,6 +44,8 @@ public class ModConfig implements ConfigData {
     public boolean openByDefault = false;
     public RenameButtonHolder.ViewMode viewMode = RenameButtonHolder.ViewMode.GRID;
 
+    public boolean offsetMenu = true;
+
     public boolean showPackName = true;
     public boolean showExtraProperties = true;
 

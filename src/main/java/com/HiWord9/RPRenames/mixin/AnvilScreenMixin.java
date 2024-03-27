@@ -19,7 +19,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -44,7 +43,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -115,8 +113,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     ArrayList<Rename> currentRenameList = new ArrayList<>();
 
     TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-    int searchFieldXOffset = 23;
-    Text SEARCH_HINT_TEXT = Text.translatable("rprenames.gui.searchHintText").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+
+    final int menuShift = 77;
+    final int searchFieldXOffset = 23;
+    final Text SEARCH_HINT_TEXT = Text.translatable("rprenames.gui.searchHintText").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 
     String searchTag = "";
 
@@ -306,7 +306,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             currentTab = Tabs.SEARCH;
         }
         screenUpdate();
-        move(77);
+        updateMenuShift();
     }
 
     private void closeMenu() {
@@ -321,7 +321,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         nameField.setFocusUnlocked(false);
         opener.setOpen(open);
         currentTab = Tabs.SEARCH;
-        move(-77);
+        updateMenuShift();
     }
 
     private void updateWidgets() {
@@ -543,7 +543,12 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         return inventoryList;
     }
 
-    private void move(int x) {
+    private void updateMenuShift() {
+        if (!config.offsetMenu) return;
+        offsetX(menuShift * (open ? 1 : -1));
+    }
+
+    private void offsetX(int x) {
         if (client == null || client.currentScreen == null) return;
 
         ((AnvilScreen) client.currentScreen).x += x;

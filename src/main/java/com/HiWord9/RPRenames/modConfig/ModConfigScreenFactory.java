@@ -92,6 +92,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.viewMode)
                 .build();
 
+        AbstractConfigListEntry<Boolean> offsetMenu = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.offsetMenu"), currentConfig.offsetMenu)
+                .setTooltip(Text.translatable("rprenames.config.gui.offsetMenu.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.offsetMenu = newConfig)
+                .setDefaultValue(defaultConfig.offsetMenu)
+                .build();
+
         AbstractConfigListEntry<Boolean> showPackName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.showPackName"), currentConfig.showPackName)
                 .setTooltip(Text.translatable("rprenames.config.gui.showPackName.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showPackName = newConfig)
@@ -290,6 +296,7 @@ public class ModConfigScreenFactory {
         general.addEntry(loadModBuiltinResources);
         gui.addEntry(openByDefault);
         gui.addEntry(viewMode);
+        gui.addEntry(offsetMenu);
         gui.addEntry(showPackName);
         gui.addEntry(showExtraProperties);
         gui.addEntry(renderMobRenamesAsEntities);
