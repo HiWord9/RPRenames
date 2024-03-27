@@ -16,7 +16,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtElement;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,13 +42,8 @@ public class RPRenames implements ClientModInitializer {
     public static Path configPathFavorite = Path.of(configPath + "/favorite");
 
     public static Map<String, ArrayList<Rename>> renames = new HashMap<>();
-//    public static Map<String, ArrayList<Rename>> renamesServer = new HashMap<>();
 
     public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
-
-//    public static URL serverResourcePackURL = null;
-//    public static boolean joiningServer = false;
-//    public static boolean leavingServer = false;
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
