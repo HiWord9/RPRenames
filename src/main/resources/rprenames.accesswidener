@@ -1,0 +1,5 @@
+accessWidener v1 named
+accessible method net/minecraft/item/ItemGroup$Builder type (Lnet/minecraft/item/ItemGroup$Type;)Lnet/minecraft/item/ItemGroup$Builder;
+accessible method net/minecraft/client/gui/DrawContext drawTooltip (Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
+accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I

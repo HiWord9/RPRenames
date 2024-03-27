@@ -1,6 +1,5 @@
 package com.HiWord9.RPRenames.util.gui;
 
-import com.HiWord9.RPRenames.DrawContextMixinAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -144,8 +143,6 @@ public class Graphics extends Screen {
     }
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
-        if (context instanceof DrawContextMixinAccessor drawContextMixinAccessor) {
-            drawContextMixinAccessor.accessedDrawTooltip(textRenderer, components, x, y, positioner);
-        }
+        context.drawTooltip(textRenderer, components, x, y, positioner);
     }
 }

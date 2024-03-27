@@ -80,10 +80,10 @@ public class RPRenames implements ClientModInitializer {
         Registry.register(
                 Registries.ITEM_GROUP,
                 new Identifier(MOD_ID, "item_group"),
-                ((ItemGroupBuilderMixinAccessor) FabricItemGroup.builder()
+                FabricItemGroup.builder()
                         .displayName(Text.translatable("rprenames.item_group"))
-                        .icon(RPRenames::getItemGroupIcon))
-                        .setType(ItemGroup.Type.SEARCH)
+                        .icon(RPRenames::getItemGroupIcon)
+                        .type(ItemGroup.Type.SEARCH)
                         .texture("item_search.png")
                         .build()
         );

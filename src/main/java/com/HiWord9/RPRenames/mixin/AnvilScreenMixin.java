@@ -544,60 +544,34 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     }
 
     private void move(int x) {
-        try {
-            if (client == null) return;
+        if (client == null || client.currentScreen == null) return;
 
-            Field field = HandledScreen.class.getDeclaredField("x");
-            field.setAccessible(true);
-            int originalX = (int) field.get(client.currentScreen);
-            field.set(client.currentScreen, originalX + x);
+        ((AnvilScreen) client.currentScreen).x += x;
 
-            nameField.setX(nameField.getX() + x);
-            opener.setX(opener.getX() + x);
-            searchTab.setX(searchTab.getX() + x);
-            favoriteTab.setX(favoriteTab.getX() + x);
-            inventoryTab.setX(inventoryTab.getX() + x);
-            globalTab.setX(globalTab.getX() + x);
-            favoriteButton.setX(favoriteButton.getX() + x);
-            searchField.setX(searchField.getX() + x);
-            pageDown.setX(pageDown.getX() + x);
-            pageUp.setX(pageUp.getX() + x);
+        nameField.setX(nameField.getX() + x);
+        opener.setX(opener.getX() + x);
+        searchTab.setX(searchTab.getX() + x);
+        favoriteTab.setX(favoriteTab.getX() + x);
+        inventoryTab.setX(inventoryTab.getX() + x);
+        globalTab.setX(globalTab.getX() + x);
+        favoriteButton.setX(favoriteButton.getX() + x);
+        searchField.setX(searchField.getX() + x);
+        pageDown.setX(pageDown.getX() + x);
+        pageUp.setX(pageUp.getX() + x);
 
-            for (RenameButtonHolder renameButtonHolder : buttons) {
-                RenameButton button = renameButtonHolder.getButton();
-                button.setX(button.getX() + x);
-            }
-
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+        for (RenameButtonHolder renameButtonHolder : buttons) {
+            RenameButton button = renameButtonHolder.getButton();
+            button.setX(button.getX() + x);
         }
-    }
-
-    private Object getFieldValueFromThisScreen(String fieldName) {
-        if (client == null) return null;
-        try {
-            Field field = HandledScreen.class.getDeclaredField(fieldName);
-            return field.get(client.currentScreen);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            RPRenames.LOGGER.error("Could not access field \"" + fieldName + "\" in AnvilScreen");
-            return null;
-        }
-    }
-
-    private Integer getX() {
-        return (Integer) getFieldValueFromThisScreen("x");
-    }
-
-    private Integer getY() {
-        return (Integer) getFieldValueFromThisScreen("y");
     }
 
     @Inject(at = @At("HEAD"), method = "drawForeground")
     private void frameUpdate(DrawContext context, int mouseX, int mouseY, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
-        Integer xScreenOffset = getX();
-        Integer yScreenOffset = getY();
-        if (xScreenOffset == null || yScreenOffset == null) return;
+        if (client == null || client.currentScreen == null) return;
+
+        int xScreenOffset = ((AnvilScreen) client.currentScreen).x;
+        int yScreenOffset = ((AnvilScreen) client.currentScreen).y;
 
         MatrixStack matrices = context.getMatrices();
         matrices.push();
@@ -897,7 +871,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         int x;
         int y;
-        int menuX = getX();
+        assert client != null && client.currentScreen != null;
+        int menuX = ((AnvilScreen) client.currentScreen).x;
         if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
             x = menuX - menuWidth + menuXOffset + buttonXOffset;
             y = this.height / 2 - 53 + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));

@@ -38,6 +38,7 @@
   "mixins": [
     "rprenames.mixins.json"
   ],
+  "accessWidener" : "rprenames.accesswidener",
 
   "depends": {
     "fabricloader": ">=0.14.22",

@@ -6,8 +6,6 @@
   "client": [
     "AnvilScreenMixin",
     "CreativeInventoryScreenMixin",
-    "DrawContextMixin",
-    "ItemGroupBuilderMixin",
     "ModelLoaderMixin"
   ],
   "injectors": {
