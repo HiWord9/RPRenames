@@ -457,9 +457,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
         if (open) {
             for (RenameButtonHolder renameButtonHolder : buttons) {
-                if (renameButtonHolder.isActive()) {
-                    renameButtonHolder.getButton().mouseClicked(mouseX, mouseY, button);
-                }
+                if (!renameButtonHolder.isActive()) continue;
+                renameButtonHolder.getButton().mouseClicked(mouseX, mouseY, button);
             }
             pageDown.mouseClicked(mouseX, mouseY, button);
             pageUp.mouseClicked(mouseX, mouseY, button);
@@ -572,6 +571,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         for (RenameButtonHolder renameButtonHolder : buttons) {
             RenameButton button = renameButtonHolder.getButton();
+            if (button == null) continue;
             button.setX(button.getX() + x);
         }
     }
@@ -641,6 +641,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                             }
                         } else if (hasShiftDown() != config.playerPreviewByDefault) {
                             searchField.setFocused(false);
+                            nameField.setFocused(false);
                             if (!config.disablePlayerPreviewTips) {
                                 tooltip.add(TooltipComponent.of(
                                         Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF")
