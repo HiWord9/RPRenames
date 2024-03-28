@@ -71,7 +71,13 @@ public class RenameButtonHolder extends Screen {
     public void drawElements(DrawContext context) {
         if (active) {
             if (viewMode == ViewMode.LIST) {
-                Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
+                if (CEM && config.renderMobRenamesAsEntities) {
+                    Graphics.renderEntityInBox(context,
+                            new ScreenRect(button.getX(), button.getY(), button.getHeight(), button.getHeight()), 1,
+                            (int) (12 / (Math.max(entity.getHeight(), entity.getWidth()))), entity, false, 200);
+                } else {
+                    Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
+                }
                 Graphics.renderText(context, displayText, Graphics.DEFAULT_TEXT_COLOR, button.getX() + (button.getWidth() - 20) / 2 + 20, button.getY() + 7, true, true);
             } else {
                 if (CEM && config.renderMobRenamesAsEntities) {
