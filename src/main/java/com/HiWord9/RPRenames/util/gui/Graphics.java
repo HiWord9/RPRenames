@@ -30,9 +30,6 @@ public class Graphics extends Screen {
 
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
-    static public final int BACKGROUND_WIDTH = 176;
-    static public final int BACKGROUND_HEIGHT = 166;
-
     static public final int TOOLTIP_CORNER = 2;
 
     protected Graphics() {

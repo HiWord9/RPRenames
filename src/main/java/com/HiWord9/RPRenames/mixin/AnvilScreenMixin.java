@@ -47,9 +47,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.HiWord9.RPRenames.util.gui.Graphics.BACKGROUND_HEIGHT;
-import static com.HiWord9.RPRenames.util.gui.Graphics.BACKGROUND_WIDTH;
-
 @Mixin(value = AnvilScreen.class, priority = 1200)
 public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixinAccessor {
     private static final ModConfig config = ModConfig.INSTANCE;
@@ -126,7 +123,13 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         RPRenames.LOGGER.info("Starting RPRenames modification on AnvilScreen");
 
-        int pageButtonsY = this.height / 2 + 57;
+        assert client != null && client.currentScreen != null;
+        int x = ((AnvilScreen) client.currentScreen).x;
+        int y = ((AnvilScreen) client.currentScreen).y;
+
+        int menuX = x - menuWidth + menuXOffset;
+
+        int pageButtonsY = y + 140;
         if (config.viewMode == RenameButtonHolder.ViewMode.GRID) {
             pageButtonsY -= 4;
             maxPageElements = 20;
@@ -136,19 +139,21 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             buttons.add(new RenameButtonHolder(config.viewMode, i));
         }
 
-        pageDown = new PageButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
-        pageUp = new PageButton(this.width / 2 - BACKGROUND_WIDTH / 2 + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
+        pageDown = new PageButton(menuX + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
+        pageUp = new PageButton(x + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
 
-        opener = new OpenerButton(this.width / 2 - 85, this.height / 2 - 39);
+        opener = new OpenerButton(x + 3, y + 44);
 
-        searchTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY, Tabs.SEARCH);
-        favoriteTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
-        inventoryTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
-        globalTab = new TabButton(this.width / 2 - BACKGROUND_WIDTH / 2 - menuWidth + menuXOffset - (TabButton.buttonWidth - 3), this.height / 2 - BACKGROUND_HEIGHT / 2 + startTabOffsetY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
+        int tabX = menuX - (TabButton.buttonWidth - 3);
+        int tabY = y + startTabOffsetY;
+        searchTab = new TabButton(tabX, tabY, Tabs.SEARCH);
+        favoriteTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
+        inventoryTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
+        globalTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
 
-        favoriteButton = new FavoriteButton(this.width / 2 + config.favoritePosX, this.height / 2 + config.favoritePosY);
+        favoriteButton = new FavoriteButton(x + 88 + config.favoritePosX, y + 83 + config.favoritePosY);
 
-        searchField = new TextFieldWidget(renderer, this.width / 2 - (BACKGROUND_WIDTH / 2) - menuWidth + menuXOffset + searchFieldXOffset, this.height / 2 - 68, menuWidth - 38, 10, Text.of(""));
+        searchField = new TextFieldWidget(renderer, menuX + searchFieldXOffset, y + 15, menuWidth - 38, 10, Text.of(""));
         searchField.setChangedListener(this::onSearch);
         searchField.setDrawsBackground(false);
         searchField.setMaxLength(1024);
@@ -439,8 +444,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!config.enableAnvilModification) return super.mouseClicked(mouseX, mouseY, button);
-        int xScreenOffset = (this.width - BACKGROUND_WIDTH) / 2;
-        int yScreenOffset = (this.height - BACKGROUND_HEIGHT) / 2;
+        assert client != null && client.currentScreen != null;
+        int xScreenOffset = ((AnvilScreen) client.currentScreen).x;
+        int yScreenOffset = ((AnvilScreen) client.currentScreen).y;
         if (ghostCraft.doRender) {
             if ((mouseX - xScreenOffset >= 26 && mouseX - xScreenOffset <= 151) && (mouseY - yScreenOffset >= 46 && mouseY - yScreenOffset <= 64)) {
                 ghostCraft.reset();
@@ -607,7 +613,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         pageUp.render(context, mouseX, mouseY, 0);
         matrices.pop();
 
-        Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, BACKGROUND_HEIGHT - (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 26 : 22), false, true);
+        Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 140 : 144), false, true);
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(context, SEARCH_HINT_TEXT, -1, -menuWidth + searchFieldXOffset, searchFieldXOffset - 8, true, false);
         }
@@ -877,13 +883,15 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         int x;
         int y;
         assert client != null && client.currentScreen != null;
-        int menuX = ((AnvilScreen) client.currentScreen).x;
+        int menuX = ((AnvilScreen) client.currentScreen).x - menuWidth + menuXOffset;
+        int buttonX = menuX + buttonXOffset;
+        int buttonY = ((AnvilScreen) client.currentScreen).y + 30;
         if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
-            x = menuX - menuWidth + menuXOffset + buttonXOffset;
-            y = this.height / 2 - 53 + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));
+            x = buttonX;
+            y = buttonY + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));
         } else {
-            x = menuX - menuWidth + menuXOffset + buttonXOffset + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
-            y = this.height / 2 - BACKGROUND_HEIGHT / 2 + 31 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
+            x = buttonX + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
+            y = buttonY + 1 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
         }
 
         ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
