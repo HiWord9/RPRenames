@@ -177,7 +177,7 @@ public class ConfigManager {
             renamesList.remove(indexInRenamesList);
         }
 
-        if (renamesList.size() > 0) {
+        if (!renamesList.isEmpty()) {
             try {
                 FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json");
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -426,6 +426,36 @@ public class ConfigManager {
             arrayList.add(rename);
             RPRenames.renames.put(item, arrayList);
         }
+    }
+
+    public static ItemStack[] getGhostCraftItems(Rename rename) {
+        ItemStack ghostSource = new ItemStack(ConfigManager.itemFromName(rename.getItems().get(0)));
+        ghostSource.setCount(rename.getStackSize());
+        if (rename.getDamage() != null) {
+            ghostSource.setDamage(rename.getDamage().getParsedDamage(ghostSource.getItem()));
+        }
+
+        ItemStack ghostEnchant = getGhostCraftEnchant(rename);
+
+        ItemStack ghostResult = createItem(rename);
+
+        return new ItemStack[]{ghostSource, ghostEnchant, ghostResult};
+    }
+
+    public static ItemStack getGhostCraftEnchant(Rename rename) {
+        ItemStack ghostEnchant = ItemStack.EMPTY;
+        if (rename.getEnchantment() != null) {
+            ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
+            ghostEnchant.getOrCreateNbt();
+            assert ghostEnchant.getNbt() != null;
+            if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
+                ghostEnchant.getNbt().put("Enchantments", new NbtList());
+            }
+            NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
+            nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+        }
+
+        return ghostEnchant;
     }
 
     public static ItemStack createItemOrSpawnEgg(Rename rename) {
