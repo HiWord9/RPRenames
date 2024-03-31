@@ -14,7 +14,6 @@ import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.HiWord9.RPRenames.util.gui.button.*;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -79,9 +78,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     final String nullItem = "air";
     String currentItem = nullItem;
-    ItemStack itemAfterUpdate;
-    boolean afterInventoryTab = false;
-    boolean afterGlobalTab = false;
+    ItemStack itemAfterUpdate = ItemStack.EMPTY;
+    boolean shouldNotUpdateTab = false;
     int tempPage;
 
     OpenerButton opener;
@@ -233,18 +231,18 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     public void onRenameButton(int indexInInventory, boolean isInInventory, boolean asCurrentItem, PlayerInventory inventory, Rename rename, boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
         ghostCraft.reset();
         if (indexInInventory != 36 && isInInventory) {
-            afterInventoryTab = currentTab == Tabs.INVENTORY;
-            afterGlobalTab = currentTab == Tabs.GLOBAL;
+            shouldNotUpdateTab = currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL;
             tempPage = page;
             if (!asCurrentItem) {
                 putInAnvil(indexInInventory, MinecraftClient.getInstance());
             }
-            afterInventoryTab = false;
-            afterGlobalTab = false;
+            shouldNotUpdateTab = false;
         } else if (indexInInventory != 36) {
+            shouldNotUpdateTab = currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL;
             for (int s = 0; s < 2; s++) {
                 moveToInventory(s, inventory);
             }
+            shouldNotUpdateTab = false;
 
             ItemStack[] ghostCraftItems = ConfigManager.getGhostCraftItems(rename);
 
@@ -307,11 +305,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void screenUpdate(int savedPage) {
         page = savedPage;
         opener.active = true;
-        if (afterInventoryTab) {
-            currentTab = Tabs.INVENTORY;
-            page = tempPage;
-        } else if (afterGlobalTab) {
-            currentTab = Tabs.GLOBAL;
+        if (shouldNotUpdateTab) {
             page = tempPage;
         }
         calcRenameList();
@@ -489,6 +483,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             ghostCraft.reset();
         }
         if (slotId != 0) return;
+        itemAfterUpdate = stack.copy();
         if (stack.isEmpty()) {
             currentItem = nullItem;
             searchField.setFocusUnlocked(false);
@@ -496,9 +491,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             searchField.setFocused(false);
         } else {
             currentItem = ConfigManager.getIdAndPath(stack.getItem());
-            itemAfterUpdate = stack.copy();
             searchField.setFocusUnlocked(true);
-            if (currentTab != Tabs.GLOBAL && currentTab != Tabs.INVENTORY) currentTab = Tabs.SEARCH;
+            if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
             favoriteButtonsUpdate(nameField.getText());
         }
         if (!open || currentTab != Tabs.GLOBAL) {

@@ -60,7 +60,7 @@ public class ModConfig implements ConfigData {
     public boolean highlightTooltipSlotSelected = false;
 
     public boolean enablePreview = true;
-    public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.BOTTOM;
+    public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.LEFT;
 
     public boolean playerPreviewByDefault = false;
 
