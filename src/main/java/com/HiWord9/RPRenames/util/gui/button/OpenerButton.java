@@ -12,33 +12,27 @@ import net.minecraft.util.Identifier;
 public class OpenerButton extends ClickableWidget {
     private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/opener.png");
 
-    static final int buttonWidth = 22;
-    static final int buttonHeight = 22;
+    static final int BUTTON_WIDTH = 22;
+    static final int BUTTON_HEIGHT = 22;
 
-    static final int textureWidth = 22;
-    static final int textureHeight = 88;
-    static final int focusedOffsetV = 22;
-    static final int openedOffsetV = 44;
+    static final int TEXTURE_WIDTH = 22;
+    static final int TEXTURE_HEIGHT = 88;
+    static final int FOCUSED_OFFSET_V = 22;
+    static final int OPENED_OFFSET_V = 44;
 
     boolean open = false;
 
     public OpenerButton(int x, int y) {
-        super(x, y, buttonWidth, buttonHeight, null);
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        boolean focused = isMouseOver(mouseX, mouseY);
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int u = 0;
         int v = 0;
-        v += open ? openedOffsetV : 0;
-        v += focused ? focusedOffsetV : 0;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), textureWidth, textureHeight);
-    }
-
-    @Override
-    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-
+        v += open ? OPENED_OFFSET_V : 0;
+        v += hovered ? FOCUSED_OFFSET_V : 0;
+        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override

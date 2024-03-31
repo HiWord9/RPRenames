@@ -39,8 +39,11 @@ dependencies {
 	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 
     // implementation 'com.google.code.gson:gson:2.10.1'
-	modImplementation "com.terraformersmc:modmenu:8.0.1"
-	modImplementation "me.shedaniel.cloth:cloth-config-fabric:12.0.119"
+//	modImplementation "com.terraformersmc:modmenu:7.0.1"
+//	modImplementation "com.terraformersmc:modmenu:8.0.1"
+	modImplementation "com.terraformersmc:modmenu:9.0.0"
+	modImplementation "me.shedaniel.cloth:cloth-config-fabric:13.0.121"
+	modImplementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
 }
 
 processResources {

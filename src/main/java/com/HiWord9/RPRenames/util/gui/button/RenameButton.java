@@ -16,20 +16,20 @@ public class RenameButton extends ClickableWidget {
     private static final Identifier TEXTURE_LIST = new Identifier(RPRenames.MOD_ID, "textures/gui/button.png");
     private static final Identifier TEXTURE_GRID = new Identifier(RPRenames.MOD_ID, "textures/gui/button_grid.png");
 
-    static final int buttonWidthList = 127;
-    public static final int buttonHeightList = 20;
-    public static final int buttonWidthGrid = 25;
-    public static final int buttonHeightGrid = 25;
+    static final int BUTTON_WIDTH_LIST = 127;
+    public static final int BUTTON_HEIGHT_LIST = 20;
+    public static final int BUTTON_WIDTH_GRID = 25;
+    public static final int BUTTON_HEIGHT_GRID = 25;
 
-    static final int textureWidthList = 127;
-    static final int textureHeightList = 80;
-    static final int textureWidthGrid = 50;
-    static final int textureHeightGrid = 50;
+    static final int TEXTURE_WIDTH_LIST = 127;
+    static final int TEXTURE_HEIGHT_LIST = 80;
+    static final int TEXTURE_WIDTH_GRID = 50;
+    static final int TEXTURE_HEIGHT_GRID = 50;
 
-    static final int focusedOffsetVList = 20;
-    static final int favoriteOffsetVList = 40;
-    static final int focusedOffsetVGrid = 25;
-    static final int favoriteOffsetUGrid = 25;
+    static final int FOCUSED_OFFSET_V_LIST = 20;
+    static final int FAVORITE_OFFSET_V_LIST = 40;
+    static final int FOCUSED_OFFSET_V_GRID = 25;
+    static final int FAVORITE_OFFSET_U_GRID = 25;
 
     ViewMode type;
     boolean favorite;
@@ -49,7 +49,7 @@ public class RenameButton extends ClickableWidget {
                         PlayerInventory inventory, Rename rename,
                         boolean enoughStackSize, boolean enoughDamage,
                         boolean hasEnchant, boolean hasEnoughLevels) {
-        super(x, y, type == ViewMode.LIST ? buttonWidthList : buttonWidthGrid, type == ViewMode.LIST ? buttonHeightList : buttonHeightGrid, null);
+        super(x, y, type == ViewMode.LIST ? BUTTON_WIDTH_LIST : BUTTON_WIDTH_GRID, type == ViewMode.LIST ? BUTTON_HEIGHT_LIST : BUTTON_HEIGHT_GRID, null);
         this.type = type;
         this.favorite = favorite;
 
@@ -65,8 +65,7 @@ public class RenameButton extends ClickableWidget {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        boolean focused = isMouseOver(mouseX, mouseY);
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         Identifier texture;
         int textureWidth;
         int textureHeight;
@@ -74,23 +73,18 @@ public class RenameButton extends ClickableWidget {
         int v = 0;
         if (type == ViewMode.LIST) {
             texture = TEXTURE_LIST;
-            textureWidth = textureWidthList;
-            textureHeight = textureHeightList;
-            v += favorite ? favoriteOffsetVList : 0;
-            v += focused ? focusedOffsetVList : 0;
+            textureWidth = TEXTURE_WIDTH_LIST;
+            textureHeight = TEXTURE_HEIGHT_LIST;
+            v += favorite ? FAVORITE_OFFSET_V_LIST : 0;
+            v += hovered ? FOCUSED_OFFSET_V_LIST : 0;
         } else {
             texture = TEXTURE_GRID;
-            textureWidth = textureWidthGrid;
-            textureHeight = textureHeightGrid;
-            u += favorite ? favoriteOffsetUGrid : 0;
-            v += focused ? focusedOffsetVGrid : 0;
+            textureWidth = TEXTURE_WIDTH_GRID;
+            textureHeight = TEXTURE_HEIGHT_GRID;
+            u += favorite ? FAVORITE_OFFSET_U_GRID : 0;
+            v += hovered ? FOCUSED_OFFSET_V_GRID : 0;
         }
         context.drawTexture(texture, getX(), getY(), u, v, getWidth(), getHeight(), textureWidth, textureHeight);
-    }
-
-    @Override
-    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-
     }
 
     @Override

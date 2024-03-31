@@ -20,38 +20,32 @@ public class PageButton extends ClickableWidget {
 
     private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
 
-    public static final int buttonWidth = 30;
-    static final int buttonHeight = 16;
+    public static final int BUTTON_WIDTH = 30;
+    static final int BUTTON_HEIGHT = 16;
 
-    static final int textureWidth = 60;
-    static final int textureHeight = 48;
-    static final int upOffsetU = 30;
-    static final int disabledOffsetV = 32;
-    static final int focusedOffsetV = 16;
+    static final int TEXTURE_WIDTH = 60;
+    static final int TEXTURE_HEIGHT = 48;
+    static final int UP_OFFSET_U = 30;
+    static final int DISABLED_OFFSET_V = 32;
+    static final int FOCUSED_OFFSET_V = 16;
 
     Type type;
 
     public PageButton(int x, int y, Type type) {
-        super(x, y, buttonWidth, buttonHeight, null);
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         this.type = type;
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        boolean focused = isMouseOver(mouseX, mouseY);
-        int u = type == Type.DOWN ? 0 : upOffsetU;
-        int v = !active ? disabledOffsetV : focused ? focusedOffsetV : 0;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), textureWidth, textureHeight);
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        int u = type == Type.DOWN ? 0 : UP_OFFSET_U;
+        int v = !active ? DISABLED_OFFSET_V : hovered ? FOCUSED_OFFSET_V : 0;
+        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
         MinecraftClient client = MinecraftClient.getInstance();
-        if (!config.disablePageArrowsTips && hasShiftDown() && active && focused) {
+        if (!config.disablePageArrowsTips && hasShiftDown() && active && hovered) {
             String key = "rprenames.gui.page" + (type == Type.DOWN ? "Down.toFirst" : "Up.toLast") + ".tooltip";
             context.drawTooltip(client.textRenderer, Text.translatable(key).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX, mouseY);
         }
-    }
-
-    @Override
-    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-
     }
 
     @Override

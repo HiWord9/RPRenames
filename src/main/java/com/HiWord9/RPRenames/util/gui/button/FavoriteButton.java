@@ -12,36 +12,29 @@ import net.minecraft.util.Identifier;
 public class FavoriteButton extends ClickableWidget {
     private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
 
-    static final int buttonWidth = 9;
-    static final int buttonHeight = 9;
+    static final int BUTTON_WIDTH = 9;
+    static final int BUTTON_HEIGHT = 9;
 
-    static final int textureWidth = 9;
-    static final int textureHeight = 18;
-    static final int vOffset = buttonHeight;
+    static final int TEXTURE_WIDTH = 9;
+    static final int TEXTURE_HEIGHT = 18;
+    static final int V_OFFSET = BUTTON_HEIGHT;
 
     boolean favorite = false;
 
     public FavoriteButton(int x, int y) {
-        super(x, y, buttonWidth, buttonHeight, null);
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         if (!active) return;
         int u = 0;
-        int v = favorite ? 0 : vOffset;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), textureWidth, textureHeight);
+        int v = favorite ? 0 : V_OFFSET;
+        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override
-    protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-
-    }
-
-    @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-
-    }
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {

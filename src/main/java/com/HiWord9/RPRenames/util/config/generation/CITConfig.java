@@ -86,8 +86,9 @@ public class CITConfig {
         String firstEnchantLvl = Rename.getFirstValue(enchantLvlProp == null ? "" : enchantLvlProp);
         Integer enchantLvl = firstEnchantLvl.isEmpty() ? null : Integer.parseInt(firstEnchantLvl) <= 0 ? null : Integer.parseInt(firstEnchantLvl);
 
-        String description = p.getProperty("rpr.description");
-        if (description == null) description = p.getProperty("description");
+        String description = p.getProperty("%rprenames.description");
+        if (description == null) description = p.getProperty("%rpr.description");
+        if (description == null) description = p.getProperty("%description");
 
         if (nbtNamePattern != null) {
             Rename rename = new Rename(

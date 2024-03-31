@@ -14,6 +14,7 @@ import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.HiWord9.RPRenames.util.gui.button.*;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -76,7 +77,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     int maxPageElements = 5;
     int currentRenameListSize;
 
-    String nullItem = "air";
+    final String nullItem = "air";
     String currentItem = nullItem;
     ItemStack itemAfterUpdate;
     boolean afterInventoryTab = false;
@@ -139,16 +140,16 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
 
         pageDown = new PageButton(menuX + buttonXOffset, pageButtonsY, PageButton.Type.DOWN);
-        pageUp = new PageButton(x + menuXOffset - buttonXOffset - PageButton.buttonWidth, pageButtonsY, PageButton.Type.UP);
+        pageUp = new PageButton(x + menuXOffset - buttonXOffset - PageButton.BUTTON_WIDTH, pageButtonsY, PageButton.Type.UP);
 
         opener = new OpenerButton(x + 3, y + 44);
 
-        int tabX = menuX - (TabButton.buttonWidth - 3);
+        int tabX = menuX - (TabButton.BUTTON_WIDTH - 3);
         int tabY = y + startTabOffsetY;
         searchTab = new TabButton(tabX, tabY, Tabs.SEARCH);
-        favoriteTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY), Tabs.FAVORITE);
-        inventoryTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY) * 2, Tabs.INVENTORY);
-        globalTab = new TabButton(tabX, tabY + (TabButton.buttonHeight + tabOffsetY) * 4, Tabs.GLOBAL);
+        favoriteTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY), Tabs.FAVORITE);
+        inventoryTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 2, Tabs.INVENTORY);
+        globalTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 4, Tabs.GLOBAL);
 
         favoriteButton = new FavoriteButton(x + 88 + config.favoritePosX, y + 83 + config.favoritePosY);
 
@@ -232,11 +233,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     public void onRenameButton(int indexInInventory, boolean isInInventory, boolean asCurrentItem, PlayerInventory inventory, Rename rename, boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
         ghostCraft.reset();
         if (indexInInventory != 36 && isInInventory) {
-            if (currentTab == Tabs.INVENTORY) {
-                afterInventoryTab = true;
-            } else if (currentTab == Tabs.GLOBAL) {
-                afterGlobalTab = true;
-            }
+            afterInventoryTab = currentTab == Tabs.INVENTORY;
+            afterGlobalTab = currentTab == Tabs.GLOBAL;
             tempPage = page;
             if (!asCurrentItem) {
                 putInAnvil(indexInInventory, MinecraftClient.getInstance());
@@ -244,10 +242,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             afterInventoryTab = false;
             afterGlobalTab = false;
         } else if (indexInInventory != 36) {
-            if (indexInInventory != -1) {
-                for (int s = 0; s < 2; s++) {
-                    moveToInventory(s, inventory);
-                }
+            for (int s = 0; s < 2; s++) {
+                moveToInventory(s, inventory);
             }
 
             ItemStack[] ghostCraftItems = ConfigManager.getGhostCraftItems(rename);
@@ -495,7 +491,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if (slotId != 0) return;
         if (stack.isEmpty()) {
             currentItem = nullItem;
-            searchField.setText("");
             searchField.setFocusUnlocked(false);
             remove(searchField);
             searchField.setFocused(false);
@@ -503,18 +498,14 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             currentItem = ConfigManager.getIdAndPath(stack.getItem());
             itemAfterUpdate = stack.copy();
             searchField.setFocusUnlocked(true);
-            currentTab = Tabs.SEARCH;
+            if (currentTab != Tabs.GLOBAL && currentTab != Tabs.INVENTORY) currentTab = Tabs.SEARCH;
             favoriteButtonsUpdate(nameField.getText());
         }
-//        if (open) {
-            if (!open || currentTab != Tabs.GLOBAL) { //todo check
-                screenUpdate();
-            } else {
-                updateSearchRequest();
-            }
-//        } else {
-//            screenUpdate();
-//        }
+        if (!open || currentTab != Tabs.GLOBAL) {
+            screenUpdate();
+        } else {
+            updateSearchRequest(page);
+        }
     }
 
     private ArrayList<String> getInventory() {
@@ -680,7 +671,17 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private static void putInAnvil(int slotInInventory, MinecraftClient client) {
         if (client.player == null || client.interactionManager == null) return;
         int syncId = client.player.currentScreenHandler.syncId;
-        client.interactionManager.clickSlot(syncId, 0, slotInInventory, SlotActionType.SWAP, client.player);
+
+        if (slotInInventory >= 9) {
+            int i = slotInInventory - 9;
+            i += 3;
+
+            client.interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, client.player);
+            client.interactionManager.clickSlot(syncId, 0, 0, SlotActionType.PICKUP, client.player);
+            client.interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, client.player);
+        } else {
+            client.interactionManager.clickSlot(syncId, 0, slotInInventory, SlotActionType.SWAP, client.player);
+        }
     }
 
     public void moveToInventory(int slot, PlayerInventory inventory) {
@@ -869,10 +870,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         int buttonY = ((AnvilScreen) client.currentScreen).y + 30;
         if (config.viewMode == RenameButtonHolder.ViewMode.LIST) {
             x = buttonX;
-            y = buttonY + (orderOnPage * (RenameButton.buttonHeightList + buttonOffsetY));
+            y = buttonY + (orderOnPage * (RenameButton.BUTTON_HEIGHT_LIST + buttonOffsetY));
         } else {
-            x = buttonX + 1 + (orderOnPage % 5 * RenameButton.buttonWidthGrid);
-            y = buttonY + 1 + (orderOnPage / 5 * RenameButton.buttonHeightGrid);
+            x = buttonX + 1 + (orderOnPage % 5 * RenameButton.BUTTON_WIDTH_GRID);
+            y = buttonY + 1 + (orderOnPage / 5 * RenameButton.BUTTON_HEIGHT_GRID);
         }
 
         ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
