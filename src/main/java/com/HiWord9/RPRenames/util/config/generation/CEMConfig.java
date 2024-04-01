@@ -46,7 +46,10 @@ public class CEMConfig {
                     if (optionalResourceJpm.isEmpty()) continue;
 
                     Resource resourceJpm = optionalResourceJpm.get();
-                    String textureName = getPropPathInRandom(objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture").get(0));
+                    ArrayList<String> textures = objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture");
+                    if (textures.isEmpty()) continue;
+
+                    String textureName = getPropPathInRandom(textures.get(0));
 
                     Identifier propId = new Identifier(Identifier.DEFAULT_NAMESPACE, RANDOM_ENTITY_PATH + textureName + PROP_EXTENSION);
                     Optional<Resource> optionalResourceProp = resourceManager.getResource(propId);
