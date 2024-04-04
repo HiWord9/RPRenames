@@ -10,8 +10,8 @@
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/rp-renames",
-    "sources": "https://github.com/HiWord9/RPRenames-fabric",
-    "issues": "https://github.com/HiWord9/RPRenames-fabric/issues"
+    "sources": "https://github.com/HiWord9/RPRenames",
+    "issues": "https://github.com/HiWord9/RPRenames/issues"
   },
   "custom": {
     "modmenu": {
