@@ -176,9 +176,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     }
 
     public void addOrRemoveFavorite(boolean add) {
-        String favoriteName = nameField.getText();
+        addOrRemoveFavorite(add, nameField.getText(), getItemInFirstSlot());
+    }
 
-        String item = getItemInFirstSlot();
+    public void addOrRemoveFavorite(boolean add, String favoriteName, String item) {
         if (!item.equals(nullItem)) {
             if (add) {
                 ConfigManager.addToFavorites(favoriteName, item);
@@ -228,7 +229,42 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         return currentTab;
     }
 
-    public void onRenameButton(int indexInInventory, boolean isInInventory, boolean asCurrentItem, PlayerInventory inventory, Rename rename, boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
+    public void onRenameButton(int button, boolean favorite,
+            int indexInInventory, boolean isInInventory,
+            boolean asCurrentItem, PlayerInventory inventory,
+            Rename rename,
+            boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
+
+        if (button == 1 && !rename.getItems().isEmpty()) {
+            if (currentTab == Tabs.SEARCH || currentTab == Tabs.FAVORITE || asCurrentItem) {
+                addOrRemoveFavorite(
+                        !favorite,
+                        rename.getName(),
+                        getItemInFirstSlot()
+                );
+            } else {
+                if (favorite) {
+                    for (String item : rename.getItems()) {
+                        if (Rename.isFavorite(item, rename.getName())) {
+                            ConfigManager.removeFromFavorites(rename.getName(), item);
+                        }
+                    }
+                    favoriteButtonsUpdate(nameField.getText());
+                    if (open) {
+                        screenUpdate(page);
+                    }
+                } else {
+                    addOrRemoveFavorite(
+                            true,
+                            rename.getName(),
+                            isInInventory ? getInventory().get(indexInInventory) : rename.getItems().get(0)
+                    );
+                }
+            }
+
+            return;
+        }
+
         ghostCraft.reset();
         if (indexInInventory != 36 && isInInventory) {
             shouldNotUpdateTab = currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL;

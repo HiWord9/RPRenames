@@ -17,5 +17,9 @@ public interface AnvilScreenMixinAccessor {
 
     Tabs getCurrentTab();
 
-    void onRenameButton(int indexInInventory, boolean isInInventory, boolean asCurrentItem, PlayerInventory inventory, Rename rename, boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels);
+    void onRenameButton(int button, boolean favorite,
+                        int indexInInventory, boolean isInInventory,
+                        boolean asCurrentItem, PlayerInventory inventory,
+                        Rename rename,
+                        boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels);
 }
