@@ -443,7 +443,16 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
         buttons.clear();
         String tempSearchFieldText = searchField.getText();
+        boolean prevOpen = open;
+        if (prevOpen) {
+            open = false;
+            updateMenuShift();
+        }
         instance.init(client, width, height);
+        if (prevOpen) {
+            open = true;
+            updateMenuShift();
+        }
         searchField.setText(tempSearchFieldText);
     }
 
