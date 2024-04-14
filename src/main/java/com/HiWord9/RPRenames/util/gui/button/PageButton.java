@@ -66,9 +66,7 @@ public class PageButton extends ClickableWidget {
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-
-    }
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     public enum Type {
         DOWN,

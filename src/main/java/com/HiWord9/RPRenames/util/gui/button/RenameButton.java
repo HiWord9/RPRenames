@@ -31,6 +31,8 @@ public class RenameButton extends ClickableWidget {
     static final int FOCUSED_OFFSET_V_GRID = 25;
     static final int FAVORITE_OFFSET_U_GRID = 25;
 
+    boolean selected = false;
+
     ViewMode type;
     boolean favorite;
 
@@ -38,7 +40,7 @@ public class RenameButton extends ClickableWidget {
     boolean isInInventory;
     boolean asCurrentItem;
     PlayerInventory inventory;
-    Rename rename;
+    public Rename rename;
     boolean enoughStackSize;
     boolean enoughDamage;
     boolean hasEnchant;
@@ -76,20 +78,19 @@ public class RenameButton extends ClickableWidget {
             textureWidth = TEXTURE_WIDTH_LIST;
             textureHeight = TEXTURE_HEIGHT_LIST;
             v += favorite ? FAVORITE_OFFSET_V_LIST : 0;
-            v += hovered ? FOCUSED_OFFSET_V_LIST : 0;
+            v += hovered || selected ? FOCUSED_OFFSET_V_LIST : 0;
         } else {
             texture = TEXTURE_GRID;
             textureWidth = TEXTURE_WIDTH_GRID;
             textureHeight = TEXTURE_HEIGHT_GRID;
             u += favorite ? FAVORITE_OFFSET_U_GRID : 0;
-            v += hovered ? FOCUSED_OFFSET_V_GRID : 0;
+            v += hovered || selected ? FOCUSED_OFFSET_V_GRID : 0;
         }
         context.drawTexture(texture, getX(), getY(), u, v, getWidth(), getHeight(), textureWidth, textureHeight);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-//        System.out.println(button + " " + mouseX + " " + mouseY);
         if (this.clicked(mouseX, mouseY)) {
             AnvilScreen screen = ((AnvilScreen) MinecraftClient.getInstance().currentScreen);
             if (screen instanceof AnvilScreenMixinAccessor anvilScreenMixinAccessor) {
@@ -102,11 +103,12 @@ public class RenameButton extends ClickableWidget {
             }
         }
         return false;
-//        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

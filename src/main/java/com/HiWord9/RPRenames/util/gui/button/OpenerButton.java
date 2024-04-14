@@ -49,9 +49,7 @@ public class OpenerButton extends ClickableWidget {
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
-
-    }
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     public void setOpen(boolean open) {
         this.open = open;

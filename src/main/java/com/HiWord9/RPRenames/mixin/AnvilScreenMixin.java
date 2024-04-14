@@ -234,7 +234,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             boolean asCurrentItem, PlayerInventory inventory,
             Rename rename,
             boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
-
         if (button == 1 && !rename.getItems().isEmpty()) {
             if (currentTab == Tabs.SEARCH || currentTab == Tabs.FAVORITE || asCurrentItem) {
                 addOrRemoveFavorite(
@@ -328,8 +327,18 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         updateMenuShift();
     }
 
+    private void updateSelected() {
+        for (RenameButtonHolder renameButtonHolder : buttons) {
+            RenameButton button = renameButtonHolder.getButton();
+            if (button == null) continue;
+            button.setSelected(button.rename.getItems().contains(getItemInFirstSlot())
+                    && button.rename.getName().equals(nameField.getText()));
+        }
+    }
+
     private void updateWidgets() {
         defineButtons();
+        updateSelected();
         showButtons();
         updatePageWidgets();
     }
@@ -397,9 +406,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
         currentRenameListSize = currentRenameList.size();
 
-        defineButtons();
-        showButtons();
-        updatePageWidgets();
+        updateWidgets();
     }
 
     private String getItemInFirstSlot() {
@@ -414,9 +421,11 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void newNameEntered(String name, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
         favoriteButtonsUpdate(name);
+        updateSelected();
     }
 
     private void favoriteButtonsUpdate(String name) {
+        System.out.println("favoriteButtonsUpdate");
         if (!name.isEmpty()) {
             favoriteButton.active = true;
             boolean favorite = Rename.isFavorite(getItemInFirstSlot(), name);
@@ -529,7 +538,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             currentItem = ConfigManager.getIdAndPath(stack.getItem());
             searchField.setFocusUnlocked(true);
             if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
-            favoriteButtonsUpdate(nameField.getText());
         }
         if (!open || currentTab != Tabs.GLOBAL) {
             screenUpdate();
