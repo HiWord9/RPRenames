@@ -50,6 +50,7 @@ public class ModConfig implements ConfigData {
     public boolean showExtraProperties = true;
 
     public boolean renderMobRenamesAsEntities = true;
+    public boolean highlightSelected = true;
 
     public boolean highlightSlot = true;
 
