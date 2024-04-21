@@ -161,7 +161,7 @@ public class ConfigManager {
         }
 
         try {
-            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json");
+            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             gson.toJson(listNames, fileWriter);
             fileWriter.close();
@@ -179,7 +179,7 @@ public class ConfigManager {
 
         if (!renamesList.isEmpty()) {
             try {
-                FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json");
+                FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 gson.toJson(renamesList, fileWriter);
                 fileWriter.close();
@@ -193,7 +193,7 @@ public class ConfigManager {
 
     private static void deleteFavoriteConfigFile(String item) {
         try {
-            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + File.separator/*+ "\\"*/ + item.replaceAll(":", ".") + ".json"));
+            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json"));
         } catch (IOException e) {
             e.printStackTrace();
         }

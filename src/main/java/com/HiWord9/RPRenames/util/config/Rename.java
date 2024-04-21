@@ -176,26 +176,18 @@ public class Rename {
     }
 
     public boolean isContainedIn(ArrayList<Rename> list, boolean ignoreNull) {
-        for (Rename r : list) {
-            if (this.equals(r, ignoreNull)) {
-                return true;
-            }
-        }
-        return false;
+        return this.indexIn(list, ignoreNull) != -1;
     }
 
     public int indexIn(ArrayList<Rename> list, boolean ignoreNull) {
-        if (!this.isContainedIn(list, ignoreNull)) {
-            return -1;
-        }
         int i = 0;
         for (Rename r : list) {
             if (this.equals(r, ignoreNull)) {
-                break;
+                return i;
             }
             i++;
         }
-        return i;
+        return -1;
     }
 
 
@@ -315,6 +307,7 @@ public class Rename {
 
     public record Mob(String entity, String icon, Properties properties, String path) {
         public String getPropName() {
+            if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
             for (String s : propertyNames) {
                 if (s.startsWith("name.")) {

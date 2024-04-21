@@ -425,7 +425,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     }
 
     private void favoriteButtonsUpdate(String name) {
-        System.out.println("favoriteButtonsUpdate");
         if (!name.isEmpty()) {
             favoriteButton.active = true;
             boolean favorite = Rename.isFavorite(getItemInFirstSlot(), name);
