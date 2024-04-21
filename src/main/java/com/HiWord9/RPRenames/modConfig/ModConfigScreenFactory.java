@@ -134,6 +134,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.highlightSelected)
                 .build();
 
+        AbstractConfigListEntry<Boolean> recolorFavoriteTooltip = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.recolorFavoriteTooltip"), currentConfig.recolorFavoriteTooltip)
+                .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.recolorFavoriteTooltip.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.recolorFavoriteTooltip = newConfig)
+                .setDefaultValue(defaultConfig.recolorFavoriteTooltip)
+                .build();
+
         AbstractConfigListEntry<Boolean> highlightSlot = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSlot"), currentConfig.highlightSlot)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.highlightSlot.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightSlot = newConfig)
@@ -317,8 +323,9 @@ public class ModConfigScreenFactory {
         SubCategoryBuilder renderCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.renderCategory"));
         renderCategory.add(0, renderMobRenamesAsEntities);
         renderCategory.add(1, highlightSelected);
-        renderCategory.add(2, highlightSlot);
-        renderCategory.add(3, slotHighlightColorCategory.build());
+        renderCategory.add(2, recolorFavoriteTooltip);
+        renderCategory.add(3, highlightSlot);
+        renderCategory.add(4, slotHighlightColorCategory.build());
 
         gui.addEntry(renderCategory.build());
 

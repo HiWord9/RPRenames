@@ -193,7 +193,7 @@ public class RenameButtonHolder extends Screen {
         int x = pos[0];
         int y = pos[1];
 
-        Graphics.drawTooltipBackground(context, x, y, width, height, 400);
+        Graphics.drawTooltipBackground(context, x, y, width, height, button.favorite,  400);
 
         int newX = x + width / 2 - size / 2;
         int newY = y + height / 2 - size / 2;
@@ -216,7 +216,7 @@ public class RenameButtonHolder extends Screen {
         int x = pos[0];
         int y = pos[1];
 
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight);
+        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, button.favorite);
         Graphics.renderEntityInBox(context,
                 new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
                 size, entity, spin);
@@ -307,7 +307,7 @@ public class RenameButtonHolder extends Screen {
         float l = entity.headYaw;
 
 
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight);
+        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, button.favorite);
         Graphics.renderEntityInBox(context,
                 new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
                 size, entity, spin);

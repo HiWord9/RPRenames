@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.gui;
 
+import com.HiWord9.RPRenames.util.gui.button.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -31,6 +32,8 @@ public class Graphics extends Screen {
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
     static public final int TOOLTIP_CORNER = 2;
+
+    static public boolean renderTooltipAsFavorite = false;
 
     protected Graphics() {
         super(null);
@@ -131,12 +134,14 @@ public class Graphics extends Screen {
         }
     }
 
-    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height) {
-        drawTooltipBackground(context, x, y, width, height, 400);
+    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, boolean favorite) {
+        drawTooltipBackground(context, x, y, width, height, favorite, 400);
     }
 
-    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, int z) {
+    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, boolean favorite, int z) {
+        renderTooltipAsFavorite = favorite;
         TooltipBackgroundRenderer.render(context, x + 4, y + 4, width - 8, height - 8, z);
+        renderTooltipAsFavorite = false;
     }
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {

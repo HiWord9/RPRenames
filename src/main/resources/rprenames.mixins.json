@@ -6,7 +6,8 @@
   "client": [
     "AnvilScreenMixin",
     "CreativeInventoryScreenMixin",
-    "ModelLoaderMixin"
+    "ModelLoaderMixin",
+    "TooltipBackgroundRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -37,7 +37,7 @@ public class RenameButton extends ClickableWidget {
     boolean selected = false;
 
     ViewMode type;
-    boolean favorite;
+    public boolean favorite;
 
     int indexInInventory;
     boolean isInInventory;
