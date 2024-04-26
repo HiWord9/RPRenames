@@ -52,6 +52,7 @@ public class ModConfig implements ConfigData {
     public boolean renderMobRenamesAsEntities = true;
     public boolean highlightSelected = true;
     public boolean recolorFavoriteTooltip = true;
+    public boolean renderStarInFavoriteTooltip = false;
 
     public boolean highlightSlot = true;
 

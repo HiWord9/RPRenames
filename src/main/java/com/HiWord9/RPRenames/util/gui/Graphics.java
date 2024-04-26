@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.gui;
 
+import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.button.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -24,6 +25,8 @@ import org.joml.Quaternionf;
 import java.util.List;
 
 public class Graphics extends Screen {
+    private static final ModConfig config = ModConfig.INSTANCE;
+
     static public final int SLOT_SIZE = 18;
 
     static final int HIGHLIGHT_COLOR_WRONG = 822018048;
@@ -142,6 +145,14 @@ public class Graphics extends Screen {
         renderTooltipAsFavorite = favorite;
         TooltipBackgroundRenderer.render(context, x + 4, y + 4, width - 8, height - 8, z);
         renderTooltipAsFavorite = false;
+        if (!favorite || !config.renderStarInFavoriteTooltip) return;
+        context.drawTexture(
+                FavoriteButton.TEXTURE,
+                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, z,
+                0, 0,
+                FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
+                FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
+        );
     }
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {

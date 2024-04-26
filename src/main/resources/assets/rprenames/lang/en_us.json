@@ -65,6 +65,8 @@
   "rprenames.config.gui.renderCategory.highlightSelected.tooltip": "If false, Rename Button for selected Rename won't be Highlighted",
   "rprenames.config.gui.renderCategory.recolorFavoriteTooltip": "Recolor Tooltip border for Favorites",
   "rprenames.config.gui.renderCategory.recolorFavoriteTooltip.tooltip": "If false, Tooltip background for Favorite Renames wont be changed",
+  "rprenames.config.gui.renderCategory.renderStarInFavoriteTooltip": "Render Star Texture in Tooltip for Favorites",
+  "rprenames.config.gui.renderCategory.renderStarInFavoriteTooltip.tooltip": "If true, Tooltip for Favorite Renames will contain\nFavorite Button Texture at Top Right Corner",
   "rprenames.config.gui.renderCategory.highlightSlot": "Highlight Slot",
   "rprenames.config.gui.renderCategory.highlightSlot.tooltip": "If true, Slot that contains hovered button's Item will be Highlighted",
   "rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightColor": "Highlight color",

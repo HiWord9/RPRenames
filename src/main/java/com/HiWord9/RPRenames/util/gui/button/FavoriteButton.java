@@ -10,13 +10,13 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.util.Identifier;
 
 public class FavoriteButton extends ClickableWidget {
-    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
+    public static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
 
-    static final int BUTTON_WIDTH = 9;
-    static final int BUTTON_HEIGHT = 9;
+    public static final int BUTTON_WIDTH = 9;
+    public static final int BUTTON_HEIGHT = 9;
 
-    static final int TEXTURE_WIDTH = 9;
-    static final int TEXTURE_HEIGHT = 18;
+    public static final int TEXTURE_WIDTH = 9;
+    public static final int TEXTURE_HEIGHT = 18;
     static final int V_OFFSET = BUTTON_HEIGHT;
 
     boolean favorite = false;
