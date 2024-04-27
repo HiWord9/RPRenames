@@ -121,7 +121,6 @@ public class ModConfig implements ConfigData {
         try {
             writer = gson.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE));
             writer.setIndent("    ");
-
             gson.toJson(gson.toJsonTree(this, ModConfig.class), writer);
         } catch (Exception e) {
             e.printStackTrace();
