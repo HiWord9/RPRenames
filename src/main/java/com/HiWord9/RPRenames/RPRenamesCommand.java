@@ -13,7 +13,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -204,13 +203,7 @@ public class RPRenamesCommand {
                 itemStack.setDamage(r.getDamage().getParsedDamage(item));
             }
             if (r.getEnchantment() != null) {
-                itemStack.getOrCreateNbt();
-                assert itemStack.getNbt() != null;
-                if (!itemStack.getNbt().contains("Enchantments", 9)) {
-                    itemStack.getNbt().put("Enchantments", new NbtList());
-                }
-                NbtList nbtList = itemStack.getNbt().getList("Enchantments", 10);
-                nbtList.add(EnchantmentHelper.createNbt(new Identifier(r.getEnchantment()), r.getEnchantmentLevel()));
+                ConfigManager.enchantItemStack(r, itemStack);
             }
 
             assert itemStack.getNbt() != null;

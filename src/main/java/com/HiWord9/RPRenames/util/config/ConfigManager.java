@@ -54,7 +54,7 @@ public class ConfigManager {
 
         long finishTime = System.currentTimeMillis() - startTime;
         updateItemGroup();
-        RPRenames.LOGGER.info("Finished collecting renames [" + finishTime / 1000 + "." + finishTime % 1000 + "s]");
+        RPRenames.LOGGER.info("Finished collecting renames [{}.{}s]", finishTime / 1000, finishTime % 1000);
 
         profiler.pop();
     }
@@ -154,20 +154,14 @@ public class ConfigManager {
             listNames = newConfig;
         } else {
             if (RPRenames.configPathFavorite.toFile().mkdirs()) {
-                RPRenames.LOGGER.info("Created folder for favorites config: " + RPRenames.configPathFavorite);
+                RPRenames.LOGGER.info("Created folder for favorites config: {}", RPRenames.configPathFavorite);
             }
-            RPRenames.LOGGER.info("Created new file for favorites config: " + RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
+            RPRenames.LOGGER.info("Created new file for favorites config: {}{}{}.json", RPRenames.configPathFavorite, File.separator, item.replaceAll(":", "."));
             listNames.add(rename);
         }
 
-        try {
-            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            gson.toJson(listNames, fileWriter);
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        writeFavoriteFile(listNames, item);
     }
 
     public static void removeFromFavorites(String favoriteName, String item) {
@@ -178,18 +172,23 @@ public class ConfigManager {
         }
 
         if (!renamesList.isEmpty()) {
-            try {
-                FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                gson.toJson(renamesList, fileWriter);
-                fileWriter.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeFavoriteFile(renamesList, item);
         } else {
             deleteFavoriteConfigFile(item);
         }
     }
+
+    private static void writeFavoriteFile(ArrayList<Rename> renames, String item) {
+        try {
+            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            gson.toJson(renames, fileWriter);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private static void deleteFavoriteConfigFile(String item) {
         try {
@@ -446,16 +445,20 @@ public class ConfigManager {
         ItemStack ghostEnchant = ItemStack.EMPTY;
         if (rename.getEnchantment() != null) {
             ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
-            ghostEnchant.getOrCreateNbt();
-            assert ghostEnchant.getNbt() != null;
-            if (!ghostEnchant.getNbt().contains("Enchantments", 9)) {
-                ghostEnchant.getNbt().put("Enchantments", new NbtList());
-            }
-            NbtList nbtList = ghostEnchant.getNbt().getList("Enchantments", 10);
-            nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+            enchantItemStack(rename, ghostEnchant);
         }
 
         return ghostEnchant;
+    }
+
+    public static void enchantItemStack(Rename rename, ItemStack itemStack) {
+        itemStack.getOrCreateNbt();
+        assert itemStack.getNbt() != null;
+        if (!itemStack.getNbt().contains("Enchantments", 9)) {
+            itemStack.getNbt().put("Enchantments", new NbtList());
+        }
+        NbtList nbtList = itemStack.getNbt().getList("Enchantments", 10);
+        nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
     }
 
     public static ItemStack createItemOrSpawnEgg(Rename rename) {
@@ -475,13 +478,7 @@ public class ConfigManager {
             item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
         }
         if (rename.getEnchantment() != null) {
-            item.getOrCreateNbt();
-            assert item.getNbt() != null;
-            if (!item.getNbt().contains("Enchantments", 9)) {
-                item.getNbt().put("Enchantments", new NbtList());
-            }
-            NbtList nbtList = item.getNbt().getList("Enchantments", 10);
-            nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+            enchantItemStack(rename, item);
         }
         return item;
     }
