@@ -5,6 +5,7 @@
   "rprenames.gui.putItem": "Put Item in Anvil first!",
   "rprenames.gui.pageUp.toLast.tooltip":  "Go to last page",
   "rprenames.gui.pageDown.toFirst.tooltip": "Go to first page",
+  "rprenames.gui.randomButton.tooltip": "I'm feeling lucky!",
   "rprenames.gui.tabs.tooltip.SEARCH": "Search",
   "rprenames.gui.tabs.tooltip.FAVORITE": "Favorite",
   "rprenames.gui.tabs.tooltip.INVENTORY": "Inventory",

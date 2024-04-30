@@ -90,6 +90,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     TabButton globalTab;
 
     FavoriteButton favoriteButton;
+    RandomButton randomButton;
 
     TextFieldWidget searchField;
 
@@ -150,8 +151,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         globalTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 4, Tabs.GLOBAL);
 
         favoriteButton = new FavoriteButton(x + 88 + config.favoritePosX, y + 83 + config.favoritePosY);
+        randomButton = new RandomButton(x + menuXOffset - 14 - RandomButton.BUTTON_WIDTH, y + 14, randomNumber() % RandomButton.SIDES);
 
-        searchField = new TextFieldWidget(renderer, menuX + searchFieldXOffset, y + 15, menuWidth - 38, 10, Text.of(""));
+        searchField = new TextFieldWidget(renderer, menuX + searchFieldXOffset, y + 15, menuWidth - 53, 10, Text.of(""));
         searchField.setChangedListener(this::onSearch);
         searchField.setDrawsBackground(false);
         searchField.setMaxLength(1024);
@@ -298,6 +300,22 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             }
         }
         nameField.setText(rename.getName());
+    }
+
+    public void chooseRandomRename() {
+        int randomNumber = randomNumber();
+        int randomSide = randomNumber % RandomButton.SIDES;
+        randomButton.setSide(randomSide);
+        if (currentRenameListSize < 1) return;
+        int renameNumber = randomNumber % currentRenameListSize;
+        page = renameNumber / maxPageElements;
+        updateWidgets();
+        buttons.get(renameNumber % maxPageElements).getButton().execute(0);
+    }
+
+    private int randomNumber() {
+        assert client != null && client.player != null;
+        return client.player.getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
     }
 
     private void openMenu() {
@@ -490,6 +508,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             favoriteTab.mouseClicked(mouseX, mouseY, button);
             inventoryTab.mouseClicked(mouseX, mouseY, button);
             globalTab.mouseClicked(mouseX, mouseY, button);
+
+            randomButton.mouseClicked(mouseX, mouseY, button);
         }
 
         opener.mouseClicked(mouseX, mouseY, button);
@@ -582,6 +602,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         inventoryTab.setX(inventoryTab.getX() + x);
         globalTab.setX(globalTab.getX() + x);
         favoriteButton.setX(favoriteButton.getX() + x);
+        randomButton.setX(randomButton.getX() + x);
         searchField.setX(searchField.getX() + x);
         pageDown.setX(pageDown.getX() + x);
         pageUp.setX(pageUp.getX() + x);
@@ -628,6 +649,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         pageDown.render(context, mouseX, mouseY, 0);
         pageUp.render(context, mouseX, mouseY, 0);
+
+        randomButton.render(context, mouseX, mouseY, 0);
         matrices.pop();
 
         Graphics.renderText(context, pageCount, menuWidth / -2 + menuXOffset, (config.viewMode == RenameButtonHolder.ViewMode.GRID ? 140 : 144), false, true);
@@ -950,7 +973,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     }
 
     private void updatePageWidgets() {
-        pageDown.active = page != 0;
+        pageDown.active = page > 0;
         pageUp.active = (page + 1) * maxPageElements <= currentRenameListSize - 1;
         pageCount = Text.of(page + 1 + "/" + (currentRenameList.size() + maxPageElements - 1) / maxPageElements);
     }

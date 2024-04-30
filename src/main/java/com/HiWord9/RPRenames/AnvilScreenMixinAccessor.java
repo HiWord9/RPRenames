@@ -22,4 +22,6 @@ public interface AnvilScreenMixinAccessor {
                         boolean asCurrentItem, PlayerInventory inventory,
                         Rename rename,
                         boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels);
+
+    void chooseRandomRename();
 }

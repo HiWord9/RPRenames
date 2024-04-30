@@ -95,15 +95,20 @@ public class RenameButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
-            AnvilScreen screen = ((AnvilScreen) MinecraftClient.getInstance().currentScreen);
-            if (screen instanceof AnvilScreenMixinAccessor anvilScreenMixinAccessor) {
-                anvilScreenMixinAccessor.onRenameButton(button, favorite,
-                        indexInInventory, isInInventory, asCurrentItem,
-                        inventory, rename,
-                        enoughStackSize, enoughDamage,
-                        hasEnchant, hasEnoughLevels);
-                return true;
-            }
+            return execute(button);
+        }
+        return false;
+    }
+
+    public boolean execute(int button) {
+        AnvilScreen screen = ((AnvilScreen) MinecraftClient.getInstance().currentScreen);
+        if (screen instanceof AnvilScreenMixinAccessor anvilScreenMixinAccessor) {
+            anvilScreenMixinAccessor.onRenameButton(button, favorite,
+                    indexInInventory, isInInventory, asCurrentItem,
+                    inventory, rename,
+                    enoughStackSize, enoughDamage,
+                    hasEnchant, hasEnoughLevels);
+            return true;
         }
         return false;
     }
