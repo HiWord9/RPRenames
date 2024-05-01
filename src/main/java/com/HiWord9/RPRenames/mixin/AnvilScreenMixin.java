@@ -120,8 +120,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void init(CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
 
-        RPRenames.LOGGER.info("Starting RPRenames modification on AnvilScreen");
-
         assert client != null && client.currentScreen != null;
         int x = ((AnvilScreen) client.currentScreen).x;
         int y = ((AnvilScreen) client.currentScreen).y;
@@ -320,7 +318,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void openMenu() {
         open = true;
-        RPRenames.LOGGER.info("Opening RPRenames Menu");
         if (currentItem.equals(nullItem)) {
             currentTab = Tabs.GLOBAL;
         } else {
@@ -332,7 +329,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void closeMenu() {
         open = false;
-        RPRenames.LOGGER.info("Closing RPRenames Menu");
         searchField.setFocused(false);
         searchField.setFocusUnlocked(false);
         searchField.setText("");
@@ -466,9 +462,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             updateMenuShift();
         }
         instance.init(client, width, height);
-        if (prevOpen) {
+        if (prevOpen && !open) {
             open = true;
             updateMenuShift();
+            opener.setOpen(true);
         }
         searchField.setText(tempSearchFieldText);
     }
