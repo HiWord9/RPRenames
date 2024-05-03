@@ -41,6 +41,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -56,6 +57,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     @Shadow
     private TextFieldWidget nameField;
+
+    boolean afterPutInAnvilFirst = false;
+    boolean afterPutInAnvilSecond = false;
 
     boolean open;
 
@@ -78,7 +82,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     final String nullItem = "air";
     String currentItem = nullItem;
-    ItemStack itemAfterUpdate = ItemStack.EMPTY;
+    ItemStack stackInAnvil = ItemStack.EMPTY;
     boolean shouldNotUpdateTab = false;
     int tempPage;
 
@@ -273,11 +277,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             }
             shouldNotUpdateTab = false;
         } else if (indexInInventory != 36) {
-            shouldNotUpdateTab = currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL;
             for (int s = 0; s < 2; s++) {
                 moveToInventory(s, inventory);
             }
-            shouldNotUpdateTab = false;
 
             ItemStack[] ghostCraftItems = ConfigManager.getGhostCraftItems(rename);
 
@@ -470,6 +472,12 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         searchField.setText(tempSearchFieldText);
     }
 
+    @Inject(at = @At(value = "HEAD"), method = "keyPressed")
+    public void onKeyPressedHead(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        afterPutInAnvilFirst = false;
+        afterPutInAnvilSecond = false;
+    }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z"), method = "keyPressed")
     private boolean onKeyPressedNameFieldIsActive(TextFieldWidget instance, int keyCode, int scanCode, int modifiers) {
         if (!config.enableAnvilModification) return instance.isActive();
@@ -479,6 +487,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!config.enableAnvilModification) return super.mouseClicked(mouseX, mouseY, button);
+        afterPutInAnvilFirst = false;
+        afterPutInAnvilSecond = false;
         assert client != null && client.currentScreen != null;
         int xScreenOffset = ((AnvilScreen) client.currentScreen).x;
         int yScreenOffset = ((AnvilScreen) client.currentScreen).y;
@@ -546,14 +556,69 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
     }
 
+    private boolean stacksEqual(ItemStack stack1, ItemStack stack2) {
+        if (stack1.isEmpty() || stack2.isEmpty()) {
+            return stack1 == stack2;
+        }
+        if (!stack1.isOf(stack2.getItem())) return false;
+        if (stack1.getCount() != stack2.getCount()) return false;
+        if (stack1.getNbt() == null || stack2.getNbt() == null) {
+            return stack1.getNbt() == stack2.getNbt();
+        }
+        return stack1.getNbt().toString().equals(stack2.getNbt().toString());
+    }
+
+    @Inject(at = @At("HEAD"), method = "onSlotUpdate", cancellable = true)
+    private void itemUpdateHead(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
+        if (!config.enableAnvilModification) return;
+        if (slotId != 0) return;
+
+        /*
+            Sometimes On server, after using putInAnvil() method client receives 3 changes on screen:
+            1. Local changes on client side
+            2. First packet from server, it tells what was in slot
+            3. Second packet from server, it tells how slot actually changed (the same as local changes)
+
+            So onSlotUpdate() method is called 3 times,
+            and for rpr it looks like after moving stacks automatically
+            player puts back previous stack in 0 slot and then puts new one again,
+            what leads to changing tab to Search and resetting nameField.
+
+            That's why there are a few fuses:
+            1. First change is proceeded normally, the local one
+            2. Second is ignored
+            3. Third is ignored if it matches expected stack, the one that was places in slot 0 automatically.
+
+            There is no such problem in singleplayer, so in singleplayer this is not proceeded.
+        */
+        if (config.fixDelayedPacketsChangingTab) {
+            // Executing local changes normally and setting flag
+            if (afterPutInAnvilFirst) {
+                afterPutInAnvilFirst = false;
+                afterPutInAnvilSecond = true;
+                return;
+            }
+
+            // Ignoring first packet from server
+            if (afterPutInAnvilSecond) {
+                afterPutInAnvilSecond = false;
+                ci.cancel();
+                return;
+            }
+        }
+
+        // Ignoring changes if stack did not change. Works for manual moving stacks too.
+        if (stacksEqual(stack, stackInAnvil)) ci.cancel();
+    }
+
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
-    private void itemUpdate(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
+    private void itemUpdateReturn(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
         if (slotId == 0 || slotId == 1) {
             ghostCraft.reset();
         }
         if (slotId != 0) return;
-        itemAfterUpdate = stack.copy();
+        stackInAnvil = stack.copy();
         if (stack.isEmpty()) {
             currentItem = nullItem;
             searchField.setFocusUnlocked(false);
@@ -734,9 +799,15 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         pageCount = Text.empty();
     }
 
-    private static void putInAnvil(int slotInInventory, MinecraftClient client) {
+    private void putInAnvil(int slotInInventory, MinecraftClient client) {
         if (client.player == null || client.interactionManager == null) return;
         int syncId = client.player.currentScreenHandler.syncId;
+
+        if (
+                config.fixDelayedPacketsChangingTab
+                && !client.isInSingleplayer()
+                && !stackInAnvil.isEmpty()
+        ) afterPutInAnvilFirst = true;
 
         if (slotInInventory >= 9) {
             int i = slotInInventory - 9;
@@ -826,7 +897,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (rename.getStackSize() != null && rename.getStackSize() > 1) {
             if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
-                enoughStackSize = Rename.isInBounds(itemAfterUpdate.getCount(), rename.getOriginalStackSize());
+                enoughStackSize = Rename.isInBounds(stackInAnvil.getCount(), rename.getOriginalStackSize());
             } else if (isInInventory) {
                 enoughStackSize = Rename.isInBounds(playerInventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
             }
@@ -844,7 +915,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (rename.getDamage() != null && rename.getDamage().damage > 0) {
             if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
-                enoughDamage = Rename.isInBounds(itemAfterUpdate.getDamage(), rename.getOriginalDamage(), item);
+                enoughDamage = Rename.isInBounds(stackInAnvil.getDamage(), rename.getOriginalDamage(), item);
             } else if (isInInventory) {
                 enoughDamage = Rename.isInBounds(playerInventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
             }
@@ -869,7 +940,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             Map<Enchantment, Integer> enchantments = Maps.newLinkedHashMap();
 
             if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
-                enchantments = EnchantmentHelper.fromNbt(itemAfterUpdate.getEnchantments());
+                enchantments = EnchantmentHelper.fromNbt(stackInAnvil.getEnchantments());
             } else if (isInInventory) {
                 enchantments = EnchantmentHelper.fromNbt(playerInventory.main.get(indexInInventory).getEnchantments());
             }

@@ -83,6 +83,7 @@ public class ModConfig implements ConfigData {
     public boolean updateConfig = true;
     public boolean showNbtDisplayName = false;
     public boolean showOriginalProperties = false;
+    public boolean fixDelayedPacketsChangingTab = false;
 
     public boolean showDescription = true;
 

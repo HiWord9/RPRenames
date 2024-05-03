@@ -290,6 +290,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.showOriginalProperties)
                 .build();
 
+        AbstractConfigListEntry<Boolean> fixDelayedPacketsChangingTab = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.fixDelayedPacketsChangingTab"), currentConfig.fixDelayedPacketsChangingTab)
+                .setTooltip(Text.translatable("rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.fixDelayedPacketsChangingTab = newConfig)
+                .setDefaultValue(defaultConfig.fixDelayedPacketsChangingTab)
+                .build();
+
         general.addEntry(ignoreCEM);
         general.addEntry(enableAnvilModification);
 
@@ -369,6 +375,7 @@ public class ModConfigScreenFactory {
         debug.addEntry(clearConfig);
         debug.addEntry(showNbtDisplayName);
         debug.addEntry(showOriginalProperties);
+        debug.addEntry(fixDelayedPacketsChangingTab);
 
         return builder.build();
     }
