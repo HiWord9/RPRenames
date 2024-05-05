@@ -1,9 +1,10 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.RenamesHelper;
+import com.HiWord9.RPRenames.util.Rename;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
+import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.gui.button.RenameButton;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.AbstractSkullBlock;
@@ -357,7 +358,7 @@ public class RenameButtonHolder extends Screen {
             displayText = shortText(Text.of(this.rename.getName()), button.getWidth() - 32);
         }
 
-        this.item = ConfigManager.createItem(rename);
+        this.item = RenamesHelper.createItem(rename);
 
         if (CEM) {
             var entityType = CEMList.EntityFromName(rename.getMob().entity());
@@ -367,7 +368,7 @@ public class RenameButtonHolder extends Screen {
             prepareEntity(entity);
         }
         if (CEM && rename.getProperties() == null) {
-            this.icon = new ItemStack(ConfigManager.itemFromName(rename.getMob().icon()));
+            this.icon = new ItemStack(ParserHelper.itemFromName(rename.getMob().icon()));
         } else {
             this.icon = this.item.copy();
         }

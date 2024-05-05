@@ -1,11 +1,14 @@
 package com.HiWord9.RPRenames.mixin;
 
-import com.HiWord9.RPRenames.AnvilScreenMixinAccessor;
+import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.RenamesHelper;
+import com.HiWord9.RPRenames.util.RenamesManager;
 import com.HiWord9.RPRenames.util.Tabs;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.config.*;
+import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.gui.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
@@ -186,9 +189,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     public void addOrRemoveFavorite(boolean add, String favoriteName, String item) {
         if (!item.equals(nullItem)) {
             if (add) {
-                ConfigManager.addToFavorites(favoriteName, item);
+                FavoritesManager.addToFavorites(favoriteName, item);
             } else {
-                ConfigManager.removeFromFavorites(favoriteName, item);
+                FavoritesManager.removeFromFavorites(favoriteName, item);
             }
             favoriteButtonsUpdate(nameField.getText());
             if (open) {
@@ -248,8 +251,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             } else {
                 if (favorite) {
                     for (String item : rename.getItems()) {
-                        if (Rename.isFavorite(item, rename.getName())) {
-                            ConfigManager.removeFromFavorites(rename.getName(), item);
+                        if (FavoritesManager.isFavorite(item, rename.getName())) {
+                            FavoritesManager.removeFromFavorites(rename.getName(), item);
                         }
                     }
                     favoriteButtonsUpdate(nameField.getText());
@@ -281,7 +284,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 moveToInventory(s, inventory);
             }
 
-            ItemStack[] ghostCraftItems = ConfigManager.getGhostCraftItems(rename);
+            ItemStack[] ghostCraftItems = RenamesHelper.getGhostCraftItems(rename);
 
             ghostCraft.setSlots(ghostCraftItems[0], ghostCraftItems[1], ghostCraftItems[2]);
             ghostCraft.setRender(true);
@@ -294,7 +297,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 ghostCraft.setRender(true);
             }
             if (!hasEnchant || !hasEnoughLevels) {
-                ghostCraft.setSlots(ItemStack.EMPTY, ConfigManager.getGhostCraftEnchant(rename), ItemStack.EMPTY);
+                ghostCraft.setSlots(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(rename), ItemStack.EMPTY);
                 ghostCraft.setForceRenderBG(null, null, true);
                 ghostCraft.setRender(true);
             }
@@ -384,8 +387,8 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void calcRenameList() {
         switch (currentTab) {
-            case SEARCH -> originalRenameList = ConfigManager.getRenames(getItemInFirstSlot());
-            case FAVORITE -> originalRenameList = ConfigManager.getFavorites(getItemInFirstSlot());
+            case SEARCH -> originalRenameList = RenamesManager.getRenames(getItemInFirstSlot());
+            case FAVORITE -> originalRenameList = FavoritesManager.getFavorites(getItemInFirstSlot());
             case INVENTORY -> {
                 ArrayList<String> currentInvList = getInventory();
                 ArrayList<String> checked = new ArrayList<>();
@@ -393,7 +396,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 for (String item : currentInvList) {
                     if (!item.equals(nullItem) && !checked.contains(item)) {
                         checked.add(item);
-                        ArrayList<Rename> renames = ConfigManager.getRenames(item);
+                        ArrayList<Rename> renames = RenamesManager.getRenames(item);
                         for (Rename r : renames) {
                             if (!names.contains(r)) names.add(r);
                         }
@@ -401,7 +404,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 }
                 originalRenameList = names;
             }
-            case GLOBAL -> originalRenameList = ConfigManager.getAllRenames();
+            case GLOBAL -> originalRenameList = RenamesManager.getAllRenames();
         }
     }
 
@@ -411,7 +414,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     private void updateSearchRequest(int page) {
         hideButtons();
-        currentRenameList = ConfigManager.search(originalRenameList, searchTag);
+        currentRenameList = RenamesHelper.search(originalRenameList, searchTag);
 
         this.page = page;
         if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {
@@ -428,7 +431,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private String getItemInFirstSlot() {
         String item = currentItem;
         if (item.equals(nullItem) && !ghostCraft.slot1.isEmpty()) {
-            item = ConfigManager.getIdAndPath(ghostCraft.slot1.getItem());
+            item = ParserHelper.getIdAndPath(ghostCraft.slot1.getItem());
         }
         return item;
     }
@@ -443,7 +446,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void favoriteButtonsUpdate(String name) {
         if (!name.isEmpty()) {
             favoriteButton.active = true;
-            boolean favorite = Rename.isFavorite(getItemInFirstSlot(), name);
+            boolean favorite = FavoritesManager.isFavorite(getItemInFirstSlot(), name);
             favoriteButton.setFavorite(favorite);
         } else {
             favoriteButton.active = false;
@@ -625,7 +628,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             remove(searchField);
             searchField.setFocused(false);
         } else {
-            currentItem = ConfigManager.getIdAndPath(stack.getItem());
+            currentItem = ParserHelper.getIdAndPath(stack.getItem());
             searchField.setFocusUnlocked(true);
             if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
         }
@@ -641,7 +644,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         assert MinecraftClient.getInstance().player != null;
         PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
         for (ItemStack itemStack : inventory.main) {
-            inventoryList.add(ConfigManager.getIdAndPath(itemStack.getItem()));
+            inventoryList.add(ParserHelper.getIdAndPath(itemStack.getItem()));
         }
         inventoryList.add(currentItem);
         return inventoryList;
@@ -858,33 +861,33 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         boolean favorite = false;
         if (currentTab != Tabs.SEARCH) {
             for (String s : rename.getItems()) {
-                if (Rename.isFavorite(s, rename.getName())) {
+                if (FavoritesManager.isFavorite(s, rename.getName())) {
                     favorite = true;
                     break;
                 }
             }
         } else {
-            favorite = Rename.isFavorite(item, rename.getName());
+            favorite = FavoritesManager.isFavorite(item, rename.getName());
         }
 
         ArrayList<Object> tooltip = new ArrayList<>();
         tooltip.add(Text.of(rename.getName()));
 
         if (rename.getDescription() != null && config.showDescription) {
-            ArrayList<Text> lines = ConfigManager.parseCustomDescription(rename.getDescription());
+            ArrayList<Text> lines = PropertiesHelper.parseCustomDescription(rename.getDescription());
             tooltip.addAll(lines);
         }
 
         if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
             ArrayList<TooltipItem> tooltipItems = new ArrayList<>();
             for (int i = 0; i < rename.getItems().size(); i++) {
-                ItemStack itemStack = ConfigManager.createItem(rename, false, i);
+                ItemStack itemStack = RenamesHelper.createItem(rename, false, i);
                 tooltipItems.add(new TooltipItem(itemStack, inventory.contains(rename.getItems().get(i))));
             }
             tooltip.add(new MultiItemTooltipComponent(tooltipItems));
         }
 
-        if (item.equals(ConfigManager.getIdAndPath(Items.NAME_TAG)) && rename.isCEM()) {
+        if (item.equals(ParserHelper.getIdAndPath(Items.NAME_TAG)) && rename.isCEM()) {
             Identifier mob = new Identifier(rename.getMob().entity());
             var entityType = Registries.ENTITY_TYPE.get(mob);
             tooltip.add(Text.translatable(entityType.getTranslationKey()).copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
@@ -897,9 +900,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (rename.getStackSize() != null && rename.getStackSize() > 1) {
             if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
-                enoughStackSize = Rename.isInBounds(stackInAnvil.getCount(), rename.getOriginalStackSize());
+                enoughStackSize = PropertiesHelper.matchesRange(stackInAnvil.getCount(), rename.getOriginalStackSize());
             } else if (isInInventory) {
-                enoughStackSize = Rename.isInBounds(playerInventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
+                enoughStackSize = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
             }
 
             if (config.showExtraProperties) {
@@ -915,9 +918,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (rename.getDamage() != null && rename.getDamage().damage > 0) {
             if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
-                enoughDamage = Rename.isInBounds(stackInAnvil.getDamage(), rename.getOriginalDamage(), item);
+                enoughDamage = PropertiesHelper.matchesRange(stackInAnvil.getDamage(), rename.getOriginalDamage(), item);
             } else if (isInInventory) {
-                enoughDamage = Rename.isInBounds(playerInventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
+                enoughDamage = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
             }
 
             if (config.showExtraProperties) {
@@ -953,7 +956,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 }
                 if (Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).toString().equals(enchantName)) {
                     hasEnchant = true;
-                    if (Rename.isInBounds(entry.getValue(), rename.getOriginalEnchantmentLevel())) {
+                    if (PropertiesHelper.matchesRange(entry.getValue(), rename.getOriginalEnchantmentLevel())) {
                         hasEnoughLevels = true;
                         break;
                     }

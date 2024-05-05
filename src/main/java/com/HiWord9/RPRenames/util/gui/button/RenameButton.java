@@ -1,9 +1,9 @@
 package com.HiWord9.RPRenames.util.gui.button;
 
-import com.HiWord9.RPRenames.AnvilScreenMixinAccessor;
+import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.Rename;
 import com.HiWord9.RPRenames.util.gui.RenameButtonHolder.ViewMode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

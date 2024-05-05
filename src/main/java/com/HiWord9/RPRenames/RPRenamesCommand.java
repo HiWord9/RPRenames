@@ -1,7 +1,10 @@
 package com.HiWord9.RPRenames;
 
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.RenamesHelper;
+import com.HiWord9.RPRenames.util.RenamesManager;
+import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -49,9 +52,9 @@ public class RPRenamesCommand {
         }
 
         Rename matchRename = null;
-        String itemId = ConfigManager.getIdAndPath(itemStack.getItem());
+        String itemId = ParserHelper.getIdAndPath(itemStack.getItem());
 
-        ArrayList<Rename> renames = ConfigManager.getRenames(itemId);
+        ArrayList<Rename> renames = RenamesManager.getRenames(itemId);
         if (!renames.isEmpty()) {
             matchRename = getMatch(
                     renames,
@@ -106,7 +109,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<Rename> renames = ConfigManager.getRenames(ConfigManager.getIdAndPath(item));
+        ArrayList<Rename> renames = RenamesManager.getRenames(ParserHelper.getIdAndPath(item));
         if (!renames.isEmpty()) {
             source.sendFeedback(Text.of("Found following Renames for ").copy()
                     .append(Text.translatable(item.getTranslationKey()))
@@ -122,7 +125,7 @@ public class RPRenamesCommand {
     }
 
     private static int solveRegex(FabricClientCommandSource source, String regex) {
-        String result = ConfigManager.solveRegex(ConfigManager.parseEscapes(regex));
+        String result = PropertiesHelper.solveRegex(PropertiesHelper.parseEscapes(regex));
         Pattern pattern = Pattern.compile(regex);
         if (pattern.matcher(result).matches()) {
             source.sendFeedback(Text.of(result).copy().fillStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)
@@ -153,16 +156,16 @@ public class RPRenamesCommand {
                     nbtName = nbtName.substring(8);
                     nbtName = nbtName.replace("*", ".*").replace("?", ".+");
                 }
-                nbtName = ConfigManager.parseEscapes(nbtName);
+                nbtName = PropertiesHelper.parseEscapes(nbtName);
                 Pattern pattern = Pattern.compile(caseInsensitive ? nbtName.toUpperCase(Locale.ROOT) : nbtName);
                 nameValid = pattern.matcher(caseInsensitive ? name.toUpperCase(Locale.ROOT) : name).matches();
             } else {
                 nameValid = name.equals(r.getName());
             }
             if (!nameValid) continue;
-            boolean stackSizeValid = Rename.isInBounds(stackSize, r.getOriginalStackSize());
+            boolean stackSizeValid = PropertiesHelper.matchesRange(stackSize, r.getOriginalStackSize());
             if (!stackSizeValid) continue;
-            boolean damageValid = Rename.isInBounds(damage, r.getOriginalDamage(), damagedItem);
+            boolean damageValid = PropertiesHelper.matchesRange(damage, r.getOriginalDamage(), damagedItem);
             if (!damageValid) continue;
             boolean enchantmentValid = false;
             boolean enchantmentLevelValid = false;
@@ -177,7 +180,7 @@ public class RPRenamesCommand {
                     if (identifier == null) continue;
                     if (identifier.toString().equals(enchantName)) {
                         enchantmentValid = true;
-                        if (Rename.isInBounds(entry.getValue(), r.getOriginalEnchantmentLevel())) {
+                        if (PropertiesHelper.matchesRange(entry.getValue(), r.getOriginalEnchantmentLevel())) {
                             enchantmentLevelValid = true;
                             break;
                         }
@@ -203,7 +206,7 @@ public class RPRenamesCommand {
                 itemStack.setDamage(r.getDamage().getParsedDamage(item));
             }
             if (r.getEnchantment() != null) {
-                ConfigManager.enchantItemStack(r, itemStack);
+                RenamesHelper.enchantItemStackWithRename(r, itemStack);
             }
 
             assert itemStack.getNbt() != null;
@@ -218,7 +221,7 @@ public class RPRenamesCommand {
             }
 
             String giveCommand = "/give @s "
-                    + ConfigManager.getIdAndPath(itemStack.getItem())
+                    + ParserHelper.getIdAndPath(itemStack.getItem())
                     + nbt
                     + (r.getStackSize() == 1 ? "" : " " + r.getStackSize());
 

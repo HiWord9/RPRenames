@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
+import com.HiWord9.RPRenames.util.RenamesManager;
 import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -258,7 +258,7 @@ public class ModConfigScreenFactory {
                 .setYesNoTextSupplier((bl) -> {
                     if (bl != prevToggleRecreateConfig.bl) {
                         RPRenames.LOGGER.info("Recreating config manually");
-                        ConfigManager.parseRenames();
+                        RenamesManager.updateRenames();
                         prevToggleRecreateConfig.bl = bl;
                     }
                     return Text.translatable("rprenames.config.debug.recreateConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
@@ -271,7 +271,7 @@ public class ModConfigScreenFactory {
                 .setYesNoTextSupplier((bl) -> {
                     if (bl != prevToggleClearConfig.bl) {
                         RPRenames.LOGGER.info("Deleting config manually");
-                        ConfigManager.configClear();
+                        RenamesManager.clearRenames();
                         prevToggleClearConfig.bl = bl;
                     }
                     return Text.translatable("rprenames.config.debug.clearConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.RED));

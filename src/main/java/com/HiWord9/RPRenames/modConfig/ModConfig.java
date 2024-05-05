@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
+import com.HiWord9.RPRenames.util.RenamesManager;
 import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -114,7 +114,7 @@ public class ModConfig implements ConfigData {
     private Boolean shouldUpdateItemGroup = null;
 
     public ModConfig write() {
-        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) ConfigManager.updateItemGroup();
+        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) RenamesManager.updateItemGroup();
         shouldUpdateItemGroup = null;
 
         Gson gson = new Gson();

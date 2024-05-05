@@ -1,6 +1,7 @@
-package com.HiWord9.RPRenames.util.config;
+package com.HiWord9.RPRenames.util;
 
-import com.HiWord9.RPRenames.util.config.generation.CEMConfig;
+import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +39,7 @@ public class Rename {
     public Rename(String name,
                   String packName,
                   Mob mob) {
-        this(name, new ArrayList<>(List.of(CEMConfig.DEFAULT_MOB_ITEM)), packName, null, null, null, null, null, null, null, mob);
+        this(name, new ArrayList<>(List.of(CEMParser.DEFAULT_MOB_ITEM)), packName, null, null, null, null, null, null, null, mob);
     }
 
     public Rename(String name,
@@ -190,106 +191,6 @@ public class Rename {
         return -1;
     }
 
-
-    public static boolean isInBounds(int n, String list) {
-        return isInBounds(n, list, null);
-    }
-
-    public static boolean isInBounds(int n, String list, @Nullable String damagedItem) {
-        if (list == null) return true;
-        if (!list.contains(" ") && !list.contains("-") && !list.contains("%"))
-            return n == Integer.parseInt(getFirstValue(list));
-
-        for (String s : split(list)) {
-            if (s.contains("-")) {
-                assert damagedItem != null;
-                Item item = ConfigManager.itemFromName(damagedItem);
-                if (s.indexOf("-") == s.length() - 1) {
-                    String min = s.substring(0, s.length() - 1);
-                    if (min.endsWith("%")) {
-                        min = min.substring(0, min.length() - 1);
-
-                        Damage minDamage = new Damage(Integer.parseInt(min), true);
-
-                        if (n >= minDamage.getParsedDamage(item)) return true;
-                    } else {
-                        if (n >= Integer.parseInt(min)) return true;
-                    }
-                } else {
-                    int i = s.indexOf('-');
-                    String min = s.substring(0, i);
-                    String max = s.substring(i + 1);
-                    if (max.endsWith("%")) {
-                        max = max.replace("%", "");
-
-                        Damage minDamage = new Damage(Integer.parseInt(min), true);
-                        Damage maxDamage = new Damage(Integer.parseInt(max), true);
-
-                        if (n >= minDamage.getParsedDamage(item)
-                                && n <= maxDamage.getParsedDamage(item)) {
-                            return true;
-                        }
-                    } else {
-                        if (n >= Integer.parseInt(min) && n <= Integer.parseInt(max)) return true;
-                    }
-                }
-            } else if (n == Integer.parseInt(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static ArrayList<String> split(String list) {
-        ArrayList<String> split = new ArrayList<>();
-        if (list.contains(" ")) {
-            int i = 0;
-            int i1 = 0;
-            while (i <= list.length()) {
-                if (i == list.length() || list.charAt(i) == ' ') {
-                    split.add(list.substring(i1, i));
-                    i1 = i + 1;
-                }
-                i++;
-            }
-        } else {
-            split.add(list);
-        }
-        return split;
-    }
-
-    public static int parseDamagePercent(int percent, Item item) {
-        int maxDamage = item.getMaxDamage();
-        return maxDamage * percent / 100;
-    }
-
-    public static String getFirstValue(String string) {
-        StringBuilder builder = new StringBuilder();
-        int n = 0;
-        while (n < string.length()) {
-            if (string.charAt(n) != '-' && string.charAt(n) != ' ') {
-                builder.append(string.charAt(n));
-                n++;
-            } else {
-                break;
-            }
-        }
-        if (string.contains("%")) {
-            builder.append("%");
-        }
-        return builder.toString();
-    }
-
-    public static boolean isFavorite(String item, String name) {
-        ArrayList<Rename> favoriteList = ConfigManager.getFavorites(item);
-        for (Rename r : favoriteList) {
-            if (r.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static class Damage {
         public int damage;
         public boolean percent;
@@ -301,7 +202,7 @@ public class Rename {
 
         public int getParsedDamage(Item item) {
             if (!percent) return damage;
-            return parseDamagePercent(damage, item);
+            return PropertiesHelper.parseDamagePercent(damage, item);
         }
     }
 

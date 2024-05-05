@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.Rename;
 import com.mojang.brigadier.CommandDispatcher;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
@@ -30,9 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class RPRenames implements ClientModInitializer {
     public static final String MOD_ID = "rprenames";
@@ -40,10 +36,6 @@ public class RPRenames implements ClientModInitializer {
 
     public static Path configPath = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID);
     public static Path configPathFavorite = Path.of(configPath + "/favorite");
-
-    public static Map<String, ArrayList<Rename>> renames = new HashMap<>();
-
-    public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 

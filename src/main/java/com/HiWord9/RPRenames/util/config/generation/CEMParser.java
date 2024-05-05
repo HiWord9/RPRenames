@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.util.config.generation;
 
-import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.RenamesManager;
+import com.HiWord9.RPRenames.util.Rename;
 import com.google.gson.Gson;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -16,9 +16,9 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.HiWord9.RPRenames.util.config.ConfigManager.*;
+import static com.HiWord9.RPRenames.util.RenamesManager.*;
 
-public class CEMConfig {
+public class CEMParser {
     public static final String DEFAULT_MOB_ITEM = "name_tag";
 
     private static final String CEM_PATH = "optifine/cem";
@@ -29,7 +29,7 @@ public class CEMConfig {
 
     private static ArrayList<String> checked = new ArrayList<>();
 
-    public static void parseCEMs(ResourceManager resourceManager, Profiler profiler) {
+    public static void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cem_renames");
 
         checked.clear();
@@ -107,12 +107,12 @@ public class CEMConfig {
         }
         Resource resource = optionalResource.get();
 
-        String packName = validatePackName(resource.getResourcePackName());
-        String path = getFullPathFromIdentifier(packName, identifier);
+        String packName = ParserHelper.validatePackName(resource.getResourcePackName());
+        String path = ParserHelper.getFullPathFromIdentifier(packName, identifier);
         if (checked.contains(path)) return;
 
         propertiesToRenameMob(
-                getPropFromResource(resource),
+                ParserHelper.getPropFromResource(resource),
                 packName,
                 path,
                 CEMList.mobs[textureNum].getUntranslatedName()
@@ -135,15 +135,15 @@ public class CEMConfig {
 
         Resource resourceProp = optionalResourceProp.get();
 
-        String packName = validatePackName(resourceProp.getResourcePackName());
-        String path = getFullPathFromIdentifier(packName, propId);
+        String packName = ParserHelper.validatePackName(resourceProp.getResourcePackName());
+        String path = ParserHelper.getFullPathFromIdentifier(packName, propId);
         checked.add(path);
 
         int i = Arrays.stream(CEMList.models).toList().indexOf(fileName);
         if (i < 0) return;
 
         propertiesToRenameMob(
-                getPropFromResource(resourceProp),
+                ParserHelper.getPropFromResource(resourceProp),
                 packName,
                 path,
                 CEMList.mobs[i].getUntranslatedName()
@@ -201,16 +201,16 @@ public class CEMConfig {
             if (skins.contains(skin)) continue;
             skins.add(skin);
 
-            String name = ConfigManager.getFirstName(p.getProperty(s));
+            String name = PropertiesHelper.getFirstName(p.getProperty(s));
             if (name == null) continue;
 
-            ArrayList<Rename> alreadyExist = ConfigManager.getRenames(DEFAULT_MOB_ITEM);
+            ArrayList<Rename> alreadyExist = RenamesManager.getRenames(DEFAULT_MOB_ITEM);
 
             Rename rename;
             Rename renameNameOnly = new Rename(name, DEFAULT_MOB_ITEM);
             Rename.Mob mob = new Rename.Mob(
                     fileName,
-                    ConfigManager.getIdAndPath(CEMList.iconFromName(fileName)),
+                    ParserHelper.getIdAndPath(CEMList.iconFromName(fileName)),
                     p,
                     path.replaceAll("\\\\", "/")
             );
@@ -238,7 +238,7 @@ public class CEMConfig {
             if (!rename.isContainedIn(alreadyExist)) {
                 ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
-                RPRenames.renames.put(DEFAULT_MOB_ITEM, newConfig);
+                renames.put(DEFAULT_MOB_ITEM, newConfig);
             }
         }
     }

@@ -1,8 +1,10 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.config.FavoritesManager;
+import com.HiWord9.RPRenames.util.RenamesHelper;
+import com.HiWord9.RPRenames.util.RenamesManager;
+import com.HiWord9.RPRenames.util.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -46,17 +48,17 @@ public abstract class CreativeInventoryScreenMixin {
         String search = searchBox.getText();
 
         if (!search.isEmpty()) {
-            ArrayList<ItemStack> filteredList = searchStacks(RPRenames.renamedItemStacks, search);
+            ArrayList<ItemStack> filteredList = searchStacks(RenamesManager.renamedItemStacks, search);
             if (filteredList.isEmpty()) {
                 handler.itemList.add(getNoRenamesFoundItem());
             } else {
                 handler.itemList.addAll(filteredList);
             }
         } else {
-            if (RPRenames.renamedItemStacks.isEmpty()) {
+            if (RenamesManager.renamedItemStacks.isEmpty()) {
                 handler.itemList.add(getNoRenamesFoundItem());
             } else {
-                handler.itemList.addAll(RPRenames.renamedItemStacks);
+                handler.itemList.addAll(RenamesManager.renamedItemStacks);
             }
 
             File[] favoriteDirFiles = RPRenames.configPathFavorite.toFile().listFiles();
@@ -72,16 +74,16 @@ public abstract class CreativeInventoryScreenMixin {
                 }
 
                 ArrayList<ItemStack> list = new ArrayList<>();
-                Map<String, ArrayList<Rename>> favoriteRenames = ConfigManager.getAllFavorites();
+                Map<String, ArrayList<Rename>> favoriteRenames = FavoritesManager.getAllFavorites();
                 for (String key : favoriteRenames.keySet()) {
                     for (Rename r : favoriteRenames.get(key)) {
                         if (r.getItems().size() > 1) {
                             for (int i = 0; i < r.getItems().size(); i++) {
-                                ItemStack stack = ConfigManager.createItem(r, true, i);
+                                ItemStack stack = RenamesHelper.createItem(r, true, i);
                                 list.add(stack);
                             }
                         } else {
-                            list.add(ConfigManager.createItemOrSpawnEgg(r));
+                            list.add(RenamesHelper.createItemOrSpawnEgg(r));
                         }
                     }
                 }

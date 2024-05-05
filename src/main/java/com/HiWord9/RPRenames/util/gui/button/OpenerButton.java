@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util.gui.button;
 
-import com.HiWord9.RPRenames.AnvilScreenMixinAccessor;
+import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

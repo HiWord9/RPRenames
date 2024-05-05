@@ -1,8 +1,7 @@
 package com.HiWord9.RPRenames.util.gui.button;
 
-import com.HiWord9.RPRenames.AnvilScreenMixinAccessor;
+import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
@@ -10,8 +9,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-
-import java.util.List;
 
 public class RandomButton extends ClickableWidget {
     public static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/dice.png");

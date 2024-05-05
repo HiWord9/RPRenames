@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
+import com.HiWord9.RPRenames.util.RenamesManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.model.ModelLoader;
@@ -22,6 +22,6 @@ public class ModelLoaderMixin {
     @Inject(method = "<init>", at = @At(value = "INVOKE", ordinal = 0, target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/lang/String;)V"))
     private void loadRenames(BlockColors blockColors, Profiler profiler, Map<Identifier, JsonUnbakedModel> jsonUnbakedModels, Map<Identifier, List<ModelLoader.SourceTrackedData>> blockStates, CallbackInfo ci) {
         if (!config.updateConfig) return;
-        ConfigManager.parseRenames(MinecraftClient.getInstance().getResourceManager(), profiler);
+        RenamesManager.updateRenames(MinecraftClient.getInstance().getResourceManager(), profiler);
     }
 }

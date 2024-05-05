@@ -1,8 +1,9 @@
 package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.ConfigManager;
-import com.HiWord9.RPRenames.util.config.Rename;
+import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.RenamesManager;
+import com.HiWord9.RPRenames.util.Rename;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -14,21 +15,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.HiWord9.RPRenames.util.config.ConfigManager.*;
-
-public class CITConfig {
+public class CITParser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
 
-    public static void parseCITs(ResourceManager resourceManager, Profiler profiler) {
+    public static void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cit_renames");
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
-                    String packName = validatePackName(entry.getValue().getResourcePackName());
-                    CITConfig.propertiesToRename(
-                            getPropFromResource(entry.getValue()),
+                    String packName = ParserHelper.validatePackName(entry.getValue().getResourcePackName());
+                    CITParser.propertiesToRename(
+                            ParserHelper.getPropFromResource(entry.getValue()),
                             packName,
-                            getFullPathFromIdentifier(packName, entry.getKey())
+                            ParserHelper.getFullPathFromIdentifier(packName, entry.getKey())
                     );
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -52,7 +51,7 @@ public class CITConfig {
         String nbtNamePattern = p.getProperty("nbt.display.Name");
 
         String stackSizeProp = p.getProperty("stackSize");
-        String firstStackSize = Rename.getFirstValue(stackSizeProp == null ? "" : stackSizeProp);
+        String firstStackSize = PropertiesHelper.getFirstValueInList(stackSizeProp == null ? "" : stackSizeProp);
         Integer stackSize = null;
         if (!firstStackSize.isEmpty()) {
             int i = Integer.parseInt(firstStackSize);
@@ -64,7 +63,7 @@ public class CITConfig {
         String damageProp = p.getProperty("damage");
         Rename.Damage damage = null;
         if (damageProp != null) {
-            String firstDamage = Rename.getFirstValue(damageProp);
+            String firstDamage = PropertiesHelper.getFirstValueInList(damageProp);
 
             if (!firstDamage.isEmpty()) {
                 try {
@@ -79,11 +78,11 @@ public class CITConfig {
         String enchantIdProp = p.getProperty("enchantmentIDs");
         String firstEnchantId = enchantIdProp;
         if (enchantIdProp != null) {
-            firstEnchantId = Rename.getFirstValue(enchantIdProp);
+            firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
         }
 
         String enchantLvlProp = p.getProperty("enchantmentLevels");
-        String firstEnchantLvl = Rename.getFirstValue(enchantLvlProp == null ? "" : enchantLvlProp);
+        String firstEnchantLvl = PropertiesHelper.getFirstValueInList(enchantLvlProp == null ? "" : enchantLvlProp);
         Integer enchantLvl = firstEnchantLvl.isEmpty() ? null : Integer.parseInt(firstEnchantLvl) <= 0 ? null : Integer.parseInt(firstEnchantLvl);
 
         String description = p.getProperty("%rprenames.description");
@@ -92,7 +91,7 @@ public class CITConfig {
 
         if (nbtNamePattern != null) {
             Rename rename = new Rename(
-                    ConfigManager.getFirstName(nbtNamePattern, items),
+                    PropertiesHelper.getFirstName(nbtNamePattern, items),
                     items,
                     packName,
                     path,
@@ -106,7 +105,7 @@ public class CITConfig {
             );
 
             for (String item : items) {
-                ConfigManager.addRename(item, rename);
+                RenamesManager.addRename(item, rename);
             }
         }
     }
@@ -115,7 +114,7 @@ public class CITConfig {
         ArrayList<String> items = new ArrayList<>();
         int start = 0;
         while (start <= matchItems.length()) {
-            String item = Rename.getFirstValue(matchItems.substring(start));
+            String item = PropertiesHelper.getFirstValueInList(matchItems.substring(start));
             start += item.length() + 1;
             if (item.startsWith("minecraft:")) {
                 item = item.substring(10);
