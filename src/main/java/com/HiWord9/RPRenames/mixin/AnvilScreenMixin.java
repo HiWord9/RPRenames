@@ -617,25 +617,29 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
     private void itemUpdateReturn(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
+        if (slotId == 0) {
+            stackInAnvil = stack.copy();
+            if (stack.isEmpty()) {
+                currentItem = nullItem;
+                searchField.setFocusUnlocked(false);
+                remove(searchField);
+                searchField.setFocused(false);
+            } else {
+                currentItem = ParserHelper.getIdAndPath(stack.getItem());
+                searchField.setFocusUnlocked(true);
+                if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
+            }
+            if (!open || currentTab != Tabs.GLOBAL) {
+                screenUpdate();
+            } else {
+                updateSearchRequest(page);
+            }
+        }
         if (slotId == 0 || slotId == 1) {
             ghostCraft.reset();
-        }
-        if (slotId != 0) return;
-        stackInAnvil = stack.copy();
-        if (stack.isEmpty()) {
-            currentItem = nullItem;
-            searchField.setFocusUnlocked(false);
-            remove(searchField);
-            searchField.setFocused(false);
-        } else {
-            currentItem = ParserHelper.getIdAndPath(stack.getItem());
-            searchField.setFocusUnlocked(true);
-            if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
-        }
-        if (!open || currentTab != Tabs.GLOBAL) {
-            screenUpdate();
-        } else {
-            updateSearchRequest(page);
+            if (currentItem.equals(nullItem)) {
+                nameField.setText("");
+            }
         }
     }
 
@@ -693,6 +697,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         opener.render(context, mouseX, mouseY, 0);
         favoriteButton.render(context, mouseX, mouseY, 0);
         matrices.pop();
+        ghostCraft.render(context, mouseX - xScreenOffset, mouseY - yScreenOffset);
         if (!open) {
             searchField.setFocused(false);
             return;
@@ -722,7 +727,6 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(context, SEARCH_HINT_TEXT, -1, -menuWidth + searchFieldXOffset, searchFieldXOffset - 8, true, false);
         }
-        ghostCraft.render(context, mouseX - xScreenOffset, mouseY - yScreenOffset);
 
         if (currentRenameList.isEmpty()) {
             String key;
