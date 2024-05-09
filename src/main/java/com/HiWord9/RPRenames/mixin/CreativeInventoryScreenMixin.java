@@ -98,7 +98,7 @@ public abstract class CreativeInventoryScreenMixin {
         ci.cancel();
     }
 
-    private ArrayList<ItemStack> searchStacks(ArrayList<ItemStack> renamedItemStacks, String search) {
+    private static ArrayList<ItemStack> searchStacks(ArrayList<ItemStack> renamedItemStacks, String search) {
         ArrayList<ItemStack> list = new ArrayList<>();
 
         for (ItemStack stack : renamedItemStacks) {

@@ -74,7 +74,7 @@ public class Graphics extends Screen {
         renderEntityInBox(context, rect, corner, size, entity, spin, 500);
     }
 
-    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, int size, Entity entity, boolean spin, int z) {
+    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, double size, Entity entity, boolean spin, int z) {
         context.enableScissor(
                 rect.getLeft() + corner, rect.getTop() + corner,
                 rect.getRight() - corner, rect.getBottom() - corner
@@ -83,7 +83,7 @@ public class Graphics extends Screen {
         context.disableScissor();
     }
 
-    public static void renderEntity(DrawContext context, int x, int y, int z, int size, Entity entity, boolean spin) {
+    public static void renderEntity(DrawContext context, int x, int y, int z, double size, Entity entity, boolean spin) {
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
         if (entity instanceof SquidEntity) {
@@ -97,7 +97,7 @@ public class Graphics extends Screen {
         context.getMatrices().translate(x, y, 1000 + z);
         context.getMatrices().scale(1f, 1f, -1);
         context.getMatrices().translate(0, 0, 1000);
-        context.getMatrices().scale(size, size, size);
+        context.getMatrices().scale((float) size, (float) size, (float) size);
         var quaternion = (new Quaternionf()).rotateZ(3.1415927F);
         var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
         quaternion.mul(quaternion2);

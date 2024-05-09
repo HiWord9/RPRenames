@@ -36,18 +36,18 @@ public class RenameButton extends ClickableWidget {
 
     boolean selected = false;
 
-    ViewMode type;
-    public boolean favorite;
+    final ViewMode type;
+    final public boolean favorite;
 
-    int indexInInventory;
-    boolean isInInventory;
-    boolean asCurrentItem;
-    PlayerInventory inventory;
-    public Rename rename;
-    boolean enoughStackSize;
-    boolean enoughDamage;
-    boolean hasEnchant;
-    boolean hasEnoughLevels;
+    final int indexInInventory;
+    final boolean isInInventory;
+    final boolean asCurrentItem;
+    final PlayerInventory inventory;
+    final public Rename rename;
+    final boolean enoughStackSize;
+    final boolean enoughDamage;
+    final boolean hasEnchant;
+    final boolean hasEnoughLevels;
 
     public RenameButton(int x, int y, ViewMode type, boolean favorite,
                         int indexInInventory, boolean isInInventory, boolean asCurrentItem,

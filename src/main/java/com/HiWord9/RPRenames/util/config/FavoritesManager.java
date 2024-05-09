@@ -109,7 +109,7 @@ public class FavoritesManager {
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Could not read Favorites from file {}", file, e);
         }
         return renames;
     }
@@ -125,15 +125,16 @@ public class FavoritesManager {
             gson.toJson(renames, fileWriter);
             fileWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Could not write Favorites for {}", item, e);
         }
     }
 
     private static void deleteFavoriteConfigFile(Item item) {
+        Path path = Path.of(pathToFavoriteFile(item));
         try {
-            Files.deleteIfExists(Path.of(pathToFavoriteFile(item)));
+            Files.deleteIfExists(path);
         } catch (IOException e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Could not delete file for Favorites {}", path, e);
         }
     }
 

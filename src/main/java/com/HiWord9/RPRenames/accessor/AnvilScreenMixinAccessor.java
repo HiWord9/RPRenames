@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.accessor;
 
-import com.HiWord9.RPRenames.util.Tabs;
+import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.rename.Rename;
 import net.minecraft.entity.player.PlayerInventory;
 
@@ -13,9 +13,9 @@ public interface AnvilScreenMixinAccessor {
 
     void onPageDown();
 
-    void setTab(Tabs tab);
+    void setTab(Tab tab);
 
-    Tabs getCurrentTab();
+    Tab getCurrentTab();
 
     void onRenameButton(int button, boolean favorite,
                         int indexInInventory, boolean isInInventory,

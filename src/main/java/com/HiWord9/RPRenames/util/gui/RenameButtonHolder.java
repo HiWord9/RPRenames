@@ -34,7 +34,7 @@ import static com.HiWord9.RPRenames.util.gui.Graphics.SLOT_SIZE;
 public class RenameButtonHolder extends Screen {
     private final ModConfig config = ModConfig.INSTANCE;
 
-    ViewMode viewMode;
+    final ViewMode viewMode;
     RenameButton button;
     boolean CEM = false;
     LivingEntity entity = null;
@@ -42,30 +42,19 @@ public class RenameButtonHolder extends Screen {
     ItemStack item;
     ItemStack icon;
     Text displayText = Text.empty();
-    int orderOnPage;
+    final int orderOnPage;
     ArrayList<TooltipComponent> tooltip = new ArrayList<>();
-    int page;
     boolean active;
 
     EquipmentSlot equipmentSlot = null;
 
-    int buttonHeight;
-    int buttonOffsetY;
-
-    int rowSize = 9;
-    int firstSlotX = 7;
-    int firstSlotY = 83;
+    final int rowSize = 9;
+    final int firstSlotX = 7;
+    final int firstSlotY = 83;
 
     public RenameButtonHolder(ViewMode viewMode, int orderOnPage) {
         super(null);
         this.viewMode = viewMode;
-        if (viewMode == ViewMode.LIST) {
-            buttonHeight = 20;
-            buttonOffsetY = 2;
-        } else {
-            buttonHeight = 25;
-            buttonOffsetY = 0;
-        }
         this.orderOnPage = orderOnPage;
     }
 
@@ -75,7 +64,7 @@ public class RenameButtonHolder extends Screen {
                 if (CEM && config.renderMobRenamesAsEntities) {
                     Graphics.renderEntityInBox(context,
                             new ScreenRect(button.getX(), button.getY(), button.getHeight(), button.getHeight()), 1,
-                            (int) (12 / (Math.max(entity.getHeight(), entity.getWidth()))), entity, false, 200);
+                            12 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
                 } else {
                     Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
                 }
@@ -84,7 +73,7 @@ public class RenameButtonHolder extends Screen {
                 if (CEM && config.renderMobRenamesAsEntities) {
                     Graphics.renderEntityInBox(context,
                             new ScreenRect(button.getX(), button.getY(), button.getWidth() - 1, button.getHeight() - 1), 1,
-                            (int) (14 / (Math.max(entity.getHeight(), entity.getWidth()))), entity, false, 200);
+                            14 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
                 } else {
                     Graphics.renderStack(context, icon, button.getX() + 4, button.getY() + 4);
                 }
@@ -133,16 +122,16 @@ public class RenameButtonHolder extends Screen {
         }
     }
 
-    boolean pressFuse = false;
+    boolean fPressFuse = false;
 
-    private boolean isKeyJustPressed(int key) {
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), key)) {
-            if (!pressFuse) {
-                pressFuse = true;
+    private boolean isFKeyJustPressed() {
+        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F)) {
+            if (!fPressFuse) {
+                fPressFuse = true;
                 return true;
             }
         } else {
-            pressFuse = false;
+            fPressFuse = false;
         }
         return false;
     }
@@ -249,7 +238,7 @@ public class RenameButtonHolder extends Screen {
             }
         }
 
-        if (isKeyJustPressed(GLFW.GLFW_KEY_F)) {
+        if (isFKeyJustPressed()) {
             if (equipmentSlot == EquipmentSlot.HEAD) {
                 if (extraSlotAvailable && extraEquipmentSlot != EquipmentSlot.HEAD && config.alwaysAllowPlayerPreviewHead) {
                     equipmentSlot = extraEquipmentSlot;
@@ -350,7 +339,7 @@ public class RenameButtonHolder extends Screen {
         return active;
     }
 
-    public void setParameters(RenameButton button, Rename rename, int page, ArrayList<TooltipComponent> tooltip) {
+    public void setParameters(RenameButton button, Rename rename, ArrayList<TooltipComponent> tooltip) {
         this.button = button;
         this.rename = rename;
         this.CEM = rename.isCEM();
@@ -372,7 +361,6 @@ public class RenameButtonHolder extends Screen {
         } else {
             this.icon = this.item.copy();
         }
-        this.page = page;
         this.tooltip = tooltip;
         this.equipmentSlot = null;
         this.active = true;

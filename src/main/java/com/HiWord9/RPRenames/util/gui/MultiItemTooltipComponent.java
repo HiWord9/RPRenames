@@ -18,7 +18,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
 
     static final Identifier SLOT = new Identifier(RPRenames.MOD_ID, "textures/gui/slot.png");
 
-    public ArrayList<TooltipItem> items;
+    private final ArrayList<TooltipItem> items;
 
     public MultiItemTooltipComponent(ArrayList<TooltipItem> items) {
         this.items = items;
@@ -95,8 +95,8 @@ public class MultiItemTooltipComponent implements TooltipComponent {
     }
 
     public static class TooltipItem {
-        public ItemStack stack;
-        public boolean isInInventory;
+        private final ItemStack stack;
+        private final boolean isInInventory;
 
         public TooltipItem(ItemStack stack, boolean isInInventory) {
             this.stack = stack;

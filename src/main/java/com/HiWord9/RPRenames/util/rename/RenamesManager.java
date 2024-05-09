@@ -15,9 +15,9 @@ import java.util.*;
 public class RenamesManager {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    public static Map<Item, ArrayList<Rename>> renames = new HashMap<>();
+    public static final Map<Item, ArrayList<Rename>> renames = new HashMap<>();
 
-    public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
+    public static final ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
 
     public static void updateRenames() {
         MinecraftClient client = MinecraftClient.getInstance();

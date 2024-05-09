@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.util.gui.button;
 
 import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.Tabs;
+import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -28,20 +28,20 @@ public class TabButton extends ClickableWidget {
     static final int SELECTED_OFFSET_U = 33;
     static final int TYPE_OFFSET_V = 26;
 
-    Tabs tab;
+    final Tab tab;
     private final int index;
 
-    public TabButton(int x, int y, Tabs tab) {
+    public TabButton(int x, int y, Tab tab) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         this.tab = tab;
-        index = Arrays.stream(Tabs.values()).toList().indexOf(tab);
+        index = Arrays.stream(Tab.values()).toList().indexOf(tab);
     }
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         AnvilScreen screen = ((AnvilScreen) MinecraftClient.getInstance().currentScreen);
         if (screen instanceof AnvilScreenMixinAccessor anvilScreenMixinAccessor) {
-            Tabs currentTab = anvilScreenMixinAccessor.getCurrentTab();
+            Tab currentTab = anvilScreenMixinAccessor.getCurrentTab();
             int u = currentTab == tab ? SELECTED_OFFSET_U : 0;
             int v = index * TYPE_OFFSET_V;
             context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);

@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.config.generation;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.Rename;
@@ -54,7 +55,7 @@ public class CEMParser {
                     parseTextureSourceFile(resourceManager, jpmFileName, path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")), RANDOM_ENTITY_PATH);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
             }
         }
 
@@ -82,7 +83,7 @@ public class CEMParser {
                     parseTextureSourceFile(resourceManager, jem, pathInCem.substring(pathInCem.lastIndexOf("/") + 1), MOB_PATH);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
             }
         }
 
@@ -91,7 +92,7 @@ public class CEMParser {
                 parseRawPropertyFile(resourceManager, RANDOM_ENTITY_PATH, c);
                 parseRawPropertyFile(resourceManager, MOB_PATH, c);
             } catch (IOException e) {
-                e.printStackTrace();
+                RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
             }
         }
         checked.clear();
@@ -161,7 +162,7 @@ public class CEMParser {
                 if (!numbers.contains(num)) numbers.addAll(List.of(num.split(" ")));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
         }
         return numbers;
     }
@@ -176,7 +177,7 @@ public class CEMParser {
             obj = gson.fromJson(bufferedReader, type);
             bufferedReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
         }
         return obj;
     }
@@ -203,7 +204,7 @@ public class CEMParser {
             if (skins.contains(skin)) continue;
             skins.add(skin);
 
-            String name = PropertiesHelper.getFirstName(p.getProperty(s));
+            String name = PropertiesHelper.getFirstName(p.getProperty(s), path);
             if (name == null) continue;
 
             ArrayList<Rename> alreadyExist = RenamesManager.getRenames(DEFAULT_MOB_ITEM);

@@ -188,8 +188,8 @@ public class Rename {
     }
 
     public static class Damage {
-        public int damage;
-        public boolean percent;
+        public final int damage;
+        public final boolean percent;
 
         public Damage(Integer damage, boolean percent) {
             this.damage = damage;

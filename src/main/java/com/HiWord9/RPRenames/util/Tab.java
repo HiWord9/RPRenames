@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util;
 
-public enum Tabs {
+public enum Tab {
     SEARCH,
     FAVORITE,
     INVENTORY,

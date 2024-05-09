@@ -6,7 +6,7 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.rename.Rename;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.Tabs;
+import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.*;
 import com.HiWord9.RPRenames.util.gui.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.Graphics;
@@ -104,16 +104,16 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
     Text pageCount = Text.empty();
 
-    ArrayList<RenameButtonHolder> buttons = new ArrayList<>();
+    final ArrayList<RenameButtonHolder> buttons = new ArrayList<>();
 
-    Tabs currentTab = Tabs.SEARCH;
+    Tab currentTab = Tab.SEARCH;
 
-    GhostCraft ghostCraft = new GhostCraft();
+    final GhostCraft ghostCraft = new GhostCraft();
 
     ArrayList<Rename> originalRenameList = new ArrayList<>();
     ArrayList<Rename> currentRenameList = new ArrayList<>();
 
-    TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+    final TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
 
     final int menuShift = 77;
     final int searchFieldXOffset = 23;
@@ -148,10 +148,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         int tabX = menuX - (TabButton.BUTTON_WIDTH - 3);
         int tabY = y + startTabOffsetY;
-        searchTab = new TabButton(tabX, tabY, Tabs.SEARCH);
-        favoriteTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY), Tabs.FAVORITE);
-        inventoryTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 2, Tabs.INVENTORY);
-        globalTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 4, Tabs.GLOBAL);
+        searchTab = new TabButton(tabX, tabY, Tab.SEARCH);
+        favoriteTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY), Tab.FAVORITE);
+        inventoryTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 2, Tab.INVENTORY);
+        globalTab = new TabButton(tabX, tabY + (TabButton.BUTTON_HEIGHT + tabOffsetY) * 4, Tab.GLOBAL);
 
         favoriteButton = new FavoriteButton(x + 88 + config.favoritePosX, y + 83 + config.favoritePosY);
         randomButton = new RandomButton(x + menuXOffset - 14 - RandomButton.BUTTON_WIDTH, y + 14, randomNumber() % RandomButton.SIDES);
@@ -224,13 +224,13 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
     }
 
-    public void setTab(Tabs tab) {
+    public void setTab(Tab tab) {
         if (tab == currentTab) return;
         currentTab = tab;
         screenUpdate();
     }
 
-    public Tabs getCurrentTab() {
+    public Tab getCurrentTab() {
         return currentTab;
     }
 
@@ -240,7 +240,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             Rename rename,
             boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
         if (button == 1 && !rename.getItems().isEmpty()) {
-            if (currentTab == Tabs.SEARCH || currentTab == Tabs.FAVORITE || asCurrentItem) {
+            if (currentTab == Tab.SEARCH || currentTab == Tab.FAVORITE || asCurrentItem) {
                 addOrRemoveFavorite(
                         !favorite,
                         rename.getName(),
@@ -271,7 +271,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         ghostCraft.reset();
         if (indexInInventory != 36 && isInInventory) {
-            shouldNotUpdateTab = currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL;
+            shouldNotUpdateTab = currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL;
             tempPage = page;
             if (!asCurrentItem) {
                 putInAnvil(indexInInventory, MinecraftClient.getInstance());
@@ -322,9 +322,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
     private void openMenu() {
         open = true;
         if (currentItem.isEmpty()) {
-            currentTab = Tabs.GLOBAL;
+            currentTab = Tab.GLOBAL;
         } else {
-            currentTab = Tabs.SEARCH;
+            currentTab = Tab.SEARCH;
         }
         screenUpdate();
         updateMenuShift();
@@ -340,7 +340,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         nameField.setFocused(true);
         nameField.setFocusUnlocked(false);
         opener.setOpen(open);
-        currentTab = Tabs.SEARCH;
+        currentTab = Tab.SEARCH;
         updateMenuShift();
     }
 
@@ -498,7 +498,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 ghostCraft.reset();
                 if (currentItem.isEmpty()) {
                     nameField.setText("");
-                    if (currentTab == Tabs.SEARCH || currentTab == Tabs.FAVORITE) {
+                    if (currentTab == Tab.SEARCH || currentTab == Tab.FAVORITE) {
                         screenUpdate();
                     }
                 }
@@ -623,9 +623,9 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 searchField.setFocused(false);
             } else {
                 searchField.setFocusUnlocked(true);
-                if (!shouldNotUpdateTab) currentTab = Tabs.SEARCH;
+                if (!shouldNotUpdateTab) currentTab = Tab.SEARCH;
             }
-            if (!open || currentTab != Tabs.GLOBAL) {
+            if (!open || currentTab != Tab.GLOBAL) {
                 screenUpdate();
             } else {
                 updateSearchRequest(page);
@@ -726,10 +726,10 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
 
         if (currentRenameList.isEmpty()) {
             String key;
-            if (getItemInFirstSlot() == Items.AIR && (currentTab == Tabs.FAVORITE || currentTab == Tabs.SEARCH)) {
+            if (getItemInFirstSlot() == Items.AIR && (currentTab == Tab.FAVORITE || currentTab == Tab.SEARCH)) {
                 key = "putItem";
             } else {
-                key = currentTab == Tabs.FAVORITE ? "noFavoriteRenamesFound" : "noRenamesFound";
+                key = currentTab == Tab.FAVORITE ? "noFavoriteRenamesFound" : "noRenamesFound";
             }
             Graphics.renderText(context, Text.translatable("rprenames.gui." + key).copy().fillStyle(Style.EMPTY.withItalic(true).withColor(Formatting.GRAY)), -1, (-menuWidth + menuXOffset) / 2, 37, true, true);
         } else {
@@ -755,7 +755,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                             }
                         }
                     }
-                    if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
+                    if ((currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
                         renameButtonHolder.highlightSlot(context, getInventory(), currentItem.getItem(), highlightColor);
                     }
                     matrices.push();
@@ -844,7 +844,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
         ArrayList<Item> inventory = getInventory();
         Item item;
-        if (currentTab == Tabs.SEARCH) {
+        if (currentTab == Tab.SEARCH) {
             item = getItemInFirstSlot();
         } else {
             item = rename.getItems().get(0);
@@ -859,7 +859,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         boolean isInInventory = inventory.contains(item);
         int indexInInventory = inventory.indexOf(item);
         boolean favorite = false;
-        if (currentTab != Tabs.SEARCH) {
+        if (currentTab != Tab.SEARCH) {
             for (Item i : rename.getItems()) {
                 if (FavoritesManager.isFavorite(i, rename.getName())) {
                     favorite = true;
@@ -878,7 +878,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
             tooltip.addAll(lines);
         }
 
-        if ((currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL)) {
+        if ((currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL)) {
             ArrayList<TooltipItem> tooltipItems = new ArrayList<>();
             for (int i = 0; i < rename.getItems().size(); i++) {
                 ItemStack itemStack = RenamesHelper.createItem(rename, false, i);
@@ -899,7 +899,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         boolean hasEnoughLevels = false;
 
         if (rename.getStackSize() > 1) {
-            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
+            if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
                 enoughStackSize = PropertiesHelper.matchesRange(currentItem.getCount(), rename.getOriginalStackSize());
             } else if (isInInventory) {
                 enoughStackSize = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getCount(), rename.getOriginalStackSize());
@@ -917,7 +917,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         }
 
         if (rename.getDamage() != null && rename.getDamage().damage > 0) {
-            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
+            if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
                 enoughDamage = PropertiesHelper.matchesRange(currentItem.getDamage(), rename.getOriginalDamage(), item);
             } else if (isInInventory) {
                 enoughDamage = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getDamage(), rename.getOriginalDamage(), item);
@@ -942,7 +942,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
         } else {
             Map<Enchantment, Integer> enchantments = Maps.newLinkedHashMap();
 
-            if (!(currentTab == Tabs.INVENTORY || currentTab == Tabs.GLOBAL) || asCurrentItem) {
+            if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
                 enchantments = EnchantmentHelper.fromNbt(currentItem.getEnchantments());
             } else if (isInInventory) {
                 enchantments = EnchantmentHelper.fromNbt(playerInventory.main.get(indexInInventory).getEnchantments());
@@ -962,7 +962,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                     }
                 }
             }
-            if (currentTab == Tabs.GLOBAL && !isInInventory) {
+            if (currentTab == Tab.GLOBAL && !isInInventory) {
                 hasEnchant = true;
                 hasEnoughLevels = true;
             }
@@ -998,7 +998,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 tooltip.add(Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
             }
         }
-        if (config.showNbtDisplayName && currentTab != Tabs.FAVORITE && rename.getOriginalNbtDisplayName() != null) {
+        if (config.showNbtDisplayName && currentTab != Tab.FAVORITE && rename.getOriginalNbtDisplayName() != null) {
             tooltip.add(Text.of("nbt.display.Name=" + rename.getOriginalNbtDisplayName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));
         }
 
@@ -1031,7 +1031,7 @@ public abstract class AnvilScreenMixin extends Screen implements AnvilScreenMixi
                 enoughStackSize, enoughDamage,
                 hasEnchant, hasEnoughLevels);
 
-        buttons.get(orderOnPage).setParameters(renameButton, rename, page, tooltipComponents);
+        buttons.get(orderOnPage).setParameters(renameButton, rename, tooltipComponents);
     }
 
     private void defineButtons() {

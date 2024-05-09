@@ -33,7 +33,7 @@ public class CITParser {
                             ParserHelper.getFullPathFromIdentifier(packName, entry.getKey())
                     );
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    RPRenames.LOGGER.error("Something went wrong while parsing CIT Renames", e);
                 }
             }
         }
@@ -73,7 +73,7 @@ public class CITParser {
                     int d = Integer.parseInt(firstDamage.replace("%", ""));
                     damage = new Rename.Damage(d, firstDamage.contains("%"));
                 } catch (NumberFormatException ignored) {
-                    RPRenames.LOGGER.warn("Could not get valid damage value " + firstDamage + " for " + path);
+                    RPRenames.LOGGER.warn("Could not get valid damage value {} for {}", firstDamage, path);
                 }
             }
         }
@@ -94,7 +94,7 @@ public class CITParser {
 
         if (nbtNamePattern != null) {
             Rename rename = new Rename(
-                    PropertiesHelper.getFirstName(nbtNamePattern, items),
+                    PropertiesHelper.getFirstName(nbtNamePattern, path),
                     items,
                     packName,
                     path,

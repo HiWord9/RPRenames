@@ -29,7 +29,7 @@ public class PageButton extends ClickableWidget {
     static final int DISABLED_OFFSET_V = 32;
     static final int FOCUSED_OFFSET_V = 16;
 
-    Type type;
+    final Type type;
 
     public PageButton(int x, int y, Type type) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);

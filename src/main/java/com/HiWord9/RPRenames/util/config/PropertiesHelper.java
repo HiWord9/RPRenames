@@ -18,7 +18,7 @@ public class PropertiesHelper {
         return getFirstName(nbtDisplayName, null);
     }
 
-    public static String getFirstName(String nbtDisplayName, @Nullable ArrayList<Item> items) {
+    public static String getFirstName(String nbtDisplayName, @Nullable String path) {
         String name = parseEscapes(nbtDisplayName);
         if (name.startsWith("pattern:") || name.startsWith("ipattern:")) {
             if (name.startsWith("i")) {
@@ -39,12 +39,11 @@ public class PropertiesHelper {
             name = solveRegex(name);
             try {
                 if (!name.matches(originalRegex)) {
-                    RPRenames.LOGGER.error("Couldn't get valid string from regex" + (items != null ? " for " + items : ""));
-                    RPRenames.LOGGER.error("regex:" + originalRegex);
-                    RPRenames.LOGGER.error("received string:" + name);
+                    RPRenames.LOGGER.error("Couldn't get valid string from regex{}\nregex: \"{}\"\nreceived string: \"{}\"",
+                            path != null ? " from " + path : "", originalRegex, name);
                 }
             } catch (PatternSyntaxException e) {
-                RPRenames.LOGGER.error("INVALID REGEX");
+                RPRenames.LOGGER.error("Invalid regex \"{}\" in {}", originalRegex, path);
             }
         }
         return name;
@@ -62,7 +61,7 @@ public class PropertiesHelper {
                         unicode = (char) Integer.parseInt(unicodeNumbers, 16);
                     } catch (Exception e) {
                         stringBuilder.append(chars[i]);
-                        RPRenames.LOGGER.warn("Invalid unicode \"" + unicodeNumbers + "\" for String: " + string);
+                        RPRenames.LOGGER.warn("Invalid unicode \"{}\" for String: {}", unicodeNumbers, string);
                         continue;
                     }
                     i += 5;
@@ -87,115 +86,112 @@ public class PropertiesHelper {
     }
 
     public static String solveRegex(String string) {
-        if (!string.startsWith("(")) {
-            string = "(" + string + ")";
+        try {
+            return initialSolveRegex("(" + string + ")");
+        } catch (Exception e) {
+            RPRenames.LOGGER.error("Something went wrong on getting matching string for regex \"{}\"", string, e);
+            return string;
         }
-        return initialSolveRegex(string);
     }
 
-    public static String initialSolveRegex(String string) {
-        try {
-            StringBuilder builder = new StringBuilder();
-            char[] chars = string.toCharArray();
-            for (int i = 0; i < chars.length; i++) {
-                StringBuilder builder2 = new StringBuilder();
-                if (chars[i] == '[') {
-                    if (chars[i + 1] != '^') {
-                        builder2.append(chars[i + 1]);
-                        i += 2;
-                        while (chars[i] != ']') {
-                            i++;
-                        }
-                    } else {
-                        int start = i;
-                        i += 3;
-                        while (chars[i] != ']') {
-                            i++;
-                        }
-                        int ch = chars[start + 2];
-                        int count = 0;
-                        while (count != 65536) {
-                            if (string.substring(start, i + 1).matches(String.valueOf((char) ch))) {
-                                break;
-                            }
-                            ch++;
-                            count++;
-                            if (ch == 65536) {
-                                ch = 0;
-                            }
-                            if (count == 65536) {
-                                ch = 65535;
-                            }
-                        }
-                        builder2.append((char) ch);
-                    }
-                } else if (chars[i] == '(') {
-                    StringBuilder builder3 = new StringBuilder();
-                    int brackets = 0;
-                    ArrayList<Character> bracketsOrder = new ArrayList<>();
-                    while (i + 1 < chars.length) {
-                        i++;
-                        if (chars[i] == '(') {
-                            bracketsOrder.add('(');
-                            brackets++;
-                        } else if (chars[i] == ')' && (bracketsOrder.isEmpty() || bracketsOrder.get(bracketsOrder.size() - 1) != '[')) {
-                            if (brackets == 0) {
-                                break;
-                            }
-                            bracketsOrder.add(')');
-                            brackets--;
-                        } else if (chars[i] == '[') {
-                            bracketsOrder.add('[');
-                            brackets++;
-                        } else if (chars[i] == ']' && chars[i - 1] != '[') {
-                            bracketsOrder.add(']');
-                            brackets--;
-                        }
-                        builder3.append(chars[i]);
-                    }
-                    builder3 = new StringBuilder(initialSolveRegex(builder3.toString()));
-                    if (!builder3.toString().startsWith("|") && !builder3.toString().endsWith("|") && !builder3.toString().contains("||") && !builder3.isEmpty()) {
-                        for (int i1 = 0; i1 != builder3.length() && builder3.charAt(i1) != '|'; i1++) {
-                            builder2.append(builder3.charAt(i1));
-                        }
-                    }
-                } else if (chars[i] != '^' && chars[i] != '$') {
-                    if (chars[i] == '\\') {
-                        i++;
-                    }
-                    builder2.append(chars[i]);
-                }
-
-                if (i + 1 < chars.length && chars[i + 1] == '{') {
-                    StringBuilder builder3 = new StringBuilder();
+    private static String initialSolveRegex(String string) {
+        StringBuilder builder = new StringBuilder();
+        char[] chars = string.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            StringBuilder builder2 = new StringBuilder();
+            if (chars[i] == '[') {
+                if (chars[i + 1] != '^') {
+                    builder2.append(chars[i + 1]);
                     i += 2;
-                    while (chars[i] != '}') {
-                        builder3.append(chars[i]);
+                    while (chars[i] != ']') {
                         i++;
                     }
-                    int s = builder3.indexOf(",") == -1 ? builder3.length() : builder3.indexOf(",");
-                    if (s > 0 || s == builder3.length() - 1) {
-                        builder.append(String.valueOf(builder2).repeat(Math.max(0, Integer.parseInt(builder3.substring(0, s)))));
-                        continue;
-                    } else if (s == 0) {
-                        builder.append(String.valueOf(builder2).repeat(Math.max(0, Integer.parseInt(builder3.substring(s + 1)))));
-                        continue;
-                    }
-                } else if (i + 1 < chars.length) {
-                    if (chars[i + 1] == '*' || chars[i + 1] == '+' || chars[i + 1] == '?') {
+                } else {
+                    int start = i;
+                    i += 3;
+                    while (chars[i] != ']') {
                         i++;
-                        if (chars[i] == '*' || chars[i] == '?') {
-                            continue;
+                    }
+                    int ch = chars[start + 2];
+                    int count = 0;
+                    while (count != 65536) {
+                        if (string.substring(start, i + 1).matches(String.valueOf((char) ch))) {
+                            break;
+                        }
+                        ch++;
+                        count++;
+                        if (ch == 65536) {
+                            ch = 0;
+                        }
+                        if (count == 65536) {
+                            ch = 65535;
                         }
                     }
+                    builder2.append((char) ch);
                 }
-                builder.append(builder2);
+            } else if (chars[i] == '(') {
+                StringBuilder builder3 = new StringBuilder();
+                int brackets = 0;
+                ArrayList<Character> bracketsOrder = new ArrayList<>();
+                while (i + 1 < chars.length) {
+                    i++;
+                    if (chars[i] == '(') {
+                        bracketsOrder.add('(');
+                        brackets++;
+                    } else if (chars[i] == ')' && (bracketsOrder.isEmpty() || bracketsOrder.get(bracketsOrder.size() - 1) != '[')) {
+                        if (brackets == 0) {
+                            break;
+                        }
+                        bracketsOrder.add(')');
+                        brackets--;
+                    } else if (chars[i] == '[') {
+                        bracketsOrder.add('[');
+                        brackets++;
+                    } else if (chars[i] == ']' && chars[i - 1] != '[') {
+                        bracketsOrder.add(']');
+                        brackets--;
+                    }
+                    builder3.append(chars[i]);
+                }
+                builder3 = new StringBuilder(initialSolveRegex(builder3.toString()));
+                if (!builder3.toString().startsWith("|") && !builder3.toString().endsWith("|") && !builder3.toString().contains("||") && !builder3.isEmpty()) {
+                    for (int i1 = 0; i1 != builder3.length() && builder3.charAt(i1) != '|'; i1++) {
+                        builder2.append(builder3.charAt(i1));
+                    }
+                }
+            } else if (chars[i] != '^' && chars[i] != '$') {
+                if (chars[i] == '\\') {
+                    i++;
+                }
+                builder2.append(chars[i]);
             }
-            return builder.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            if (i + 1 < chars.length && chars[i + 1] == '{') {
+                StringBuilder builder3 = new StringBuilder();
+                i += 2;
+                while (chars[i] != '}') {
+                    builder3.append(chars[i]);
+                    i++;
+                }
+                int s = builder3.indexOf(",") == -1 ? builder3.length() : builder3.indexOf(",");
+                if (s > 0 || s == builder3.length() - 1) {
+                    builder.append(String.valueOf(builder2).repeat(Math.max(0, Integer.parseInt(builder3.substring(0, s)))));
+                    continue;
+                } else if (s == 0) {
+                    builder.append(String.valueOf(builder2).repeat(Math.max(0, Integer.parseInt(builder3.substring(s + 1)))));
+                    continue;
+                }
+            } else if (i + 1 < chars.length) {
+                if (chars[i + 1] == '*' || chars[i + 1] == '+' || chars[i + 1] == '?') {
+                    i++;
+                    if (chars[i] == '*' || chars[i] == '?') {
+                        continue;
+                    }
+                }
+            }
+            builder.append(builder2);
         }
-        return string;
+        return builder.toString();
     }
 
     public static ArrayList<Text> parseCustomDescription(String description) {
@@ -254,8 +250,7 @@ public class PropertiesHelper {
             try {
                 return num == Integer.parseInt(getFirstValueInList(list));
             } catch (Exception e) {
-                RPRenames.LOGGER.error("Could not get valid Damage value from list: {}", list);
-                e.printStackTrace();
+                RPRenames.LOGGER.error("Could not get valid Damage value from list: {}", list, e);
                 return false;
             }
         }

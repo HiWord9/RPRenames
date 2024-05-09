@@ -34,8 +34,8 @@ public class RPRenames implements ClientModInitializer {
     public static final String MOD_ID = "rprenames";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static Path configPath = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID);
-    public static Path configPathFavorite = Path.of(configPath + "/favorite");
+    public static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID);
+    public static final Path configPathFavorite = Path.of(configPath + "/favorite");
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 

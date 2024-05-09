@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
 public class CEMList {
-    public static String[] models = new String[]{
+    public static final String[] models = new String[]{
             "allay", "armor_stand", "axolotl", "axolotl", "axolotl", "axolotl", "axolotl",
             "bat", "polar_bear", "bee", "bee", "bee", "bee", "bee", "blaze",
             "cat", "cat", "cat", "cat", "cat_collar", "cat", "ocelot", "cat", "cat", "cat", "cat", "cat", "cat",
@@ -33,7 +33,7 @@ public class CEMList {
             "zombie_villager", "zombie_villager", "zombie_villager", "zombie_villager"
     };
 
-    public static String[] textures = new String[]{
+    public static final String[] textures = new String[]{
             "allay/allay", "armorstand/wood",
             "axolotl/axolotl_blue", "axolotl/axolotl_cyan", "axolotl/axolotl_gold", "axolotl/axolotl_lucy", "axolotl/axolotl_wild",
             "bat", "bear/polarbear",
@@ -81,7 +81,7 @@ public class CEMList {
             "zombie_villager/type/swamp", "zombie_villager/type/taiga", "zombie_villager/zombie_villager"
     };
 
-    public static EntityType<?>[] mobs = new EntityType<?>[]{
+    public static final EntityType<?>[] mobs = new EntityType<?>[]{
             EntityType.ALLAY,
             EntityType.ARMOR_STAND,
             EntityType.AXOLOTL,
@@ -268,7 +268,7 @@ public class CEMList {
             EntityType.ZOMBIE_VILLAGER
     };
 
-    public static Item[] spawnEggItems = new Item[]{
+    public static final Item[] spawnEggItems = new Item[]{
             Items.ALLAY_SPAWN_EGG,
             Items.ARMOR_STAND,
             Items.AXOLOTL_SPAWN_EGG,

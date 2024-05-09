@@ -104,7 +104,7 @@ public class ModConfig implements ConfigData {
         try {
             return new Gson().fromJson(reader = new FileReader(RPRenames.MOD_CONFIG_FILE), ModConfig.class);
         } catch (Exception e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Could not read Config file", e);
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(reader);
@@ -124,7 +124,7 @@ public class ModConfig implements ConfigData {
             writer.setIndent("    ");
             gson.toJson(gson.toJsonTree(this, ModConfig.class), writer);
         } catch (Exception e) {
-            e.printStackTrace();
+            RPRenames.LOGGER.error("Could not write Config file", e);
             throw new RuntimeException(e);
         } finally {
             IOUtils.closeQuietly(writer);
