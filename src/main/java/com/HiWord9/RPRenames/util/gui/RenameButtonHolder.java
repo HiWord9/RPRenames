@@ -1,10 +1,9 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.RenamesHelper;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
-import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.gui.button.RenameButton;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.AbstractSkullBlock;
@@ -23,6 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -92,9 +92,9 @@ public class RenameButtonHolder extends Screen {
         }
     }
 
-    public void highlightSlot(DrawContext context, ArrayList<String> inventory, String currentItem, int highlightColor) {
+    public void highlightSlot(DrawContext context, ArrayList<Item> inventory, Item currentItem, int highlightColor) {
         int slotNum;
-        for (String item : rename.getItems()) {
+        for (Item item : rename.getItems()) {
             slotNum = inventory.indexOf(item);
             if (slotNum < 0) continue;
 
@@ -368,7 +368,7 @@ public class RenameButtonHolder extends Screen {
             prepareEntity(entity);
         }
         if (CEM && rename.getProperties() == null) {
-            this.icon = new ItemStack(ParserHelper.itemFromName(rename.getMob().icon()));
+            this.icon = new ItemStack(rename.getMob().icon());
         } else {
             this.icon = this.item.copy();
         }

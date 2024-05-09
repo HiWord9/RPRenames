@@ -1,9 +1,9 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.RenamesHelper;
-import com.HiWord9.RPRenames.util.RenamesManager;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -52,9 +52,8 @@ public class RPRenamesCommand {
         }
 
         Rename matchRename = null;
-        String itemId = ParserHelper.getIdAndPath(itemStack.getItem());
 
-        ArrayList<Rename> renames = RenamesManager.getRenames(itemId);
+        ArrayList<Rename> renames = RenamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
             matchRename = getMatch(
                     renames,
@@ -62,7 +61,7 @@ public class RPRenamesCommand {
                     itemStack.getCount(),
                     itemStack.getDamage(),
                     EnchantmentHelper.fromNbt(itemStack.getEnchantments()),
-                    itemId
+                    itemStack.getItem()
             );
         }
 
@@ -109,7 +108,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<Rename> renames = RenamesManager.getRenames(ParserHelper.getIdAndPath(item));
+        ArrayList<Rename> renames = RenamesManager.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(Text.of("Found following Renames for ").copy()
                     .append(Text.translatable(item.getTranslationKey()))
@@ -140,7 +139,7 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static Rename getMatch(ArrayList<Rename> renames, String name, int stackSize, int damage, Map<Enchantment, Integer> enchantments, String damagedItem) {
+    private static Rename getMatch(ArrayList<Rename> renames, String name, int stackSize, int damage, Map<Enchantment, Integer> enchantments, Item damagedItem) {
         for (Rename r : renames) {
             boolean nameValid;
             String nbtName = r.getOriginalNbtDisplayName();

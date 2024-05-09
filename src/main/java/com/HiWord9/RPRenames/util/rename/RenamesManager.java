@@ -1,10 +1,11 @@
-package com.HiWord9.RPRenames.util;
+package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
@@ -14,7 +15,7 @@ import java.util.*;
 public class RenamesManager {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    public static Map<String, ArrayList<Rename>> renames = new HashMap<>();
+    public static Map<Item, ArrayList<Rename>> renames = new HashMap<>();
 
     public static ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
 
@@ -44,7 +45,7 @@ public class RenamesManager {
         renamedItemStacks.clear();
         ArrayList<ItemStack> list = new ArrayList<>();
         ArrayList<Rename> parsedRenames = new ArrayList<>();
-        for (String key : renames.keySet()) {
+        for (Item key : renames.keySet()) {
             for (Rename r : renames.get(key)) {
                 if (parsedRenames.contains(r)) continue;
                 parsedRenames.add(r);
@@ -68,7 +69,7 @@ public class RenamesManager {
 
     public static ArrayList<Rename> getAllRenames() {
         ArrayList<Rename> names = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<Rename>> entry : renames.entrySet()) {
+        for (Map.Entry<Item, ArrayList<Rename>> entry : renames.entrySet()) {
             for (Rename r : entry.getValue()) {
                 if (!names.contains(r)) names.add(r);
             }
@@ -76,7 +77,7 @@ public class RenamesManager {
         return names;
     }
 
-    public static ArrayList<Rename> getRenames(String item) {
+    public static ArrayList<Rename> getRenames(Item item) {
         if (renames.containsKey(item)) {
             return renames.get(item);
         } else {
@@ -84,7 +85,7 @@ public class RenamesManager {
         }
     }
 
-    public static void addRename(String item, Rename rename) {
+    public static void addRename(Item item, Rename rename) {
         if (renames.containsKey(item)) {
             Rename simplifiedRename = new Rename(rename.getName(),
                     rename.getItems(),

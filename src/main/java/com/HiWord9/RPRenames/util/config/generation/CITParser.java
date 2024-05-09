@@ -2,8 +2,11 @@ package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.RenamesManager;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.Rename;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -46,7 +49,7 @@ public class CITParser {
             matchItems = matchItems.substring(0, matchItems.length() - 1);
         }
 
-        ArrayList<String> items = splitMatchItems(matchItems);
+        ArrayList<Item> items = itemsFromMatchItems(matchItems);
 
         String nbtNamePattern = p.getProperty("nbt.display.Name");
 
@@ -104,7 +107,7 @@ public class CITParser {
                     null
             );
 
-            for (String item : items) {
+            for (Item item : items) {
                 RenamesManager.addRename(item, rename);
             }
         }
@@ -125,5 +128,19 @@ public class CITParser {
             items.add(item);
         }
         return items;
+    }
+
+    private static ArrayList<Item> itemsFromMatchList(ArrayList<String> matchItemsList) {
+        ArrayList<Item> items = new ArrayList<>();
+        for (String matchItem : matchItemsList) {
+            Item item = Registries.ITEM.get(new Identifier(matchItem));
+            if (item == Items.AIR) continue;
+            items.add(item);
+        }
+        return items;
+    }
+
+    private static ArrayList<Item> itemsFromMatchItems(String matchItems) {
+        return itemsFromMatchList(splitMatchItems(matchItems));
     }
 }

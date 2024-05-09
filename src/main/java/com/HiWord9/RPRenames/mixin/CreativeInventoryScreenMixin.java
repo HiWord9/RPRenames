@@ -2,12 +2,13 @@ package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
-import com.HiWord9.RPRenames.util.RenamesHelper;
-import com.HiWord9.RPRenames.util.RenamesManager;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -74,12 +75,12 @@ public abstract class CreativeInventoryScreenMixin {
                 }
 
                 ArrayList<ItemStack> list = new ArrayList<>();
-                Map<String, ArrayList<Rename>> favoriteRenames = FavoritesManager.getAllFavorites();
-                for (String key : favoriteRenames.keySet()) {
+                Map<Item, ArrayList<Rename>> favoriteRenames = FavoritesManager.getAllFavorites();
+                for (Item key : favoriteRenames.keySet()) {
                     for (Rename r : favoriteRenames.get(key)) {
                         if (r.getItems().size() > 1) {
                             for (int i = 0; i < r.getItems().size(); i++) {
-                                ItemStack stack = RenamesHelper.createItem(r, true, i);
+                                ItemStack stack = RenamesHelper.createItemOrSpawnEgg(r, true, i);
                                 list.add(stack);
                             }
                         } else {

@@ -1,38 +1,34 @@
-package com.HiWord9.RPRenames.util;
+package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import net.minecraft.item.Item;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class Rename {
-    private final String name;
-    private ArrayList<String> items;
-    private final String packName;
-    private final String path;
-    private final Integer stackSize;
-    private final Damage damage;
-    private final String enchantment;
-    private final Integer enchantmentLevel;
-    private final Properties properties;
-    private final String description;
-    private final Mob mob;
-    private final boolean cem;
+    protected final String name;
+    protected ArrayList<Item> items;
+    protected final String packName;
+    protected final String path;
+    protected final Integer stackSize;
+    protected final Damage damage;
+    protected final String enchantment;
+    protected final Integer enchantmentLevel;
+    protected final Properties properties;
+    protected final String description;
+    protected final Mob mob;
+    protected final boolean cem;
 
     public Rename(String name) {
         this(name, null, null, null, null, null, null, null, null, null, null);
     }
 
-    public Rename(String name, String item) {
+    public Rename(String name, Item item) {
         this(name, new ArrayList<>(List.of(item)));
     }
 
-    public Rename(String name, ArrayList<String> items) {
+    public Rename(String name, ArrayList<Item> items) {
         this(name, items, null, null, null, null, null, null, null, null, null);
     }
 
@@ -43,7 +39,7 @@ public class Rename {
     }
 
     public Rename(String name,
-                  ArrayList<String> items,
+                  ArrayList<Item> items,
                   String packName,
                   String path,
                   Integer stackSize,
@@ -52,7 +48,7 @@ public class Rename {
                   Integer enchantmentLevel,
                   Properties properties,
                   String description,
-                  @Nullable Mob mob) {
+                  Mob mob) {
         this.name = name;
         this.items = items;
         this.packName = packName;
@@ -76,11 +72,11 @@ public class Rename {
         return properties == null ? cem ? mob.getPropName() : null : properties.getProperty("nbt.display.Name");
     }
 
-    public ArrayList<String> getItems() {
+    public ArrayList<Item> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<String> items) {
+    public void setItems(ArrayList<Item> items) {
         this.items = items;
     }
 
@@ -92,7 +88,7 @@ public class Rename {
         return path;
     }
 
-    public Integer getStackSize() {
+    public int getStackSize() {
         return stackSize == null ? 1 : stackSize;
     }
 
@@ -116,7 +112,7 @@ public class Rename {
         return properties == null ? null : properties.getProperty("enchantmentIDs");
     }
 
-    public Integer getEnchantmentLevel() {
+    public int getEnchantmentLevel() {
         return enchantmentLevel == null ? 1 : enchantmentLevel;
     }
 
@@ -206,7 +202,7 @@ public class Rename {
         }
     }
 
-    public record Mob(String entity, String icon, Properties properties, String path) {
+    public record Mob(String entity, Item icon, Properties properties, String path) {
         public String getPropName() {
             if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();

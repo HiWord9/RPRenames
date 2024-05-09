@@ -1,8 +1,7 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.Rename;
-import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import net.minecraft.item.Item;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -19,7 +18,7 @@ public class PropertiesHelper {
         return getFirstName(nbtDisplayName, null);
     }
 
-    public static String getFirstName(String nbtDisplayName, @Nullable ArrayList<String> items) {
+    public static String getFirstName(String nbtDisplayName, @Nullable ArrayList<Item> items) {
         String name = parseEscapes(nbtDisplayName);
         if (name.startsWith("pattern:") || name.startsWith("ipattern:")) {
             if (name.startsWith("i")) {
@@ -201,11 +200,11 @@ public class PropertiesHelper {
 
     public static ArrayList<Text> parseCustomDescription(String description) {
         ArrayList<Text> lines = new ArrayList<>();
-        String[] splited = description
+        String[] split = description
                 .replaceAll("\\\\&", String.valueOf(Formatting.FORMATTING_CODE_PREFIX))
                 .split("\n");
 
-        for (String s : splited) {
+        for (String s : split) {
             MutableText line = Text.empty();
             char[] chars = s.toCharArray();
             for (int i = 0; i < chars.length; i++) {
@@ -249,7 +248,7 @@ public class PropertiesHelper {
         return matchesRange(num, list, null);
     }
 
-    public static boolean matchesRange(int num, String list, @Nullable String damagedItem) {
+    public static boolean matchesRange(int num, String list, @Nullable Item damagedItem) {
         if (list == null) return true;
         if (!list.contains(" ") && !list.contains("-") && !list.contains("%")) {
             try {
@@ -263,8 +262,6 @@ public class PropertiesHelper {
 
         for (String s : splitList(list)) {
             if (s.contains("-")) {
-                assert damagedItem != null;
-                Item item = ParserHelper.itemFromName(damagedItem);
                 if (s.indexOf("-") == s.length() - 1) {
                     String min = s.substring(0, s.length() - 1);
                     if (min.endsWith("%")) {
@@ -272,7 +269,7 @@ public class PropertiesHelper {
 
                         Rename.Damage minDamage = new Rename.Damage(Integer.parseInt(min), true);
 
-                        if (num >= minDamage.getParsedDamage(item)) return true;
+                        if (num >= minDamage.getParsedDamage(damagedItem)) return true;
                     } else {
                         if (num >= Integer.parseInt(min)) return true;
                     }
@@ -286,8 +283,8 @@ public class PropertiesHelper {
                         Rename.Damage minDamage = new Rename.Damage(Integer.parseInt(min), true);
                         Rename.Damage maxDamage = new Rename.Damage(Integer.parseInt(max), true);
 
-                        if (num >= minDamage.getParsedDamage(item)
-                                && num <= maxDamage.getParsedDamage(item)) {
+                        if (num >= minDamage.getParsedDamage(damagedItem)
+                                && num <= maxDamage.getParsedDamage(damagedItem)) {
                             return true;
                         }
                     } else {

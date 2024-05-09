@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util;
+package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
@@ -24,7 +24,7 @@ public class RenamesHelper {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     public static ItemStack[] getGhostCraftItems(Rename rename) {
-        ItemStack ghostSource = new ItemStack(ParserHelper.itemFromName(rename.getItems().get(0)));
+        ItemStack ghostSource = new ItemStack(rename.getItems().get(0));
         ghostSource.setCount(rename.getStackSize());
         if (rename.getDamage() != null) {
             ghostSource.setDamage(rename.getDamage().getParsedDamage(ghostSource.getItem()));
@@ -58,8 +58,12 @@ public class RenamesHelper {
     }
 
     public static ItemStack createItemOrSpawnEgg(Rename rename) {
+        return createItemOrSpawnEgg(rename, true, 0);
+    }
+
+    public static ItemStack createItemOrSpawnEgg(Rename rename, boolean withCustomName, int itemIndex) {
         if (rename.isCEM() && config.generateSpawnEggsInItemGroup) return createSpawnEgg(rename);
-        return createItem(rename);
+        return createItem(rename, withCustomName, itemIndex);
     }
 
     public static ItemStack createItem(Rename rename) {
@@ -67,7 +71,7 @@ public class RenamesHelper {
     }
 
     public static ItemStack createItem(Rename rename, boolean withCustomName, int itemIndex) {
-        ItemStack item = new ItemStack(ParserHelper.itemFromName(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex)));
+        ItemStack item = new ItemStack(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex));
         if (withCustomName) item.setCustomName(Text.of(rename.getName()));
         item.setCount(rename.getStackSize());
         if (rename.getDamage() != null) {
@@ -142,8 +146,8 @@ public class RenamesHelper {
                 String itemName = matchTag.substring(5);
                 for (Rename r : list) {
                     if (r.getItems() == null) break;
-                    for (String item : r.getItems()) {
-                        if (item.toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
+                    for (Item item : r.getItems()) {
+                        if (ParserHelper.idFromItem(item).toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
                             cutList.add(r);
                             break;
                         }
@@ -166,7 +170,7 @@ public class RenamesHelper {
                 String damage = matchTag.substring(7);
                 if (damage.matches("[0-9]+")) {
                     for (Rename r : list) {
-                        for (String item : r.getItems()) {
+                        for (Item item : r.getItems()) {
                             if (PropertiesHelper.matchesRange(Integer.parseInt(damage), r.getOriginalDamage(), item)) {
                                 cutList.add(r);
                                 break;
@@ -193,7 +197,7 @@ public class RenamesHelper {
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
                 for (Rename r : list) {
-                    for (String item : r.getItems()) {
+                    for (Item item : r.getItems()) {
                         if (FavoritesManager.isFavorite(item, r.getName())) {
                             cutList.add(r);
                             break;

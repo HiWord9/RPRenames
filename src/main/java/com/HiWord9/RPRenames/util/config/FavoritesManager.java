@@ -1,10 +1,13 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
+import com.HiWord9.RPRenames.util.rename.RenameSerializer;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 
 import java.io.File;
 import java.io.FileReader;
@@ -13,83 +16,73 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FavoritesManager {
 
-    public static Map<String, ArrayList<Rename>> getAllFavorites() {
-        Map<String, ArrayList<Rename>> favoriteRenames = new HashMap<>();
+    public static Map<Item, ArrayList<Rename>> getAllFavorites() {
+        Map<Item, ArrayList<Rename>> favoriteRenames = new HashMap<>();
         File[] files = RPRenames.configPathFavorite.toFile().listFiles();
         if (files == null) return favoriteRenames;
         for (File file : files) {
-            String fileName = file.getName();
-            String item = fileName.substring(0, fileName.length() - 5);
-            favoriteRenames.put(item.replace(".", ":"), getFavorites(item));
+            Item item = itemFromFavoriteFileName(file.getName());
+            favoriteRenames.put(item, getFavorites(item));
         }
         return favoriteRenames;
     }
 
-    public static ArrayList<Rename> getFavorites(String item) {
+    private static Item itemFromFavoriteFileName(String fileName) {
+        if (!fileName.endsWith(".json")) return Items.AIR;
+        String itemFromFileName = fileName.substring(0, fileName.length() - 5).replace(".", ":");
+        return ParserHelper.itemFromName(itemFromFileName);
+    }
+
+    public static ArrayList<Rename> getFavorites(Item item) {
         ArrayList<Rename> renames = new ArrayList<>();
-        File favoritesFile = new File(RPRenames.configPathFavorite + File.separator + item.replace(":", ".") + ".json");
-        if (favoritesFile.exists()) {
-            try {
-                FileReader fileReader = new FileReader(favoritesFile);
-                Type type = new TypeToken<ArrayList<Rename>>() {
-                }.getType();
-                Gson gson = new Gson();
-                renames = gson.fromJson(fileReader, type);
-                fileReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        File favoritesFile = new File(pathToFavoriteFile(item));
+        if (favoritesFile.exists()) renames = readFavoriteFile(favoritesFile);
 
         fixRenameItemsIfNeeded(renames, item);
 
         return renames;
     }
 
-    private static void fixRenameItemsIfNeeded(ArrayList<Rename> renames, String item) {
+    private static void fixRenameItemsIfNeeded(ArrayList<Rename> renames, Item item) {
         boolean fix = false;
         for (Rename rename : renames) {
-            if (rename.getItems() != null) continue;
-            RPRenames.LOGGER.error("Fixing items list for favorite Rename \"" + rename.getName() + "\". Looks like it was created in ver <0.8.0");
+            if (rename == null || rename.getItems() != null) continue;
+            RPRenames.LOGGER.error("Fixing items list for favorite Rename \"{}\". Looks like it was created in ver <0.8.0", rename.getName());
             rename.setItems(new ArrayList<>(List.of(item)));
             fix = true;
         }
         if (!fix) return;
-        RPRenames.LOGGER.warn("Recreating Favorite Renames List File for \"" + item + "\" with fixed Items.");
+        RPRenames.LOGGER.warn("Recreating Favorite Renames List File for \"{}\" with fixed Items.", item);
         deleteFavoriteConfigFile(item);
         for (Rename rename : renames) {
             addToFavorites(rename.getName(), item);
         }
     }
 
-    public static void addToFavorites(String favoriteName, String item) {
-        ArrayList<Rename> listNames = new ArrayList<>();
+    public static void addToFavorites(String favoriteName, Item item) {
+        ArrayList<Rename> renames = new ArrayList<>();
         Rename rename = new Rename(favoriteName, item);
         ArrayList<Rename> alreadyExist = getFavorites(item);
         if (!alreadyExist.isEmpty()) {
             ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
             newConfig.add(rename);
-            listNames = newConfig;
+            renames = newConfig;
         } else {
             if (RPRenames.configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: {}", RPRenames.configPathFavorite);
             }
-            RPRenames.LOGGER.info("Created new file for favorites config: {}{}{}.json", RPRenames.configPathFavorite, File.separator, item.replaceAll(":", "."));
-            listNames.add(rename);
+            RPRenames.LOGGER.info("Created new file for favorites config: {}", pathToFavoriteFile(item));
+            renames.add(rename);
         }
 
-
-        writeFavoriteFile(listNames, item);
+        writeFavoriteFile(renames, item);
     }
 
-    public static void removeFromFavorites(String favoriteName, String item) {
+    public static void removeFromFavorites(String favoriteName, Item item) {
         ArrayList<Rename> renamesList = getFavorites(item);
         int indexInRenamesList = new Rename(favoriteName).indexIn(renamesList, true);
         if (indexInRenamesList >= 0) {
@@ -103,10 +96,32 @@ public class FavoritesManager {
         }
     }
 
-    private static void writeFavoriteFile(ArrayList<Rename> renames, String item) {
+    private static ArrayList<Rename> readFavoriteFile(File file) {
+        ArrayList<Rename> renames = new ArrayList<>();
         try {
-            FileWriter fileWriter = new FileWriter(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json");
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            FileReader fileReader = new FileReader(file);
+            Type type = new TypeToken<ArrayList<Rename>>() {
+            }.getType();
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(Rename.class, new RenameSerializer())
+                    .registerTypeAdapter(Rename.Mob.class, new RenameSerializer.MobSerializer())
+                    .create();
+            renames = gson.fromJson(fileReader, type);
+            fileReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return renames;
+    }
+
+    private static void writeFavoriteFile(ArrayList<Rename> renames, Item item) {
+        try {
+            FileWriter fileWriter = new FileWriter(pathToFavoriteFile(item));
+            Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .registerTypeAdapter(Rename.class, new RenameSerializer())
+                    .registerTypeAdapter(Rename.Mob.class, new RenameSerializer.MobSerializer())
+                    .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();
         } catch (IOException e) {
@@ -114,15 +129,15 @@ public class FavoritesManager {
         }
     }
 
-    private static void deleteFavoriteConfigFile(String item) {
+    private static void deleteFavoriteConfigFile(Item item) {
         try {
-            Files.deleteIfExists(Path.of(RPRenames.configPathFavorite + File.separator + item.replaceAll(":", ".") + ".json"));
+            Files.deleteIfExists(Path.of(pathToFavoriteFile(item)));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static boolean isFavorite(String item, String name) {
+    public static boolean isFavorite(Item item, String name) {
         ArrayList<Rename> favoriteList = getFavorites(item);
         for (Rename r : favoriteList) {
             if (r.getName().equals(name)) {
@@ -130,5 +145,13 @@ public class FavoritesManager {
             }
         }
         return false;
+    }
+
+    private static String pathToFavoriteFile(Item item) {
+        return RPRenames.configPathFavorite + File.separator + fileNameFromItem(item);
+    }
+
+    private static String fileNameFromItem(Item item) {
+        return ParserHelper.idFromItem(item).replace(":", ".") + ".json";
     }
 }

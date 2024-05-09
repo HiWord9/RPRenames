@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ParserHelper {
+    private static final String defaultIdNamespacePart = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR;
 
     public static Properties getPropFromResource(Resource resource) throws IOException {
         Properties prop = new Properties();
@@ -34,5 +35,13 @@ public class ParserHelper {
 
     public static Item itemFromName(String id) {
         return Registries.ITEM.get(new Identifier(id));
+    }
+
+    public static String idFromItem(Item item) {
+        String id = Registries.ITEM.getId(item).toString();
+        if (id.startsWith(defaultIdNamespacePart)) {
+            return id.substring(defaultIdNamespacePart.length());
+        }
+        return id;
     }
 }

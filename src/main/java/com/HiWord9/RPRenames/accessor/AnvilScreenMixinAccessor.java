@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.accessor;
 
 import com.HiWord9.RPRenames.util.Tabs;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import net.minecraft.entity.player.PlayerInventory;
 
 public interface AnvilScreenMixinAccessor {

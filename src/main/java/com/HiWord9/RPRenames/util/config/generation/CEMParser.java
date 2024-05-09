@@ -1,9 +1,11 @@
 package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.RenamesManager;
-import com.HiWord9.RPRenames.util.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.Rename;
 import com.google.gson.Gson;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -16,10 +18,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.HiWord9.RPRenames.util.RenamesManager.*;
+import static com.HiWord9.RPRenames.util.rename.RenamesManager.*;
 
 public class CEMParser {
-    public static final String DEFAULT_MOB_ITEM = "name_tag";
+    public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private static final String CEM_PATH = "optifine/cem";
     private static final String RANDOM_ENTITY_PATH = "optifine/random/entity/";
@@ -27,7 +29,7 @@ public class CEMParser {
 
     private static final String PROP_EXTENSION = ".properties";
 
-    private static ArrayList<String> checked = new ArrayList<>();
+    private static final ArrayList<String> checked = new ArrayList<>();
 
     public static void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cem_renames");
@@ -210,7 +212,7 @@ public class CEMParser {
             Rename renameNameOnly = new Rename(name, DEFAULT_MOB_ITEM);
             Rename.Mob mob = new Rename.Mob(
                     fileName,
-                    ParserHelper.getIdAndPath(CEMList.iconFromName(fileName)),
+                    CEMList.iconFromName(fileName),
                     p,
                     path.replaceAll("\\\\", "/")
             );
