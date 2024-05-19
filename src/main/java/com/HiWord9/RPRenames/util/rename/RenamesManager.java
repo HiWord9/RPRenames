@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
+import com.HiWord9.RPRenames.util.config.generation.Parser;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,6 +15,7 @@ import java.util.*;
 
 public class RenamesManager {
     private static final ModConfig config = ModConfig.INSTANCE;
+    public static final ArrayList<Parser> parsers = new ArrayList<>();
 
     public static final Map<Item, ArrayList<Rename>> renames = new HashMap<>();
 
@@ -31,8 +33,9 @@ public class RenamesManager {
         long startTime = System.currentTimeMillis();
         RPRenames.LOGGER.info("Starting collecting renames");
 
-        CITParser.parse(resourceManager, profiler);
-        CEMParser.parse(resourceManager, profiler);
+        for (Parser parser : parsers) {
+            parser.parse(resourceManager, profiler);
+        }
 
         long finishTime = System.currentTimeMillis() - startTime;
         updateItemGroup();

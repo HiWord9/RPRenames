@@ -1,6 +1,9 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.config.generation.CEMParser;
+import com.HiWord9.RPRenames.util.config.generation.CITParser;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
@@ -58,6 +61,9 @@ public class RPRenames implements ClientModInitializer {
         }
 
         registerItemGroup();
+
+        RenamesManager.parsers.add(new CITParser());
+        RenamesManager.parsers.add(new CEMParser());
     }
 
     public static Identifier asId(String path) {

@@ -21,7 +21,7 @@ import java.util.*;
 
 import static com.HiWord9.RPRenames.util.rename.RenamesManager.*;
 
-public class CEMParser {
+public class CEMParser implements Parser {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private static final String CEM_PATH = "optifine/cem";
@@ -32,7 +32,7 @@ public class CEMParser {
 
     private static final ArrayList<String> checked = new ArrayList<>();
 
-    public static void parse(ResourceManager resourceManager, Profiler profiler) {
+    public void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cem_renames");
 
         checked.clear();

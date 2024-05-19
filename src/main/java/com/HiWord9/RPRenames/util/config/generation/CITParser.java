@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class CITParser {
+public class CITParser implements Parser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
 
-    public static void parse(ResourceManager resourceManager, Profiler profiler) {
+    public void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cit_renames");
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
