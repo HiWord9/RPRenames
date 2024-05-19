@@ -1,11 +1,10 @@
-package com.HiWord9.RPRenames.util.gui.button;
+package com.HiWord9.RPRenames.util.gui.widget.button;
 
-import com.HiWord9.RPRenames.accessor.AnvilScreenMixinAccessor;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Style;
@@ -20,6 +19,8 @@ public class PageButton extends ClickableWidget {
 
     private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
 
+    RPRWidget rprWidget;
+
     public static final int BUTTON_WIDTH = 30;
     static final int BUTTON_HEIGHT = 16;
 
@@ -31,8 +32,10 @@ public class PageButton extends ClickableWidget {
 
     final Type type;
 
-    public PageButton(int x, int y, Type type) {
+    public PageButton(RPRWidget instance, int x, int y, Type type) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+        rprWidget = instance;
+
         this.type = type;
     }
 
@@ -51,21 +54,16 @@ public class PageButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
-            AnvilScreen screen = ((AnvilScreen) MinecraftClient.getInstance().currentScreen);
-            if (screen instanceof AnvilScreenMixinAccessor anvilScreenMixinAccessor) {
-                if (type == Type.DOWN) {
-                    anvilScreenMixinAccessor.onPageDown();
-                } else {
-                    anvilScreenMixinAccessor.onPageUp();
-                }
-                return true;
+            if (type == Type.DOWN) {
+                rprWidget.onPageDown();
+            } else {
+                rprWidget.onPageUp();
             }
-            return false;
+            return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     public enum Type {

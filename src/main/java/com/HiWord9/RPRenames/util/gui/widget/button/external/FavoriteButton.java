@@ -1,0 +1,52 @@
+package com.HiWord9.RPRenames.util.gui.widget.button.external;
+
+import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.util.Identifier;
+
+public class FavoriteButton extends ClickableWidget {
+    public static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
+
+    RPRWidget rprWidget;
+
+    public static final int BUTTON_WIDTH = 9;
+    public static final int BUTTON_HEIGHT = 9;
+
+    public static final int TEXTURE_WIDTH = 9;
+    public static final int TEXTURE_HEIGHT = 18;
+    static final int V_OFFSET = BUTTON_HEIGHT;
+
+    boolean favorite = false;
+
+    public FavoriteButton(RPRWidget instance, int x, int y) {
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+        rprWidget = instance;
+    }
+
+    @Override
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (!active) return;
+        int u = 0;
+        int v = favorite ? 0 : V_OFFSET;
+        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    }
+
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.clicked(mouseX, mouseY)) {
+            rprWidget.addOrRemoveFavorite(!favorite);
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+}

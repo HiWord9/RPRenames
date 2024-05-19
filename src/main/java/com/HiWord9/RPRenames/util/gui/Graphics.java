@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.gui.button.FavoriteButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -19,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import org.joml.Quaternionf;
 
@@ -29,8 +30,8 @@ public class Graphics extends Screen {
 
     static public final int SLOT_SIZE = 18;
 
-    static final int HIGHLIGHT_COLOR_WRONG = 822018048;
-    static final int HIGHLIGHT_COLOR_SECOND = 822018303;
+    public static final int HIGHLIGHT_COLOR_WRONG = 822018048;
+    public static final int HIGHLIGHT_COLOR_SECOND = 822018303;
 
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
@@ -84,6 +85,7 @@ public class Graphics extends Screen {
     }
 
     public static void renderEntity(DrawContext context, int x, int y, int z, double size, Entity entity, boolean spin) {
+        MinecraftClient client = MinecraftClient.getInstance();
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
         if (entity instanceof SquidEntity) {
@@ -102,21 +104,21 @@ public class Graphics extends Screen {
         var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
         quaternion.mul(quaternion2);
         context.getMatrices().multiply(quaternion);
-        if (MinecraftClient.getInstance().cameraEntity != null) {
-            entity.setPos(MinecraftClient.getInstance().cameraEntity.getX(), MinecraftClient.getInstance().cameraEntity.getY(), MinecraftClient.getInstance().cameraEntity.getZ());
+        if (client.cameraEntity != null) {
+            entity.setPos(client.cameraEntity.getX(), client.cameraEntity.getY(), client.cameraEntity.getZ());
         }
 
         if (!(entity instanceof PlayerEntity)) {
-            assert MinecraftClient.getInstance().player != null;
-            entity.age = MinecraftClient.getInstance().player.age;
+            assert client.player != null;
+            entity.age = client.player.age;
         }
         setupAngles(entity, spin);
 
-        var entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+        var entityRenderDispatcher = client.getEntityRenderDispatcher();
         quaternion2.conjugate();
         entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);
-        var immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        var immediate = client.getBufferBuilders().getEntityVertexConsumers();
 
         entityRenderDispatcher.render(entity, 0, 0, 0, 0.f, 1.f, context.getMatrices(), immediate,
                 LightmapTextureManager.MAX_LIGHT_COORDINATE
@@ -157,5 +159,11 @@ public class Graphics extends Screen {
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
         context.drawTooltip(textRenderer, components, x, y, positioner);
+    }
+
+    public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {
+        int x = xOffset + slot.x - 1;
+        int y = yOffset + slot.y - 1;
+        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, color, color);
     }
 }

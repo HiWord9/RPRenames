@@ -44,10 +44,6 @@
 
   "rprenames.config.gui.openByDefault": "Open by default",
   "rprenames.config.gui.openByDefault.tooltip": "If true, opens RP Renames menu automatically",
-  "rprenames.config.gui.viewMode": "View Mode",
-  "rprenames.config.gui.viewMode.tooltip": "How Renames should be viewed in Menu",
-  "rprenames.config.gui.viewMode.list": "List",
-  "rprenames.config.gui.viewMode.grid": "Grid",
   "rprenames.config.gui.offsetMenu": "Offset Menu",
   "rprenames.config.gui.offsetMenu.tooltip": "If false, Gui will not be centered on screen",
 

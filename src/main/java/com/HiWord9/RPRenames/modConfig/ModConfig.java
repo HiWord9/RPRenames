@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.widget.button.RenameButton;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 import me.shedaniel.autoconfig.ConfigData;
@@ -42,7 +42,6 @@ public class ModConfig implements ConfigData {
     public boolean loadModBuiltinResources = true;
 
     public boolean openByDefault = false;
-    public RenameButtonHolder.ViewMode viewMode = RenameButtonHolder.ViewMode.GRID;
 
     public boolean offsetMenu = true;
 
@@ -63,7 +62,7 @@ public class ModConfig implements ConfigData {
     public boolean highlightTooltipSlotSelected = false;
 
     public boolean enablePreview = true;
-    public RenameButtonHolder.PreviewPos previewPos = RenameButtonHolder.PreviewPos.LEFT;
+    public RenameButton.PreviewPos previewPos = RenameButton.PreviewPos.LEFT;
 
     public boolean playerPreviewByDefault = false;
 

@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.widget.button.RenameButton;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.gui.RenameButtonHolder;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -77,19 +77,6 @@ public class ModConfigScreenFactory {
                 .setTooltip(Text.translatable("rprenames.config.gui.openByDefault.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.openByDefault = newConfig)
                 .setDefaultValue(defaultConfig.openByDefault)
-                .build();
-
-        AbstractConfigListEntry<RenameButtonHolder.ViewMode> viewMode = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.viewMode"), RenameButtonHolder.ViewMode.class, currentConfig.viewMode)
-                .setTooltip(Text.translatable("rprenames.config.gui.viewMode.tooltip"))
-                .setEnumNameProvider(value -> {
-                    if (value == RenameButtonHolder.ViewMode.LIST) {
-                        return Text.translatable("rprenames.config.gui.viewMode.list");
-                    } else {
-                        return Text.translatable("rprenames.config.gui.viewMode.grid");
-                    }
-                })
-                .setSaveConsumer(newConfig -> currentConfig.viewMode = newConfig)
-                .setDefaultValue(defaultConfig.viewMode)
                 .build();
 
         AbstractConfigListEntry<Boolean> offsetMenu = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.offsetMenu"), currentConfig.offsetMenu)
@@ -176,12 +163,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.enablePreview)
                 .build();
 
-        AbstractConfigListEntry<RenameButtonHolder.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), RenameButtonHolder.PreviewPos.class, currentConfig.previewPos)
+        AbstractConfigListEntry<RenameButton.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), RenameButton.PreviewPos.class, currentConfig.previewPos)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.previewPos.tooltip"))
                 .setEnumNameProvider(value -> {
-                    if (value == RenameButtonHolder.PreviewPos.BOTTOM) {
+                    if (value == RenameButton.PreviewPos.BOTTOM) {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.bottom");
-                    } else if (value == RenameButtonHolder.PreviewPos.LEFT) {
+                    } else if (value == RenameButton.PreviewPos.LEFT) {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.left");
                     } else {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.top");
@@ -314,7 +301,6 @@ public class ModConfigScreenFactory {
         general.addEntry(loadModBuiltinResources);
 
         gui.addEntry(openByDefault);
-        gui.addEntry(viewMode);
         gui.addEntry(offsetMenu);
 
         SubCategoryBuilder tooltipSlotCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.tooltipCategory.tooltipSlotCategory"));

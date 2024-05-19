@@ -1,20 +1,25 @@
-package com.HiWord9.RPRenames.util.gui;
+package com.HiWord9.RPRenames.util.gui.widget.button;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.rename.RenamesHelper;
-import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
-import com.HiWord9.RPRenames.util.gui.button.RenameButton;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.HiWord9.RPRenames.util.gui.Graphics;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -24,94 +29,199 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
-import static com.HiWord9.RPRenames.util.gui.Graphics.SLOT_SIZE;
+import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class RenameButtonHolder extends Screen {
-    private final ModConfig config = ModConfig.INSTANCE;
+public class RenameButton extends ClickableWidget {
+    private static final ModConfig config = ModConfig.INSTANCE;
+    final int highlightColor = config.getSlotHighlightRGBA();
 
-    final ViewMode viewMode;
-    RenameButton button;
-    boolean CEM = false;
+    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/button.png");
+
+    RPRWidget rprWidget;
+
+    public static final int BUTTON_WIDTH = 25;
+    public static final int BUTTON_HEIGHT = 25;
+
+    static final int TEXTURE_WIDTH = BUTTON_WIDTH * 2;
+    static final int TEXTURE_HEIGHT = BUTTON_HEIGHT * 2;
+
+    static final int FOCUSED_OFFSET_V = BUTTON_WIDTH;
+    static final int FAVORITE_OFFSET_U = BUTTON_HEIGHT;
+
+    boolean selected = false;
+
+    final public boolean favorite;
+
     LivingEntity entity = null;
-    Rename rename;
     ItemStack item;
     ItemStack icon;
-    Text displayText = Text.empty();
-    final int orderOnPage;
-    ArrayList<TooltipComponent> tooltip = new ArrayList<>();
-    boolean active;
+    ArrayList<TooltipComponent> tooltipComponents;
+    EquipmentSlot equipmentSlot;
 
-    EquipmentSlot equipmentSlot = null;
+    final int indexInInventory;
+    final boolean isInInventory;
+    final boolean asCurrentItem;
+    final public Rename rename;
+    final boolean enoughStackSize;
+    final boolean enoughDamage;
+    final boolean hasEnchant;
+    final boolean hasEnoughLevels;
 
-    final int rowSize = 9;
-    final int firstSlotX = 7;
-    final int firstSlotY = 83;
+    public RenameButton(RPRWidget instance, Rename rename, ArrayList<TooltipComponent> tooltip,
+                        int x, int y,
+                        boolean favorite,
+                        int indexInInventory, boolean isInInventory, boolean asCurrentItem,
+                        boolean enoughStackSize, boolean enoughDamage,
+                        boolean hasEnchant, boolean hasEnoughLevels) {
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+        rprWidget = instance;
 
-    public RenameButtonHolder(ViewMode viewMode, int orderOnPage) {
-        super(null);
-        this.viewMode = viewMode;
-        this.orderOnPage = orderOnPage;
+        this.favorite = favorite;
+
+        this.indexInInventory = indexInInventory;
+        this.isInInventory = isInInventory;
+        this.asCurrentItem = asCurrentItem;
+        this.rename = rename;
+        this.enoughStackSize = enoughStackSize;
+        this.enoughDamage = enoughDamage;
+        this.hasEnchant = hasEnchant;
+        this.hasEnoughLevels = hasEnoughLevels;
+
+        this.item = RenamesHelper.createItem(rename);
+
+        if (isCEM()) {
+            var entityType = CEMList.EntityFromName(rename.getMob().entity());
+            var client = MinecraftClient.getInstance();
+            assert entityType != null;
+            this.entity = (LivingEntity) entityType.create(client.world);
+            prepareEntity(entity);
+        }
+        if (isCEM() && rename.getProperties() == null) {
+            this.icon = new ItemStack(rename.getMob().icon());
+        } else {
+            this.icon = this.item.copy();
+        }
+        this.tooltipComponents = tooltip;
+        this.equipmentSlot = null;
     }
 
-    public void drawElements(DrawContext context) {
-        if (active) {
-            if (viewMode == ViewMode.LIST) {
-                if (CEM && config.renderMobRenamesAsEntities) {
-                    Graphics.renderEntityInBox(context,
-                            new ScreenRect(button.getX(), button.getY(), button.getHeight(), button.getHeight()), 1,
-                            12 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
-                } else {
-                    Graphics.renderStack(context, icon, button.getX() + 2, button.getY() + 2);
+    @Override
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        int u = favorite ? FAVORITE_OFFSET_U : 0;
+        int v = hovered || (selected && config.highlightSelected) ? FOCUSED_OFFSET_V : 0;
+        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        drawElements(context);
+    }
+
+    public void postRender(DrawContext context, int mouseX, int mouseY) {
+        if (!isMouseOver(mouseX, mouseY)) return;
+        ArrayList<TooltipComponent> tooltip = new ArrayList<>(tooltipComponents);
+        Screen screen = rprWidget.getScreen();
+        if (!isCEM() && config.enablePreview) {
+            if (!hasShiftDown() && !config.playerPreviewByDefault) {
+                if (!config.disablePlayerPreviewTips) {
+                    tooltip.add(TooltipComponent.of(
+                            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift")
+                                    .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                                    .asOrderedText()));
                 }
-                Graphics.renderText(context, displayText, Graphics.DEFAULT_TEXT_COLOR, button.getX() + (button.getWidth() - 20) / 2 + 20, button.getY() + 7, true, true);
-            } else {
-                if (CEM && config.renderMobRenamesAsEntities) {
-                    Graphics.renderEntityInBox(context,
-                            new ScreenRect(button.getX(), button.getY(), button.getWidth() - 1, button.getHeight() - 1), 1,
-                            14 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
-                } else {
-                    Graphics.renderStack(context, icon, button.getX() + 4, button.getY() + 4);
+            } else if (hasShiftDown() != config.playerPreviewByDefault) {
+                screen.setFocused(null);
+                if (!config.disablePlayerPreviewTips) {
+                    tooltip.add(TooltipComponent.of(
+                            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF")
+                                    .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                                    .asOrderedText()));
                 }
             }
         }
+        if ((rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
+            if (screen instanceof HandledScreen<?> handledScreen) {
+                highlightSlot(context, handledScreen.x, handledScreen.y, handledScreen.getScreenHandler().slots, highlightColor);
+            }
+        }
+        Graphics.drawTooltip(
+                context,
+                MinecraftClient.getInstance().textRenderer,
+                tooltip,
+                mouseX, mouseY,
+                HoveredTooltipPositioner.INSTANCE
+        );
+        if (config.enablePreview) {
+            drawPreview(
+                    context,
+                    mouseX, mouseY,
+                    52, 52,
+                    config.scaleFactorItem, config.scaleFactorEntity
+            );
+        }
     }
 
-    public void highlightSlot(DrawContext context, ArrayList<Item> inventory, Item currentItem, int highlightColor) {
-        int slotNum;
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.clicked(mouseX, mouseY)) {
+            return execute(button);
+        }
+        return false;
+    }
+
+    public boolean execute(int button) {
+        rprWidget.onRenameButton(button, favorite,
+                indexInInventory, isInInventory, asCurrentItem,
+                rename,
+                enoughStackSize, enoughDamage,
+                hasEnchant, hasEnoughLevels);
+        return true;
+    }
+
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public void drawElements(DrawContext context) {
+        if (isCEM() && config.renderMobRenamesAsEntities) {
+            Graphics.renderEntityInBox(context,
+                    new ScreenRect(getX(), getY(), getWidth() - 1, getHeight() - 1), 1,
+                    14 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
+        } else {
+            Graphics.renderStack(context, icon, getX() + 4, getY() + 4);
+        }
+    }
+
+    public void highlightSlot(DrawContext context, int xOffset, int yOffset, DefaultedList<Slot> slots, int highlightColor) {
         for (Item item : rename.getItems()) {
-            slotNum = inventory.indexOf(item);
+            int slotNum = -1;
+            int i = 0;
+            Slot slot = null;
+            for (Slot s : slots) {
+                if ((i != 1 && i != 2) && s.getStack().isOf(item)) {
+                    slotNum = i;
+                    slot = s;
+                    break;
+                }
+                i++;
+            }
             if (slotNum < 0) continue;
 
-            int x = 26;
-            int y = 46;
-            if (!inventory.get(slotNum).equals(currentItem)) {
-                boolean isOnHotBar = false;
-                if (slotNum < rowSize) {
-                    slotNum += rowSize * 3;
-                    isOnHotBar = true;
-                } else {
-                    slotNum -= rowSize;
-                }
-                int orderInRow = slotNum % rowSize;
-                int row = slotNum / rowSize;
-                x = firstSlotX + (SLOT_SIZE * orderInRow);
-                y = firstSlotY + (SLOT_SIZE * row);
-                if (isOnHotBar) {
-                    y += 4;
-                }
-            }
-            RenderSystem.enableDepthTest();
-            context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, highlightColor, highlightColor);
+            Graphics.highlightSlot(context, xOffset, yOffset, slot, highlightColor);
         }
     }
 
     public void drawPreview(DrawContext context, int mouseX, int mouseY, int width, int height, double scaleFactorItem, double scaleFactorEntity) {
-        if (!CEM) {
+        if (!isCEM()) {
             if (hasShiftDown() != config.playerPreviewByDefault) {
                 playerPreview(context, mouseX, mouseY, (int) (width * scaleFactorEntity), (int) (height * scaleFactorEntity), (int) (32 * scaleFactorEntity), config.spinPlayerPreview, item);
             } else {
@@ -138,35 +248,36 @@ public class RenameButtonHolder extends Screen {
 
     private int[] setPreviewPos(int x, int y, int width, int height) {
         int[] positions = new int[2];
+        Screen screen = rprWidget.getScreen();
         if (config.previewPos == PreviewPos.LEFT) {
             x -= (5 + width);
             y -= 16;
 
-            if (y + height > this.height) {
-                y = this.height - height;
+            if (y + height > screen.height) {
+                y = screen.height - height;
             }
         } else {
             x += 8;
             int yOffset = 0;
             int tooltipHeight = 3 + 3;
-            for (TooltipComponent component : tooltip) {
+            for (TooltipComponent component : tooltipComponents) {
                 tooltipHeight += component.getHeight();
             }
-            if (tooltip.size() > 1) {
+            if (tooltipComponents.size() > 1) {
                 tooltipHeight += 2;
             }
-            if (config.enablePreview && !CEM && !config.disablePlayerPreviewTips && (!config.playerPreviewByDefault || !hasShiftDown())) {
+            if (config.enablePreview && !isCEM() && !config.disablePlayerPreviewTips && (!config.playerPreviewByDefault || !hasShiftDown())) {
                 tooltipHeight += 10;
             }
             yOffset += tooltipHeight + 2 - 16;
             if (config.previewPos == PreviewPos.BOTTOM) {
-                if (y + yOffset + height > this.height && ((y - (height + 18)) > height / -2)) {
+                if (y + yOffset + height > screen.height && ((y - (height + 18)) > height / -2)) {
                     y -= (height + 18);
                 } else {
                     y += yOffset;
                 }
             } else if (config.previewPos == PreviewPos.TOP) {
-                if (y - (height + 18) < 0 && (y + yOffset + height - this.height < height / 2)) {
+                if (y - (height + 18) < 0 && (y + yOffset + height - screen.height < height / 2)) {
                     y += yOffset;
                 } else {
                     y -= (height + 18);
@@ -183,7 +294,7 @@ public class RenameButtonHolder extends Screen {
         int x = pos[0];
         int y = pos[1];
 
-        Graphics.drawTooltipBackground(context, x, y, width, height, button.favorite,  400);
+        Graphics.drawTooltipBackground(context, x, y, width, height, favorite,  400);
 
         int newX = x + width / 2 - size / 2;
         int newY = y + height / 2 - size / 2;
@@ -206,7 +317,7 @@ public class RenameButtonHolder extends Screen {
         int x = pos[0];
         int y = pos[1];
 
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, button.favorite);
+        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, favorite);
         Graphics.renderEntityInBox(context,
                 new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
                 size, entity, spin);
@@ -297,7 +408,7 @@ public class RenameButtonHolder extends Screen {
         float l = entity.headYaw;
 
 
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, button.favorite);
+        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, favorite);
         Graphics.renderEntityInBox(context,
                 new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
                 size, entity, spin);
@@ -315,83 +426,13 @@ public class RenameButtonHolder extends Screen {
         }
     }
 
-    public RenameButton getButton() {
-        return button;
-    }
-
-    public int getOrderOnPage() {
-        return orderOnPage;
-    }
-
-    public ArrayList<TooltipComponent> getTooltip() {
-        return tooltip;
-    }
-
     public boolean isCEM() {
-        return CEM;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setParameters(RenameButton button, Rename rename, ArrayList<TooltipComponent> tooltip) {
-        this.button = button;
-        this.rename = rename;
-        this.CEM = rename.isCEM();
-        if (viewMode == ViewMode.LIST) {
-            displayText = shortText(Text.of(this.rename.getName()), button.getWidth() - 32);
-        }
-
-        this.item = RenamesHelper.createItem(rename);
-
-        if (CEM) {
-            var entityType = CEMList.EntityFromName(rename.getMob().entity());
-            var client = MinecraftClient.getInstance();
-            assert entityType != null;
-            this.entity = (LivingEntity) entityType.create(client.world);
-            prepareEntity(entity);
-        }
-        if (CEM && rename.getProperties() == null) {
-            this.icon = new ItemStack(rename.getMob().icon());
-        } else {
-            this.icon = this.item.copy();
-        }
-        this.tooltip = tooltip;
-        this.equipmentSlot = null;
-        this.active = true;
-
-        this.client = MinecraftClient.getInstance();
-        assert client.currentScreen != null;
-        this.height = client.currentScreen.height;
-        this.width = client.currentScreen.width;
-    }
-
-    private Text shortText(Text text, int length) {
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-        String shortText;
-        shortText = text.getString();
-        if (renderer.getWidth(shortText) > length) {
-            while (renderer.getWidth(shortText) > length || shortText.endsWith(" ")) {
-                shortText = shortText.substring(0, shortText.length() - 1);
-            }
-            return Text.of(shortText + "...");
-        }
-        return Text.of(shortText);
+        return rename.isCEM();
     }
 
     public enum PreviewPos {
         BOTTOM,
         LEFT,
         TOP
-    }
-
-    public enum ViewMode {
-        LIST,
-        GRID
     }
 }
