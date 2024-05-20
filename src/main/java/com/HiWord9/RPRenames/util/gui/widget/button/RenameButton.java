@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -221,14 +222,35 @@ public class RenameButton extends ClickableWidget {
     }
 
     public void drawPreview(DrawContext context, int mouseX, int mouseY, int width, int height, double scaleFactorItem, double scaleFactorEntity) {
-        if (!isCEM()) {
-            if (hasShiftDown() != config.playerPreviewByDefault) {
-                playerPreview(context, mouseX, mouseY, (int) (width * scaleFactorEntity), (int) (height * scaleFactorEntity), (int) (32 * scaleFactorEntity), config.spinPlayerPreview, item);
-            } else {
-                itemPreview(context, mouseX, mouseY, (int) (width / 2 * scaleFactorItem), (int) (height / 2 * scaleFactorItem), (int) (16 * scaleFactorItem), item);
+        int newWidth;
+        int newHeight;
+        int size;
+        LivingEntity entity = this.entity;
+        boolean shouldPreviewEntity = isCEM();
+        boolean shouldPreviewPlayer = hasShiftDown() != config.playerPreviewByDefault;
+        if (shouldPreviewEntity || shouldPreviewPlayer) {
+            size = (int) (32 * scaleFactorEntity);
+            if (!shouldPreviewEntity) {
+                entity = MinecraftClient.getInstance().player;
             }
+            if (entity == null) return;
+            newWidth = (int) (width + size * entity.getWidth() - 1);
+            newHeight = (int) (height + size * entity.getHeight() - 1);
         } else {
-            entityPreview(context, mouseX, mouseY, (int) (width * scaleFactorEntity), (int) (height * scaleFactorEntity), (int) (32 * scaleFactorEntity), config.spinMobPreview, entity);
+            size = (int) (16 * scaleFactorItem);
+            newWidth = (int) (width / 2 * scaleFactorItem);
+            newHeight = (int) (height / 2 * scaleFactorItem);
+        }
+        int[] pos = setPreviewPos(mouseX, mouseY, newWidth, newHeight);
+        int x = pos[0];
+        int y = pos[1];
+
+        if (shouldPreviewEntity) {
+            entityPreview(context, x, y, newWidth, newHeight, size, config.spinMobPreview, entity);
+        } else if (shouldPreviewPlayer) {
+            playerPreview(context, x, y, newWidth, newHeight, size, config.spinPlayerPreview, (ClientPlayerEntity) entity, item);
+        } else {
+            itemPreview(context, x, y, newWidth, newHeight, size, item);
         }
     }
 
@@ -289,11 +311,7 @@ public class RenameButton extends ClickableWidget {
         return positions;
     }
 
-    private void itemPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, ItemStack itemStack) {
-        int[] pos = setPreviewPos(mouseX, mouseY, width, height);
-        int x = pos[0];
-        int y = pos[1];
-
+    private void itemPreview(DrawContext context, int x, int y, int width, int height, int size, ItemStack itemStack) {
         Graphics.drawTooltipBackground(context, x, y, width, height, favorite,  400);
 
         int newX = x + width / 2 - size / 2;
@@ -301,30 +319,15 @@ public class RenameButton extends ClickableWidget {
         Graphics.renderStack(context, itemStack, newX, newY, 400, size);
     }
 
-    private void prepareEntity(Entity entity) {
-        if (entity == null) return;
-        if (entity instanceof SnowGolemEntity) {
-            ((SnowGolemEntity) entity).setHasPumpkin(!config.disableSnowGolemPumpkin);
-        }
-        entity.setCustomName(Text.of(rename.getName()));
-    }
-
-    private void entityPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, boolean spin, LivingEntity entity) {
-        int newWidth = (int) (width + size * entity.getWidth() - 1);
-        int newHeight = (int) (height + size * entity.getHeight() - 1);
-
-        int[] pos = setPreviewPos(mouseX, mouseY, newWidth, newHeight);
-        int x = pos[0];
-        int y = pos[1];
-
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, favorite);
+    private void entityPreview(DrawContext context, int x, int y, int width, int height, int size, boolean spin, LivingEntity entity) {
+        Graphics.drawTooltipBackground(context, x, y, width, height, favorite);
         Graphics.renderEntityInBox(context,
-                new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
+                new ScreenRect(x, y, width, height), Graphics.TOOLTIP_CORNER,
                 size, entity, spin);
     }
 
-    private void playerPreview(DrawContext context, int mouseX, int mouseY, int width, int height, int size, boolean spin, ItemStack item) {
-        var entity = MinecraftClient.getInstance().player;
+    private void playerPreview(DrawContext context, int x, int y, int width, int height, int size, boolean spin, ClientPlayerEntity player, ItemStack item) {
+//        var player = MinecraftClient.getInstance().player;
 
         boolean extraSlotAvailable = true;
         EquipmentSlot extraEquipmentSlot = null;
@@ -386,44 +389,45 @@ public class RenameButton extends ClickableWidget {
             }
         }
 
-        assert entity != null;
-        ItemStack temp = entity.getEquippedStack(equipmentSlot);
+        assert player != null;
+        ItemStack temp = player.getEquippedStack(equipmentSlot);
 
         if (isArmor) {
-            entity.getInventory().armor.set(armorSlot, item);
+            player.getInventory().armor.set(armorSlot, item);
         } else {
-            entity.equipStack(equipmentSlot, item);
+            player.equipStack(equipmentSlot, item);
         }
 
-        int newWidth = (int) (width + size * entity.getWidth() - 1);
-        int newHeight = (int) (height + size * entity.getHeight() - 1);
-        int[] pos = setPreviewPos(mouseX, mouseY, newWidth, newHeight);
-        int x = pos[0];
-        int y = pos[1];
+        float h = player.bodyYaw;
+        float i = player.getYaw();
+        float j = player.getPitch();
+        float k = player.prevHeadYaw;
+        float l = player.headYaw;
 
-        float h = entity.bodyYaw;
-        float i = entity.getYaw();
-        float j = entity.getPitch();
-        float k = entity.prevHeadYaw;
-        float l = entity.headYaw;
-
-
-        Graphics.drawTooltipBackground(context, x, y, newWidth, newHeight, favorite);
+        Graphics.drawTooltipBackground(context, x, y, width, height, favorite);
         Graphics.renderEntityInBox(context,
-                new ScreenRect(x, y, newWidth, newHeight), Graphics.TOOLTIP_CORNER,
-                size, entity, spin);
+                new ScreenRect(x, y, width, height), Graphics.TOOLTIP_CORNER,
+                size, player, spin);
 
-        entity.bodyYaw = h;
-        entity.setYaw(i);
-        entity.setPitch(j);
-        entity.prevHeadYaw = k;
-        entity.headYaw = l;
+        player.bodyYaw = h;
+        player.setYaw(i);
+        player.setPitch(j);
+        player.prevHeadYaw = k;
+        player.headYaw = l;
 
         if (isArmor) {
-            entity.getInventory().armor.set(armorSlot, temp);
+            player.getInventory().armor.set(armorSlot, temp);
         } else {
-            entity.equipStack(equipmentSlot, temp);
+            player.equipStack(equipmentSlot, temp);
         }
+    }
+
+    private void prepareEntity(Entity entity) {
+        if (entity == null) return;
+        if (entity instanceof SnowGolemEntity) {
+            ((SnowGolemEntity) entity).setHasPumpkin(!config.disableSnowGolemPumpkin);
+        }
+        entity.setCustomName(Text.of(rename.getName()));
     }
 
     public boolean isCEM() {
