@@ -80,7 +80,7 @@ public class ModConfig implements ConfigData {
     public boolean disablePlayerPreviewTips = false;
 
     public boolean updateConfig = true;
-    public boolean showNbtDisplayName = false;
+    public boolean showNamePattern = false;
     public boolean showOriginalProperties = false;
     public boolean fixDelayedPacketsChangingTab = false;
 

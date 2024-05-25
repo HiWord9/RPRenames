@@ -3,16 +3,12 @@ package com.HiWord9.RPRenames.util.rename;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.config.generation.CEMList;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -23,8 +19,8 @@ import java.util.regex.PatternSyntaxException;
 public class RenamesHelper {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    public static ItemStack[] getGhostCraftItems(Rename rename) {
-        ItemStack ghostSource = new ItemStack(rename.getItems().get(0));
+    public static ItemStack[] getGhostCraftItems(CITRename rename) {
+        ItemStack ghostSource = new ItemStack(rename.getItem());
         ghostSource.setCount(rename.getStackSize());
         if (rename.getDamage() != null) {
             ghostSource.setDamage(rename.getDamage().getParsedDamage(ghostSource.getItem()));
@@ -32,12 +28,12 @@ public class RenamesHelper {
 
         ItemStack ghostEnchant = getGhostCraftEnchant(rename);
 
-        ItemStack ghostResult = createItem(rename);
+        ItemStack ghostResult = rename.toStack();
 
         return new ItemStack[]{ghostSource, ghostEnchant, ghostResult};
     }
 
-    public static ItemStack getGhostCraftEnchant(Rename rename) {
+    public static ItemStack getGhostCraftEnchant(CITRename rename) {
         ItemStack ghostEnchant = ItemStack.EMPTY;
         if (rename.getEnchantment() != null) {
             ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
@@ -47,7 +43,7 @@ public class RenamesHelper {
         return ghostEnchant;
     }
 
-    public static void enchantItemStackWithRename(Rename rename, ItemStack itemStack) {
+    public static void enchantItemStackWithRename(CITRename rename, ItemStack itemStack) {
         itemStack.getOrCreateNbt();
         assert itemStack.getNbt() != null;
         if (!itemStack.getNbt().contains("Enchantments", 9)) {
@@ -57,49 +53,17 @@ public class RenamesHelper {
         nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
     }
 
-    public static ItemStack createItemOrSpawnEgg(Rename rename) {
-        return createItemOrSpawnEgg(rename, true, 0);
+    public static ItemStack createItemOrSpawnEgg(AbstractRename rename) {
+        return createItemOrSpawnEgg(rename, 0);
     }
 
-    public static ItemStack createItemOrSpawnEgg(Rename rename, boolean withCustomName, int itemIndex) {
-        if (rename.isCEM() && config.generateSpawnEggsInItemGroup) return createSpawnEgg(rename);
-        return createItem(rename, withCustomName, itemIndex);
+    public static ItemStack createItemOrSpawnEgg(AbstractRename rename, int itemIndex) {
+        if (rename instanceof CEMRename cemRename && config.generateSpawnEggsInItemGroup) return cemRename.toSpawnEgg();
+        return rename.toStack(itemIndex);
     }
 
-    public static ItemStack createItem(Rename rename) {
-        return createItem(rename, true, 0);
-    }
-
-    public static ItemStack createItem(Rename rename, boolean withCustomName, int itemIndex) {
-        ItemStack item = new ItemStack(rename.getItems().get(itemIndex >= rename.getItems().size() ? 0 : itemIndex));
-        if (withCustomName) item.setCustomName(Text.of(rename.getName()));
-        item.setCount(rename.getStackSize());
-        if (rename.getDamage() != null) {
-            item.setDamage(rename.getDamage().getParsedDamage(item.getItem()));
-        }
-        if (rename.getEnchantment() != null) {
-            enchantItemStackWithRename(rename, item);
-        }
-        return item;
-    }
-
-    public static ItemStack createSpawnEgg(Rename rename) {
-        Item item = SpawnEggItem.forEntity(CEMList.EntityFromName(rename.getMob().entity()));
-        ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
-        spawnEgg.setCustomName(Text.of(rename.getName()));
-        NbtCompound nbt = spawnEgg.getOrCreateNbt();
-        NbtCompound nbtName = new NbtCompound();
-        nbtName.putString("CustomName", rename.getName());
-        nbt.put("EntityTag", nbtName);
-        if (item == null) {
-            NbtCompound nbt2 = nbt.getCompound("EntityTag");
-            nbt2.putString("id", rename.getMob().entity());
-        }
-        return spawnEgg;
-    }
-
-    public static ArrayList<Rename> search(ArrayList<Rename> list, String match) {
-        ArrayList<Rename> cutList = new ArrayList<>();
+    public static ArrayList<AbstractRename> search(ArrayList<AbstractRename> list, String match) {
+        ArrayList<AbstractRename> cutList = new ArrayList<>();
         if (match.startsWith("#")) {
             String matchTag = match.substring(1);
             if (matchTag.contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
@@ -125,7 +89,7 @@ public class RenamesHelper {
                 }
 
                 if (isRegex) {
-                    for (Rename r : list) {
+                    for (AbstractRename r : list) {
                         if (caseInsensitive ? r.getName().toUpperCase(Locale.ROOT).matches(regex.toUpperCase(Locale.ROOT)) : r.getName().matches(regex)) {
                             cutList.add(r);
                         }
@@ -137,15 +101,16 @@ public class RenamesHelper {
                     packName = packName.substring(1);
                 }
                 packName = packName.substring(1);
-                for (Rename r : list) {
-                    if (r.getPackName() != null && r.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT).contains(packName.toUpperCase(Locale.ROOT))) {
+                for (AbstractRename r : list) {
+                    if (r.getPackName() != null
+                            && r.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT)
+                            .contains(packName.toUpperCase(Locale.ROOT))) {
                         cutList.add(r);
                     }
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ITEM:")) {
                 String itemName = matchTag.substring(5);
-                for (Rename r : list) {
-                    if (r.getItems() == null) break;
+                for (AbstractRename r : list) {
                     for (Item item : r.getItems()) {
                         if (ParserHelper.idFromItem(item).toUpperCase(Locale.ROOT).contains(itemName.toUpperCase(Locale.ROOT))) {
                             cutList.add(r);
@@ -160,20 +125,24 @@ public class RenamesHelper {
                 }
                 stackSize = stackSize.substring(1);
                 if (stackSize.matches("[0-9]+")) {
-                    for (Rename r : list) {
-                        if (PropertiesHelper.matchesRange(Integer.parseInt(stackSize), r.getOriginalStackSize())) {
-                            cutList.add(r);
+                    for (AbstractRename r : list) {
+                        if (r instanceof CITRename citRename) {
+                            if (PropertiesHelper.matchesRange(Integer.parseInt(stackSize), citRename.getOriginalStackSize())) {
+                                cutList.add(r);
+                            }
                         }
                     }
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("DAMAGE:")) {
                 String damage = matchTag.substring(7);
                 if (damage.matches("[0-9]+")) {
-                    for (Rename r : list) {
-                        for (Item item : r.getItems()) {
-                            if (PropertiesHelper.matchesRange(Integer.parseInt(damage), r.getOriginalDamage(), item)) {
-                                cutList.add(r);
-                                break;
+                    for (AbstractRename r : list) {
+                        if (r instanceof CITRename citRename) {
+                            for (Item item : citRename.getItems()) {
+                                if (PropertiesHelper.matchesRange(Integer.parseInt(damage), citRename.getOriginalDamage(), item)) {
+                                    cutList.add(r);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -184,19 +153,21 @@ public class RenamesHelper {
                     enchant = enchant.substring(1);
                 }
                 enchant = enchant.substring(1);
-                for (Rename r : list) {
-                    if (r.getEnchantment() != null) {
-                        ArrayList<String> split = PropertiesHelper.splitList(r.getOriginalEnchantment());
-                        for (String s : split) {
-                            if (s.toUpperCase(Locale.ROOT).contains(enchant)) {
-                                cutList.add(r);
-                                break;
+                for (AbstractRename r : list) {
+                    if (r instanceof CITRename citRename) {
+                        if (citRename.getEnchantment() != null) {
+                            ArrayList<String> split = PropertiesHelper.splitList(citRename.getOriginalEnchantment());
+                            for (String s : split) {
+                                if (s.toUpperCase(Locale.ROOT).contains(enchant)) {
+                                    cutList.add(r);
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
-                for (Rename r : list) {
+                for (AbstractRename r : list) {
                     for (Item item : r.getItems()) {
                         if (FavoritesManager.isFavorite(item, r.getName())) {
                             cutList.add(r);
@@ -220,7 +191,7 @@ public class RenamesHelper {
                 isRegex = true;
             } catch (Exception ignored) {
             }
-            for (Rename r : list) {
+            for (AbstractRename r : list) {
                 if (r.getName().toUpperCase(Locale.ROOT).contains(match.toUpperCase(Locale.ROOT)) || (isRegex && r.getName().toUpperCase(Locale.ROOT).matches(match.toUpperCase(Locale.ROOT)))) {
                     cutList.add(r);
                 }

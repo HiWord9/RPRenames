@@ -1,7 +1,8 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.rename.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.CITRename;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.RenameSerializer;
 import com.google.common.reflect.TypeToken;
@@ -20,8 +21,8 @@ import java.util.*;
 
 public class FavoritesManager {
 
-    public static Map<Item, ArrayList<Rename>> getAllFavorites() {
-        Map<Item, ArrayList<Rename>> favoriteRenames = new HashMap<>();
+    public static Map<Item, ArrayList<AbstractRename>> getAllFavorites() {
+        Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
         File[] files = RPRenames.configPathFavorite.toFile().listFiles();
         if (files == null) return favoriteRenames;
         for (File file : files) {
@@ -37,38 +38,37 @@ public class FavoritesManager {
         return ParserHelper.itemFromName(itemFromFileName);
     }
 
-    public static ArrayList<Rename> getFavorites(Item item) {
-        ArrayList<Rename> renames = new ArrayList<>();
-        File favoritesFile = new File(pathToFavoriteFile(item));
-        if (favoritesFile.exists()) renames = readFavoriteFile(favoritesFile);
+    public static ArrayList<AbstractRename> getFavorites(Item item) {
+        ArrayList<AbstractRename> renames = savedFavorites(item);
 
         fixRenameItemsIfNeeded(renames, item);
 
         return renames;
     }
 
-    private static void fixRenameItemsIfNeeded(ArrayList<Rename> renames, Item item) {
+    private static void fixRenameItemsIfNeeded(ArrayList<AbstractRename> renames, Item item) {
         boolean fix = false;
-        for (Rename rename : renames) {
-            if (rename == null || rename.getItems() != null) continue;
-            RPRenames.LOGGER.error("Fixing items list for favorite Rename \"{}\". Looks like it was created in ver <0.8.0", rename.getName());
-            rename.setItems(new ArrayList<>(List.of(item)));
-            fix = true;
+        for (AbstractRename rename : renames) {
+            if (rename instanceof CITRename citRename) {
+                RPRenames.LOGGER.error("Fixing items list for favorite Rename \"{}\". Looks like it was created in ver <0.8.0", rename.getName());
+                citRename.setItems(new ArrayList<>(List.of(item)));
+                fix = true;
+            }
         }
         if (!fix) return;
         RPRenames.LOGGER.warn("Recreating Favorite Renames List File for \"{}\" with fixed Items.", item);
         deleteFavoriteConfigFile(item);
-        for (Rename rename : renames) {
+        for (AbstractRename rename : renames) {
             addToFavorites(rename.getName(), item);
         }
     }
 
     public static void addToFavorites(String favoriteName, Item item) {
-        ArrayList<Rename> renames = new ArrayList<>();
-        Rename rename = new Rename(favoriteName, item);
-        ArrayList<Rename> alreadyExist = getFavorites(item);
+        ArrayList<AbstractRename> renames = new ArrayList<>();
+        AbstractRename rename = new AbstractRename(favoriteName, item);
+        ArrayList<AbstractRename> alreadyExist = getFavorites(item);
         if (!alreadyExist.isEmpty()) {
-            ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
+            ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
             newConfig.add(rename);
             renames = newConfig;
         } else {
@@ -83,8 +83,8 @@ public class FavoritesManager {
     }
 
     public static void removeFromFavorites(String favoriteName, Item item) {
-        ArrayList<Rename> renamesList = getFavorites(item);
-        int indexInRenamesList = new Rename(favoriteName).indexIn(renamesList, true);
+        ArrayList<AbstractRename> renamesList = getFavorites(item);
+        int indexInRenamesList = new AbstractRename(favoriteName).indexIn(renamesList, true);
         if (indexInRenamesList >= 0) {
             renamesList.remove(indexInRenamesList);
         }
@@ -96,15 +96,26 @@ public class FavoritesManager {
         }
     }
 
-    private static ArrayList<Rename> readFavoriteFile(File file) {
-        ArrayList<Rename> renames = new ArrayList<>();
+    private static ArrayList<AbstractRename> savedFavorites(Item item) {
+        ArrayList<AbstractRename> renames = new ArrayList<>();
+        File favoritesFile = new File(pathToFavoriteFile(item));
+        if (favoritesFile.exists()) {
+            renames = readFavoriteFile(favoritesFile);
+            for (AbstractRename r : renames) {
+                if (r.getItem() == null) r.setItem(item);
+            }
+        }
+        return renames;
+    }
+
+    private static ArrayList<AbstractRename> readFavoriteFile(File file) {
+        ArrayList<AbstractRename> renames = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(file);
-            Type type = new TypeToken<ArrayList<Rename>>() {
+            Type type = new TypeToken<ArrayList<AbstractRename>>() {
             }.getType();
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(Rename.class, new RenameSerializer())
-                    .registerTypeAdapter(Rename.Mob.class, new RenameSerializer.MobSerializer())
+                    .registerTypeAdapter(AbstractRename.class, new RenameSerializer())
                     .create();
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
@@ -114,13 +125,12 @@ public class FavoritesManager {
         return renames;
     }
 
-    private static void writeFavoriteFile(ArrayList<Rename> renames, Item item) {
+    private static void writeFavoriteFile(ArrayList<AbstractRename> renames, Item item) {
         try {
             FileWriter fileWriter = new FileWriter(pathToFavoriteFile(item));
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
-                    .registerTypeAdapter(Rename.class, new RenameSerializer())
-                    .registerTypeAdapter(Rename.Mob.class, new RenameSerializer.MobSerializer())
+                    .registerTypeAdapter(AbstractRename.class, new RenameSerializer())
                     .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();
@@ -139,8 +149,8 @@ public class FavoritesManager {
     }
 
     public static boolean isFavorite(Item item, String name) {
-        ArrayList<Rename> favoriteList = getFavorites(item);
-        for (Rename r : favoriteList) {
+        ArrayList<AbstractRename> favoriteList = getFavorites(item);
+        for (AbstractRename r : favoriteList) {
             if (r.getName().equals(name)) {
                 return true;
             }

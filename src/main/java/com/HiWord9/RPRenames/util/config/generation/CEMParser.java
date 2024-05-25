@@ -2,11 +2,11 @@ package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.rename.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.CEMRename;
+import com.HiWord9.RPRenames.util.rename.CITRename;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.rename.Rename;
 import com.google.gson.Gson;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -22,7 +22,6 @@ import java.util.*;
 import static com.HiWord9.RPRenames.util.rename.RenamesManager.*;
 
 public class CEMParser implements Parser {
-    public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private static final String CEM_PATH = "optifine/cem";
     private static final String RANDOM_ENTITY_PATH = "optifine/random/entity/";
@@ -207,41 +206,37 @@ public class CEMParser implements Parser {
             String name = PropertiesHelper.getFirstName(p.getProperty(s), path);
             if (name == null) continue;
 
-            ArrayList<Rename> alreadyExist = RenamesManager.getRenames(DEFAULT_MOB_ITEM);
+            ArrayList<AbstractRename> alreadyExist = RenamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
-            Rename rename;
-            Rename renameNameOnly = new Rename(name, DEFAULT_MOB_ITEM);
-            Rename.Mob mob = new Rename.Mob(
+            AbstractRename rename;
+            AbstractRename renameNameOnly = new CEMRename(name);
+            CEMRename.Mob mob = new CEMRename.Mob(
                     fileName,
                     CEMList.iconFromName(fileName),
                     p,
                     path.replaceAll("\\\\", "/")
             );
 
-            if (renameNameOnly.isContainedIn(alreadyExist, true)) {
-                Rename renameForItem = alreadyExist.get(renameNameOnly.indexIn(alreadyExist, true));
-                alreadyExist.remove(renameNameOnly.indexIn(alreadyExist, true));
-                rename = new Rename(
-                        renameForItem.getName(),
-                        renameForItem.getItems(),
-                        renameForItem.getPackName(),
-                        renameForItem.getPath(),
-                        renameForItem.getStackSize(),
-                        renameForItem.getDamage(),
-                        renameForItem.getEnchantment(),
-                        renameForItem.getEnchantmentLevel(),
-                        renameForItem.getProperties(),
-                        renameForItem.getDescription(),
-                        mob
-                );
-            } else {
-                rename = new Rename(name, packName, mob);
+            int i = renameNameOnly.indexIn(alreadyExist, true);
+            if (i != -1) {
+                AbstractRename renameForItem = alreadyExist.get(i);
+                if (renameForItem instanceof CITRename citRename) {
+                    if (citRename.same(new CITRename(name, CEMRename.DEFAULT_MOB_ITEM), false)) {
+                        alreadyExist.remove(i);
+                    }
+                }
             }
+            rename = new CEMRename(
+                    name,
+                    packName,
+                    path,
+                    mob
+            );
 
             if (!rename.isContainedIn(alreadyExist)) {
-                ArrayList<Rename> newConfig = new ArrayList<>(alreadyExist);
+                ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
-                renames.put(DEFAULT_MOB_ITEM, newConfig);
+                renames.put(CEMRename.DEFAULT_MOB_ITEM, newConfig);
             }
         }
     }

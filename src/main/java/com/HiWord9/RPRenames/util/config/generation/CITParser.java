@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.config.generation;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.rename.CITRename;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -64,14 +64,14 @@ public class CITParser implements Parser {
         }
 
         String damageProp = p.getProperty("damage");
-        Rename.Damage damage = null;
+        CITRename.Damage damage = null;
         if (damageProp != null) {
             String firstDamage = PropertiesHelper.getFirstValueInList(damageProp);
 
             if (!firstDamage.isEmpty()) {
                 try {
                     int d = Integer.parseInt(firstDamage.replace("%", ""));
-                    damage = new Rename.Damage(d, firstDamage.contains("%"));
+                    damage = new CITRename.Damage(d, firstDamage.contains("%"));
                 } catch (NumberFormatException ignored) {
                     RPRenames.LOGGER.warn("Could not get valid damage value {} for {}", firstDamage, path);
                 }
@@ -92,22 +92,34 @@ public class CITParser implements Parser {
         if (description == null) description = p.getProperty("%rpr.description");
         if (description == null) description = p.getProperty("%description");
 
-        if (nbtNamePattern != null) {
-            Rename rename = new Rename(
-                    PropertiesHelper.getFirstName(nbtNamePattern, path),
-                    items,
-                    packName,
-                    path,
-                    stackSize,
-                    damage,
-                    firstEnchantId,
-                    enchantLvl,
-                    p,
-                    description,
-                    null
-            );
+        if (nbtNamePattern == null) return;
 
-            for (Item item : items) {
+        CITRename rename = new CITRename(
+                PropertiesHelper.getFirstName(nbtNamePattern, path),
+                items,
+                packName,
+                path,
+                stackSize,
+                damage,
+                firstEnchantId,
+                enchantLvl,
+                p,
+                description
+        );
+
+        for (Item item : items) {
+            CITRename simplifiedRename = new CITRename(rename.getName(),
+//                    rename.getItems(),
+                    null,
+                    null,
+                    null,
+                    rename.getStackSize(),
+                    rename.getDamage(),
+                    rename.getEnchantment(),
+                    rename.getEnchantmentLevel(),
+                    null,
+                    null);
+            if (!simplifiedRename.isContainedIn(RenamesManager.renames.get(item), true)) {
                 RenamesManager.addRename(item, rename);
             }
         }

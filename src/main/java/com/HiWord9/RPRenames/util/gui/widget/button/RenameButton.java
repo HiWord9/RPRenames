@@ -6,8 +6,8 @@ import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import com.HiWord9.RPRenames.util.rename.Rename;
-import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import com.HiWord9.RPRenames.util.rename.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.CEMRename;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -72,13 +72,13 @@ public class RenameButton extends ClickableWidget {
     final int indexInInventory;
     final boolean isInInventory;
     final boolean asCurrentItem;
-    final public Rename rename;
+    final public AbstractRename rename;
     final boolean enoughStackSize;
     final boolean enoughDamage;
     final boolean hasEnchant;
     final boolean hasEnoughLevels;
 
-    public RenameButton(RPRWidget instance, Rename rename, ArrayList<TooltipComponent> tooltip,
+    public RenameButton(RPRWidget instance, AbstractRename rename, ArrayList<TooltipComponent> tooltip,
                         int x, int y,
                         boolean favorite,
                         int indexInInventory, boolean isInInventory, boolean asCurrentItem,
@@ -98,17 +98,17 @@ public class RenameButton extends ClickableWidget {
         this.hasEnchant = hasEnchant;
         this.hasEnoughLevels = hasEnoughLevels;
 
-        this.item = RenamesHelper.createItem(rename);
+        this.item = rename.toStack();
 
-        if (isCEM()) {
-            var entityType = CEMList.EntityFromName(rename.getMob().entity());
+        if (rename instanceof CEMRename cemRename) {
+            var entityType = CEMList.EntityFromName(cemRename.getMob().entity());
             var client = MinecraftClient.getInstance();
             assert entityType != null;
             this.entity = (LivingEntity) entityType.create(client.world);
             prepareEntity(entity);
         }
-        if (isCEM() && rename.getProperties() == null) {
-            this.icon = new ItemStack(rename.getMob().icon());
+        if (rename instanceof CEMRename cemRename && rename.getProperties() == null) {
+            this.icon = new ItemStack(cemRename.getMob().icon());
         } else {
             this.icon = this.item.copy();
         }
@@ -431,7 +431,7 @@ public class RenameButton extends ClickableWidget {
     }
 
     public boolean isCEM() {
-        return rename.isCEM();
+        return rename instanceof CEMRename;
     }
 
     public enum PreviewPos {

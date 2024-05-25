@@ -1,9 +1,7 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.rename.RenamesHelper;
-import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.rename.*;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -51,9 +49,9 @@ public class RPRenamesCommand {
                     .fillStyle(Style.EMPTY.withColor(Formatting.RED).withItalic(true)));
         }
 
-        Rename matchRename = null;
+        AbstractRename matchRename = null;
 
-        ArrayList<Rename> renames = RenamesManager.getRenames(itemStack.getItem());
+        ArrayList<AbstractRename> renames = RenamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
             matchRename = getMatch(
                     renames,
@@ -81,16 +79,16 @@ public class RPRenamesCommand {
                 printPath(matchRename.getPath(), matchRename.getPackName(), source);
             }
         }
-        if (matchRename.isCEM()) {
+        if (matchRename instanceof CEMRename cemRename) {
             source.sendFeedback(Text.of("CEM Properties:").copy().fillStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)));
-            printProperties(matchRename.getMob().properties(), source);
-            if (matchRename.getPackName() != null) {
-                if (matchRename.getMob().path() != null) {
-                    printPath(matchRename.getMob().path(), matchRename.getPackName(), source);
+            printProperties(cemRename.getMob().properties(), source);
+            if (cemRename.getPackName() != null) {
+                if (cemRename.getMob().path() != null) {
+                    printPath(cemRename.getMob().path(), cemRename.getPackName(), source);
                 }
             }
         }
-        if (matchRename.getPath() == null && (!matchRename.isCEM() || matchRename.getMob().path() == null)) {
+        if (matchRename.getPath() == null && (!(matchRename instanceof CEMRename cemRename) || cemRename.getMob().path() == null)) {
             source.sendFeedback(Text.of("Couldn't get Path to Properties File for this Rename").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED)));
             if (matchRename.getPackName() == null) {
                 source.sendFeedback(Text.of("Couldn't get Pack Name for this Rename").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED)));
@@ -108,12 +106,12 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<Rename> renames = RenamesManager.getRenames(item);
+        ArrayList<AbstractRename> renames = RenamesManager.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(Text.of("Found following Renames for ").copy()
                     .append(Text.translatable(item.getTranslationKey()))
                     .append(Text.of(":")));
-            printRenameList(renames, item, source);
+            printRenameList(renames, source);
         } else {
             source.sendFeedback(Text.of("No Renames for ").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED))
                     .append(Text.translatable(item.getTranslationKey()))
@@ -139,10 +137,10 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static Rename getMatch(ArrayList<Rename> renames, String name, int stackSize, int damage, Map<Enchantment, Integer> enchantments, Item damagedItem) {
-        for (Rename r : renames) {
+    private static AbstractRename getMatch(ArrayList<AbstractRename> renames, String name, int stackSize, int damage, Map<Enchantment, Integer> enchantments, Item damagedItem) {
+        for (AbstractRename r : renames) {
             boolean nameValid;
-            String nbtName = r.getOriginalNbtDisplayName();
+            String nbtName = r.getNamePattern();
             boolean caseInsensitive = false;
             if (nbtName.startsWith("iregex:") || nbtName.startsWith("ipattern:")) {
                 nbtName = nbtName.substring(1);
@@ -162,51 +160,44 @@ public class RPRenamesCommand {
                 nameValid = name.equals(r.getName());
             }
             if (!nameValid) continue;
-            boolean stackSizeValid = PropertiesHelper.matchesRange(stackSize, r.getOriginalStackSize());
-            if (!stackSizeValid) continue;
-            boolean damageValid = PropertiesHelper.matchesRange(damage, r.getOriginalDamage(), damagedItem);
-            if (!damageValid) continue;
-            boolean enchantmentValid = false;
-            boolean enchantmentLevelValid = false;
-            String enchantName = r.getEnchantment();
-            if (enchantName != null) {
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    if (!enchantName.contains(":")) {
-                        enchantName = new Identifier(enchantName).toString();
-                    }
-                    Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
-                    if (identifier == null) continue;
-                    if (identifier.toString().equals(enchantName)) {
-                        enchantmentValid = true;
-                        if (PropertiesHelper.matchesRange(entry.getValue(), r.getOriginalEnchantmentLevel())) {
-                            enchantmentLevelValid = true;
-                            break;
+            if (r instanceof CITRename citRename) {
+                boolean stackSizeValid = PropertiesHelper.matchesRange(stackSize, citRename.getOriginalStackSize());
+                if (!stackSizeValid) continue;
+                boolean damageValid = PropertiesHelper.matchesRange(damage, citRename.getOriginalDamage(), damagedItem);
+                if (!damageValid) continue;
+                boolean enchantmentValid = false;
+                boolean enchantmentLevelValid = false;
+                String enchantName = citRename.getEnchantment();
+                if (enchantName != null) {
+                    for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                        Enchantment enchantment = entry.getKey();
+                        if (!enchantName.contains(":")) {
+                            enchantName = new Identifier(enchantName).toString();
+                        }
+                        Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
+                        if (identifier == null) continue;
+                        if (identifier.toString().equals(enchantName)) {
+                            enchantmentValid = true;
+                            if (PropertiesHelper.matchesRange(entry.getValue(), citRename.getOriginalEnchantmentLevel())) {
+                                enchantmentLevelValid = true;
+                                break;
+                            }
                         }
                     }
+                } else {
+                    enchantmentValid = true;
+                    enchantmentLevelValid = true;
                 }
-            } else {
-                enchantmentValid = true;
-                enchantmentLevelValid = true;
+                if (!enchantmentValid || !enchantmentLevelValid) continue;
             }
-            if (enchantmentValid && enchantmentLevelValid) {
-                return r;
-            }
+            return r;
         }
         return null;
     }
 
-    private static void printRenameList(ArrayList<Rename> renames, Item item, FabricClientCommandSource source) {
-        for (Rename r : renames) {
-            ItemStack itemStack = new ItemStack(item);
-            itemStack.setCustomName(Text.of(r.getName()));
-            itemStack.setCount(r.getStackSize());
-            if (r.getDamage() != null && r.getDamage().damage != 0) {
-                itemStack.setDamage(r.getDamage().getParsedDamage(item));
-            }
-            if (r.getEnchantment() != null) {
-                RenamesHelper.enchantItemStackWithRename(r, itemStack);
-            }
+    private static void printRenameList(ArrayList<AbstractRename> renames, FabricClientCommandSource source) {
+        for (AbstractRename r : renames) {
+            ItemStack itemStack = r.toStack();
 
             assert itemStack.getNbt() != null;
             String nbt = itemStack.getNbt().toString();
@@ -222,7 +213,8 @@ public class RPRenamesCommand {
             String giveCommand = "/give @s "
                     + ParserHelper.getIdAndPath(itemStack.getItem())
                     + nbt
-                    + (r.getStackSize() == 1 ? "" : " " + r.getStackSize());
+                    + (r instanceof CITRename citRename ?
+                    (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
 
             ClickEvent runGive = new ClickEvent(ClickEvent.Action.RUN_COMMAND, giveCommand);
             source.sendFeedback(Text.of("[/give]").copy()

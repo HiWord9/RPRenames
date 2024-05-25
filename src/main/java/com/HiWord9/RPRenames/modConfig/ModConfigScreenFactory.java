@@ -265,10 +265,10 @@ public class ModConfigScreenFactory {
                 })
                 .build();
 
-        AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNbtDisplayName)
+        AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNamePattern)
                 .setTooltip(Text.translatable("rprenames.config.debug.showNbtDisplayName.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.showNbtDisplayName = newConfig)
-                .setDefaultValue(defaultConfig.showNbtDisplayName)
+                .setSaveConsumer(newConfig -> currentConfig.showNamePattern = newConfig)
+                .setDefaultValue(defaultConfig.showNamePattern)
                 .build();
 
         AbstractConfigListEntry<Boolean> showOriginalProperties = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showOriginalProperties"), currentConfig.showOriginalProperties)

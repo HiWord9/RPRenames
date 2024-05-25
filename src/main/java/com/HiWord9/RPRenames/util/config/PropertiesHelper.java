@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.Rename;
+import com.HiWord9.RPRenames.util.rename.CITRename;
 import net.minecraft.item.Item;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -262,7 +262,7 @@ public class PropertiesHelper {
                     if (min.endsWith("%")) {
                         min = min.substring(0, min.length() - 1);
 
-                        Rename.Damage minDamage = new Rename.Damage(Integer.parseInt(min), true);
+                        CITRename.Damage minDamage = new CITRename.Damage(Integer.parseInt(min), true);
 
                         if (num >= minDamage.getParsedDamage(damagedItem)) return true;
                     } else {
@@ -275,8 +275,8 @@ public class PropertiesHelper {
                     if (max.endsWith("%")) {
                         max = max.replace("%", "");
 
-                        Rename.Damage minDamage = new Rename.Damage(Integer.parseInt(min), true);
-                        Rename.Damage maxDamage = new Rename.Damage(Integer.parseInt(max), true);
+                        CITRename.Damage minDamage = new CITRename.Damage(Integer.parseInt(min), true);
+                        CITRename.Damage maxDamage = new CITRename.Damage(Integer.parseInt(max), true);
 
                         if (num >= minDamage.getParsedDamage(damagedItem)
                                 && num <= maxDamage.getParsedDamage(damagedItem)) {

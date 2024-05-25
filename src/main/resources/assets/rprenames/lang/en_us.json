@@ -110,10 +110,10 @@
   "rprenames.config.debug.clearConfig": "Clear Renames",
   "rprenames.config.debug.clearConfig.tooltip": "Delete data about all current active Renames manually\n(It will refresh on next Resource Packs Update if \"Update Renames\" is true)",
   "rprenames.config.debug.clearConfig.title": "Clear",
-  "rprenames.config.debug.showNbtDisplayName": "Show \"nbt.display.Name\"",
-  "rprenames.config.debug.showNbtDisplayName.tooltip": "If true, \"nbt.display.Name\" property gotten from \"x.properties\" file will be added to Buttons Tooltip",
+  "rprenames.config.debug.showNbtDisplayName": "Show Name Pattern",
+  "rprenames.config.debug.showNbtDisplayName.tooltip": "If true, property that describes Pattern of Name from \".properties\" file will be added to Buttons Tooltip",
   "rprenames.config.debug.showOriginalProperties": "Show Original Properties",
-  "rprenames.config.debug.showOriginalProperties.tooltip": "If true, simplified values of extra properties in Tooltips\nwill be shown as they are written in \"x.properties\" file",
+  "rprenames.config.debug.showOriginalProperties.tooltip": "If true, simplified values of extra properties in Tooltips\nwill be shown as they are written in \".properties\" file",
   "rprenames.config.debug.fixDelayedPacketsChangingTab": "Fix Tab Changing after Auto Placing items",
   "rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip": "Sometimes after placing items in anvil automatically server may response with 2 packets,\none for previous state and second one for actual slot update.\nRPR counts this changes as manually moving items by player,\nwhat leads to changing tab to Search and resetting name in nameField.\nIf this option true, it will try to fix it.\nIt is not recommended to turn it on if u haven't faced this problem.",
 
