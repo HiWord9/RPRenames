@@ -455,21 +455,10 @@ public class CEMList {
             Items.ZOMBIE_VILLAGER_SPAWN_EGG
     };
 
-    public static Item iconFromName(String untranslatedName) {
-        int n = 0;
-        for (Item i : spawnEggItems) {
-            if (mobs[n].getUntranslatedName().equals(untranslatedName)) {
-                return i;
-            }
-            n++;
-        }
-        return null;
-    }
-
-    public static EntityType<?> EntityFromName(String untranslatedName) {
-        for (EntityType<?> entityType : mobs) {
-            if (entityType.getUntranslatedName().equals(untranslatedName)) {
-                return entityType;
+    public static Item iconFromType(EntityType<?> entityType) {
+        for (int n = 0; n < mobs.length; n++) {
+            if (mobs[n].equals(entityType)) {
+                return spawnEggItems[n];
             }
         }
         return null;

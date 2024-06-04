@@ -109,7 +109,6 @@ public class CITParser implements Parser {
 
         for (Item item : items) {
             CITRename simplifiedRename = new CITRename(rename.getName(),
-//                    rename.getItems(),
                     null,
                     null,
                     null,

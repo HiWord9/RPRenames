@@ -10,18 +10,14 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -53,14 +49,7 @@ public class RPRenamesCommand {
 
         ArrayList<AbstractRename> renames = RenamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
-            matchRename = getMatch(
-                    renames,
-                    itemStack.getName().getString(),
-                    itemStack.getCount(),
-                    itemStack.getDamage(),
-                    EnchantmentHelper.fromNbt(itemStack.getEnchantments()),
-                    itemStack.getItem()
-            );
+            matchRename = getMatch(renames, itemStack);
         }
 
         if (matchRename == null) {
@@ -137,7 +126,8 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static AbstractRename getMatch(ArrayList<AbstractRename> renames, String name, int stackSize, int damage, Map<Enchantment, Integer> enchantments, Item damagedItem) {
+    private static AbstractRename getMatch(ArrayList<AbstractRename> renames, ItemStack stack) {
+        String name = stack.getName().getString();
         for (AbstractRename r : renames) {
             boolean nameValid;
             String nbtName = r.getNamePattern();
@@ -161,34 +151,7 @@ public class RPRenamesCommand {
             }
             if (!nameValid) continue;
             if (r instanceof CITRename citRename) {
-                boolean stackSizeValid = PropertiesHelper.matchesRange(stackSize, citRename.getOriginalStackSize());
-                if (!stackSizeValid) continue;
-                boolean damageValid = PropertiesHelper.matchesRange(damage, citRename.getOriginalDamage(), damagedItem);
-                if (!damageValid) continue;
-                boolean enchantmentValid = false;
-                boolean enchantmentLevelValid = false;
-                String enchantName = citRename.getEnchantment();
-                if (enchantName != null) {
-                    for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                        Enchantment enchantment = entry.getKey();
-                        if (!enchantName.contains(":")) {
-                            enchantName = new Identifier(enchantName).toString();
-                        }
-                        Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
-                        if (identifier == null) continue;
-                        if (identifier.toString().equals(enchantName)) {
-                            enchantmentValid = true;
-                            if (PropertiesHelper.matchesRange(entry.getValue(), citRename.getOriginalEnchantmentLevel())) {
-                                enchantmentLevelValid = true;
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    enchantmentValid = true;
-                    enchantmentLevelValid = true;
-                }
-                if (!enchantmentValid || !enchantmentLevelValid) continue;
+                if (!new CITRename.CraftMatcher(citRename, stack).matches()) continue;
             }
             return r;
         }

@@ -7,6 +7,7 @@ import com.HiWord9.RPRenames.util.rename.CEMRename;
 import com.HiWord9.RPRenames.util.rename.CITRename;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.google.gson.Gson;
+import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -117,7 +118,7 @@ public class CEMParser implements Parser {
                 ParserHelper.getPropFromResource(resource),
                 packName,
                 path,
-                CEMList.mobs[textureNum].getUntranslatedName()
+                CEMList.mobs[textureNum]
         );
     }
 
@@ -148,7 +149,7 @@ public class CEMParser implements Parser {
                 ParserHelper.getPropFromResource(resourceProp),
                 packName,
                 path,
-                CEMList.mobs[i].getUntranslatedName()
+                CEMList.mobs[i]
         );
     }
 
@@ -194,7 +195,7 @@ public class CEMParser implements Parser {
         return list;
     }
 
-    private static void propertiesToRenameMob(Properties p, String packName, String path, String fileName) {
+    private static void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> fileName) {
         ArrayList<String> skins = new ArrayList<>();
         for (String s : p.stringPropertyNames()) {
             if (!s.startsWith("name.")) continue;
@@ -212,7 +213,7 @@ public class CEMParser implements Parser {
             AbstractRename renameNameOnly = new CEMRename(name);
             CEMRename.Mob mob = new CEMRename.Mob(
                     fileName,
-                    CEMList.iconFromName(fileName),
+                    CEMList.iconFromType(fileName),
                     p,
                     path.replaceAll("\\\\", "/")
             );

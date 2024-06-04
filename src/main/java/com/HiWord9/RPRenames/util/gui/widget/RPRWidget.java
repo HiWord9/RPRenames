@@ -4,28 +4,21 @@ import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
-import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.button.*;
 import com.HiWord9.RPRenames.util.rename.*;
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -34,8 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
@@ -225,11 +216,28 @@ public class RPRWidget implements Drawable {
         }
     }
 
-    public void onRenameButton(int button, boolean favorite,
-                               int indexInInventory, boolean isInInventory,
-                               boolean asCurrentItem,
-                               AbstractRename rename,
-                               boolean enoughStackSize, boolean enoughDamage, boolean hasEnchant, boolean hasEnoughLevels) {
+    public Item firstItemInInventory(AbstractRename rename) {
+        Item item;
+        if (currentTab == Tab.SEARCH) {
+            item = getItemInFirstSlot();
+        } else {
+            item = rename.getItem();
+            for (Item i : rename.getItems()) {
+                if (inventory.contains(i)) {
+                    item = i;
+                    break;
+                }
+            }
+        }
+        return item;
+    }
+
+    public void onRenameButton(int button, boolean favorite, AbstractRename rename) {
+        Item item = firstItemInInventory(rename);
+        boolean asCurrentItem = item == getItemInFirstSlot();
+        int indexInInventory = inventory.indexOf(item);
+        boolean isInInventory = indexInInventory != -1;
+
         if (button == 1 && rename.getItem() != null) {
             if (getCurrentTab() == Tab.SEARCH || getCurrentTab() == Tab.FAVORITE || asCurrentItem) {
                 addOrRemoveFavorite(
@@ -239,9 +247,9 @@ public class RPRWidget implements Drawable {
                 );
             } else {
                 if (favorite) {
-                    for (Item item : rename.getItems()) {
-                        if (FavoritesManager.isFavorite(item, rename.getName())) {
-                            FavoritesManager.removeFromFavorites(rename.getName(), item);
+                    for (Item i : rename.getItems()) {
+                        if (FavoritesManager.isFavorite(i, rename.getName())) {
+                            FavoritesManager.removeFromFavorites(rename.getName(), i);
                         }
                     }
                     favoriteButtonUpdate(connectionName.getText());
@@ -273,21 +281,25 @@ public class RPRWidget implements Drawable {
                 connectionSlotMovement.takeFromWorkSlot(s);
             }
 
-            if (rename instanceof CITRename citRename) {
-                ItemStack[] ghostCraftItems = RenamesHelper.getGhostCraftItems(citRename);
+            ItemStack[] ghostCraftItems = RenamesHelper.getGhostCraftItems(rename);
 
-                connectionGhostCraft.setStacks(ghostCraftItems[0], ghostCraftItems[1], ghostCraftItems[2]);
-                connectionGhostCraft.setRender(true);
-            }
+            connectionGhostCraft.setStacks(ghostCraftItems[0], ghostCraftItems[1], ghostCraftItems[2]);
+            connectionGhostCraft.setRender(true);
         } else {
             connectionSlotMovement.takeFromWorkSlot(1);
         }
-        if (isInInventory) {
-            if (!enoughStackSize || !enoughDamage) {
+        if (isInInventory && rename instanceof CITRename citRename) {
+            ItemStack stack = currentItem;
+            if ((currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) && !asCurrentItem) {
+                assert client.player != null;
+                stack = client.player.getInventory().main.get(indexInInventory);
+            }
+            CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, stack);
+            if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
                 connectionGhostCraft.setSpecialHighlight(true, null, true);
                 connectionGhostCraft.setRender(true);
             }
-            if ((!hasEnchant || !hasEnoughLevels) && rename instanceof CITRename citRename) {
+            if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
                 connectionGhostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
                 connectionGhostCraft.setSpecialHighlight(null, null, true);
                 connectionGhostCraft.setRender(true);
@@ -418,7 +430,6 @@ public class RPRWidget implements Drawable {
         RenderSystem.enableDepthTest();
         context.drawTexture(MENU_TEXTURE, this.x + MENU_START_X, this.y, 0, 0, 0, MENU_TEXTURE_WIDTH, WIDGET_HEIGHT, MENU_TEXTURE_WIDTH, WIDGET_HEIGHT);
 
-
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(context, SEARCH_HINT_TEXT, -1, this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET, this.y + 15, true, false);
         }
@@ -505,7 +516,7 @@ public class RPRWidget implements Drawable {
         screenUpdate(page);
     }
 
-    private ArrayList<Item> getInventory() {
+    public ArrayList<Item> getInventory() {
         ArrayList<Item> inventoryList = new ArrayList<>();
         assert MinecraftClient.getInstance().player != null;
         PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
@@ -567,22 +578,6 @@ public class RPRWidget implements Drawable {
 
     private RenameButton createButton(int orderOnPage, AbstractRename rename) {
         if (MinecraftClient.getInstance().player == null) return null;
-        PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
-        Item item;
-        if (currentTab == Tab.SEARCH) {
-            item = getItemInFirstSlot();
-        } else {
-            item = rename.getItem();
-            for (Item i : rename.getItems()) {
-                if (inventory.contains(i)) {
-                    item = i;
-                    break;
-                }
-            }
-        }
-        boolean asCurrentItem = item == getItemInFirstSlot();
-        boolean isInInventory = inventory.contains(item);
-        int indexInInventory = inventory.indexOf(item);
         boolean favorite = false;
         if (currentTab != Tab.SEARCH) {
             for (Item i : rename.getItems()) {
@@ -592,217 +587,7 @@ public class RPRWidget implements Drawable {
                 }
             }
         } else {
-            favorite = FavoritesManager.isFavorite(item, rename.getName());
-        }
-
-        ArrayList<Object> tooltip = new ArrayList<>();
-        tooltip.add(Text.of(rename.getName()));
-
-        if (config.showDescription && rename instanceof Describable describable) {
-            String description = describable.getDescription();
-            if (description != null) {
-                ArrayList<Text> lines = PropertiesHelper.parseCustomDescription(description);
-                tooltip.addAll(lines);
-            }
-        }
-
-        if (currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) {
-            ArrayList<MultiItemTooltipComponent.TooltipItem> tooltipItems = new ArrayList<>();
-            for (int i = 0; i < rename.getItems().size(); i++) {
-                ItemStack itemStack = rename.toStack(i);
-                itemStack.removeCustomName();
-                tooltipItems.add(new MultiItemTooltipComponent.TooltipItem(itemStack, inventory.contains(rename.getItems().get(i))));
-            }
-            tooltip.add(new MultiItemTooltipComponent(tooltipItems));
-        }
-
-        if (item == Items.NAME_TAG && rename instanceof CEMRename cemRename) {
-            Identifier mob = new Identifier(cemRename.getMob().entity());
-            var entityType = Registries.ENTITY_TYPE.get(mob);
-            tooltip.add(Text.translatable(entityType.getTranslationKey()).copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
-        }
-
-        boolean enoughStackSize = true;
-        boolean enoughDamage = true;
-        boolean hasEnchant = false;
-        boolean hasEnoughLevels = false;
-
-        if (rename instanceof CITRename citRename) {
-            if (citRename.getStackSize() > 1) {
-                if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
-                    enoughStackSize = PropertiesHelper.matchesRange(currentItem.getCount(), citRename.getOriginalStackSize());
-                } else if (isInInventory) {
-                    enoughStackSize = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getCount(), citRename.getOriginalStackSize());
-                }
-
-                if (config.showExtraProperties) {
-                    if (config.showOriginalProperties) {
-                        tooltip.add(Text.of("stackSize")
-                                .copy().fillStyle(
-                                        Style.EMPTY.withColor(Formatting.GOLD)
-                                ).append(Text.of("=")
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(Formatting.GRAY)
-                                        )
-                                ).append(Text.of(citRename.getOriginalStackSize())
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(
-                                                        enoughStackSize ? Formatting.GREEN : Formatting.DARK_RED
-                                                )
-                                        )
-                                )
-                        );
-                    } else {
-                        tooltip.add(
-                                Text.of(Text.translatable("rprenames.gui.tooltipHint.stackSize").getString()
-                                                + " " + citRename.getStackSize())
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(enoughStackSize ? Formatting.GRAY : Formatting.DARK_RED)
-                                )
-                        );
-                    }
-                }
-            }
-
-            if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
-                if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
-                    enoughDamage = PropertiesHelper.matchesRange(currentItem.getDamage(), citRename.getOriginalDamage(), item);
-                } else if (isInInventory) {
-                    enoughDamage = PropertiesHelper.matchesRange(playerInventory.main.get(indexInInventory).getDamage(), citRename.getOriginalDamage(), item);
-                }
-
-                if (config.showExtraProperties) {
-                    if (config.showOriginalProperties) {
-                        tooltip.add(Text.of("damage")
-                                .copy().fillStyle(
-                                        Style.EMPTY.withColor(Formatting.GOLD)
-                                ).append(Text.of("=")
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(Formatting.GRAY)
-                                        )
-                                ).append(Text.of(citRename.getOriginalDamage())
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(
-                                                        enoughDamage ? Formatting.GREEN : Formatting.DARK_RED
-                                                )
-                                        )
-                                )
-                        );
-                    } else {
-                        tooltip.add(Text.of(
-                                Text.translatable("rprenames.gui.tooltipHint.damage").getString()
-                                        + " " + citRename.getDamage().damage
-                                        + (citRename.getDamage().percent ? "%" : "")
-                        ).copy().fillStyle(
-                                Style.EMPTY.withColor(
-                                        enoughDamage ? Formatting.GRAY : Formatting.DARK_RED
-                                )
-                        ));
-                    }
-                }
-            }
-
-            if (citRename.getEnchantment() == null) {
-                hasEnchant = true;
-                hasEnoughLevels = true;
-            } else {
-                Map<Enchantment, Integer> enchantments = Maps.newLinkedHashMap();
-
-                if (!(currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) || asCurrentItem) {
-                    enchantments = EnchantmentHelper.fromNbt(currentItem.getEnchantments());
-                } else if (isInInventory) {
-                    enchantments = EnchantmentHelper.fromNbt(playerInventory.main.get(indexInInventory).getEnchantments());
-                }
-
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    String enchantName = citRename.getEnchantment();
-                    if (!enchantName.contains(":")) {
-                        enchantName = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR + enchantName;
-                    }
-                    if (Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).toString().equals(enchantName)) {
-                        hasEnchant = true;
-                        if (PropertiesHelper.matchesRange(entry.getValue(), citRename.getOriginalEnchantmentLevel())) {
-                            hasEnoughLevels = true;
-                            break;
-                        }
-                    }
-                }
-                if (currentTab == Tab.GLOBAL && !isInInventory) {
-                    hasEnchant = true;
-                    hasEnoughLevels = true;
-                }
-                if (config.showExtraProperties) {
-                    if (config.showOriginalProperties) {
-                        tooltip.add(Text.of("enchantmentIDs")
-                                .copy().fillStyle(
-                                        Style.EMPTY.withColor(Formatting.GOLD)
-                                ).append(Text.of("=")
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(Formatting.GRAY)
-                                        )
-                                ).append(Text.of(citRename.getOriginalEnchantment())
-                                        .copy().fillStyle(
-                                                Style.EMPTY.withColor(
-                                                        hasEnchant ? Formatting.GREEN : Formatting.DARK_RED
-                                                )
-                                        )
-                                )
-                        );
-                        if (citRename.getOriginalEnchantmentLevel() != null) {
-                            tooltip.add(Text.of("enchantmentLevels")
-                                    .copy().fillStyle(
-                                            Style.EMPTY.withColor(Formatting.GOLD)
-                                    ).append(Text.of("=")
-                                            .copy().fillStyle(
-                                                    Style.EMPTY.withColor(Formatting.GRAY)
-                                            )
-                                    ).append(Text.of(citRename.getOriginalEnchantmentLevel())
-                                            .copy().fillStyle(
-                                                    Style.EMPTY.withColor(
-                                                            hasEnoughLevels ? Formatting.GREEN : Formatting.DARK_RED)
-                                            )
-                                    )
-                            );
-                        }
-                    } else {
-                        Identifier enchant = Identifier.splitOn(citRename.getEnchantment(), ':');
-                        String namespace = enchant.getNamespace();
-                        String path = enchant.getPath();
-                        Text translatedEnchant = Text.translatable("enchantment." + namespace + "." + path);
-                        Text translatedEnchantLevel = Text.translatable("enchantment.level." + citRename.getEnchantmentLevel());
-                        tooltip.add(Text.of(
-                                Text.translatable("rprenames.gui.tooltipHint.enchantment").getString()
-                                        + " " + translatedEnchant.getString()
-                                        + " " + translatedEnchantLevel.getString())
-                                .copy().fillStyle(
-                                        Style.EMPTY.withColor(
-                                                hasEnchant && hasEnoughLevels ? Formatting.GRAY : Formatting.DARK_RED
-                                        )
-                                )
-                        );
-                    }
-                }
-            }
-        }
-
-        if (config.showPackName && rename.getPackName() != null) {
-            String packName = rename.getPackName();
-            if (packName.endsWith(".zip")) {
-                tooltip.add(Text.of(packName.substring(0, packName.length() - 4))
-                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                        .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                );
-            } else {
-                tooltip.add(Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD)));
-            }
-        }
-        if (config.showNamePattern && currentTab != Tab.FAVORITE) {
-            String pattern = rename.getNamePattern();
-            if (pattern != null) {
-                    tooltip.add(Text.of("Name Pattern: " + pattern).copy()
-                        .fillStyle(Style.EMPTY.withColor(Formatting.BLUE)));
-            }
+            favorite = FavoritesManager.isFavorite(getItemInFirstSlot(), rename.getName());
         }
 
         int buttonX = this.x + MENU_START_X + BUTTON_X_OFFSET;
@@ -810,22 +595,10 @@ public class RPRWidget implements Drawable {
         int x = buttonX + 1 + (orderOnPage % 5 * RenameButton.BUTTON_WIDTH);
         int y = buttonY + 1 + (orderOnPage / 5 * RenameButton.BUTTON_HEIGHT);
 
-        ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
-        for (Object o : tooltip) {
-            if (o instanceof Text) {
-                tooltipComponents.add(TooltipComponent.of(((Text) o).asOrderedText()));
-            } else if (o instanceof TooltipComponent tooltipComponent) {
-                tooltipComponents.add(tooltipComponent);
-            }
-        }
-
         return new RenameButton(
-                this, rename, tooltipComponents,
+                this, rename,
                 x, y,
-                favorite,
-                indexInInventory, isInInventory, asCurrentItem,
-                enoughStackSize, enoughDamage,
-                hasEnchant, hasEnoughLevels);
+                favorite);
     }
 
     private void updateWidgets() {

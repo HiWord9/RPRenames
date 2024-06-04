@@ -1,9 +1,13 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.*;
 
@@ -140,7 +144,97 @@ public class CITRename extends AbstractRename implements Describable {
             RenamesHelper.enchantItemStackWithRename(this, item);
         }
         return item;
-//        return super.toStack(index).
-//        return RenamesHelper.createItemStackCIT(this, index);
+    }
+
+    /**
+     * This class tells is given {@link ItemStack} passes given {@link CITRename} required conditions.
+     * Calculations are executed only on initialization, so any further stack's changes won't affect result.
+     * It does not take in count stack's name and item.
+     */
+
+    public static class CraftMatcher {
+        boolean enoughStackSize = true;
+        boolean enoughDamage = true;
+        boolean hasEnchant = false;
+        boolean hasEnoughLevels = false;
+
+        public CraftMatcher(CITRename rename, ItemStack stack) {
+            if (rename.getStackSize() > 1) {
+                enoughStackSize = PropertiesHelper.matchesRange(stack.getCount(), rename.getOriginalStackSize());
+            }
+
+            if (rename.getDamage() != null && rename.getDamage().damage > 0) {
+                enoughDamage = PropertiesHelper.matchesRange(stack.getDamage(), rename.getOriginalDamage(), stack.getItem());
+            }
+
+            if (rename.getEnchantment() == null) {
+                hasEnchant = true;
+                hasEnoughLevels = true;
+            } else {
+                Map<Enchantment, Integer> enchantments;
+                enchantments = EnchantmentHelper.fromNbt(stack.getEnchantments());
+
+                String enchantName = rename.getEnchantment();
+                if (!enchantName.contains(":")) {
+                    enchantName = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR + enchantName;
+                }
+                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                    Enchantment enchantment = entry.getKey();
+                    Identifier id = Registries.ENCHANTMENT.getId(enchantment);
+                    if (id == null) continue;
+                    if (id.toString().equals(enchantName)) {
+                        hasEnchant = true;
+                        if (PropertiesHelper.matchesRange(entry.getValue(), rename.getOriginalEnchantmentLevel())) {
+                            hasEnoughLevels = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Returns true if given stack's count passes rename's requirements, false otherwise.
+         */
+        public boolean enoughStackSize() {
+            return enoughStackSize;
+        }
+
+        /**
+         * Returns true if given stack's damage passes rename's requirements, false otherwise.
+         */
+        public boolean enoughDamage() {
+            return enoughDamage;
+        }
+
+        /**
+         * Returns true if given stack's enchantment list passes rename's requirements, false otherwise.
+         */
+        public boolean hasEnchant() {
+            return hasEnchant;
+        }
+
+        /**
+         * Returns true if given stack's enchantment levels passes rename's requirements, false otherwise.
+         */
+        public boolean hasEnoughLevels() {
+            return hasEnoughLevels;
+        }
+
+        /**
+         * Returns true if given stack passes rename's requirements, false if at least one does not.
+         * Basically means "This stack can (not) be renamed with no additional changes".
+         * Note that it does not take in count stack's item.
+         */
+        public boolean matches() {
+            return enoughStackSize()
+                    && enoughDamage()
+                    && hasEnchant()
+                    && hasEnoughLevels();
+        }
+    }
+
+    public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
+        return new CITRenameRenderer(this, rprWidget, favorite);
     }
 }

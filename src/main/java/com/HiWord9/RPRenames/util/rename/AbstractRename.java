@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.rename;
 
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -110,6 +111,10 @@ public class AbstractRename {
 
     public ItemStack toStack(int index) {
         return new ItemStack(items.get(index)).setCustomName(Text.of(name));
+    }
+
+    public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
+        return new DefaultRenameRenderer(this);
     }
 
     public boolean equals(Object obj) {

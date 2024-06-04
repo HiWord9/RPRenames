@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.gui.widget.button.RenameButton;
+import com.HiWord9.RPRenames.util.rename.PreviewTooltipPositioner;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -163,12 +163,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.enablePreview)
                 .build();
 
-        AbstractConfigListEntry<RenameButton.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), RenameButton.PreviewPos.class, currentConfig.previewPos)
+        AbstractConfigListEntry<PreviewTooltipPositioner.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), PreviewTooltipPositioner.PreviewPos.class, currentConfig.previewPos)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.previewPos.tooltip"))
                 .setEnumNameProvider(value -> {
-                    if (value == RenameButton.PreviewPos.BOTTOM) {
+                    if (value == PreviewTooltipPositioner.PreviewPos.BOTTOM) {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.bottom");
-                    } else if (value == RenameButton.PreviewPos.LEFT) {
+                    } else if (value == PreviewTooltipPositioner.PreviewPos.LEFT) {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.left");
                     } else {
                         return Text.translatable("rprenames.config.gui.previewCategory.previewPos.top");

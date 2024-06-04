@@ -19,16 +19,19 @@ import java.util.regex.PatternSyntaxException;
 public class RenamesHelper {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    public static ItemStack[] getGhostCraftItems(CITRename rename) {
+    public static ItemStack[] getGhostCraftItems(AbstractRename rename) {
         ItemStack ghostSource = new ItemStack(rename.getItem());
-        ghostSource.setCount(rename.getStackSize());
-        if (rename.getDamage() != null) {
-            ghostSource.setDamage(rename.getDamage().getParsedDamage(ghostSource.getItem()));
-        }
-
-        ItemStack ghostEnchant = getGhostCraftEnchant(rename);
-
+        ItemStack ghostEnchant = ItemStack.EMPTY;
         ItemStack ghostResult = rename.toStack();
+
+        if (rename instanceof CITRename citRename) {
+            ghostSource.setCount(citRename.getStackSize());
+            if (citRename.getDamage() != null) {
+                ghostSource.setDamage(citRename.getDamage().getParsedDamage(ghostSource.getItem()));
+            }
+
+            ghostEnchant = getGhostCraftEnchant(citRename);
+        }
 
         return new ItemStack[]{ghostSource, ghostEnchant, ghostResult};
     }

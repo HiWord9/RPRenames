@@ -28,7 +28,13 @@ import java.util.List;
 public class Graphics extends Screen {
     private static final ModConfig config = ModConfig.INSTANCE;
 
+    static public final int DEFAULT_PREVIEW_WIDTH = 52;
+    static public final int DEFAULT_PREVIEW_HEIGHT = 52;
+    static public final int DEFAULT_PREVIEW_SIZE_ENTITY = 32;
+    static public final int DEFAULT_PREVIEW_SIZE_ITEM = 16;
+
     static public final int SLOT_SIZE = 18;
+    static public final int STACK_IN_SLOT_SIZE = 16;
 
     public static final int HIGHLIGHT_COLOR_WRONG = 822018048;
     public static final int HIGHLIGHT_COLOR_SECOND = 822018303;
@@ -58,11 +64,11 @@ public class Graphics extends Screen {
     }
 
     public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y) {
-        renderStack(context, itemStack, x, y, 0, 16);
+        renderStack(context, itemStack, x, y, 0, STACK_IN_SLOT_SIZE);
     }
 
     public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y, int z, int size) {
-        float scale = size != 16 ? ((float) size / 16f) : 1f;
+        float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(x, y, z);

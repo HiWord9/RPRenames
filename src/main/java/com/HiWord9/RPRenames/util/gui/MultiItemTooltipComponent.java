@@ -18,7 +18,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
 
     static final Identifier SLOT = new Identifier(RPRenames.MOD_ID, "textures/gui/slot.png");
 
-    private final ArrayList<TooltipItem> items;
+    public final ArrayList<TooltipItem> items;
 
     public MultiItemTooltipComponent(ArrayList<TooltipItem> items) {
         this.items = items;
@@ -62,11 +62,13 @@ public class MultiItemTooltipComponent implements TooltipComponent {
             if (i == 7 && size > 8) {
                 Graphics.renderText(context, Text.of("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
             } else {
-                if (!item.isInInventory && config.highlightTooltipSlotWrong) {
-                    context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_WRONG);
-                }
-                if (item.isInInventory && i == 0 && config.highlightTooltipSlotSelected) {
-                    context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
+                if (item.isInInventory != null) {
+                    if (!item.isInInventory && config.highlightTooltipSlotWrong) {
+                        context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_WRONG);
+                    }
+                    if (item.isInInventory && i == 0 && config.highlightTooltipSlotSelected) {
+                        context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
+                    }
                 }
                 Graphics.renderStack(context, item.stack, j + 1, k + 1);
             }
@@ -82,6 +84,10 @@ public class MultiItemTooltipComponent implements TooltipComponent {
         int j = 0;
 
         for (TooltipItem tooltipItem : list) {
+            if (tooltipItem.isInInventory == null) {
+                sorted.add(tooltipItem);
+                continue;
+            }
             if (tooltipItem.isInInventory) {
                 sorted.add(i, tooltipItem);
                 i++;
@@ -96,10 +102,14 @@ public class MultiItemTooltipComponent implements TooltipComponent {
 
     public static class TooltipItem {
         private final ItemStack stack;
-        private final boolean isInInventory;
+        private Boolean isInInventory;
 
-        public TooltipItem(ItemStack stack, boolean isInInventory) {
+        public TooltipItem(ItemStack stack, Boolean isInInventory) {
             this.stack = stack;
+            this.isInInventory = isInInventory;
+        }
+
+        public void setIsInInventory(Boolean isInInventory) {
             this.isInInventory = isInInventory;
         }
     }

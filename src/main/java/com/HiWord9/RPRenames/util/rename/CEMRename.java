@@ -1,11 +1,14 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.util.config.generation.CEMList;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 
 import java.util.Properties;
@@ -54,7 +57,7 @@ public class CEMRename extends AbstractRename {
     }
 
     public ItemStack toSpawnEgg() {
-        Item item = SpawnEggItem.forEntity(CEMList.EntityFromName(this.getMob().entity()));
+        Item item = SpawnEggItem.forEntity(this.getMob().entity());
         ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
         spawnEgg.setCustomName(Text.of(this.getName()));
         NbtCompound nbt = spawnEgg.getOrCreateNbt();
@@ -63,13 +66,12 @@ public class CEMRename extends AbstractRename {
         nbt.put("EntityTag", nbtName);
         if (item == null) {
             NbtCompound nbt2 = nbt.getCompound("EntityTag");
-            nbt2.putString("id", this.getMob().entity());
+            nbt2.putString("id", Registries.ENTITY_TYPE.getId(this.getMob().entity()).toString());
         }
         return spawnEgg;
     }
 
-    public record Mob(String entity, Item icon, Properties properties, String path) {
-
+    public record Mob(EntityType<?> entity, Item icon, Properties properties, String path) {
         public String getPropName() {
             if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
@@ -82,5 +84,9 @@ public class CEMRename extends AbstractRename {
             }
             return null;
         }
+    }
+
+    public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
+        return new CEMRenameRenderer(this, rprWidget, favorite);
     }
 }
