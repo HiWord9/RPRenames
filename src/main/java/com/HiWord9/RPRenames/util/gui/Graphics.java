@@ -23,8 +23,8 @@ import org.joml.Quaternionf;
 import java.util.List;
 
 public class Graphics {
-    static public final int DEFAULT_PREVIEW_WIDTH = 50;
-    static public final int DEFAULT_PREVIEW_HEIGHT = 50;
+    static public final int DEFAULT_PREVIEW_WIDTH = 42;
+    static public final int DEFAULT_PREVIEW_HEIGHT = 42;
     static public final int DEFAULT_PREVIEW_SIZE_ENTITY = 32;
     static public final int DEFAULT_PREVIEW_SIZE_ITEM = 16;
 
@@ -147,6 +147,21 @@ public class Graphics {
                                    TooltipPositioner positioner,
                                    boolean favorite) {
         drawTooltip(context, textRenderer, List.of(component), x, y, positioner, favorite);
+    }
+
+    public static void drawTooltipWithFixedBorders(DrawContext context, TextRenderer textRenderer,
+                                   TooltipComponent component,
+                                   int x, int y,
+                                   TooltipPositioner positioner,
+                                   boolean favorite) {
+        drawTooltip(context, textRenderer,
+                List.of(component,
+                        new TooltipComponent() { //dump tooltip component to increase list size
+                            public int getHeight() {return 0;}
+                            public int getWidth(TextRenderer textRenderer) {return 0;}
+                        }
+                ),
+                x, y, positioner, favorite);
     }
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer,

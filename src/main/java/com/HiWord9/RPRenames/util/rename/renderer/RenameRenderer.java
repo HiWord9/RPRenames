@@ -10,6 +10,6 @@ public interface RenameRenderer {
     void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight);
 
     interface Preview {
-        void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltipComponents);
+        void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> mainTooltip);
     }
 }

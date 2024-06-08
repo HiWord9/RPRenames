@@ -10,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -29,7 +28,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
     boolean favorite;
 
     LivingEntity entity;
-    EntityPreviewTooltipComponent previewTooltipComponent;
+    EntityPreviewTooltipComponent entityPreviewTooltipComponent;
 
     public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
@@ -43,10 +42,10 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
         prepareEntity(entity, rename);
 
         int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
-        int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getWidth() - 1) - 8; //todo ????
-        int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getHeight() - 1) - 6;
+        int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getWidth() - 1);
+        int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getHeight() - 1);
 
-        previewTooltipComponent = new EntityPreviewTooltipComponent(
+        entityPreviewTooltipComponent = new EntityPreviewTooltipComponent(
                 entity,
                 width, height, size,
                 config.spinMobPreview
@@ -96,23 +95,13 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltipComponents) {
-        entityPreview(context,
-                mouseX, mouseY,
-                previewTooltipComponent,
-                new PreviewTooltipPositioner(tooltipComponents));
-    }
-
-    private void entityPreview(DrawContext context,
-                               int mouseX, int mouseY,
-                               TooltipComponent tooltipComponent,
-                               TooltipPositioner positioner) {
-        Graphics.drawTooltip(
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> mainTooltip) {
+        Graphics.drawTooltipWithFixedBorders(
                 context,
                 MinecraftClient.getInstance().textRenderer,
-                tooltipComponent,
+                entityPreviewTooltipComponent,
                 mouseX, mouseY,
-                positioner,
+                new PreviewTooltipPositioner(mainTooltip),
                 favorite
         );
     }

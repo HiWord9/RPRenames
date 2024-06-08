@@ -56,8 +56,8 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         assert client.player != null;
 
         playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
-        playerWidth = (int) (width + playerSize * client.player.getWidth() - 1) - 8; //todo ??!!
-        playerHeight = (int) (height + playerSize * client.player.getHeight() - 1) - 6;
+        playerWidth = (int) (width + playerSize * client.player.getWidth() - 1);
+        playerHeight = (int) (height + playerSize * client.player.getHeight() - 1);
 
         playerPreviewTooltipComponent = new PlayerPreviewTooltipComponent(
                 client.player, stack,
@@ -68,8 +68,8 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
         double scaleFactorItem = config.scaleFactorItem;
         itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
-        itemWidth = (int) (width / 2 * scaleFactorItem) - 8;
-        itemHeight = (int) (height / 2 * scaleFactorItem) - 6;
+        itemWidth = (int) (width / 2 * scaleFactorItem);
+        itemHeight = (int) (height / 2 * scaleFactorItem);
 
         itemPreviewTooltipComponent = new ItemPreviewTooltipComponent(
                 stack,
@@ -246,9 +246,9 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltip) {
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> mainTooltip) {
         boolean shouldPreviewPlayer = hasShiftDown() != config.playerPreviewByDefault;
-        TooltipPositioner positioner = new PreviewTooltipPositioner(tooltipComponents);
+        TooltipPositioner positioner = new PreviewTooltipPositioner(mainTooltip);
 
         if (shouldPreviewPlayer) {
             playerPreview(
@@ -270,7 +270,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
             playerPreviewTooltipComponent.cycleSlots(config.alwaysAllowPlayerPreviewHead);
         }
 
-        Graphics.drawTooltip(
+        Graphics.drawTooltipWithFixedBorders(
                 context,
                 MinecraftClient.getInstance().textRenderer,
                 playerPreviewTooltipComponent,
@@ -281,7 +281,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     }
 
     private void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
-        Graphics.drawTooltip(
+        Graphics.drawTooltipWithFixedBorders(
                 context,
                 MinecraftClient.getInstance().textRenderer,
                 itemPreviewTooltipComponent,
