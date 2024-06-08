@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.google.gson.*;
 import net.minecraft.item.Item;
 
@@ -12,7 +13,7 @@ public class RenameSerializer implements JsonSerializer<AbstractRename>, JsonDes
     public JsonElement serialize(AbstractRename rename, Type type, JsonSerializationContext context) {
         JsonObject result = new JsonObject();
 
-        result.addProperty("name", rename.name);
+        result.addProperty("name", rename.getName());
 //        result.addProperty("item", ParserHelper.idFromItem(rename.getItem()));
 //        result.addProperty("packName", rename.packName);
 

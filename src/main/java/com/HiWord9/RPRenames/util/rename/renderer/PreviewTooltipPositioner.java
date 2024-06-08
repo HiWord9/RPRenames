@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import net.minecraft.client.gui.tooltip.TooltipComponent;

@@ -1,9 +1,11 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Describable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -20,7 +22,7 @@ public class DefaultRenameRenderer implements RenameRenderer {
     ItemStack stack;
     ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
 
-    DefaultRenameRenderer(AbstractRename rename) {
+    public DefaultRenameRenderer(AbstractRename rename) {
         stack = rename.toStack();
 
         tooltipComponents.add(nameTooltipComponent(rename));

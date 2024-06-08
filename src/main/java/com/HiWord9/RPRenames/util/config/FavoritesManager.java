@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.RenameSerializer;
 import com.google.common.reflect.TypeToken;

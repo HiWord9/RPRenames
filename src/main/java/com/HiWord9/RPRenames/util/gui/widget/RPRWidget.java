@@ -2,11 +2,12 @@ package com.HiWord9.RPRenames.util.gui.widget;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.button.*;
 import com.HiWord9.RPRenames.util.rename.*;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -576,7 +577,6 @@ public class RPRWidget implements Drawable {
     }
 
     private RenameButton createButton(int orderOnPage, AbstractRename rename) {
-        if (MinecraftClient.getInstance().player == null) return null;
         boolean favorite = false;
         if (currentTab != Tab.SEARCH) {
             for (Item i : rename.getItems()) {
@@ -636,25 +636,33 @@ public class RPRWidget implements Drawable {
         }
     }
 
+    public enum Tab {
+        SEARCH,
+        FAVORITE,
+        INVENTORY,
+        GLOBAL
+    }
+
     public interface ConnectionName {
         String getText();
         void setText(String name);
-    }
 
+    }
     public interface ConnectionSlotMovement {
         void putInWorkSlot(int slotInInventory);
         void takeFromWorkSlot(int slotInWorkspace);
-    }
 
+    }
     public interface ConnectionFavoriteButton {
         void update(String name, Item item);
-    }
 
+    }
     public interface ConnectionGhostCraft {
         void reset();
         void setStacks(ItemStack stack1, ItemStack stack2, ItemStack stack3);
         void setRender(boolean doRender);
         void setSpecialHighlight(Boolean highlightSlot1, Boolean highlightSlot2, Boolean highlightSlot3);
         ItemStack getStackInFirstSlot();
+
     }
 }

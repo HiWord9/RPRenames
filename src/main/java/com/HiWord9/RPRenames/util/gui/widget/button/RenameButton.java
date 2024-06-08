@@ -2,11 +2,10 @@ package com.HiWord9.RPRenames.util.gui.widget.button;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import com.HiWord9.RPRenames.util.rename.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.RenameRenderer;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -63,7 +62,7 @@ public class RenameButton extends ClickableWidget {
         if (!isMouseOver(mouseX, mouseY)) return;
 
         Screen screen = rprWidget.getScreen();
-        if ((rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
+        if ((rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)) {
             if (screen instanceof HandledScreen<?> handledScreen) {
                 highlightSlot(context, handledScreen.x, handledScreen.y, handledScreen.getScreenHandler().slots, highlightColor);
             }

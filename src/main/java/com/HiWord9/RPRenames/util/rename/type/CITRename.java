@@ -1,7 +1,10 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.type;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.renderer.CITRenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.*;

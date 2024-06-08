@@ -1,6 +1,8 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.type;
 
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.renderer.DefaultRenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -10,11 +12,11 @@ import java.util.List;
 import java.util.Properties;
 
 public class AbstractRename {
-    protected String name;
-    protected String packName;
-    protected String path;
-    protected Properties properties;
-    protected ArrayList<Item> items = new ArrayList<>();
+    String name;
+    String packName;
+    String path;
+    Properties properties;
+    ArrayList<Item> items = new ArrayList<>();
 
     public AbstractRename(String name) {
         this(name, null);

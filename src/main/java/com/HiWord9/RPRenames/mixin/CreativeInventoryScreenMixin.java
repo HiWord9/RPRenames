@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.mixin;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
 import com.HiWord9.RPRenames.util.rename.*;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;

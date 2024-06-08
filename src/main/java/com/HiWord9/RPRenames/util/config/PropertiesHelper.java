@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.item.Item;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;

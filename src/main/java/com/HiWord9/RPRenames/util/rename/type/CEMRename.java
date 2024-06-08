@@ -1,7 +1,8 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.type;
 
-import com.HiWord9.RPRenames.util.config.generation.CEMList;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.renderer.CEMRenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

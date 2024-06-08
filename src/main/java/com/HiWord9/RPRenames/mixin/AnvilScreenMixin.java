@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
@@ -170,7 +169,7 @@ public abstract class AnvilScreenMixin extends Screen {
         if (ghostCraft.mouseClicked(mouseX, mouseY, button)) {
             if (rprWidget.getCurrentItem().isEmpty()) {
                 nameField.setText("");
-                if (rprWidget.getCurrentTab() == Tab.SEARCH || rprWidget.getCurrentTab() == Tab.FAVORITE) {
+                if (rprWidget.getCurrentTab() == RPRWidget.Tab.SEARCH || rprWidget.getCurrentTab() == RPRWidget.Tab.FAVORITE) {
                     rprWidget.screenUpdate();
                 }
             }

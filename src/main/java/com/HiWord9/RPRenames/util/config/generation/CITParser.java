@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.config.generation;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.rename.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;

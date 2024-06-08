@@ -1,11 +1,11 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.EntityPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
@@ -31,7 +31,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
     LivingEntity entity;
     EntityPreviewTooltipComponent previewTooltipComponent;
 
-    CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
+    public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
         this.rename = rename;
         this.rprWidget = rprWidget;
@@ -54,7 +54,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
         int index = 1;
 
-        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
+        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(index++, component);
         }
@@ -64,7 +64,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
         if (!config.showPackName && rename.getPackName() != null) {
             tooltipComponents.remove(index);
         }
-        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
+        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }

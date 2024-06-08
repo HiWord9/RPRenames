@@ -1,12 +1,12 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.gui.*;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.PlayerPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -35,7 +35,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
-    CITRenameRenderer(CITRename rename, RPRWidget rprWidget, boolean favorite) {
+    public CITRenameRenderer(CITRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
         this.rename = rename;
         this.rprWidget = rprWidget;
@@ -85,7 +85,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
             index += description.size();
         }
 
-        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
+        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(index++, component);
         }
@@ -99,7 +99,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         if (!config.showPackName && rename.getPackName() != null) {
             tooltipComponents.remove(index);
         }
-        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
+        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
@@ -203,7 +203,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         boolean isInInventory = indexInInventory != -1;
 
         ItemStack stack = rprWidget.getCurrentItem();
-        if ((rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL)
+        if ((rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL)
                 && !asCurrentItem && isInInventory) {
             assert MinecraftClient.getInstance().player != null;
             PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();

@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.util.gui.widget.button;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.Tab;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.MinecraftClient;
@@ -29,20 +28,20 @@ public class TabButton extends ClickableWidget {
     static final int SELECTED_OFFSET_U = 33;
     static final int TYPE_OFFSET_V = 26;
 
-    final Tab tab;
+    final RPRWidget.Tab tab;
     private final int index;
 
-    public TabButton(RPRWidget instance, int x, int y, Tab tab) {
+    public TabButton(RPRWidget instance, int x, int y, RPRWidget.Tab tab) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         rprWidget = instance;
 
         this.tab = tab;
-        index = Arrays.stream(Tab.values()).toList().indexOf(tab);
+        index = Arrays.stream(RPRWidget.Tab.values()).toList().indexOf(tab);
     }
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        Tab currentTab = rprWidget.getCurrentTab();
+        RPRWidget.Tab currentTab = rprWidget.getCurrentTab();
         int u = currentTab == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
         context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);

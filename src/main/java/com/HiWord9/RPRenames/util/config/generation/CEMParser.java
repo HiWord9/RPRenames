@@ -2,9 +2,9 @@ package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.rename.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.CEMRename;
-import com.HiWord9.RPRenames.util.rename.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.CEMRename;
+import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.google.gson.Gson;
 import net.minecraft.entity.EntityType;
