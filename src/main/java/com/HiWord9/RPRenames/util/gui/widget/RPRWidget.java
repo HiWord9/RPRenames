@@ -269,14 +269,31 @@ public class RPRWidget implements Drawable {
         }
 
         connectionGhostCraft.reset();
-        if (indexInInventory != 36 && isInInventory) {
-            shouldNotUpdateTab = getCurrentTab() == Tab.INVENTORY || getCurrentTab() == Tab.GLOBAL;
-            tempPage = page;
-            if (!asCurrentItem) {
-                connectionSlotMovement.putInWorkSlot(indexInInventory);
+        if (isInInventory) {
+            if (indexInInventory != 36) { //in inventory
+                shouldNotUpdateTab = getCurrentTab() == Tab.INVENTORY || getCurrentTab() == Tab.GLOBAL;
+                tempPage = page;
+                if (!asCurrentItem) {
+                    connectionSlotMovement.putInWorkSlot(indexInInventory);
+                }
+                shouldNotUpdateTab = false;
+            } else { //in work slot
+                connectionSlotMovement.takeFromWorkSlot(1);
             }
-            shouldNotUpdateTab = false;
-        } else if (indexInInventory != 36) {
+
+            if (rename instanceof CITRename citRename) {
+                CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, currentItem);
+                if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
+                    connectionGhostCraft.setSpecialHighlight(true, null, true);
+                    connectionGhostCraft.setRender(true);
+                }
+                if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
+                    connectionGhostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
+                    connectionGhostCraft.setSpecialHighlight(null, null, true);
+                    connectionGhostCraft.setRender(true);
+                }
+            }
+        } else { //not in inventory
             for (int s = 0; s < 2; s++) {
                 connectionSlotMovement.takeFromWorkSlot(s);
             }
@@ -285,26 +302,8 @@ public class RPRWidget implements Drawable {
 
             connectionGhostCraft.setStacks(ghostCraftItems[0], ghostCraftItems[1], ghostCraftItems[2]);
             connectionGhostCraft.setRender(true);
-        } else {
-            connectionSlotMovement.takeFromWorkSlot(1);
         }
-        if (isInInventory && rename instanceof CITRename citRename) {
-            ItemStack stack = currentItem;
-            if ((currentTab == Tab.INVENTORY || currentTab == Tab.GLOBAL) && !asCurrentItem) {
-                assert client.player != null;
-                stack = client.player.getInventory().main.get(indexInInventory);
-            }
-            CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, stack);
-            if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
-                connectionGhostCraft.setSpecialHighlight(true, null, true);
-                connectionGhostCraft.setRender(true);
-            }
-            if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
-                connectionGhostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
-                connectionGhostCraft.setSpecialHighlight(null, null, true);
-                connectionGhostCraft.setRender(true);
-            }
-        }
+
         connectionName.setText(rename.getName());
     }
 
