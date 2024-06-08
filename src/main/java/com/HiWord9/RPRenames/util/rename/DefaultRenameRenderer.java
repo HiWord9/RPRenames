@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

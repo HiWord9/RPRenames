@@ -1,13 +1,10 @@
 package com.HiWord9.RPRenames.util.gui;
 
-import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.DiffuseLighting;
@@ -25,11 +22,9 @@ import org.joml.Quaternionf;
 
 import java.util.List;
 
-public class Graphics extends Screen {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
-    static public final int DEFAULT_PREVIEW_WIDTH = 52;
-    static public final int DEFAULT_PREVIEW_HEIGHT = 52;
+public class Graphics {
+    static public final int DEFAULT_PREVIEW_WIDTH = 50;
+    static public final int DEFAULT_PREVIEW_HEIGHT = 50;
     static public final int DEFAULT_PREVIEW_SIZE_ENTITY = 32;
     static public final int DEFAULT_PREVIEW_SIZE_ITEM = 16;
 
@@ -41,13 +36,7 @@ public class Graphics extends Screen {
 
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
-    static public final int TOOLTIP_CORNER = 2;
-
     static public boolean renderTooltipAsFavorite = false;
-
-    protected Graphics() {
-        super(null);
-    }
 
     public static void renderText(DrawContext context, Text text, int x, int y, boolean shadow, boolean centered) {
         renderText(context, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
@@ -77,14 +66,14 @@ public class Graphics extends Screen {
         matrices.pop();
     }
 
-    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, int size, Entity entity, boolean spin) {
-        renderEntityInBox(context, rect, corner, size, entity, spin, 500);
+    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int size, Entity entity, boolean spin) {
+        renderEntityInBox(context, rect, size, entity, spin, 500);
     }
 
-    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int corner, double size, Entity entity, boolean spin, int z) {
+    public static void renderEntityInBox(DrawContext context, ScreenRect rect, double size, Entity entity, boolean spin, int z) {
         context.enableScissor(
-                rect.getLeft() + corner, rect.getTop() + corner,
-                rect.getRight() - corner, rect.getBottom() - corner
+                rect.getLeft(), rect.getTop(),
+                rect.getRight(), rect.getBottom()
         );
         renderEntity(context, rect.getLeft() + rect.width() / 2, (int) ((rect.getTop() + rect.height() / 2) + (size * entity.getHeight()) / 2), z, size, entity, spin);
         context.disableScissor();
@@ -145,26 +134,39 @@ public class Graphics extends Screen {
         }
     }
 
-    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, boolean favorite) {
-        drawTooltipBackground(context, x, y, width, height, favorite, 400);
+    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
+                                   List<TooltipComponent> components,
+                                   int x, int y,
+                                   TooltipPositioner positioner) {
+        drawTooltip(context, textRenderer, components, x, y, positioner, false);
     }
 
-    public static void drawTooltipBackground(DrawContext context, int x, int y, int width, int height, boolean favorite, int z) {
+    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
+                                   TooltipComponent component,
+                                   int x, int y,
+                                   TooltipPositioner positioner,
+                                   boolean favorite) {
+        drawTooltip(context, textRenderer, List.of(component), x, y, positioner, favorite);
+    }
+
+    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
+                                   List<TooltipComponent> components,
+                                   int x, int y,
+                                   TooltipPositioner positioner,
+                                   boolean favorite) {
         renderTooltipAsFavorite = favorite;
-        TooltipBackgroundRenderer.render(context, x + 4, y + 4, width - 8, height - 8, z);
+        context.drawTooltip(textRenderer, components, x, y, positioner);
         renderTooltipAsFavorite = false;
-        if (!favorite || !config.renderStarInFavoriteTooltip) return;
+    }
+
+    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width) {
         context.drawTexture(
                 FavoriteButton.TEXTURE,
-                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, z,
+                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, 400,
                 0, 0,
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
-    }
-
-    public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
-        context.drawTooltip(textRenderer, components, x, y, positioner);
     }
 
     public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {

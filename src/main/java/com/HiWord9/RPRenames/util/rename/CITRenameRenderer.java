@@ -2,29 +2,23 @@ package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.Tab;
-import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.*;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.PlayerPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import org.joml.Vector2ic;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -38,13 +32,50 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     RPRWidget rprWidget;
     boolean favorite;
 
-    EquipmentSlot equipmentSlot;
+    ItemPreviewTooltipComponent itemPreviewTooltipComponent;
+    PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
     CITRenameRenderer(CITRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
         this.rename = rename;
         this.rprWidget = rprWidget;
         this.favorite = favorite;
+
+        int itemWidth;
+        int itemHeight;
+        int itemSize;
+
+        int playerWidth;
+        int playerHeight;
+        int playerSize;
+
+        int width = Graphics.DEFAULT_PREVIEW_WIDTH;
+        int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
+
+        var client = MinecraftClient.getInstance();
+        assert client.player != null;
+
+        playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
+        playerWidth = (int) (width + playerSize * client.player.getWidth() - 1) - 8; //todo ??!!
+        playerHeight = (int) (height + playerSize * client.player.getHeight() - 1) - 6;
+
+        playerPreviewTooltipComponent = new PlayerPreviewTooltipComponent(
+                client.player, stack,
+                playerWidth, playerHeight,
+                playerSize,
+                config.spinPlayerPreview
+        );
+
+        double scaleFactorItem = config.scaleFactorItem;
+        itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
+        itemWidth = (int) (width / 2 * scaleFactorItem) - 8;
+        itemHeight = (int) (height / 2 * scaleFactorItem) - 6;
+
+        itemPreviewTooltipComponent = new ItemPreviewTooltipComponent(
+                stack,
+                itemWidth, itemHeight,
+                itemSize
+        );
 
         int index = 1;
 
@@ -215,161 +246,49 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltip) { //todo custom tooltip components
-        var client = MinecraftClient.getInstance();
-        assert client.player != null;
-
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltip) {
         boolean shouldPreviewPlayer = hasShiftDown() != config.playerPreviewByDefault;
-
-        int width = Graphics.DEFAULT_PREVIEW_WIDTH;
-        int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
-
-        int size;
-        int newWidth;
-        int newHeight;
-        if (shouldPreviewPlayer) {
-            double scaleFactorEntity = config.scaleFactorEntity;
-            size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * scaleFactorEntity);
-            newWidth = (int) (width + size * client.player.getWidth() - 1);
-            newHeight = (int) (height + size * client.player.getHeight() - 1);
-        } else {
-            double scaleFactorItem = config.scaleFactorItem;
-            size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
-            newWidth = (int) (width / 2 * scaleFactorItem);
-            newHeight = (int) (height / 2 * scaleFactorItem);
-        }
-
-        var screen = rprWidget.getScreen();
-        Vector2ic vector2ic = new PreviewTooltipPositioner(tooltip)
-                .getPosition(
-                        screen.width, screen.height,
-                        mouseX, mouseY,
-                        newWidth, newHeight
-                );
-        int x = vector2ic.x();
-        int y = vector2ic.y();
+        TooltipPositioner positioner = new PreviewTooltipPositioner(tooltipComponents);
 
         if (shouldPreviewPlayer) {
             playerPreview(
                     context,
-                    x, y,
-                    newWidth, newHeight,
-                    size,
-                    config.spinPlayerPreview,
-                    client.player,
-                    this.stack
+                    mouseX, mouseY,
+                    positioner
             );
         } else {
             itemPreview(
                     context,
-                    x, y,
-                    newWidth, newHeight,
-                    size,
-                    this.stack
+                    mouseX, mouseY,
+                    positioner
             );
         }
     }
 
-    private void playerPreview(DrawContext context, int x, int y, int width, int height, int size, boolean spin, ClientPlayerEntity player, ItemStack item) {
-        boolean extraSlotAvailable = true;
-        EquipmentSlot extraEquipmentSlot = null;
-
-        if (item.getItem() instanceof ArmorItem armorItem) {
-            extraEquipmentSlot = armorItem.getSlotType();
-        } else if (Block.getBlockFromItem(item.getItem()) == Blocks.CARVED_PUMPKIN) {
-            extraEquipmentSlot = EquipmentSlot.HEAD;
-        } else if (Block.getBlockFromItem(item.getItem()) instanceof AbstractSkullBlock) {
-            extraEquipmentSlot = EquipmentSlot.HEAD;
-        } else if (item.getItem() instanceof ElytraItem) {
-            extraEquipmentSlot = EquipmentSlot.CHEST;
-        } else {
-            extraSlotAvailable = false;
-        }
-
-        if (equipmentSlot == null) {
-            if (extraSlotAvailable) {
-                equipmentSlot = extraEquipmentSlot;
-            } else {
-                equipmentSlot = EquipmentSlot.MAINHAND;
-            }
-        }
-
+    private void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         if (isFKeyJustPressed()) {
-            if (equipmentSlot == EquipmentSlot.HEAD) {
-                if (extraSlotAvailable && extraEquipmentSlot != EquipmentSlot.HEAD && config.alwaysAllowPlayerPreviewHead) {
-                    equipmentSlot = extraEquipmentSlot;
-                } else {
-                    equipmentSlot = EquipmentSlot.MAINHAND;
-                }
-            } else if (equipmentSlot == EquipmentSlot.MAINHAND) {
-                equipmentSlot = EquipmentSlot.OFFHAND;
-            } else if (equipmentSlot == EquipmentSlot.OFFHAND) {
-                if (config.alwaysAllowPlayerPreviewHead) {
-                    equipmentSlot = EquipmentSlot.HEAD;
-                } else {
-                    if (extraSlotAvailable) {
-                        equipmentSlot = extraEquipmentSlot;
-                    } else {
-                        equipmentSlot = EquipmentSlot.MAINHAND;
-                    }
-                }
-            } else if (equipmentSlot == extraEquipmentSlot) {
-                equipmentSlot = EquipmentSlot.MAINHAND;
-            }
+            playerPreviewTooltipComponent.cycleSlots(config.alwaysAllowPlayerPreviewHead);
         }
 
-        boolean isArmor = false;
-        int armorSlot = 0;
-        if (equipmentSlot != EquipmentSlot.MAINHAND && equipmentSlot != EquipmentSlot.OFFHAND) {
-            isArmor = true;
-            if (equipmentSlot == EquipmentSlot.LEGS) {
-                armorSlot = 1;
-            } else if (equipmentSlot == EquipmentSlot.CHEST) {
-                armorSlot = 2;
-            } else if (equipmentSlot == EquipmentSlot.HEAD) {
-                armorSlot = 3;
-            }
-        }
-
-        assert player != null;
-        ItemStack temp = player.getEquippedStack(equipmentSlot);
-
-        if (isArmor) {
-            player.getInventory().armor.set(armorSlot, item);
-        } else {
-            player.equipStack(equipmentSlot, item);
-        }
-
-        float h = player.bodyYaw;
-        float i = player.getYaw();
-        float j = player.getPitch();
-        float k = player.prevHeadYaw;
-        float l = player.headYaw;
-
-        Graphics.drawTooltipBackground(context, x, y, width, height, favorite);
-        Graphics.renderEntityInBox(context,
-                new ScreenRect(x, y, width, height), Graphics.TOOLTIP_CORNER,
-                size, player, spin);
-
-        player.bodyYaw = h;
-        player.setYaw(i);
-        player.setPitch(j);
-        player.prevHeadYaw = k;
-        player.headYaw = l;
-
-        if (isArmor) {
-            player.getInventory().armor.set(armorSlot, temp);
-        } else {
-            player.equipStack(equipmentSlot, temp);
-        }
+        Graphics.drawTooltip(
+                context,
+                MinecraftClient.getInstance().textRenderer,
+                playerPreviewTooltipComponent,
+                mouseX, mouseY,
+                positioner,
+                favorite
+        );
     }
 
-    private void itemPreview(DrawContext context, int x, int y, int width, int height, int size, ItemStack itemStack) {
-        Graphics.drawTooltipBackground(context, x, y, width, height, favorite, 400);
-
-        int newX = x + width / 2 - size / 2;
-        int newY = y + height / 2 - size / 2;
-        Graphics.renderStack(context, itemStack, newX, newY, 400, size);
+    private void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
+        Graphics.drawTooltip(
+                context,
+                MinecraftClient.getInstance().textRenderer,
+                itemPreviewTooltipComponent,
+                mouseX, mouseY,
+                positioner,
+                favorite
+        );
     }
 
     private boolean fPressFuse = false;

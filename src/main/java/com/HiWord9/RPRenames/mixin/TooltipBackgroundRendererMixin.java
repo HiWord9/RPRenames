@@ -27,10 +27,12 @@ public abstract class TooltipBackgroundRendererMixin {
             method = "render"
     )
     private static void onRenderBorder(DrawContext context, int x, int y, int width, int height, int z, int startColor, int endColor) {
-        if (!config.recolorFavoriteTooltip ||!Graphics.renderTooltipAsFavorite || startColor != 1347420415 || endColor != 1344798847) {
+        if (!config.recolorFavoriteTooltip || !Graphics.renderTooltipAsFavorite || startColor != 1347420415 || endColor != 1344798847) {
             renderBorder(context, x, y, width, height, z, startColor, endColor);
             return;
         }
         renderBorder(context, x, y, width, height, z, START_COLOR, END_COLOR);
+        if (!config.renderStarInFavoriteTooltip) return;
+        Graphics.renderStarInFavoriteTooltip(context, x, y, width);
     }
 }

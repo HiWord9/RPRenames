@@ -12,30 +12,30 @@ public class PreviewTooltipPositioner implements TooltipPositioner {
     private static final ModConfig config = ModConfig.INSTANCE;
     ArrayList<TooltipComponent> tooltipComponents;
 
-    PreviewTooltipPositioner(ArrayList<TooltipComponent> tooltipComponents) {
-        this.tooltipComponents = tooltipComponents;
+    PreviewTooltipPositioner(ArrayList<TooltipComponent> mainTooltipsComponents) {
+        this.tooltipComponents = mainTooltipsComponents;
     }
 
     @Override
     public Vector2ic getPosition(int screenWidth, int screenHeight, int x, int y, int width, int height) {
         if (config.previewPos == PreviewPos.LEFT) {
-            x -= (5 + width);
-            y -= 16;
+            x -= (12 + width);
+            y -= 12;
 
-            if (y + height > screenHeight) {
-                y = screenHeight - height;
+            if (y + height + 4 > screenHeight) {
+                y = screenHeight - (height + 4);
             }
         } else {
-            x += 8;
-            int yOffset = -14;
-            int tooltipHeight = tooltipComponents.size() > 1 ? 8 : 6;
+            x += 12;
+            int yOffset = -12;
+            int tooltipHeight = tooltipComponents.size() == 1 ? -2 : 0;
             for (TooltipComponent component : tooltipComponents) {
                 tooltipHeight += component.getHeight();
             }
-            yOffset += tooltipHeight;
+            yOffset += tooltipHeight + 10;
 
-            int firstTopPoint = y - (height + 18);
-            int lastBottomPoint = y + yOffset + height;
+            int firstTopPoint = y - (height + 22);
+            int lastBottomPoint = y + yOffset + height + 4;
             int breakPoint = height / 2;
             if (config.previewPos == PreviewPos.BOTTOM ?
                     ((firstTopPoint) > -breakPoint) && lastBottomPoint > screenHeight :

@@ -2,13 +2,15 @@ package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.Tab;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.EntityPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +18,6 @@ import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.joml.Vector2ic;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
     boolean favorite;
 
     LivingEntity entity;
+    EntityPreviewTooltipComponent previewTooltipComponent;
 
     CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
@@ -39,6 +41,16 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
         var client = MinecraftClient.getInstance();
         this.entity = (LivingEntity) entityType.create(client.world);
         prepareEntity(entity, rename);
+
+        int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
+        int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getWidth() - 1) - 8; //todo ????
+        int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getHeight() - 1) - 6;
+
+        previewTooltipComponent = new EntityPreviewTooltipComponent(
+                entity,
+                width, height, size,
+                config.spinMobPreview
+        );
 
         int index = 1;
 
@@ -68,7 +80,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
     @Override
     public void onRender(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         Graphics.renderEntityInBox(context,
-                new ScreenRect(buttonX, buttonY, buttonWidth, buttonHeight), 1,
+                new ScreenRect(buttonX + 1, buttonY + 1, buttonWidth - 2, buttonHeight - 2),
                 14 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
     }
 
@@ -85,29 +97,24 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
     @Override
     public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> tooltipComponents) {
-        int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
-        int width = Graphics.DEFAULT_PREVIEW_WIDTH;
-        int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
-        int newWidth = (int) (width + size * entity.getWidth() - 1);
-        int newHeight = (int) (height + size * entity.getHeight() - 1);
-
-        var screen = rprWidget.getScreen();
-        Vector2ic vector2ic = new PreviewTooltipPositioner(tooltipComponents)
-                .getPosition(
-                        screen.width, screen.height,
-                        mouseX, mouseY,
-                        newWidth, newHeight
-                );
-        int x = vector2ic.x();
-        int y = vector2ic.y();
-        entityPreview(context, x, y, newWidth, newHeight, size, config.spinMobPreview, entity);
+        entityPreview(context,
+                mouseX, mouseY,
+                previewTooltipComponent,
+                new PreviewTooltipPositioner(tooltipComponents));
     }
 
-    private void entityPreview(DrawContext context, int x, int y, int width, int height, int size, boolean spin, LivingEntity entity) {
-        Graphics.drawTooltipBackground(context, x, y, width, height, favorite);
-        Graphics.renderEntityInBox(context,
-                new ScreenRect(x, y, width, height), Graphics.TOOLTIP_CORNER,
-                size, entity, spin);
+    private void entityPreview(DrawContext context,
+                               int mouseX, int mouseY,
+                               TooltipComponent tooltipComponent,
+                               TooltipPositioner positioner) {
+        Graphics.drawTooltip(
+                context,
+                MinecraftClient.getInstance().textRenderer,
+                tooltipComponent,
+                mouseX, mouseY,
+                positioner,
+                favorite
+        );
     }
 
     private void prepareEntity(Entity entity, CEMRename rename) {

@@ -1,7 +1,8 @@
-package com.HiWord9.RPRenames.util.gui;
+package com.HiWord9.RPRenames.util.gui.tooltipcomponent;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;

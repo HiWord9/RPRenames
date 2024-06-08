@@ -20,7 +20,7 @@ public class ModConfig implements ConfigData {
 
     public boolean enableAnvilModification = true;
 
-    public int favoritePosX = 71;
+    public int favoritePosX = 71; //todo government (limit rights (remove optionality))
     public int favoritePosY = -75;
 
     public boolean compareItemGroupRenames = true;

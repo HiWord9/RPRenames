@@ -175,7 +175,7 @@ public class CITRename extends AbstractRename implements Describable {
                 enchantments = EnchantmentHelper.fromNbt(stack.getEnchantments());
 
                 String enchantName = rename.getEnchantment();
-                if (!enchantName.contains(":")) {
+                if (!enchantName.contains(":")) { //todo rename.enchantment as Identifier
                     enchantName = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR + enchantName;
                 }
                 for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
