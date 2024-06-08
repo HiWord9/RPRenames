@@ -141,7 +141,7 @@ public class RenamesHelper {
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("DAMAGE:")) {
                 String damage = matchTag.substring(7);
-                if (damage.matches("[0-9]+")) {
+                if (damage.matches("[0-9]{1,9}")) {
                     for (AbstractRename r : list) {
                         if (r instanceof CITRename citRename) {
                             for (Item item : citRename.getItems()) {
