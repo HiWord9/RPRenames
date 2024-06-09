@@ -175,7 +175,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
                                 : Formatting.DARK_RED)));
             }
             if (citRename.getEnchantment() != null) {
-                Identifier enchant = Identifier.splitOn(citRename.getEnchantment(), ':');
+                Identifier enchant = citRename.getEnchantment();
                 String namespace = enchant.getNamespace();
                 String path = enchant.getPath();
                 Text translatedEnchant = Text.translatable("enchantment." + namespace + "." + path);

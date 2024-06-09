@@ -17,7 +17,7 @@ import java.util.*;
 public class CITRename extends AbstractRename implements Describable {
     protected final Integer stackSize;
     protected final Damage damage;
-    protected final String enchantment;
+    protected final Identifier enchantment;
     protected final Integer enchantmentLevel;
     protected String description;
 
@@ -35,7 +35,7 @@ public class CITRename extends AbstractRename implements Describable {
                      String path,
                      Integer stackSize,
                      Damage damage,
-                     String enchantment,
+                     Identifier enchantment,
                      Integer enchantmentLevel,
                      Properties properties,
                      String description) {
@@ -75,7 +75,7 @@ public class CITRename extends AbstractRename implements Describable {
         return properties == null ? null : properties.getProperty("damage");
     }
 
-    public String getEnchantment() {
+    public Identifier getEnchantment() {
         return enchantment;
     }
 
@@ -177,15 +177,11 @@ public class CITRename extends AbstractRename implements Describable {
                 Map<Enchantment, Integer> enchantments;
                 enchantments = EnchantmentHelper.fromNbt(stack.getEnchantments());
 
-                String enchantName = rename.getEnchantment();
-                if (!enchantName.contains(":")) { //todo rename.enchantment as Identifier
-                    enchantName = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR + enchantName;
-                }
                 for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                     Enchantment enchantment = entry.getKey();
                     Identifier id = Registries.ENCHANTMENT.getId(enchantment);
                     if (id == null) continue;
-                    if (id.toString().equals(enchantName)) {
+                    if (id.equals(rename.getEnchantment())) {
                         hasEnchant = true;
                         if (PropertiesHelper.matchesRange(entry.getValue(), rename.getOriginalEnchantmentLevel())) {
                             hasEnoughLevels = true;

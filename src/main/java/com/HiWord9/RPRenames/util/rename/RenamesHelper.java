@@ -56,7 +56,7 @@ public class RenamesHelper {
             itemStack.getNbt().put("Enchantments", new NbtList());
         }
         NbtList nbtList = itemStack.getNbt().getList("Enchantments", 10);
-        nbtList.add(EnchantmentHelper.createNbt(new Identifier(rename.getEnchantment()), rename.getEnchantmentLevel()));
+        nbtList.add(EnchantmentHelper.createNbt(rename.getEnchantment(), rename.getEnchantmentLevel()));
     }
 
     public static ItemStack createItemOrSpawnEgg(AbstractRename rename) {

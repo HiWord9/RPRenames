@@ -50,6 +50,7 @@ public class CITParser implements Parser {
         }
 
         ArrayList<Item> items = itemsFromMatchItems(matchItems);
+        if (items.isEmpty()) return;
 
         String nbtNamePattern = p.getProperty("nbt.display.Name");
 
@@ -79,9 +80,14 @@ public class CITParser implements Parser {
         }
 
         String enchantIdProp = p.getProperty("enchantmentIDs");
-        String firstEnchantId = enchantIdProp;
+        Identifier enchantment = null;
         if (enchantIdProp != null) {
-            firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
+            String firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
+            enchantment = new Identifier(firstEnchantId);
+            if (Registries.ENCHANTMENT.get(enchantment) == null) {
+                RPRenames.LOGGER.warn("Could not get valid enchantment {} for {}", enchantment, path);
+                enchantment = null;
+            }
         }
 
         String enchantLvlProp = p.getProperty("enchantmentLevels");
@@ -101,7 +107,7 @@ public class CITParser implements Parser {
                 path,
                 stackSize,
                 damage,
-                firstEnchantId,
+                enchantment,
                 enchantLvl,
                 p,
                 description
