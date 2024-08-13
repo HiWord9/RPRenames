@@ -1,21 +1,17 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.math.Color;
 import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 
-@Config(name = RPRenames.MOD_ID)
-public class ModConfig implements ConfigData {
+public class ModConfig {
     public boolean ignoreCEM = false;
 
     public boolean enableAnvilModification = true;
@@ -87,10 +83,8 @@ public class ModConfig implements ConfigData {
     public boolean showDescription = true;
 
     public int getSlotHighlightRGBA() {
-        int r = Color.ofTransparent(slotHighlightColorRGB).getRed();
-        int g = Color.ofTransparent(slotHighlightColorRGB).getGreen();
-        int b = Color.ofTransparent(slotHighlightColorRGB).getBlue();
-        return Color.ofRGBA(r, g, b, (int) ((float) slotHighlightColorALPHA / 100 * 255)).getColor();
+        int a = (int) ((float) slotHighlightColorALPHA / 100 * 255);
+        return (a << 24) | slotHighlightColorRGB;
     }
 
     public static final ModConfig INSTANCE = ModConfig.read();

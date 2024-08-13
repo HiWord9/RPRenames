@@ -5,9 +5,6 @@ import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigHolder;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -25,7 +22,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +38,9 @@ public class RPRenames implements ClientModInitializer {
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
-    private static ConfigHolder<ModConfig> configHolder;
-
     @Override
     public void onInitializeClient() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
-        configHolder = AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
-        configHolder.registerSaveListener((manager, data) -> ActionResult.SUCCESS);
         ClientCommandRegistrationCallback.EVENT.register(RPRenames::registerCommand);
         ModConfig config = ModConfig.INSTANCE;
         if (config.loadModBuiltinResources) {
