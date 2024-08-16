@@ -399,6 +399,7 @@ public class RPRWidget implements Drawable {
             } else {
                 updateSearchRequest(page);
             }
+            favoriteButtonUpdate(connectionName.getText());
         }
         if (slotId == 0 || slotId == 1) {
             connectionGhostCraft.reset();
