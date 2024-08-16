@@ -33,6 +33,6 @@ public abstract class TooltipBackgroundRendererMixin {
         }
         renderBorder(context, x, y, width, height, z, START_COLOR, END_COLOR);
         if (!config.renderStarInFavoriteTooltip) return;
-        Graphics.renderStarInFavoriteTooltip(context, x, y, width);
+        Graphics.renderStarInFavoriteTooltip(context, x, y, width, z + 1);
     }
 }

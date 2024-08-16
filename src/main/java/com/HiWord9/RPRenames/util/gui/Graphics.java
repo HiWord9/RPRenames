@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -174,10 +175,10 @@ public class Graphics {
         renderTooltipAsFavorite = false;
     }
 
-    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width) {
+    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width, int z) {
         context.drawTexture(
                 FavoriteButton.TEXTURE,
-                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, 400,
+                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, z,
                 0, 0,
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
