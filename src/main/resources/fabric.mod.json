@@ -1,52 +1,52 @@
 {
   "schemaVersion": 1,
-  "id": "rprenames",
+  "id": "${mod_id}",
   "version": "${version}",
 
-  "name": "RP Renames",
-  "description": "See what CIT and CEM Renames are in ur Resource Packs!",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
-    "HiWord9"
+    "${mod_author}"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/rp-renames",
-    "sources": "https://github.com/HiWord9/RPRenames",
-    "issues": "https://github.com/HiWord9/RPRenames/issues"
+    "homepage": "${mod_homepage_modrinth}",
+    "sources": "${mod_sources}",
+    "issues": "${mod_issue_tracker}"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/rp-renames",
-        "modmenu.modrinth": "https://modrinth.com/mod/rp-renames",
-        "modmenu.donate": "https://paypal.me/hiword9"
+        "modmenu.curseforge": "${mod_homepage_curseforge}",
+        "modmenu.modrinth": "${mod_homepage_modrinth}",
+        "modmenu.donate": "${mod_donate_paypal}"
       }
     }
   },
 
-  "license": "MIT License",
-  "icon": "assets/rprenames/icon.png",
+  "license": "${mod_license}",
+  "icon": "assets/${mod_id}/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.HiWord9.RPRenames.RPRenames"
+      "${mod_main_dir}.${mod_client_class}"
     ],
     "modmenu": [
-      "com.HiWord9.RPRenames.modConfig.ModMenuIntegration"
+      "${mod_main_dir}.${mod_modmenu_impl_subdir}"
     ]
   },
   "mixins": [
-    "rprenames.mixins.json"
+    "${mod_id}.mixins.json"
   ],
-  "accessWidener" : "rprenames.accesswidener",
+  "accessWidener": "${mod_id}.accesswidener",
 
   "depends": {
-    "fabricloader": ">=0.14.22",
+    "fabricloader": "${loader_version_range}",
     "fabric-api": "*",
-    "minecraft": ">=1.20 <1.21",
-    "java": ">=17"
+    "minecraft": "${minecraft_version_range}",
+    "java": ">=${java_version}"
   },
   "recommends": {
-    "cloth-config": ">=7"
+    "cloth-config": "${cloth_config_version_range}"
   }
 }

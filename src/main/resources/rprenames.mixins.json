@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.HiWord9.RPRenames.mixin",
+  "package": "${mod_main_dir}.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AnvilScreenMixin",
@@ -12,5 +12,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "rprenames-refmap.json"
+  "refmap": "${mod_id}-refmap.json"
 }
