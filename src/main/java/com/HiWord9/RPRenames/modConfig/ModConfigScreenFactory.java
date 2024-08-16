@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
@@ -42,18 +43,6 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.enableAnvilModification)
                 .build();
 
-        AbstractConfigListEntry<Integer> favoriteButtonX = entryBuilder.startIntField(Text.translatable("rprenames.config.general.favoriteButtonPositionCategory.x"), currentConfig.favoritePosX)
-                .setTooltip(Text.translatable("rprenames.config.general.favoriteButtonPositionCategory.x.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.favoritePosX = newConfig)
-                .setDefaultValue(defaultConfig.favoritePosX)
-                .build();
-
-        AbstractConfigListEntry<Integer> favoriteButtonY = entryBuilder.startIntField(Text.translatable("rprenames.config.general.favoriteButtonPositionCategory.y"), currentConfig.favoritePosY)
-                .setTooltip(Text.translatable("rprenames.config.general.favoriteButtonPositionCategory.y.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.favoritePosY = newConfig)
-                .setDefaultValue(defaultConfig.favoritePosY)
-                .build();
-
         AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.creativeTabCategory.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
                 .setTooltip(Text.translatable("rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip"))
                 .setSaveConsumer(currentConfig::setCompareItemGroupRenames)
@@ -83,6 +72,13 @@ public class ModConfigScreenFactory {
                 .setTooltip(Text.translatable("rprenames.config.gui.offsetMenu.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.offsetMenu = newConfig)
                 .setDefaultValue(defaultConfig.offsetMenu)
+                .build();
+
+        AbstractConfigListEntry<FavoriteButton.Position> favoriteButtonPosition = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.favoriteButtonPosition"), FavoriteButton.Position.class, currentConfig.favoriteButtonPosition)
+                .setTooltip(Text.translatable("rprenames.config.gui.favoriteButtonPosition.tooltip"))
+                .setEnumNameProvider(value -> Text.translatable("rprenames.config.gui.favoriteButtonPosition." + value.name()))
+                .setSaveConsumer(newConfig -> currentConfig.favoriteButtonPosition = newConfig)
+                .setDefaultValue(defaultConfig.favoriteButtonPosition)
                 .build();
 
         AbstractConfigListEntry<Boolean> showPackName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.showPackName"), currentConfig.showPackName)
@@ -286,12 +282,6 @@ public class ModConfigScreenFactory {
         general.addEntry(ignoreCEM);
         general.addEntry(enableAnvilModification);
 
-        SubCategoryBuilder favoriteButtonPosition = entryBuilder.startSubCategory(Text.translatable("rprenames.config.general.favoriteButtonPositionCategory"));
-        favoriteButtonPosition.add(0, favoriteButtonX);
-        favoriteButtonPosition.add(1, favoriteButtonY);
-
-        general.addEntry(favoriteButtonPosition.build());
-
         SubCategoryBuilder creativeTabCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.general.creativeTabCategory"));
         creativeTabCategory.add(0, compareItemGroupRenames);
         creativeTabCategory.add(1, generateSpawnEggsInItemGroup);
@@ -302,6 +292,7 @@ public class ModConfigScreenFactory {
 
         gui.addEntry(openByDefault);
         gui.addEntry(offsetMenu);
+        gui.addEntry(favoriteButtonPosition);
 
         SubCategoryBuilder tooltipSlotCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.tooltipCategory.tooltipSlotCategory"));
         tooltipSlotCategory.add(0, highlightTooltipSlotWrong);

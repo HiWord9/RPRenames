@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
@@ -16,8 +17,7 @@ public class ModConfig {
 
     public boolean enableAnvilModification = true;
 
-    public int favoritePosX = 71; //todo government (limit rights (remove optionality))
-    public int favoritePosY = -75;
+    public FavoriteButton.Position favoriteButtonPosition = FavoriteButton.Position.TOP_RIGHT;
 
     public boolean compareItemGroupRenames = true;
     public void setCompareItemGroupRenames(boolean compareItemGroupRenames) {

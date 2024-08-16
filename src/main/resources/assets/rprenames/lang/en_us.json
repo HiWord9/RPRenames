@@ -29,11 +29,6 @@
   "rprenames.config.general.enableAnvilModification": "Show RP Renames button",
   "rprenames.config.general.enableAnvilModification.tooltip": "If false, it wont do any modifications of anvil screen",
 
-  "rprenames.config.general.favoriteButtonPositionCategory.x": "\"Add to Favorite\" button X",
-  "rprenames.config.general.favoriteButtonPositionCategory.x.tooltip": "Counts from center to right",
-  "rprenames.config.general.favoriteButtonPositionCategory.y": "\"Add to Favorite\" button Y",
-  "rprenames.config.general.favoriteButtonPositionCategory.y.tooltip": "Counts from center to bottom",
-
   "rprenames.config.general.creativeTabCategory.compareItemGroupRenames": "Compare Renames in Item Group",
   "rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip": "If true, Renames with multiple matching items\nwill be shown once in RPRenames Creative Tab",
   "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup": "Convert CEM Renames to Spawn Eggs",
@@ -46,6 +41,12 @@
   "rprenames.config.gui.openByDefault.tooltip": "If true, opens RP Renames menu automatically",
   "rprenames.config.gui.offsetMenu": "Offset Menu",
   "rprenames.config.gui.offsetMenu.tooltip": "If false, Gui will not be centered on screen",
+
+  "rprenames.config.gui.favoriteButtonPosition": "\"Add to Favorites\" button's position",
+  "rprenames.config.gui.favoriteButtonPosition.tooltip": "Where to locate the \"Add to Favorites\" button on Screen\nTop right corner by default",
+  "rprenames.config.gui.favoriteButtonPosition.TOP_RIGHT": "Top Right Corner",
+  "rprenames.config.gui.favoriteButtonPosition.LEFT_FROM_NAMEFIELD": "To the Left of Name Field",
+  "rprenames.config.gui.favoriteButtonPosition.RIGHT_FROM_RESULT_SLOT": "To the Right of Result Slot",
 
   "rprenames.config.gui.tooltipCategory.showPackName": "Show Pack name",
   "rprenames.config.gui.tooltipCategory.showPackName.tooltip": "If false, Pack name in Rename's tooltip won't be shown",
@@ -117,7 +118,6 @@
   "rprenames.config.debug.fixDelayedPacketsChangingTab": "Fix Tab Changing after Auto Placing items",
   "rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip": "Sometimes after placing items in anvil automatically server may response with 2 packets,\none for previous state and second one for actual slot update.\nRPR counts this changes as manually moving items by player,\nwhat leads to changing tab to Search and resetting name in nameField.\nIf this option true, it will try to fix it.\nIt is not recommended to turn it on if u haven't faced this problem.",
 
-  "rprenames.config.general.favoriteButtonPositionCategory": "\"Add to Favorite\" Button Position",
   "rprenames.config.general.creativeTabCategory": "RPRenames Creative Tab",
   "rprenames.config.gui.tooltipCategory": "Tooltip",
   "rprenames.config.gui.tooltipCategory.tooltipSlotCategory": "Slots",

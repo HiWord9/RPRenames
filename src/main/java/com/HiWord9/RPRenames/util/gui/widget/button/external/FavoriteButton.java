@@ -21,8 +21,12 @@ public class FavoriteButton extends ClickableWidget {
 
     boolean favorite = false;
 
-    public FavoriteButton(RPRWidget instance, int x, int y) {
-        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+    public FavoriteButton(RPRWidget instance, int x, int y, Position offset) {
+        this(instance, x + offset.getX(), y + offset.getY());
+    }
+
+    public FavoriteButton(RPRWidget instance, int globalX, int globalY) {
+        super(globalX, globalY, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         rprWidget = instance;
     }
 
@@ -48,5 +52,27 @@ public class FavoriteButton extends ClickableWidget {
 
     public void setFavorite(boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public enum Position {
+        TOP_RIGHT(159, 8),
+        LEFT_FROM_NAMEFIELD(47, 23),
+        RIGHT_FROM_RESULT_SLOT(156, 50);
+
+        final int x;
+        final int y;
+
+        Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
     }
 }

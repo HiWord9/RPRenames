@@ -62,7 +62,7 @@ public abstract class AnvilScreenMixin extends Screen {
         int y = ((AnvilScreen) client.currentScreen).y;
 
         opener = new OpenerButton(rprWidget, x + 3, y + 44, this::onToggleOpenRPRWidget);
-        favoriteButton = new FavoriteButton(rprWidget, x + 88 + config.favoritePosX, y + 83 + config.favoritePosY);
+        favoriteButton = new FavoriteButton(rprWidget, x, y, config.favoriteButtonPosition);
 
         DefaultedList<Slot> slots = ((AnvilScreen) client.currentScreen).getScreenHandler().slots;
         ghostCraft = new GhostCraft(
