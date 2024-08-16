@@ -161,15 +161,7 @@ public class ModConfigScreenFactory {
 
         AbstractConfigListEntry<PreviewTooltipPositioner.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), PreviewTooltipPositioner.PreviewPos.class, currentConfig.previewPos)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.previewPos.tooltip"))
-                .setEnumNameProvider(value -> {
-                    if (value == PreviewTooltipPositioner.PreviewPos.BOTTOM) {
-                        return Text.translatable("rprenames.config.gui.previewCategory.previewPos.bottom");
-                    } else if (value == PreviewTooltipPositioner.PreviewPos.LEFT) {
-                        return Text.translatable("rprenames.config.gui.previewCategory.previewPos.left");
-                    } else {
-                        return Text.translatable("rprenames.config.gui.previewCategory.previewPos.top");
-                    }
-                })
+                .setEnumNameProvider(value -> Text.translatable("rprenames.config.gui.previewCategory.previewPos." + value.name()))
                 .setSaveConsumer(newConfig -> currentConfig.previewPos = newConfig)
                 .setDefaultValue(defaultConfig.previewPos)
                 .build();

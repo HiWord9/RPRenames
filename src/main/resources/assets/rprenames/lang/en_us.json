@@ -77,9 +77,9 @@
   "rprenames.config.gui.previewCategory.enablePreview.tooltip": "If false, Preview wont be shown",
   "rprenames.config.gui.previewCategory.previewPos": "Preview Position",
   "rprenames.config.gui.previewCategory.previewPos.tooltip": "In which direction from Cursor to show the Preview",
-  "rprenames.config.gui.previewCategory.previewPos.bottom": "Bottom",
-  "rprenames.config.gui.previewCategory.previewPos.left": "Left",
-  "rprenames.config.gui.previewCategory.previewPos.top": "Top",
+  "rprenames.config.gui.previewCategory.previewPos.BOTTOM": "Bottom",
+  "rprenames.config.gui.previewCategory.previewPos.LEFT": "Left",
+  "rprenames.config.gui.previewCategory.previewPos.TOP": "Top",
 
   "rprenames.config.gui.previewCategory.playerCategory.playerPreviewByDefault": "Show Player Preview by default",
   "rprenames.config.gui.previewCategory.playerCategory.playerPreviewByDefault.tooltip": "If true, Player Preview will be shown by default instead of Item Preview",
