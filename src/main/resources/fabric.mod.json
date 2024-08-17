@@ -18,12 +18,13 @@
       "links": {
         "modmenu.curseforge": "${mod_homepage_curseforge}",
         "modmenu.modrinth": "${mod_homepage_modrinth}",
-        "modmenu.donate": "${mod_donate_paypal}"
+        "modmenu.donate": "${mod_donate_paypal}",
+        "License": "${mod_license_link}/${mod_license_version}"
       }
     }
   },
 
-  "license": "${mod_license}",
+  "license": "${mod_license} ${mod_license_version}",
   "icon": "assets/${mod_id}/icon.png",
 
   "environment": "*",

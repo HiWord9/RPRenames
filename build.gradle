@@ -39,6 +39,7 @@ dependencies {
 }
 
 processResources {
+
 	def expandProps = [
 			"version"                         : version,
 			"group"                           : project.group, //Else we target the task's group.
@@ -60,14 +61,15 @@ processResources {
 
 			"mod_sources"                     : mod_sources,
 			"mod_issue_tracker"               : mod_issue_tracker,
+			"mod_license_link"                : mod_license_link,
 			"mod_license"                     : mod_license,
+			"mod_license_version"             : mod_license_version,
 
 			"minecraft_version_range"         : minecraft_version_range,
 			"loader_version_range"            : loader_version_range,
 			"cloth_config_version_range"      : cloth_config_version_range,
 			"java_version"                    : java_version
 	]
-
 	filesMatching(['fabric.mod.json', mod_id + '.mixins.json']) {
 		expand expandProps
 	}
