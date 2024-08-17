@@ -106,7 +106,6 @@ public abstract class AnvilScreenMixin extends Screen {
         } else {
             favoriteButton.active = false;
         }
-
     }
 
     private void onToggleOpenRPRWidget() {
@@ -125,7 +124,7 @@ public abstract class AnvilScreenMixin extends Screen {
     private void newNameEntered(String name, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
         if (!rprWidget.init) return;
-        rprWidget.onNameUpdate(name);
+        rprWidget.nameUpdate(name);
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"), method = "resize")
@@ -236,7 +235,7 @@ public abstract class AnvilScreenMixin extends Screen {
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
     private void itemUpdateReturn(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
-        rprWidget.onItemUpdate(slotId, stack);
+        rprWidget.itemUpdate(slotId, stack);
     }
 
     private void updateMenuShift() {

@@ -55,9 +55,9 @@ public class PageButton extends ClickableWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
             if (type == Type.DOWN) {
-                rprWidget.onPageDown();
+                rprWidget.prevPage();
             } else {
-                rprWidget.onPageUp();
+                rprWidget.nextPage();
             }
             return true;
         }
