@@ -12,8 +12,6 @@ public class OpenerButton extends ClickableWidget {
 
     RPRWidget rprWidget;
 
-    ExecuteAction executeAction;
-
     static final int BUTTON_WIDTH = 22;
     static final int BUTTON_HEIGHT = 22;
 
@@ -22,10 +20,9 @@ public class OpenerButton extends ClickableWidget {
     static final int FOCUSED_OFFSET_V = 22;
     static final int OPENED_OFFSET_V = 44;
 
-    public OpenerButton(RPRWidget instance, int x, int y, ExecuteAction executeAction) {
+    public OpenerButton(RPRWidget instance, int x, int y) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         rprWidget = instance;
-        this.executeAction = executeAction;
     }
 
     @Override
@@ -40,7 +37,7 @@ public class OpenerButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
-            executeAction.execute();
+            execute();
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -49,7 +46,7 @@ public class OpenerButton extends ClickableWidget {
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
-    public interface ExecuteAction {
-        void execute();
+    public void execute() {
+        rprWidget.toggleOpen();
     }
 }

@@ -1,14 +1,15 @@
 package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.gui.*;
-import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.PlayerPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.InputUtil;
@@ -224,7 +225,9 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
                                     .asOrderedText()));
                 }
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
-                rprWidget.getScreen().setFocused(null);
+                Screen screen = MinecraftClient.getInstance().currentScreen;
+                if (screen != null) screen.setFocused(null);
+
                 if (!config.disablePlayerPreviewTips) {
                     tooltipAddition.add(TooltipComponent.of(
                             Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF")

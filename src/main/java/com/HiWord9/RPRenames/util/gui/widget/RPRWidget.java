@@ -2,10 +2,17 @@ package com.HiWord9.RPRenames.util.gui.widget;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.config.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.widget.button.*;
-import com.HiWord9.RPRenames.util.rename.*;
+import com.HiWord9.RPRenames.util.gui.widget.button.PageButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.RandomButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.RenameButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.TabButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,6 +24,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,7 +40,7 @@ import java.util.List;
 
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class RPRWidget implements Drawable, Element {
+public class RPRWidget implements Drawable, Element/*, Widget*/ {
     protected ModConfig config = ModConfig.INSTANCE;
     protected static Identifier MENU_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/menu.png");
 
@@ -48,26 +56,15 @@ public class RPRWidget implements Drawable, Element {
     static final int PAGE_BUTTONS_Y = 136;
 
     MinecraftClient client;
-    Screen screen;
+    RPRInteractableScreen interactableScreen;
+
+    TextFieldWidget nameField;
+    OpenerButton openerButton;
+    FavoriteButton favoriteButton;
+    GhostCraft ghostCraft;
+
     int x;
     int y;
-
-    ConnectionName connectionName = new ConnectionName() {
-        public String getText() {return "";}
-        public void setText(String name) {}
-    };
-    ConnectionSlotMovement connectionSlotMovement = new ConnectionSlotMovement() {
-        public void putInWorkSlot(int slotInInventory) {}
-        public void takeFromWorkSlot(int slotInWorkspace) {}
-    };
-    ConnectionFavoriteButton connectionFavoriteButton = (name, item) -> {};
-    ConnectionGhostCraft connectionGhostCraft = new ConnectionGhostCraft() {
-        public void reset() {}
-        public void setStacks(ItemStack stack1, ItemStack stack2, ItemStack stack3) {}
-        public void setRender(boolean doRender) {}
-        public void setSpecialHighlight(Boolean highlightSlot1, Boolean highlightSlot2, Boolean highlightSlot3) {}
-        public ItemStack getStackInFirstSlot() {return ItemStack.EMPTY;}
-    };
 
     public boolean init = false;
 
@@ -114,11 +111,22 @@ public class RPRWidget implements Drawable, Element {
 
     public RPRWidget() {}
 
-    public void init(MinecraftClient minecraftClient, @Nullable Screen parentScreen, int x, int y) {
+    public void init(int x, int y,
+                     @Nullable RPRInteractableScreen parentScreen,
+                     TextFieldWidget nameField,
+                     OpenerButton openerButton,
+                     FavoriteButton favoriteButton,
+                     GhostCraft ghostCraft) {
         this.init = true;
 
-        this.client = minecraftClient;
-        this.screen = parentScreen;
+        this.client = MinecraftClient.getInstance();
+
+        this.nameField = nameField;
+        this.openerButton = openerButton;
+        this.favoriteButton = favoriteButton;
+        this.ghostCraft = ghostCraft;
+
+        this.interactableScreen = parentScreen;
         this.x = x;
         this.y = y;
 
@@ -144,29 +152,8 @@ public class RPRWidget implements Drawable, Element {
                 randomButton, searchField
         ));
 
+        updateFavoriteButton();
         screenUpdate();
-    }
-
-    public void connect(
-            ConnectionName connectionName,
-            ConnectionSlotMovement connectionSlotMovement,
-            ConnectionFavoriteButton connectionFavoriteButton,
-            ConnectionGhostCraft connectionGhostCraft
-    ) {
-        if (connectionName != null) {
-            this.connectionName = connectionName;
-        }
-        if (connectionSlotMovement != null) {
-            this.connectionSlotMovement = connectionSlotMovement;
-        }
-        if (connectionFavoriteButton != null) {
-            this.connectionFavoriteButton = connectionFavoriteButton;
-        }
-        if (connectionGhostCraft != null) {
-            this.connectionGhostCraft = connectionGhostCraft;
-        }
-
-        favoriteButtonUpdate(this.connectionName.getText());
     }
 
     public boolean isOpen() {
@@ -179,6 +166,7 @@ public class RPRWidget implements Drawable, Element {
         } else {
             close();
         }
+        interactableScreen.updateMenuShift();
     }
 
     public void open() {
@@ -189,6 +177,9 @@ public class RPRWidget implements Drawable, Element {
             currentTab = Tab.SEARCH;
         }
         screenUpdate();
+
+        nameField.setFocused(false);
+        nameField.setFocusUnlocked(true);
     }
 
     public void close() {
@@ -198,6 +189,17 @@ public class RPRWidget implements Drawable, Element {
         searchField.setText("");
         updateWidgets();
         currentTab = Tab.SEARCH;
+
+        nameField.setFocused(true);
+        nameField.setFocusUnlocked(false);
+    }
+
+    public String getNameText() {
+        return nameField.getText();
+    }
+
+    public void setNameText(String text) {
+        nameField.setText(text);
     }
 
     public void setTab(Tab tab) {
@@ -233,14 +235,14 @@ public class RPRWidget implements Drawable, Element {
 
     public Item getItemInFirstSlot() {
         Item item = currentItem.getItem();
-        if (item == Items.AIR && !connectionGhostCraft.getStackInFirstSlot().isEmpty()) {
-            item = connectionGhostCraft.getStackInFirstSlot().getItem();
+        if (item == Items.AIR && !ghostCraft.getStackInFirstSlot().isEmpty()) {
+            item = ghostCraft.getStackInFirstSlot().getItem();
         }
         return item;
     }
 
     public void addOrRemoveFavorite(boolean add) {
-        addOrRemoveFavorite(add, connectionName.getText(), getItemInFirstSlot());
+        addOrRemoveFavorite(add, getNameText(), getItemInFirstSlot());
     }
 
     public void addOrRemoveFavorite(boolean add, String favoriteName, Item item) {
@@ -250,7 +252,7 @@ public class RPRWidget implements Drawable, Element {
             } else {
                 FavoritesManager.removeFromFavorites(favoriteName, item);
             }
-            favoriteButtonUpdate(connectionName.getText());
+            updateFavoriteButton();
             if (open) {
                 screenUpdate(page);
             }
@@ -272,43 +274,43 @@ public class RPRWidget implements Drawable, Element {
     }
 
     private void executeRename(AbstractRename rename, boolean isInInventory, int indexInInventory, boolean asCurrentItem) {
-        connectionGhostCraft.reset();
+        ghostCraft.reset();
         if (isInInventory) {
             if (indexInInventory != 36) { //in inventory
                 shouldNotUpdateTab = getCurrentTab() == Tab.INVENTORY || getCurrentTab() == Tab.GLOBAL;
                 tempPage = page;
                 if (!asCurrentItem) {
-                    connectionSlotMovement.putInWorkSlot(indexInInventory);
+                    interactableScreen.moveToCraft(indexInInventory, 0);
                 }
                 shouldNotUpdateTab = false;
             } else { //in work slot
-                connectionSlotMovement.takeFromWorkSlot(1);
+                interactableScreen.moveToInventory(1);
             }
 
             if (rename instanceof CITRename citRename) {
                 CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, currentItem);
                 if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
-                    connectionGhostCraft.setSpecialHighlight(true, null, true);
-                    connectionGhostCraft.setRender(true);
+                    ghostCraft.setSpecialHighlight(true, null, true);
+                    ghostCraft.setRender(true);
                 }
                 if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
-                    connectionGhostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
-                    connectionGhostCraft.setSpecialHighlight(null, null, true);
-                    connectionGhostCraft.setRender(true);
+                    ghostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
+                    ghostCraft.setSpecialHighlight(null, null, true);
+                    ghostCraft.setRender(true);
                 }
             }
         } else { //not in inventory
             for (int s = 0; s < 2; s++) {
-                connectionSlotMovement.takeFromWorkSlot(s);
+                interactableScreen.moveToInventory(s);
             }
 
-            ItemStack[] ghostCraftItems = RenamesHelper.getGhostCraftItems(rename);
+            ItemStack[] ghostCraftStacks = RenamesHelper.getGhostCraftItems(rename);
 
-            connectionGhostCraft.setStacks(ghostCraftItems[0], ghostCraftItems[1], ghostCraftItems[2]);
-            connectionGhostCraft.setRender(true);
+            ghostCraft.setStacks(ghostCraftStacks[0], ghostCraftStacks[1], ghostCraftStacks[2]);
+            ghostCraft.setRender(true);
         }
 
-        connectionName.setText(rename.getName());
+        setNameText(rename.getName());
     }
 
     private void favoriteInGui(boolean favorite, AbstractRename rename, boolean asCurrentItem, boolean isInInventory, int indexInInventory) {
@@ -325,7 +327,7 @@ public class RPRWidget implements Drawable, Element {
                         FavoritesManager.removeFromFavorites(rename.getName(), i);
                     }
                 }
-                favoriteButtonUpdate(connectionName.getText());
+                updateFavoriteButton();
                 if (isOpen()) {
                     screenUpdate(getPage());
                 }
@@ -349,10 +351,6 @@ public class RPRWidget implements Drawable, Element {
         buttons.get(renameNumber % maxPageElements).execute(0);
     }
 
-    public Screen getScreen() {
-        return screen;
-    }
-
     public void screenUpdate() {
         screenUpdate(0);
     }
@@ -370,8 +368,8 @@ public class RPRWidget implements Drawable, Element {
         }
     }
 
-    public void nameUpdate(String name) {
-        favoriteButtonUpdate(name);
+    public void updateName() {
+        updateFavoriteButton();
         updateSelected();
     }
 
@@ -379,6 +377,7 @@ public class RPRWidget implements Drawable, Element {
         if (slotId == 0) {
             currentItem = stack.copy();
             if (stack.isEmpty()) {
+                Screen screen = client.currentScreen;
                 if (screen != null && screen.getFocused() == searchField) {
                     screen.setFocused(null);
                 }
@@ -391,12 +390,12 @@ public class RPRWidget implements Drawable, Element {
             } else {
                 updateSearchRequest(page);
             }
-            favoriteButtonUpdate(connectionName.getText());
+            updateFavoriteButton();
         }
         if (slotId == 0 || slotId == 1) {
-            connectionGhostCraft.reset();
+            ghostCraft.reset();
             if (currentItem.isEmpty()) {
-                connectionName.setText("");
+                setNameText("");
             }
         }
     }
@@ -404,7 +403,7 @@ public class RPRWidget implements Drawable, Element {
     public void offsetX(int x) {
         this.x += x;
 
-        for (ClickableWidget widget : widgets) {
+        for (Widget widget : widgets) {
             widget.setX(widget.getX() + x);
         }
         for (RenameButton renameButton : buttons) {
@@ -467,8 +466,22 @@ public class RPRWidget implements Drawable, Element {
         return item;
     }
 
-    private void favoriteButtonUpdate(String name) {
-        connectionFavoriteButton.update(name, getItemInFirstSlot());
+    private void updateFavoriteButton() {
+        updateFavoriteButton(getNameText());
+    }
+
+    private void updateFavoriteButton(String name) {
+        updateFavoriteButton(name, getItemInFirstSlot());
+    }
+
+    private void updateFavoriteButton(String name, Item item) {
+        if (!name.isEmpty()) {
+            favoriteButton.active = true;
+            boolean favorite = FavoritesManager.isFavorite(item, name);
+            favoriteButton.setFavorite(favorite);
+        } else {
+            favoriteButton.active = false;
+        }
     }
 
     @Override
@@ -480,7 +493,13 @@ public class RPRWidget implements Drawable, Element {
         checkForInvChanges();
 
         RenderSystem.enableDepthTest();
-        context.drawTexture(MENU_TEXTURE, this.x + MENU_START_X, this.y, 0, 0, 0, MENU_TEXTURE_WIDTH, WIDGET_HEIGHT, MENU_TEXTURE_WIDTH, WIDGET_HEIGHT);
+        context.drawTexture(
+                MENU_TEXTURE,
+                this.x + MENU_START_X, this.y, 0,
+                0, 0,
+                MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT,
+                MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT
+        );
 
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(context, SEARCH_HINT_TEXT, -1, this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET, this.y + 15, true, false);
@@ -508,7 +527,7 @@ public class RPRWidget implements Drawable, Element {
         for (RenameButton renameButton : buttons) {
             renameButton.render(context, mouseX, mouseY, 0);
         }
-        for (ClickableWidget widget : widgets) {
+        for (Drawable widget : widgets) {
             widget.render(context, mouseX, mouseY, 0);
         }
         for (RenameButton renameButton : buttons) {
@@ -520,7 +539,8 @@ public class RPRWidget implements Drawable, Element {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (open) {
-            for (ClickableWidget widget : widgets) {
+            Screen screen =  client.currentScreen;
+            for (Element widget : widgets) {
                 if (widget.mouseClicked(mouseX, mouseY, button)) {
                     if (widget == searchField && screen != null) {
                         screen.setFocused(searchField);
@@ -542,7 +562,7 @@ public class RPRWidget implements Drawable, Element {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (ClickableWidget widget : widgets) {
+        for (Element widget : widgets) {
             if (widget.keyPressed(keyCode, scanCode, modifiers)) return true;
         }
         return false;
@@ -637,7 +657,7 @@ public class RPRWidget implements Drawable, Element {
         for (RenameButton button : buttons) {
             if (button == null) continue;
             button.setSelected(button.rename.getItems().contains(getItemInFirstSlot())
-                    && button.rename.getName().equals(connectionName.getText()));
+                    && button.rename.getName().equals(getNameText()));
         }
     }
 
@@ -659,28 +679,5 @@ public class RPRWidget implements Drawable, Element {
         FAVORITE,
         INVENTORY,
         GLOBAL
-    }
-
-    public interface ConnectionName {
-        String getText();
-        void setText(String name);
-
-    }
-    public interface ConnectionSlotMovement {
-        void putInWorkSlot(int slotInInventory);
-        void takeFromWorkSlot(int slotInWorkspace);
-
-    }
-    public interface ConnectionFavoriteButton {
-        void update(String name, Item item);
-
-    }
-    public interface ConnectionGhostCraft {
-        void reset();
-        void setStacks(ItemStack stack1, ItemStack stack2, ItemStack stack3);
-        void setRender(boolean doRender);
-        void setSpecialHighlight(Boolean highlightSlot1, Boolean highlightSlot2, Boolean highlightSlot3);
-        ItemStack getStackInFirstSlot();
-
     }
 }

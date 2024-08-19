@@ -1,23 +1,20 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.FavoritesManager;
-import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
-import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
+import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = AnvilScreen.class, priority = 1200)
-public abstract class AnvilScreenMixin extends Screen {
+public abstract class AnvilScreenMixin extends Screen implements RPRInteractableScreen {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     protected AnvilScreenMixin(Text title) {
@@ -61,7 +58,7 @@ public abstract class AnvilScreenMixin extends Screen {
         int x = ((AnvilScreen) client.currentScreen).x;
         int y = ((AnvilScreen) client.currentScreen).y;
 
-        opener = new OpenerButton(rprWidget, x + 3, y + 44, this::onToggleOpenRPRWidget);
+        opener = new OpenerButton(rprWidget, x + 3, y + 44);
         favoriteButton = new FavoriteButton(rprWidget, x, y, config.favoriteButtonPosition);
 
         DefaultedList<Slot> slots = ((AnvilScreen) client.currentScreen).getScreenHandler().slots;
@@ -71,60 +68,30 @@ public abstract class AnvilScreenMixin extends Screen {
                 new GhostCraft.GhostSlot(x + slots.get(2).x - 1, y + slots.get(2).y - 1)
         );
 
-        rprWidget.init(client, client.currentScreen, x - RPRWidget.WIDGET_WIDTH - menuXOffset, y);
-        rprWidget.connect(
-                new RPRWidget.ConnectionName() {
-                    public String getText() {
-                        return nameField.getText();
-                    }
-                    public void setText(String name) {
-                        nameField.setText(name);
-                    }
-                },
-                new RPRWidget.ConnectionSlotMovement() {
-                    public void putInWorkSlot(int slotInInventory) {
-                        putInAnvil(slotInInventory);
-                    }
-                    public void takeFromWorkSlot(int slotInWorkspace) {
-                        moveToInventory(slotInWorkspace);
-                    }
-                },
-                this::onFavoriteButtonUpdate,
+        RPRInteractableScreen rprInteractableScreen = null;
+        if (client.currentScreen instanceof RPRInteractableScreen screen) {
+            rprInteractableScreen = screen;
+        }
+
+        rprWidget.init(
+                x - RPRWidget.WIDGET_WIDTH - menuXOffset, y,
+                rprInteractableScreen,
+                nameField,
+                opener,
+                favoriteButton,
                 ghostCraft
         );
 
         if (config.openByDefault) {
-            onToggleOpenRPRWidget();
-        }
-    }
-
-    private void onFavoriteButtonUpdate(String name, Item item) {
-        if (!name.isEmpty()) {
-            favoriteButton.active = true;
-            boolean favorite = FavoritesManager.isFavorite(item, name);
-            favoriteButton.setFavorite(favorite);
-        } else {
-            favoriteButton.active = false;
-        }
-    }
-
-    private void onToggleOpenRPRWidget() {
-        rprWidget.toggleOpen();
-        updateMenuShift();
-        if (rprWidget.isOpen()) {
-            nameField.setFocused(false);
-            nameField.setFocusUnlocked(true);
-        } else {
-            nameField.setFocused(true);
-            nameField.setFocusUnlocked(false);
+            opener.execute();
         }
     }
 
     @Inject(at = @At("RETURN"), method = "onRenamed")
-    private void newNameEntered(String name, CallbackInfo ci) {
+    private void newNameEntered(CallbackInfo ci) {
         if (!config.enableAnvilModification) return;
         if (!rprWidget.init) return;
-        rprWidget.nameUpdate(name);
+        rprWidget.updateName();
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"), method = "resize")
@@ -136,11 +103,11 @@ public abstract class AnvilScreenMixin extends Screen {
         String tempSearchFieldText = rprWidget.searchField.getText();
         boolean prevOpen = rprWidget.isOpen();
         if (prevOpen) {
-            onToggleOpenRPRWidget();
+            opener.execute();
         }
         instance.init(client, width, height);
         if (prevOpen && !rprWidget.isOpen()) {
-            onToggleOpenRPRWidget();
+            opener.execute();
         }
         rprWidget.searchField.setText(tempSearchFieldText);
     }
@@ -238,7 +205,7 @@ public abstract class AnvilScreenMixin extends Screen {
         rprWidget.itemUpdate(slotId, stack);
     }
 
-    private void updateMenuShift() {
+    public void updateMenuShift() {
         if (!config.offsetMenu) return;
         offsetX(menuShift * (rprWidget.isOpen() ? 1 : -1));
     }
@@ -275,9 +242,8 @@ public abstract class AnvilScreenMixin extends Screen {
         matrices.pop();
     }
 
-    private void putInAnvil(int slotInInventory) {
-        if (client == null || client.player == null || client.interactionManager == null) return;
-        int syncId = client.player.currentScreenHandler.syncId;
+    public void moveToCraft(int slotInInventory, int workSlot) {
+        if (client == null) return;
 
         if (
                 config.fixDelayedPacketsChangingTab
@@ -285,31 +251,7 @@ public abstract class AnvilScreenMixin extends Screen {
                 && !rprWidget.getCurrentItem().isEmpty()
         ) afterPutInAnvilFirst = true;
 
-        if (slotInInventory >= 9) {
-            int i = slotInInventory - 9;
-            i += 3;
-
-            client.interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, client.player);
-            client.interactionManager.clickSlot(syncId, 0, 0, SlotActionType.PICKUP, client.player);
-            client.interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, client.player);
-        } else {
-            client.interactionManager.clickSlot(syncId, 0, slotInInventory, SlotActionType.SWAP, client.player);
-        }
-    }
-
-    private void moveToInventory(int slot) {
-        assert (client != null ? client.player : null) != null;
-        PlayerInventory inventory = client.player.getInventory();
-        ItemStack stack = client.player.currentScreenHandler.slots.get(slot).getStack();
-        if (!stack.isEmpty()) {
-            int syncId = client.player.currentScreenHandler.syncId;
-            assert client.interactionManager != null;
-            if (inventory.getOccupiedSlotWithRoomForStack(stack) != -1 || inventory.getEmptySlot() != -1) {
-                client.interactionManager.clickSlot(syncId, slot, 0, SlotActionType.QUICK_MOVE, client.player);
-                moveToInventory(slot);
-            } else {
-                client.interactionManager.clickSlot(syncId, slot, 99, SlotActionType.THROW, client.player);
-            }
-        }
+        // using internal method to be able to add extra logic
+        RPRInteractableScreen.moveToCraftInternal(slotInInventory, workSlot, 3);
     }
 }

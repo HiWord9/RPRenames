@@ -4,12 +4,14 @@ import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 
-import static com.HiWord9.RPRenames.util.gui.Graphics.*;
+import static com.HiWord9.RPRenames.util.gui.Graphics.HIGHLIGHT_COLOR_WRONG;
+import static com.HiWord9.RPRenames.util.gui.Graphics.SLOT_SIZE;
 
-public class GhostCraft implements RPRWidget.ConnectionGhostCraft, Drawable {
+public class GhostCraft implements Drawable, Element {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     public GhostSlot slot1;
@@ -48,6 +50,12 @@ public class GhostCraft implements RPRWidget.ConnectionGhostCraft, Drawable {
         reset();
         return true;
     }
+
+    @Override
+    public void setFocused(boolean focused) {}
+
+    @Override
+    public boolean isFocused() {return false;}
 
     public void setRender(boolean doRender) {
         this.doRender = doRender;
