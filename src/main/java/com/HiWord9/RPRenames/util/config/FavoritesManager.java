@@ -119,7 +119,7 @@ public class FavoritesManager {
                     .create();
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             RPRenames.LOGGER.error("Could not read Favorites from file {}", file, e);
         }
         return renames;
@@ -134,7 +134,7 @@ public class FavoritesManager {
                     .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             RPRenames.LOGGER.error("Could not write Favorites for {}", item, e);
         }
     }
