@@ -1,12 +1,12 @@
 package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.RenameSerializer;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.google.common.reflect.TypeToken;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
@@ -17,7 +17,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FavoritesManager {
 
@@ -39,28 +41,7 @@ public class FavoritesManager {
     }
 
     public static ArrayList<AbstractRename> getFavorites(Item item) {
-        ArrayList<AbstractRename> renames = savedFavorites(item);
-
-        fixRenameItemsIfNeeded(renames, item);
-
-        return renames;
-    }
-
-    private static void fixRenameItemsIfNeeded(ArrayList<AbstractRename> renames, Item item) {
-        boolean fix = false;
-        for (AbstractRename rename : renames) {
-            if (rename instanceof CITRename citRename) {
-                RPRenames.LOGGER.error("Fixing items list for favorite Rename \"{}\". Looks like it was created in ver <0.8.0", rename.getName());
-                citRename.setItems(new ArrayList<>(List.of(item)));
-                fix = true;
-            }
-        }
-        if (!fix) return;
-        RPRenames.LOGGER.warn("Recreating Favorite Renames List File for \"{}\" with fixed Items.", item);
-        deleteFavoriteConfigFile(item);
-        for (AbstractRename rename : renames) {
-            addToFavorites(rename.getName(), item);
-        }
+        return savedFavorites(item);
     }
 
     public static void addToFavorites(String favoriteName, Item item) {
@@ -112,8 +93,7 @@ public class FavoritesManager {
         ArrayList<AbstractRename> renames = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(file);
-            Type type = new TypeToken<ArrayList<AbstractRename>>() {
-            }.getType();
+            Type type = new TypeToken<ArrayList<AbstractRename>>(){}.getType();
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(AbstractRename.class, new RenameSerializer())
                     .create();
