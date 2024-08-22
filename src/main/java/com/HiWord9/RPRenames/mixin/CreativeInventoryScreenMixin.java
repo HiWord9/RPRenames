@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.FavoritesManager;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.rename.*;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.client.MinecraftClient;
@@ -74,7 +74,7 @@ public abstract class CreativeInventoryScreenMixin {
                 }
 
                 ArrayList<ItemStack> list = new ArrayList<>();
-                Map<Item, ArrayList<AbstractRename>> favoriteRenames = FavoritesManager.getAllFavorites();
+                Map<Item, ArrayList<AbstractRename>> favoriteRenames = FavoritesManager.getInstance().getAllFavorites();
                 for (Item key : favoriteRenames.keySet()) {
                     for (AbstractRename r : favoriteRenames.get(key)) {
                         for (int i = 0; i < r.getItems().size(); i++) {

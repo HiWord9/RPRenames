@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.gui.widget;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.RPRInteractableScreen;
-import com.HiWord9.RPRenames.util.config.FavoritesManager;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.button.PageButton;
 import com.HiWord9.RPRenames.util.gui.widget.button.RandomButton;
@@ -57,6 +57,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     MinecraftClient client;
     RPRInteractableScreen interactableScreen;
+    FavoritesManager favoritesManager;
 
     TextFieldWidget nameField;
     OpenerButton openerButton;
@@ -113,6 +114,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     public void init(int x, int y,
                      @Nullable RPRInteractableScreen parentScreen,
+                     FavoritesManager favoritesManager,
                      TextFieldWidget nameField,
                      OpenerButton openerButton,
                      FavoriteButton favoriteButton,
@@ -120,6 +122,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         this.init = true;
 
         this.client = MinecraftClient.getInstance();
+        this.favoritesManager = favoritesManager;
 
         this.nameField = nameField;
         this.openerButton = openerButton;
@@ -248,9 +251,9 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public void addOrRemoveFavorite(boolean add, String favoriteName, Item item) {
         if (item != Items.AIR) {
             if (add) {
-                FavoritesManager.addToFavorites(favoriteName, item);
+                favoritesManager.addToFavorites(favoriteName, item);
             } else {
-                FavoritesManager.removeFromFavorites(favoriteName, item);
+                favoritesManager.removeFromFavorites(favoriteName, item);
             }
             updateFavoriteButton();
             if (open) {
@@ -323,8 +326,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         } else {
             if (favorite) {
                 for (Item i : rename.getItems()) {
-                    if (FavoritesManager.isFavorite(i, rename.getName())) {
-                        FavoritesManager.removeFromFavorites(rename.getName(), i);
+                    if (favoritesManager.isFavorite(i, rename.getName())) {
+                        favoritesManager.removeFromFavorites(rename.getName(), i);
                     }
                 }
                 updateFavoriteButton();
@@ -477,7 +480,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     private void updateFavoriteButton(String name, Item item) {
         if (!name.isEmpty()) {
             favoriteButton.active = true;
-            boolean favorite = FavoritesManager.isFavorite(item, name);
+            boolean favorite = favoritesManager.isFavorite(item, name);
             favoriteButton.setFavorite(favorite);
         } else {
             favoriteButton.active = false;
@@ -577,7 +580,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     private void calcRenameList() {
         switch (currentTab) {
             case SEARCH -> originalRenameList = RenamesManager.getRenames(getItemInFirstSlot());
-            case FAVORITE -> originalRenameList = FavoritesManager.getFavorites(getItemInFirstSlot());
+            case FAVORITE -> originalRenameList = favoritesManager.getFavorites(getItemInFirstSlot());
             case INVENTORY -> {
                 ArrayList<Item> checked = new ArrayList<>();
                 ArrayList<AbstractRename> names = new ArrayList<>();
@@ -618,13 +621,13 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         boolean favorite = false;
         if (currentTab != Tab.SEARCH) {
             for (Item i : rename.getItems()) {
-                if (FavoritesManager.isFavorite(i, rename.getName())) {
+                if (favoritesManager.isFavorite(i, rename.getName())) {
                     favorite = true;
                     break;
                 }
             }
         } else {
-            favorite = FavoritesManager.isFavorite(getItemInFirstSlot(), rename.getName());
+            favorite = favoritesManager.isFavorite(getItemInFirstSlot(), rename.getName());
         }
 
         int buttonX = this.x + MENU_START_X + BUTTON_X_OFFSET;

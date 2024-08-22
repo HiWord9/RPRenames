@@ -2,6 +2,7 @@ package com.HiWord9.RPRenames.mixin;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.RPRInteractableScreen;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
@@ -76,6 +77,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         rprWidget.init(
                 x - RPRWidget.WIDGET_WIDTH - menuXOffset, y,
                 rprInteractableScreen,
+                FavoritesManager.getInstance(),
                 nameField,
                 opener,
                 favoriteButton,

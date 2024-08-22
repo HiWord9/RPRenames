@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.FavoritesManager;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
@@ -12,7 +12,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -175,7 +174,7 @@ public class RenamesHelper {
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
                 for (AbstractRename r : list) {
                     for (Item item : r.getItems()) {
-                        if (FavoritesManager.isFavorite(item, r.getName())) {
+                        if (FavoritesManager.getInstance().isFavorite(item, r.getName())) {
                             cutList.add(r);
                             break;
                         }

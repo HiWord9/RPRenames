@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
@@ -56,6 +57,8 @@ public class RPRenames implements ClientModInitializer {
 
         RenamesManager.parsers.add(new CITParser());
         RenamesManager.parsers.add(new CEMParser());
+
+        FavoritesManager.getInstance().loadSavedFavorites();
     }
 
     public static Identifier asId(String path) {
