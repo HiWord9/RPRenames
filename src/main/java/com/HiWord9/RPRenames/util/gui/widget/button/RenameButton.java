@@ -95,21 +95,12 @@ public class RenameButton extends ClickableWidget {
     }
 
     public void highlightSlot(DrawContext context, int xOffset, int yOffset, DefaultedList<Slot> slots, int highlightColor) {
-        for (Item item : rename.getItems()) {
-            int slotNum = -1;
-            int i = 0;
-            Slot slot = null;
-            for (Slot s : slots) {
-                if ((i != 1 && i != 2) && s.getStack().isOf(item)) {
-                    slotNum = i;
-                    slot = s;
-                    break;
-                }
-                i++;
+        for (int i = 0; i < slots.size(); i++) {
+            if (i == 1 || i == 2) continue;
+            Slot slot = slots.get(i);
+            if (rename.getItems().contains(slot.getStack().getItem())) {
+                Graphics.highlightSlot(context, xOffset, yOffset, slot, highlightColor);
             }
-            if (slotNum < 0) continue;
-
-            Graphics.highlightSlot(context, xOffset, yOffset, slot, highlightColor);
         }
     }
 }
