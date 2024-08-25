@@ -29,6 +29,34 @@ import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
+    private static final TooltipComponent playerPreviewTipShift = TooltipComponent.of(
+            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift",
+                            Text.translatable("rprenaess.key.shift").formatted(Formatting.GRAY))
+                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .asOrderedText()
+    );
+
+    private static final TooltipComponent playerPreviewTipF = TooltipComponent.of(
+            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF",
+                            Text.translatable("rprenaess.key.f").formatted(Formatting.GRAY))
+                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .asOrderedText()
+    );
+
+    private static final TooltipComponent favoriteTipAdd = TooltipComponent.of(
+            Text.translatable("rprenames.gui.tooltipHint.favorite.add",
+                            Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
+                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .asOrderedText()
+    );
+
+    private static final TooltipComponent favoriteTipRemove = TooltipComponent.of(
+            Text.translatable("rprenames.gui.tooltipHint.favorite.remove",
+                            Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
+                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .asOrderedText()
+    );
+
     CITRename rename;
     RPRWidget rprWidget;
     boolean favorite;
@@ -217,27 +245,16 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
         if (config.enablePreview) {
-            String action = null;
             if (!hasShiftDown() && !config.playerPreviewByDefault) {
-                action = "holdShift";
+                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewTipShift);
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
-                action = "pressF";
+                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewTipF);
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
             }
-            if (action != null && !config.disablePlayerPreviewTips) {
-                tooltipAddition.add(TooltipComponent.of(
-                        Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip." + action)
-                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
-                                .asOrderedText()));
-            }
         }
         if (!config.disableFavoriteTips) {
-            String action = favorite ? "remove" : "add";
-            tooltipAddition.add(TooltipComponent.of(
-                    Text.translatable("rprenames.gui.tooltipHint.favorite." + action)
-                            .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
-                            .asOrderedText()));
+            tooltipAddition.add(favorite ? favoriteTipRemove : favoriteTipAdd);
         }
         tooltipComponents.addAll(tooltipAddition);
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
