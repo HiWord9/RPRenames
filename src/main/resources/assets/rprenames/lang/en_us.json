@@ -12,6 +12,8 @@
   "rprenames.gui.tabs.tooltip.GLOBAL": "Global",
   "rprenames.gui.tooltipHint.playerPreviewTip.holdShift": "Hold Shift to view Player Preview",
   "rprenames.gui.tooltipHint.playerPreviewTip.pressF": "Press \"F\" to move Item to the next slot",
+  "rprenames.gui.tooltipHint.favorite.add": "RMB to mark as Favorite",
+  "rprenames.gui.tooltipHint.favorite.remove": "RMB to unmark as Favorites",
   "rprenames.gui.tooltipHint.stackSize": "Stack size:",
   "rprenames.gui.tooltipHint.damage": "Damage:",
   "rprenames.gui.tooltipHint.enchantment": "Enchantment:",
@@ -102,6 +104,8 @@
   "rprenames.config.gui.tipsCategory.disablePageArrowsTips.tooltip": "If true, Page Arrows Tips wont be shown if Shift is pressed",
   "rprenames.config.gui.tipsCategory.disablePlayerPreviewTips": "Disable Player Preview Tips",
   "rprenames.config.gui.tipsCategory.disablePlayerPreviewTips.tooltip": "If true, Tooltips wont tell Tips about Player Preview",
+  "rprenames.config.gui.tipsCategory.disableFavoriteTips": "Disable Marking as Favorite Tips",
+  "rprenames.config.gui.tipsCategory.disableFavoriteTips.tooltip": "If true, Tooltips wont tell Tips about marking Rename as Favorite on RMB",
 
   "rprenames.config.debug.updateConfig": "Update Renames",
   "rprenames.config.debug.updateConfig.tooltip": "Update or not Renames List on updating resource packs",

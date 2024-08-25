@@ -220,6 +220,12 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.disablePlayerPreviewTips)
                 .build();
 
+        AbstractConfigListEntry<Boolean> disableFavoriteTips = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tipsCategory.disableFavoriteTips"), currentConfig.disableFavoriteTips)
+                .setTooltip(Text.translatable("rprenames.config.gui.tipsCategory.disableFavoriteTips.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.disableFavoriteTips = newConfig)
+                .setDefaultValue(defaultConfig.disableFavoriteTips)
+                .build();
+
         AbstractConfigListEntry<Boolean> updateConfig = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.updateConfig"), currentConfig.updateConfig)
                 .setTooltip(Text.translatable("rprenames.config.debug.updateConfig.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.updateConfig = newConfig)
@@ -336,6 +342,7 @@ public class ModConfigScreenFactory {
         SubCategoryBuilder tipsCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.tipsCategory"));
         tipsCategory.add(0, disablePageArrowsTips);
         tipsCategory.add(1, disablePlayerPreviewTips);
+        tipsCategory.add(2, disableFavoriteTips);
 
         gui.addEntry(tipsCategory.build());
 

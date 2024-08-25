@@ -217,24 +217,27 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
         if (config.enablePreview) {
+            String action = null;
             if (!hasShiftDown() && !config.playerPreviewByDefault) {
-                if (!config.disablePlayerPreviewTips) {
-                    tooltipAddition.add(TooltipComponent.of(
-                            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift")
-                                    .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
-                                    .asOrderedText()));
-                }
+                action = "holdShift";
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
+                action = "pressF";
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
-
-                if (!config.disablePlayerPreviewTips) {
-                    tooltipAddition.add(TooltipComponent.of(
-                            Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF")
-                                    .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
-                                    .asOrderedText()));
-                }
             }
+            if (action != null && !config.disablePlayerPreviewTips) {
+                tooltipAddition.add(TooltipComponent.of(
+                        Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip." + action)
+                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                                .asOrderedText()));
+            }
+        }
+        if (!config.disableFavoriteTips) {
+            String action = favorite ? "remove" : "add";
+            tooltipAddition.add(TooltipComponent.of(
+                    Text.translatable("rprenames.gui.tooltipHint.favorite." + action)
+                            .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true))
+                            .asOrderedText()));
         }
         tooltipComponents.addAll(tooltipAddition);
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);

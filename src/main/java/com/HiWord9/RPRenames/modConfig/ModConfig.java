@@ -74,6 +74,7 @@ public class ModConfig {
 
     public boolean disablePageArrowsTips = false;
     public boolean disablePlayerPreviewTips = false;
+    public boolean disableFavoriteTips = false;
 
     public boolean updateConfig = true;
     public boolean showNamePattern = false;
