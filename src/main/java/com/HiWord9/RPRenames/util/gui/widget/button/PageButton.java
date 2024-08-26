@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -47,7 +46,7 @@ public class PageButton extends ClickableWidget {
         MinecraftClient client = MinecraftClient.getInstance();
         if (!config.disablePageArrowsTips && hasShiftDown() && active && hovered) {
             String key = "rprenames.gui.page" + (type == Type.DOWN ? "Down.toFirst" : "Up.toLast") + ".tooltip";
-            context.drawTooltip(client.textRenderer, Text.translatable(key).copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY).withItalic(true)), mouseX, mouseY);
+            context.drawTooltip(client.textRenderer, Text.translatable(key).formatted(Formatting.GRAY), mouseX, mouseY);
         }
     }
 

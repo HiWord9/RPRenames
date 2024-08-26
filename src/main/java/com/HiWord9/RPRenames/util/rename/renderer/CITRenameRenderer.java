@@ -32,28 +32,28 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
     private static final TooltipComponent playerPreviewTipShift = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift",
                             Text.translatable("rprenaess.key.shift").formatted(Formatting.GRAY))
-                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
     private static final TooltipComponent playerPreviewTipF = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF",
                             Text.translatable("rprenaess.key.f").formatted(Formatting.GRAY))
-                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
     private static final TooltipComponent favoriteTipAdd = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.favorite.add",
                             Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
-                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
     private static final TooltipComponent favoriteTipRemove = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.favorite.remove",
                             Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
-                    .fillStyle(Style.EMPTY.withColor(Formatting.DARK_GRAY).withItalic(true))
+                    .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
