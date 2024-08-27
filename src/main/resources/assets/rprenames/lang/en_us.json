@@ -103,12 +103,10 @@
   "rprenames.config.gui.previewCategory.scaleCategory.scaleFactorEntity": "Entity Preview Scale Factor",
   "rprenames.config.gui.previewCategory.scaleCategory.scaleFactorEntity.tooltip": "Multiplies Entity Preview",
 
+  "rprenames.config.gui.hintsCategory.disableTooltipHints": "Disable Tooltip Hints",
+  "rprenames.config.gui.hintsCategory.disableTooltipHints.tooltip": "If true, hints for additional functionality wont be shown in Tooltip",
   "rprenames.config.gui.hintsCategory.disablePageArrowsHints": "Disable Page Arrows Hints",
   "rprenames.config.gui.hintsCategory.disablePageArrowsHints.tooltip": "If true, Page Arrows Hints wont be shown if Shift is pressed",
-  "rprenames.config.gui.hintsCategory.disablePlayerPreviewHints": "Disable Player Preview Hints",
-  "rprenames.config.gui.hintsCategory.disablePlayerPreviewHints.tooltip": "If true, Tooltips wont tell Hints about Player Preview",
-  "rprenames.config.gui.hintsCategory.disableFavoriteHints": "Disable Marking as Favorite Hints",
-  "rprenames.config.gui.hintsCategory.disableFavoriteHints.tooltip": "If true, Tooltips wont tell Hints about quick marking Rename as Favorite",
 
   "rprenames.config.debug.updateConfig": "Update Renames",
   "rprenames.config.debug.updateConfig.tooltip": "Update or not Renames List on updating resource packs",

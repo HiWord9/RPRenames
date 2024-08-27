@@ -249,14 +249,14 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
         if (config.enablePreview) {
             if (!hasShiftDown() && !config.playerPreviewByDefault) {
-                if (!config.disablePlayerPreviewHints) tooltipAddition.add(playerPreviewHintShift);
+                if (!config.disableTooltipHints) tooltipAddition.add(playerPreviewHintShift);
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
-                if (!config.disablePlayerPreviewHints) tooltipAddition.add(playerPreviewHintF);
+                if (!config.disableTooltipHints) tooltipAddition.add(playerPreviewHintF);
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
             }
         }
-        if (!config.disableFavoriteHints) {
+        if (!config.disableTooltipHints) {
             tooltipAddition.add(favorite ? favoriteHintRemove : favoriteHintAdd);
         }
         tooltipComponents.addAll(tooltipAddition);

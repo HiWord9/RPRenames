@@ -72,9 +72,8 @@ public class ModConfig {
 
     public boolean alwaysAllowPlayerPreviewHead = false;
 
+    public boolean disableTooltipHints = false;
     public boolean disablePageArrowsHints = false;
-    public boolean disablePlayerPreviewHints = false;
-    public boolean disableFavoriteHints = false;
 
     public boolean updateConfig = true;
     public boolean showNamePattern = false;
