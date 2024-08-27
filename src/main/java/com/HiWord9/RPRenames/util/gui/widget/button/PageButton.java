@@ -44,7 +44,7 @@ public class PageButton extends ClickableWidget {
         int v = !active ? DISABLED_OFFSET_V : hovered ? FOCUSED_OFFSET_V : 0;
         context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
         MinecraftClient client = MinecraftClient.getInstance();
-        if (!config.disablePageArrowsTips && hasShiftDown() && active && hovered) {
+        if (!config.disablePageArrowsHints && hasShiftDown() && active && hovered) {
             String key = "rprenames.gui.page" + (type == Type.DOWN ? "Down.toFirst" : "Up.toLast") + ".tooltip";
             context.drawTooltip(client.textRenderer, Text.translatable(key).formatted(Formatting.GRAY), mouseX, mouseY);
         }

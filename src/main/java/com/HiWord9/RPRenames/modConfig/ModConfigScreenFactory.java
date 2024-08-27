@@ -208,22 +208,22 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.disableSnowGolemPumpkin)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disablePageArrowsTips = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tipsCategory.disablePageArrowsTips"), currentConfig.disablePageArrowsTips)
-                .setTooltip(Text.translatable("rprenames.config.gui.tipsCategory.disablePageArrowsTips.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.disablePageArrowsTips = newConfig)
-                .setDefaultValue(defaultConfig.disablePageArrowsTips)
+        AbstractConfigListEntry<Boolean> disablePageArrowsHints = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disablePageArrowsHints"), currentConfig.disablePageArrowsHints)
+                .setTooltip(Text.translatable("rprenames.config.gui.hintsCategory.disablePageArrowsHints.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.disablePageArrowsHints = newConfig)
+                .setDefaultValue(defaultConfig.disablePageArrowsHints)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disablePlayerPreviewTips = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tipsCategory.disablePlayerPreviewTips"), currentConfig.disablePlayerPreviewTips)
-                .setTooltip(Text.translatable("rprenames.config.gui.tipsCategory.disablePlayerPreviewTips.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.disablePlayerPreviewTips = newConfig)
-                .setDefaultValue(defaultConfig.disablePlayerPreviewTips)
+        AbstractConfigListEntry<Boolean> disablePlayerPreviewHints = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disablePlayerPreviewHints"), currentConfig.disablePlayerPreviewHints)
+                .setTooltip(Text.translatable("rprenames.config.gui.hintsCategory.disablePlayerPreviewHints.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.disablePlayerPreviewHints = newConfig)
+                .setDefaultValue(defaultConfig.disablePlayerPreviewHints)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disableFavoriteTips = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tipsCategory.disableFavoriteTips"), currentConfig.disableFavoriteTips)
-                .setTooltip(Text.translatable("rprenames.config.gui.tipsCategory.disableFavoriteTips.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.disableFavoriteTips = newConfig)
-                .setDefaultValue(defaultConfig.disableFavoriteTips)
+        AbstractConfigListEntry<Boolean> disableFavoriteHints = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disableFavoriteHints"), currentConfig.disableFavoriteHints)
+                .setTooltip(Text.translatable("rprenames.config.gui.hintsCategory.disableFavoriteHints.tooltip"))
+                .setSaveConsumer(newConfig -> currentConfig.disableFavoriteHints = newConfig)
+                .setDefaultValue(defaultConfig.disableFavoriteHints)
                 .build();
 
         AbstractConfigListEntry<Boolean> updateConfig = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.updateConfig"), currentConfig.updateConfig)
@@ -339,12 +339,12 @@ public class ModConfigScreenFactory {
 
         gui.addEntry(previewCategory.build());
 
-        SubCategoryBuilder tipsCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.tipsCategory"));
-        tipsCategory.add(0, disablePageArrowsTips);
-        tipsCategory.add(1, disablePlayerPreviewTips);
-        tipsCategory.add(2, disableFavoriteTips);
+        SubCategoryBuilder hintsCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.hintsCategory"));
+        hintsCategory.add(0, disablePageArrowsHints);
+        hintsCategory.add(1, disablePlayerPreviewHints);
+        hintsCategory.add(2, disableFavoriteHints);
 
-        gui.addEntry(tipsCategory.build());
+        gui.addEntry(hintsCategory.build());
 
         debug.addEntry(updateConfig);
         debug.addEntry(recreateConfig);
