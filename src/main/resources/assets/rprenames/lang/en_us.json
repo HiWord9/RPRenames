@@ -17,9 +17,9 @@
   "rprenames.gui.tooltipHint.stackSize": "Stack size:",
   "rprenames.gui.tooltipHint.damage": "Damage:",
   "rprenames.gui.tooltipHint.enchantment": "Enchantment:",
-  "rprenaess.key.shift": "Shift",
-  "rprenaess.key.f": "F",
-  "rprenaess.key.rmb": "RMB",
+  "rprenames.key.shift": "Shift",
+  "rprenames.key.f": "F",
+  "rprenames.key.rmb": "RMB",
 
   "rprenames.item_group": "RPRenames",
 

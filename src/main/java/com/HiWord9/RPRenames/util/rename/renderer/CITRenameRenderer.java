@@ -29,30 +29,33 @@ import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    private static final TooltipComponent playerPreviewTipShift = TooltipComponent.of(
+    private static final TooltipComponent playerPreviewHintShift = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.holdShift",
-                            Text.translatable("rprenaess.key.shift").formatted(Formatting.GRAY))
+                            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY))
                     .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
-    private static final TooltipComponent playerPreviewTipF = TooltipComponent.of(
+    private static final TooltipComponent playerPreviewHintF = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.playerPreviewTip.pressF",
-                            Text.translatable("rprenaess.key.f").formatted(Formatting.GRAY))
+                            Text.translatable("rprenames.key.f")
+                                    .formatted(Formatting.GRAY))
                     .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
-    private static final TooltipComponent favoriteTipAdd = TooltipComponent.of(
+    private static final TooltipComponent favoriteHintAdd = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.favorite.add",
-                            Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
+                            Text.translatable("rprenames.key.rmb")
+                                    .formatted(Formatting.GRAY))
                     .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
 
-    private static final TooltipComponent favoriteTipRemove = TooltipComponent.of(
+    private static final TooltipComponent favoriteHintRemove = TooltipComponent.of(
             Text.translatable("rprenames.gui.tooltipHint.favorite.remove",
-                            Text.translatable("rprenaess.key.rmb").formatted(Formatting.GRAY))
+                            Text.translatable("rprenames.key.rmb")
+                                    .formatted(Formatting.GRAY))
                     .formatted(Formatting.DARK_GRAY)
                     .asOrderedText()
     );
@@ -246,15 +249,15 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
         if (config.enablePreview) {
             if (!hasShiftDown() && !config.playerPreviewByDefault) {
-                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewTipShift);
+                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewHintShift);
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
-                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewTipF);
+                if (!config.disablePlayerPreviewTips) tooltipAddition.add(playerPreviewHintF);
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
             }
         }
         if (!config.disableFavoriteTips) {
-            tooltipAddition.add(favorite ? favoriteTipRemove : favoriteTipAdd);
+            tooltipAddition.add(favorite ? favoriteHintRemove : favoriteHintAdd);
         }
         tooltipComponents.addAll(tooltipAddition);
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
