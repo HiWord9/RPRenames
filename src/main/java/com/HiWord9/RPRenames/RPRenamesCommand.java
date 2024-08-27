@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames;
 
+import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.*;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
@@ -38,7 +39,26 @@ public class RPRenamesCommand {
                                 .executes(context -> list(context.getSource(), ItemStackArgumentType.getItemStackArgument(context, "item").getItem()))))
                 .then(literal("solveRegex")
                         .then(ClientCommandManager.argument("regex", StringArgumentType.greedyString())
-                                .executes(context -> solveRegex(context.getSource(), StringArgumentType.getString(context, "regex"))))));
+                                .executes(context -> solveRegex(context.getSource(), StringArgumentType.getString(context, "regex")))))
+                .then(literal("disableHints")
+                        .executes(context -> disableHints(context.getSource()))));
+    }
+
+    private static int disableHints(FabricClientCommandSource source) {
+        ModConfig config = ModConfig.INSTANCE;
+        config.disableTooltipHints = !config.disableTooltipHints;
+        config.write();
+        if (config.disableTooltipHints) {
+            source.sendFeedback(Text.of("Hints wont bother you anymore!").copy().formatted(Formatting.GOLD));
+            source.sendFeedback(
+                    Text.of("Use ").copy().formatted(Formatting.GOLD)
+                            .append(Text.of("/rprenames disableHints").copy().formatted(Formatting.GREEN))
+                            .append(Text.of(" again to turn them on, or find this option in config").copy().formatted(Formatting.GOLD))
+            );
+        } else {
+            source.sendFeedback(Text.of("Turned Hints back on!").copy().formatted(Formatting.GOLD));
+        }
+        return Command.SINGLE_SUCCESS;
     }
 
     public static int info(FabricClientCommandSource source) {

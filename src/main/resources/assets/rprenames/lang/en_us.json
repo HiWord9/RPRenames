@@ -14,6 +14,8 @@
   "rprenames.gui.tooltipHint.playerPreview.pressF": "Press [%1$s] to cycle through slots",
   "rprenames.gui.tooltipHint.favorite.add": "Press [%1$s] to mark as Favorite",
   "rprenames.gui.tooltipHint.favorite.remove": "Press [%1$s] to unmark as Favorites",
+  "rprenames.gui.tooltipHint.disable": "Use %1$s to hide hints",
+  "rprenames.gui.tooltipHint.disable.command": "/rprenames disableHints",
   "rprenames.gui.tooltipHint.stackSize": "Stack size:",
   "rprenames.gui.tooltipHint.damage": "Damage:",
   "rprenames.gui.tooltipHint.enchantment": "Enchantment:",

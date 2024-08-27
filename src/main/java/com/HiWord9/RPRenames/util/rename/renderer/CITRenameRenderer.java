@@ -60,6 +60,14 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
                     .asOrderedText()
     );
 
+    private static final TooltipComponent disableHint = TooltipComponent.of(
+            Text.translatable("rprenames.gui.tooltipHint.disable",
+                            Text.translatable("rprenames.gui.tooltipHint.disable.command")
+                                    .formatted(Formatting.GRAY))
+                    .formatted(Formatting.DARK_GRAY)
+                    .asOrderedText()
+    );
+
     CITRename rename;
     RPRWidget rprWidget;
     boolean favorite;
@@ -258,6 +266,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         }
         if (!config.disableTooltipHints) {
             tooltipAddition.add(favorite ? favoriteHintRemove : favoriteHintAdd);
+            tooltipAddition.add(disableHint);
         }
         tooltipComponents.addAll(tooltipAddition);
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
