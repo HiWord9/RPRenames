@@ -49,14 +49,22 @@ public class RPRenamesCommand {
         config.disableTooltipHints = !config.disableTooltipHints;
         config.write();
         if (config.disableTooltipHints) {
-            source.sendFeedback(Text.of("Hints wont bother you anymore!").copy().formatted(Formatting.GOLD));
             source.sendFeedback(
-                    Text.of("Use ").copy().formatted(Formatting.GOLD)
-                            .append(Text.of("/rprenames disableHints").copy().formatted(Formatting.GREEN))
-                            .append(Text.of(" again to turn them on, or find this option in config").copy().formatted(Formatting.GOLD))
+                    Text.translatable("rprenames.command.disableHints.disabled")
+                    .formatted(Formatting.GOLD)
+            );
+            source.sendFeedback(
+                    Text.translatable(
+                            "rprenames.command.disableHints.howToTurnOn",
+                            Text.translatable("rprenames.gui.tooltipHint.disable.command")
+                                    .formatted(Formatting.GREEN))
+                            .formatted(Formatting.GOLD)
             );
         } else {
-            source.sendFeedback(Text.of("Turned Hints back on!").copy().formatted(Formatting.GOLD));
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.disableHints.enabled")
+                    .formatted(Formatting.GOLD)
+            );
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -64,8 +72,11 @@ public class RPRenamesCommand {
     public static int info(FabricClientCommandSource source) {
         ItemStack itemStack = source.getPlayer().getStackInHand(Hand.MAIN_HAND);
         if (itemStack.isEmpty()) {
-            source.sendFeedback(Text.of("Hold Renamed Item to view its Rename Properties!").copy()
-                    .fillStyle(Style.EMPTY.withColor(Formatting.RED).withItalic(true)));
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.noItemGiven")
+                    .formatted(Formatting.RED)
+            );
+            return Command.SINGLE_SUCCESS;
         }
 
         AbstractRename matchRename = null;
@@ -76,10 +87,16 @@ public class RPRenamesCommand {
         }
 
         if (matchRename == null) {
-            source.sendFeedback(Text.of("No Renames were found").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED)));
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.noRenamesFound")
+                    .formatted(Formatting.RED)
+            );
             return Command.SINGLE_SUCCESS;
         } else {
-            source.sendFeedback(Text.of("Found following Rename Properties:").copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW)));
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.foundProperties")
+                    .formatted(Formatting.YELLOW)
+            );
         }
 
         Properties properties = matchRename.getProperties();
@@ -92,7 +109,10 @@ public class RPRenamesCommand {
             }
         }
         if (matchRename instanceof CEMRename cemRename) {
-            source.sendFeedback(Text.of("CEM Properties:").copy().fillStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)));
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.cemProperties")
+                    .formatted(Formatting.LIGHT_PURPLE)
+        );
             printProperties(cemRename.getMob().properties(), source);
             if (cemRename.getPackName() != null) {
                 if (cemRename.getMob().path() != null) {
@@ -100,15 +120,27 @@ public class RPRenamesCommand {
                 }
             }
         }
-        if (matchRename.getPath() == null && (!(matchRename instanceof CEMRename cemRename) || cemRename.getMob().path() == null)) {
-            source.sendFeedback(Text.of("Couldn't get Path to Properties File for this Rename").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED)));
-            if (matchRename.getPackName() == null) {
-                source.sendFeedback(Text.of("Couldn't get Pack Name for this Rename").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED)));
-            } else {
-                source.sendFeedback(Text.of("Pack Name").copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                        .append(Text.of(" = ").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .append(Text.of(matchRename.getPackName()).copy().fillStyle(Style.EMPTY.withColor(Formatting.BLUE))));
-            }
+        if (matchRename.getPath() == null && (
+                        !(matchRename instanceof CEMRename cemRename)
+                        || cemRename.getMob().path() == null
+                )) {
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.noPath")
+                    .formatted(Formatting.RED)
+            );
+        }
+        if (matchRename.getPackName() == null) {
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.noRpName")
+                            .formatted(Formatting.RED)
+            );
+        } else {
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.info.rpName")
+                            .formatted(Formatting.GOLD)
+                            .append(Text.of(" = ").copy().formatted(Formatting.GRAY))
+                            .append(Text.of(matchRename.getPackName()).copy().formatted(Formatting.BLUE))
+            );
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -120,14 +152,20 @@ public class RPRenamesCommand {
     public static int list(FabricClientCommandSource source, Item item) {
         ArrayList<AbstractRename> renames = RenamesManager.getRenames(item);
         if (!renames.isEmpty()) {
-            source.sendFeedback(Text.of("Found following Renames for ").copy()
-                    .append(Text.translatable(item.getTranslationKey()))
-                    .append(Text.of(":")));
+            source.sendFeedback(
+                    Text.translatable(
+                            "rprenames.command.list.foundRenames",
+                            Text.translatable(item.getTranslationKey())
+                    )
+            );
             printRenameList(renames, source);
         } else {
-            source.sendFeedback(Text.of("No Renames for ").copy().fillStyle(Style.EMPTY.withColor(Formatting.RED))
-                    .append(Text.translatable(item.getTranslationKey()))
-                    .append(Text.of(" were found").copy()));
+            source.sendFeedback(
+                    Text.translatable(
+                            "rprenames.command.list.noRenamesFound",
+                            Text.translatable(item.getTranslationKey())
+                    ).formatted(Formatting.RED)
+            );
         }
 
         return Command.SINGLE_SUCCESS;
@@ -137,14 +175,26 @@ public class RPRenamesCommand {
         String result = PropertiesHelper.solveRegex(PropertiesHelper.parseEscapes(regex));
         Pattern pattern = Pattern.compile(regex);
         if (pattern.matcher(result).matches()) {
-            source.sendFeedback(Text.of(result).copy().fillStyle(Style.EMPTY.withColor(Formatting.LIGHT_PURPLE)
-                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(regex)))
-                    .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, result))));
+            source.sendFeedback(
+                    Text.of(result).copy()
+                    .fillStyle(Style.EMPTY
+                            .withColor(Formatting.LIGHT_PURPLE)
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(regex)))
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, result))
+                    )
+            );
         } else {
-            source.sendError(Text.of("Error occurred on getting string matching regex").copy()
-                    .fillStyle(Style.EMPTY.withColor(Formatting.RED)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(regex).copy()
-                                    .fillStyle(Style.EMPTY.withColor(Formatting.RED))))));
+            source.sendError(
+                    Text.translatable("rprenames.command.solveRegex.error")
+                    .fillStyle(Style.EMPTY
+                            .withColor(Formatting.RED)
+                            .withHoverEvent(new HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    Text.of(regex).copy()
+                                            .formatted(Formatting.RED)
+                            ))
+                    )
+            );
         }
         return Command.SINGLE_SUCCESS;
     }
@@ -203,34 +253,53 @@ public class RPRenamesCommand {
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
 
             ClickEvent runGive = new ClickEvent(ClickEvent.Action.RUN_COMMAND, giveCommand);
-            source.sendFeedback(Text.of("[/give]").copy()
-                    .fillStyle(Style.EMPTY.withColor(Formatting.GRAY)
+            source.sendFeedback(
+                    Text.translatable("rprenames.command.list.givePrefix")
+                    .fillStyle(Style.EMPTY
+                            .withColor(Formatting.GRAY)
                             .withClickEvent(runGive)
                             .withInsertion(giveCommand)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of("Run /give Command"))))
+                            .withHoverEvent(new HoverEvent(
+                                    HoverEvent.Action.SHOW_TEXT,
+                                    Text.translatable("rprenames.command.list.runGive")
+                            ))
+                    )
                     .append(itemStack.toHoverableText().copy()
-                            .styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, r.getName())))));
+                            .styled(style -> style.withClickEvent(new ClickEvent(
+                                    ClickEvent.Action.COPY_TO_CLIPBOARD,
+                                    r.getName()
+                            )))
+                    )
+            );
         }
     }
 
     private static void printProperties(Properties properties, FabricClientCommandSource source) {
         for (String s : properties.stringPropertyNames()) {
-            source.sendFeedback(Text.of(s).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                    .append(Text.of("=").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                    .append(Text.of(properties.getProperty(s)).copy().fillStyle(Style.EMPTY.withColor(Formatting.GREEN))));
+            source.sendFeedback(
+                    Text.of(s).copy().formatted(Formatting.GOLD)
+                    .append(Text.of("=").copy().formatted(Formatting.GRAY))
+                    .append(Text.of(properties.getProperty(s)).copy().formatted(Formatting.GREEN))
+            );
         }
     }
 
     private static void printPath(String path, String packName, FabricClientCommandSource source) {
         String dirPath = path.substring(0, path.lastIndexOf("/"));
-        source.sendFeedback(Text.of("Located in: ").copy()
-                .append(Text.of(path).copy()
-                .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW).withUnderline(true)
-                        .withClickEvent(new ClickEvent(
-                                ClickEvent.Action.OPEN_FILE,
-                                (packName.equals("server") ? "server-resource-packs/" : "resourcepacks/" + (packName.endsWith(".zip") ? packName : dirPath))
-                        ))
-                ))
+        source.sendFeedback(
+                Text.translatable(
+                        "rprenames.command.info.located",
+                        Text.of(path).copy()
+                                .fillStyle(Style.EMPTY
+                                        .withColor(Formatting.YELLOW)
+                                        .withUnderline(true)
+                                        .withClickEvent(new ClickEvent(
+                                                ClickEvent.Action.OPEN_FILE,
+                                                packName.equals("server") ? "server-resource-packs/" : "resourcepacks/"
+                                                        + (packName.endsWith(".zip") ? packName : dirPath)
+                                        ))
+                                )
+                )
         );
     }
 }

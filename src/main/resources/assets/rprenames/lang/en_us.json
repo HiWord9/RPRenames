@@ -23,6 +23,23 @@
   "rprenames.key.f": "F",
   "rprenames.key.rmb": "RMB",
 
+  "rprenames.command.disableHints.disabled": "Hints wont bother you anymore!",
+  "rprenames.command.disableHints.enabled": "Turned Hints back on!",
+  "rprenames.command.disableHints.howToTurnOn": "Use %1$s again to turn them on, or find this option in config",
+  "rprenames.command.info.noItemGiven": "Hold Renamed Item to view its Rename Properties!",
+  "rprenames.command.info.noRenamesFound": "No Renames were found",
+  "rprenames.command.info.foundProperties": "Found following Rename Properties:",
+  "rprenames.command.info.cemProperties": "CEM Properties:",
+  "rprenames.command.info.noPath": "Couldn't get Path to Properties File for this Rename",
+  "rprenames.command.info.noRpName": "Couldn't get Pack Name for this Rename",
+  "rprenames.command.info.rpName": "Pack Name",
+  "rprenames.command.info.located": "Located in: %1$s",
+  "rprenames.command.list.foundRenames": "Found following Renames for %1$s:",
+  "rprenames.command.list.noRenamesFound": "No Renames for %1$s were found",
+  "rprenames.command.list.givePrefix": "[/give]",
+  "rprenames.command.list.runGive": "Run /give Command",
+  "rprenames.command.solveRegex.error": "Error occurred on getting string matching regex",
+
   "rprenames.item_group": "RPRenames",
 
   "rprenames.config.title": "RPRenames",
