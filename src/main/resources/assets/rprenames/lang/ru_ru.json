@@ -25,7 +25,7 @@
 
   "rprenames.command.disableHints.disabled": "Подсказки больше не будут вас беспокоить",
   "rprenames.command.disableHints.enabled": "Подсказки снова включены",
-  "rprenames.command.disableHints.howToTurnOn": "Снова используйте %1$s, чтобы включить их, или найдите эту опцию в конфигурации",
+  "rprenames.command.disableHints.howToTurnOn": "Снова используйте %1$s, чтобы включить их, или найдите эту опцию в настройках",
   "rprenames.command.info.noItemGiven": "Удерживайте переименованный предмет, чтобы просмотреть его опции переименования",
   "rprenames.command.info.noRenamesFound": "Переименований не найдено",
   "rprenames.command.info.foundProperties": "Найдены следующие опции переименования:",
@@ -40,9 +40,9 @@
   "rprenames.command.list.runGive": "Выполнить команду /give",
   "rprenames.command.solveRegex.error": "Произошла ошибка при получении регулярного выражения, соответствующего строке",
 
-  "rprenames.item_group": "Переименования ресурсов",
+  "rprenames.item_group": "RPRenames",
 
-  "rprenames.config.title": "Переименования ресурсов",
+  "rprenames.config.title": "RPRenames",
 
   "rprenames.config.general": "Общие",
   "rprenames.config.gui": "Интерфейс",
@@ -50,19 +50,19 @@
 
   "rprenames.config.general.ignoreCEM": "Игнорировать переименования CEM",
   "rprenames.config.general.ignoreCEM.tooltip": "Если включено, переименования CEM не будут отображаться в списке",
-  "rprenames.config.general.enableAnvilModification": "Показать кнопку переименования ресурсов",
+  "rprenames.config.general.enableAnvilModification": "Показать кнопку RPRenames",
   "rprenames.config.general.enableAnvilModification.tooltip": "Если отключено, то никаких изменений на экране наковальни не будет",
 
-  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames": "Сравнение переименований в группе предметов",
-  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip": "Если включено, переименования с несколькими\nсовпадающими предметами будут отображаться один\nраз на творческой вкладке 'Переименования ресурсов'",
+  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames": "Сопоставлять переименования в группе предметов",
+  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip": "Если включено, переименования с несколькими\nсовпадающими предметами будут отображаться один\nраз на творческой вкладке RPRenames",
   "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup": "Преобразовать переименования CEM в яйца призыва",
-  "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup.tooltip": "Если включено, переименования CEM будут\nотображаться в виде яиц призыва на творческой вкладке\n'Переименования ресурсов', в противном случае — в виде бирок",
+  "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup.tooltip": "Если включено, переименования CEM будут\nотображаться в виде яиц призыва на творческой вкладке\nRPRenames, в противном случае — в виде бирок",
 
   "rprenames.config.general.loadModBuiltinResources": "Загружать встроенные в мод наборы ресурсов",
   "rprenames.config.general.loadModBuiltinResources.tooltip": "Если включено, встроенные в мод наборы ресурсов\nбудут добавлены на экран выбора наборов. Если отключено, они не\nбудут отображаться. Требуется перезагрузка",
 
   "rprenames.config.gui.openByDefault": "Открыто по умолчанию",
-  "rprenames.config.gui.openByDefault.tooltip": "Если включено, меню 'Переименования ресурсов' открывается автоматически",
+  "rprenames.config.gui.openByDefault.tooltip": "Если включено, меню RPRenames открывается автоматически",
   "rprenames.config.gui.offsetMenu": "Смещенное меню",
   "rprenames.config.gui.offsetMenu.tooltip": "Если отключено, интерфейс не будет отображаться по центру экрана",
 
@@ -142,7 +142,7 @@
   "rprenames.config.debug.fixDelayedPacketsChangingTab": "Исправлено изменение вкладки после автоматического размещения предметов",
   "rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip": "Иногда после автоматического размещения предметов в наковальне сервер может отправить в ответ 2 пакета,\nодин для предыдущего состояния, а второй для актуального обновления слота.\nЭтот мод расценивает это как ручное перемещение предметов игроком, что приводит к смене вкладки на поиск и сбросу имени в поле nameField. Если включено, программа попытается это исправить. Не рекомендуется включать, если вы ещё не сталкивались с этой проблемой.",
 
-  "rprenames.config.general.creativeTabCategory": "Творческая вкладка 'Переименования ресурсов'",
+  "rprenames.config.general.creativeTabCategory": "Творческая вкладка RPRenames",
   "rprenames.config.gui.tooltipCategory": "Всплывающая подсказка",
   "rprenames.config.gui.tooltipCategory.tooltipSlotCategory": "Слоты",
   "rprenames.config.gui.renderCategory": "Отображение",
