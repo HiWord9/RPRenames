@@ -16,6 +16,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -29,44 +30,30 @@ import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    private static final TooltipComponent playerPreviewHintShift = TooltipComponent.of(
-            Text.translatable("rprenames.gui.tooltipHint.playerPreview.holdShift",
-                            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY))
-                    .formatted(Formatting.DARK_GRAY)
-                    .asOrderedText()
-    );
+    private static final MutableText playerPreviewHintShift = Text.translatable(
+            "rprenames.gui.tooltipHint.playerPreview.holdShift",
+            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
 
-    private static final TooltipComponent playerPreviewHintF = TooltipComponent.of(
-            Text.translatable("rprenames.gui.tooltipHint.playerPreview.pressF",
-                            Text.translatable("rprenames.key.f")
-                                    .formatted(Formatting.GRAY))
-                    .formatted(Formatting.DARK_GRAY)
-                    .asOrderedText()
-    );
+    private static final MutableText playerPreviewHintF = Text.translatable(
+            "rprenames.gui.tooltipHint.playerPreview.pressF",
+            Text.translatable("rprenames.key.f").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
 
-    private static final TooltipComponent favoriteHintAdd = TooltipComponent.of(
-            Text.translatable("rprenames.gui.tooltipHint.favorite.add",
-                            Text.translatable("rprenames.key.rmb")
-                                    .formatted(Formatting.GRAY))
-                    .formatted(Formatting.DARK_GRAY)
-                    .asOrderedText()
-    );
+    private static final MutableText favoriteHintAdd = Text.translatable(
+            "rprenames.gui.tooltipHint.favorite.add",
+            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
 
-    private static final TooltipComponent favoriteHintRemove = TooltipComponent.of(
-            Text.translatable("rprenames.gui.tooltipHint.favorite.remove",
-                            Text.translatable("rprenames.key.rmb")
-                                    .formatted(Formatting.GRAY))
-                    .formatted(Formatting.DARK_GRAY)
-                    .asOrderedText()
-    );
+    private static final MutableText favoriteHintRemove = Text.translatable(
+            "rprenames.gui.tooltipHint.favorite.remove",
+            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
 
-    private static final TooltipComponent disableHint = TooltipComponent.of(
-            Text.translatable("rprenames.gui.tooltipHint.disable",
-                            Text.translatable("rprenames.gui.tooltipHint.disable.command")
-                                    .formatted(Formatting.GRAY))
-                    .formatted(Formatting.DARK_GRAY)
-                    .asOrderedText()
-    );
+    private static final MutableText disableHint = Text.translatable(
+            "rprenames.gui.tooltipHint.disable",
+            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
 
     CITRename rename;
     RPRWidget rprWidget;
@@ -257,16 +244,16 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
         if (config.enablePreview) {
             if (!hasShiftDown() && !config.playerPreviewByDefault) {
-                if (!config.disableTooltipHints) tooltipAddition.add(playerPreviewHintShift);
+                if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintShift));
             } else if (hasShiftDown() != config.playerPreviewByDefault) {
-                if (!config.disableTooltipHints) tooltipAddition.add(playerPreviewHintF);
+                if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintF));
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
             }
         }
         if (!config.disableTooltipHints) {
-            tooltipAddition.add(favorite ? favoriteHintRemove : favoriteHintAdd);
-            tooltipAddition.add(disableHint);
+            tooltipAddition.add(favorite ? tooltipOf(favoriteHintRemove) : tooltipOf(favoriteHintAdd));
+            tooltipAddition.add(tooltipOf(disableHint));
         }
         tooltipComponents.addAll(tooltipAddition);
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
@@ -338,5 +325,9 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
             fPressFuse = false;
         }
         return false;
+    }
+
+    private TooltipComponent tooltipOf(MutableText mutableText) {
+        return TooltipComponent.of(mutableText.asOrderedText());
     }
 }
