@@ -53,7 +53,7 @@
   "rprenames.config.general.enableAnvilModification": "Show RP Renames button",
   "rprenames.config.general.enableAnvilModification.tooltip": "If false, it wont do any modifications of anvil screen",
 
-  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames": "Compare Renames in Item Group",
+  "rprenames.config.general.creativeTabCategory.compareItemGroupRenames": "Merge Renames in Item Group",
   "rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip": "If true, Renames with multiple matching items\nwill be shown once in RPRenames Creative Tab",
   "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup": "Convert CEM Renames to Spawn Eggs",
   "rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup.tooltip": "If true, CEM Renames will be displayed as Spawn Eggs\nin RPRenames Creative Tab, otherwise, as Name Tags",
@@ -67,7 +67,7 @@
   "rprenames.config.gui.offsetMenu.tooltip": "If false, Gui will not be centered on screen",
 
   "rprenames.config.gui.favoriteButtonPosition": "\"Add to Favorites\" button's position",
-  "rprenames.config.gui.favoriteButtonPosition.tooltip": "Where to locate the \"Add to Favorites\" button on Screen\nTop right corner by default",
+  "rprenames.config.gui.favoriteButtonPosition.tooltip": "Where to locate the \"Add to Favorites\" button on Screen.\nTop right corner by default",
   "rprenames.config.gui.favoriteButtonPosition.TOP_RIGHT": "Top Right Corner",
   "rprenames.config.gui.favoriteButtonPosition.LEFT_FROM_NAMEFIELD": "To the Left of Name Field",
   "rprenames.config.gui.favoriteButtonPosition.RIGHT_FROM_RESULT_SLOT": "To the Right of Result Slot",
@@ -115,7 +115,7 @@
   "rprenames.config.gui.previewCategory.entityCategory.spinMobPreview": "Spin Mobs in Preview",
   "rprenames.config.gui.previewCategory.entityCategory.spinMobPreview.tooltip": "If false, Mobs in CEM Preview wont spin and will be fixed at 45 degrees",
   "rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin": "Disable Snow Golem's pumpkin",
-  "rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin.tooltip": "If false, Snow Golems in name tag's tooltips will be rendered without pumpkin",
+  "rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin.tooltip": "If true, Snow Golems in CEM preview will be rendered without pumpkin",
 
   "rprenames.config.gui.previewCategory.scaleCategory.scaleFactorItem": "Item Preview Scale Factor",
   "rprenames.config.gui.previewCategory.scaleCategory.scaleFactorItem.tooltip": "1.0 is a regular 16x16 Item Preview",
