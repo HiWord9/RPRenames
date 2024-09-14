@@ -22,7 +22,7 @@ public class ModConfigScreenFactory {
 
         ConfigBuilder builder = ConfigBuilder.create()
                 .setParentScreen(parent)
-                .setDefaultBackgroundTexture(new Identifier("minecraft", "textures/block/bookshelf.png"))
+                .setDefaultBackgroundTexture(Identifier.of("minecraft", "textures/block/bookshelf.png"))
                 .setTitle(Text.translatable("rprenames.config.title"))
                 .setSavingRunnable(currentConfig::write);
 

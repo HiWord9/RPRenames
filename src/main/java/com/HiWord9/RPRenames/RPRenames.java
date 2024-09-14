@@ -14,12 +14,9 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -62,7 +59,7 @@ public class RPRenames implements ClientModInitializer {
     }
 
     public static Identifier asId(String path) {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 
     public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
@@ -72,12 +69,12 @@ public class RPRenames implements ClientModInitializer {
     public static void registerItemGroup() {
         Registry.register(
                 Registries.ITEM_GROUP,
-                new Identifier(MOD_ID, "item_group"),
+                Identifier.of(MOD_ID, "item_group"),
                 FabricItemGroup.builder()
                         .displayName(Text.translatable("rprenames.item_group"))
                         .icon(RPRenames::getItemGroupIcon)
                         .type(ItemGroup.Type.SEARCH)
-                        .texture("item_search.png")
+                        .texture(ItemGroup.getTabTextureId("item_search"))
                         .build()
         );
     }
@@ -90,7 +87,7 @@ public class RPRenames implements ClientModInitializer {
             stack.getNbt().put("Enchantments", new NbtList());
         }
         NbtList nbtList = stack.getNbt().getList("Enchantments", NbtElement.COMPOUND_TYPE);
-        nbtList.add(EnchantmentHelper.createNbt(new Identifier("mending"), 1));
+        nbtList.add(EnchantmentHelper.createNbt(Identifier.of("mending"), 1));
         stack.getOrCreateSubNbt(MOD_ID);
         return stack;
     }

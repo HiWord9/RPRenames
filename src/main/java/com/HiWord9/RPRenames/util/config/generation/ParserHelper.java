@@ -34,7 +34,7 @@ public class ParserHelper {
     }
 
     public static Item itemFromName(String id) {
-        return Registries.ITEM.get(new Identifier(id));
+        return Registries.ITEM.get(Identifier.of(id));
     }
 
     public static String idFromItem(Item item) {

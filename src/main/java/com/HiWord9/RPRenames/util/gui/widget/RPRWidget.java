@@ -42,7 +42,7 @@ import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class RPRWidget implements Drawable, Element/*, Widget*/ {
     protected ModConfig config = ModConfig.INSTANCE;
-    protected static Identifier MENU_TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/menu.png");
+    protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
 
     public static final int MENU_TEXTURE_WIDTH = 147;
     public static final int MENU_TEXTURE_HEIGHT = 166;

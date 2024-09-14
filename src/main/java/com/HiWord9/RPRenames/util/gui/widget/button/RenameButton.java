@@ -21,7 +21,7 @@ public class RenameButton extends ClickableWidget {
     private static final ModConfig config = ModConfig.INSTANCE;
     final int highlightColor = config.getSlotHighlightRGBA();
 
-    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/button.png");
+    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/button.png");
 
     RPRWidget rprWidget;
 

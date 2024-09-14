@@ -83,7 +83,7 @@ public class CITParser implements Parser {
         Identifier enchantment = null;
         if (enchantIdProp != null) {
             String firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
-            enchantment = new Identifier(firstEnchantId);
+            enchantment = Identifier.of(firstEnchantId);
             if (Registries.ENCHANTMENT.get(enchantment) == null) {
                 RPRenames.LOGGER.warn("Could not get valid enchantment {} for {}", enchantment, path);
                 enchantment = null;
@@ -150,7 +150,7 @@ public class CITParser implements Parser {
     private static ArrayList<Item> itemsFromMatchList(ArrayList<String> matchItemsList) {
         ArrayList<Item> items = new ArrayList<>();
         for (String matchItem : matchItemsList) {
-            Item item = Registries.ITEM.get(new Identifier(matchItem));
+            Item item = Registries.ITEM.get(Identifier.of(matchItem));
             if (item == Items.AIR) continue;
             items.add(item);
         }
