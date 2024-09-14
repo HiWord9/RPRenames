@@ -7,11 +7,17 @@ import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -49,13 +55,13 @@ public class RenamesHelper {
     }
 
     public static void enchantItemStackWithRename(CITRename rename, ItemStack itemStack) {
-        itemStack.getOrCreateNbt();
-        assert itemStack.getNbt() != null;
-        if (!itemStack.getNbt().contains("Enchantments", 9)) {
-            itemStack.getNbt().put("Enchantments", new NbtList());
+        itemStack.getOrDefault(DataComponentTypes.CUSTOM_NAME, Text.empty());
+        assert itemStack.getComponents() != null;
+        if (!itemStack.getComponents().contains(DataComponentTypes.ENCHANTMENTS)) {
+            itemStack.set(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
         }
-        NbtList nbtList = itemStack.getNbt().getList("Enchantments", 10);
-        nbtList.add(EnchantmentHelper.createNbt(rename.getEnchantment(), rename.getEnchantmentLevel()));
+        ItemEnchantmentsComponent enchants = itemStack.getEnchantments();
+//TODO        nbtList.add(EnchantmentHelper.createNbt(rename.getEnchantment(), rename.getEnchantmentLevel()));
     }
 
     public static ItemStack createItemOrSpawnEgg(AbstractRename rename) {

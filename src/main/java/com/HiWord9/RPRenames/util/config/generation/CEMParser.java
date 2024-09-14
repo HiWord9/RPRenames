@@ -101,16 +101,16 @@ public class CEMParser implements Parser {
     }
 
     private static void parseRawPropertyFile(ResourceManager resourceManager, String texturePath, int textureNum) throws IOException {
-        Identifier identifier = new Identifier(Identifier.DEFAULT_NAMESPACE, texturePath + CEMList.textures[textureNum] + PROP_EXTENSION);
+        Identifier identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + CEMList.textures[textureNum] + PROP_EXTENSION);
         Optional<Resource> optionalResource = resourceManager.getResource(identifier);
         if (optionalResource.isEmpty()) {
-            identifier = new Identifier(Identifier.DEFAULT_NAMESPACE, texturePath + getLastPathPart(CEMList.textures[textureNum]) + PROP_EXTENSION);
+            identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + getLastPathPart(CEMList.textures[textureNum]) + PROP_EXTENSION);
             optionalResource = resourceManager.getResource(identifier);
             if (optionalResource.isEmpty()) return;
         }
         Resource resource = optionalResource.get();
 
-        String packName = ParserHelper.validatePackName(resource.getResourcePackName());
+        String packName = ParserHelper.validatePackName(resource.getPack().getId());
         String path = ParserHelper.getFullPathFromIdentifier(packName, identifier);
         if (checked.contains(path)) return;
 
@@ -123,7 +123,7 @@ public class CEMParser implements Parser {
     }
 
     private static void parseTextureSourceFile(ResourceManager resourceManager, String fileWithTextureName, String fileName, String texturePath) throws IOException {
-        Optional<Resource> optionalResourceJpm = resourceManager.getResource(new Identifier(Identifier.DEFAULT_NAMESPACE, CEM_PATH + "/" + fileWithTextureName));
+        Optional<Resource> optionalResourceJpm = resourceManager.getResource(Identifier.of(Identifier.DEFAULT_NAMESPACE, CEM_PATH + "/" + fileWithTextureName));
         if (optionalResourceJpm.isEmpty()) return;
 
         Resource resourceJpm = optionalResourceJpm.get();
@@ -132,13 +132,13 @@ public class CEMParser implements Parser {
 
         String textureName = prepareTexturePath(textures.get(0));
 
-        Identifier propId = new Identifier(Identifier.DEFAULT_NAMESPACE, texturePath + textureName + PROP_EXTENSION);
+        Identifier propId = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + textureName + PROP_EXTENSION);
         Optional<Resource> optionalResourceProp = resourceManager.getResource(propId);
         if (optionalResourceProp.isEmpty()) return;
 
         Resource resourceProp = optionalResourceProp.get();
 
-        String packName = ParserHelper.validatePackName(resourceProp.getResourcePackName());
+        String packName = ParserHelper.validatePackName(resourceProp.getPack().getId());
         String path = ParserHelper.getFullPathFromIdentifier(packName, propId);
         checked.add(path);
 

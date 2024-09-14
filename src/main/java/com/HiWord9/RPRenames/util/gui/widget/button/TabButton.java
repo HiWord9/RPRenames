@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TabButton extends ClickableWidget {
-    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/tabs.png");
+    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/tabs.png");
     private static final String TRANSLATION_PREFIX = "rprenames.gui.tabs.tooltip.";
 
     RPRWidget rprWidget;

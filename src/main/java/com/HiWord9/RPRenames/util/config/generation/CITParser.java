@@ -26,7 +26,7 @@ public class CITParser implements Parser {
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
-                    String packName = ParserHelper.validatePackName(entry.getValue().getResourcePackName());
+                    String packName = ParserHelper.validatePackName(entry.getValue().getPack().getId());
                     CITParser.propertiesToRename(
                             ParserHelper.getPropFromResource(entry.getValue()),
                             packName,
@@ -83,8 +83,8 @@ public class CITParser implements Parser {
         Identifier enchantment = null;
         if (enchantIdProp != null) {
             String firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
-            enchantment = new Identifier(firstEnchantId);
-            if (Registries.ENCHANTMENT.get(enchantment) == null) {
+            enchantment = Identifier.of(firstEnchantId);
+            if (Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE.get(enchantment) == null) {
                 RPRenames.LOGGER.warn("Could not get valid enchantment {} for {}", enchantment, path);
                 enchantment = null;
             }
@@ -150,7 +150,7 @@ public class CITParser implements Parser {
     private static ArrayList<Item> itemsFromMatchList(ArrayList<String> matchItemsList) {
         ArrayList<Item> items = new ArrayList<>();
         for (String matchItem : matchItemsList) {
-            Item item = Registries.ITEM.get(new Identifier(matchItem));
+            Item item = Registries.ITEM.get(Identifier.of(matchItem));
             if (item == Items.AIR) continue;
             items.add(item);
         }

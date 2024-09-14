@@ -7,6 +7,7 @@ import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -27,7 +28,7 @@ import java.util.Map;
 @Mixin(CreativeInventoryScreen.class)
 public abstract class CreativeInventoryScreenMixin {
 
-    @Shadow @Final private static String CUSTOM_CREATIVE_LOCK_KEY;
+//TODO    @Shadow @Final private static String CUSTOM_CREATIVE_LOCK_KEY;
 
     @Shadow private TextFieldWidget searchBox;
 
@@ -107,15 +108,15 @@ public abstract class CreativeInventoryScreenMixin {
 
     private ItemStack getNoRenamesFoundItem() {
         ItemStack itemStack = new ItemStack(Items.PAPER);
-        itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
-        itemStack.setCustomName(Text.translatable("rprenames.gui.noRenamesFound"));
+//TODO        itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
+        itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("rprenames.gui.noRenamesFound"));
         return itemStack;
     }
 
     private ItemStack getFavoriteItem() {
         ItemStack itemStack = new ItemStack(Items.PAPER);
-        itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
-        itemStack.setCustomName(Text.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
+//TODO        itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
+        itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
         return itemStack;
     }
 }

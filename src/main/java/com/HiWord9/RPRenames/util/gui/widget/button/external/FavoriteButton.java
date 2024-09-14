@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.util.Identifier;
 
 public class FavoriteButton extends ClickableWidget {
-    public static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
+    public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
 
     RPRWidget rprWidget;
 

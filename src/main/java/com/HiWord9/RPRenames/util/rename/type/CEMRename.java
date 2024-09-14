@@ -3,6 +3,8 @@ package com.HiWord9.RPRenames.util.rename.type;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.CEMRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -60,13 +62,13 @@ public class CEMRename extends AbstractRename {
     public ItemStack toSpawnEgg() {
         Item item = SpawnEggItem.forEntity(this.getMob().entity());
         ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
-        spawnEgg.setCustomName(Text.of(this.getName()));
-        NbtCompound nbt = spawnEgg.getOrCreateNbt();
+        spawnEgg.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.getName()));
+//TODO        NbtCompound nbt = spawnEgg.getOrCreateNbt();
         NbtCompound nbtName = new NbtCompound();
         nbtName.putString("CustomName", this.getName());
-        nbt.put("EntityTag", nbtName);
+//TODO        nbt.put("EntityTag", nbtName);
         if (item == null) {
-            NbtCompound nbt2 = nbt.getCompound("EntityTag");
+            NbtCompound nbt2 = spawnEgg.get(DataComponentTypes.ENTITY_DATA).copyNbt();
             nbt2.putString("id", Registries.ENTITY_TYPE.getId(this.getMob().entity()).toString());
         }
         return spawnEgg;

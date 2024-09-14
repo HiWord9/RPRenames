@@ -14,12 +14,12 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -53,7 +53,7 @@ public class RPRenames implements ClientModInitializer {
             });
         }
 
-        registerItemGroup();
+//TODO        registerItemGroup();
 
         RenamesManager.parsers.add(new CITParser());
         RenamesManager.parsers.add(new CEMParser());
@@ -62,7 +62,7 @@ public class RPRenames implements ClientModInitializer {
     }
 
     public static Identifier asId(String path) {
-        return new Identifier(MOD_ID, path);
+        return Identifier.of(MOD_ID, path);
     }
 
     public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
@@ -72,32 +72,33 @@ public class RPRenames implements ClientModInitializer {
     public static void registerItemGroup() {
         Registry.register(
                 Registries.ITEM_GROUP,
-                new Identifier(MOD_ID, "item_group"),
+                Identifier.of(MOD_ID, "item_group"),
                 FabricItemGroup.builder()
                         .displayName(Text.translatable("rprenames.item_group"))
                         .icon(RPRenames::getItemGroupIcon)
                         .type(ItemGroup.Type.SEARCH)
-                        .texture("item_search.png")
+//TODO                        .texture(Identifier.tryParse("item_search.png"))
                         .build()
         );
     }
 
     private static ItemStack getItemGroupIcon() {
         ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
-        stack.getOrCreateNbt();
-        assert stack.getNbt() != null;
-        if (!stack.getNbt().contains("Enchantments", 9)) {
-            stack.getNbt().put("Enchantments", new NbtList());
+        stack.getOrDefault(DataComponentTypes.CUSTOM_NAME, Text.empty());
+        assert stack.getComponents() != null;
+        if (stack.getEnchantments().getEnchantments() == null) {
+            stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
         }
-        NbtList nbtList = stack.getNbt().getList("Enchantments", NbtElement.COMPOUND_TYPE);
-        nbtList.add(EnchantmentHelper.createNbt(new Identifier("mending"), 1));
-        stack.getOrCreateSubNbt(MOD_ID);
+        ItemEnchantmentsComponent enchantments = stack.getEnchantments();
+//TODO    nbtList.add(EnchantmentHelper.createNbt(new Identifier("mending"), 1));
+        stack.getOrDefault(DataComponentTypes.CUSTOM_DATA, MOD_ID);
         return stack;
     }
 
     public static boolean verifyItemGroup(ItemGroup itemGroup) {
         ItemStack icon = itemGroup.getIcon();
-        icon.getOrCreateNbt();
-        return icon.getSubNbt(MOD_ID) != null;
+        icon.getOrDefault(DataComponentTypes.CUSTOM_DATA, MOD_ID);
+        boolean ccontains = icon.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT).contains(MOD_ID);
+        return ccontains;
     }
 }

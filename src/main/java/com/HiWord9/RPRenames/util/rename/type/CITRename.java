@@ -5,10 +5,14 @@ import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.CITRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -138,7 +142,7 @@ public class CITRename extends AbstractRename implements Describable {
     @Override
     public ItemStack toStack(int index) {
         ItemStack item = new ItemStack(this.getItems().get(index >= this.getItems().size() ? 0 : index));
-        item.setCustomName(Text.of(getName()));
+        item.set(DataComponentTypes.CUSTOM_NAME, Text.of(getName()));
         item.setCount(getStackSize());
         if (getDamage() != null) {
             item.setDamage(getDamage().getParsedDamage(item.getItem()));
@@ -174,12 +178,12 @@ public class CITRename extends AbstractRename implements Describable {
                 hasEnchant = true;
                 hasEnoughLevels = true;
             } else {
-                Map<Enchantment, Integer> enchantments;
-                enchantments = EnchantmentHelper.fromNbt(stack.getEnchantments());
+                ItemEnchantmentsComponent enchantments;
+                enchantments = EnchantmentHelper.getEnchantments(stack);
 
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    Identifier id = Registries.ENCHANTMENT.getId(enchantment);
+                for (Object2IntMap.Entry<RegistryEntry<Enchantment>> entry: enchantments.getEnchantmentEntries()) {
+                    Enchantment enchantment = entry.getKey().value();
+                    Identifier id = Registries.ENCHANTMENT_EFFECT_COMPONENT_TYPE.getId(DataComponentTypes.ENCHANTMENTS);
                     if (id == null) continue;
                     if (id.equals(rename.getEnchantment())) {
                         hasEnchant = true;

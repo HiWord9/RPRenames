@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class RandomButton extends ClickableWidget {
-    public static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/dice.png");
+    public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/dice.png");
     static final String TOOLTIP_KEY = "rprenames.gui.randomButton.tooltip";
 
     RPRWidget rprWidget;

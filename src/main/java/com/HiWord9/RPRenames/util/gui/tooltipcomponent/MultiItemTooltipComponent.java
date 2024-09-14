@@ -17,7 +17,7 @@ import static com.HiWord9.RPRenames.util.gui.Graphics.*;
 public class MultiItemTooltipComponent implements TooltipComponent {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    static final Identifier SLOT = new Identifier(RPRenames.MOD_ID, "textures/gui/slot.png");
+    static final Identifier SLOT = Identifier.of(RPRenames.MOD_ID, "textures/gui/slot.png");
 
     public final ArrayList<TooltipItem> items;
 

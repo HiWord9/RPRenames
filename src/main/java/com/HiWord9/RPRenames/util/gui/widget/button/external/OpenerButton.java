@@ -8,7 +8,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.util.Identifier;
 
 public class OpenerButton extends ClickableWidget {
-    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/opener.png");
+    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/opener.png");
 
     RPRWidget rprWidget;
 

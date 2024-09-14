@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
@@ -234,21 +235,10 @@ public class RPRenamesCommand {
     private static void printRenameList(ArrayList<AbstractRename> renames, FabricClientCommandSource source) {
         for (AbstractRename r : renames) {
             ItemStack itemStack = r.toStack();
-
-            assert itemStack.getNbt() != null;
-            String nbt = itemStack.getNbt().toString();
-            if (nbt.contains("Damage:0")) {
-                nbt = nbt.replace("Damage:0", "");
-                if (nbt.startsWith("{,")) {
-                    nbt = "{" + nbt.substring(2);
-                } else if (nbt.endsWith(",}")) {
-                    nbt = nbt.substring(0, nbt.length() - 2) + "}";
-                }
-            }
+            assert itemStack.getComponents() != null;
 
             String giveCommand = "/give @s "
                     + ParserHelper.getIdAndPath(itemStack.getItem())
-                    + nbt
                     + (r instanceof CITRename citRename ?
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
 
@@ -258,7 +248,7 @@ public class RPRenamesCommand {
                     .fillStyle(Style.EMPTY
                             .withColor(Formatting.GRAY)
                             .withClickEvent(runGive)
-                            .withInsertion(giveCommand)
+                           .withInsertion(giveCommand)
                             .withHoverEvent(new HoverEvent(
                                     HoverEvent.Action.SHOW_TEXT,
                                     Text.translatable("rprenames.command.list.runGive")

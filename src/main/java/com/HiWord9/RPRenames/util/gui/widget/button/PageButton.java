@@ -16,7 +16,7 @@ import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 public class PageButton extends ClickableWidget {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    private static final Identifier TEXTURE = new Identifier(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
+    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
 
     RPRWidget rprWidget;
 
