@@ -110,7 +110,7 @@ public class CEMParser implements Parser {
         }
         Resource resource = optionalResource.get();
 
-        String packName = ParserHelper.validatePackName(resource.getResourcePackName());
+        String packName = ParserHelper.validatePackName(resource.getPack().getId());
         String path = ParserHelper.getFullPathFromIdentifier(packName, identifier);
         if (checked.contains(path)) return;
 
@@ -138,7 +138,7 @@ public class CEMParser implements Parser {
 
         Resource resourceProp = optionalResourceProp.get();
 
-        String packName = ParserHelper.validatePackName(resourceProp.getResourcePackName());
+        String packName = ParserHelper.validatePackName(resourceProp.getPack().getId());
         String path = ParserHelper.getFullPathFromIdentifier(packName, propId);
         checked.add(path);
 

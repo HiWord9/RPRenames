@@ -26,7 +26,7 @@ public class CITParser implements Parser {
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
-                    String packName = ParserHelper.validatePackName(entry.getValue().getResourcePackName());
+                    String packName = ParserHelper.validatePackName(entry.getValue().getPack().getId());
                     CITParser.propertiesToRename(
                             ParserHelper.getPropFromResource(entry.getValue()),
                             packName,
