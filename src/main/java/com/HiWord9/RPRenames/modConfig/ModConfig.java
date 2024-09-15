@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
-import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -34,7 +34,6 @@ public class ModConfig {
         }
         this.generateSpawnEggsInItemGroup = generateSpawnEggsInItemGroup;
     }
-
     public boolean loadModBuiltinResources = true;
 
     public boolean openByDefault = false;
@@ -107,7 +106,7 @@ public class ModConfig {
     private Boolean shouldUpdateItemGroup = null;
 
     public ModConfig write() {
-        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) RenamesManager.updateItemGroup();
+        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) RPRenamesItemGroup.update();
         shouldUpdateItemGroup = null;
 
         Gson gson = new Gson();

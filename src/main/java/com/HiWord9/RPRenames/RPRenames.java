@@ -9,20 +9,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,34 +60,6 @@ public class RPRenames implements ClientModInitializer {
     }
 
     public static void registerItemGroup() {
-        Registry.register(
-                Registries.ITEM_GROUP,
-                Identifier.of(MOD_ID, "item_group"),
-                FabricItemGroup.builder()
-                        .displayName(Text.translatable("rprenames.item_group"))
-                        .icon(RPRenames::getItemGroupIcon)
-                        .type(ItemGroup.Type.SEARCH)
-                        .texture(ItemGroup.getTabTextureId("item_search"))
-                        .build()
-        );
-    }
-
-    private static ItemStack getItemGroupIcon() {
-        ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
-
-        stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
-
-        NbtCompound nbt = new NbtCompound();
-        nbt.put(MOD_ID, null);
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
-
-        return stack;
-    }
-
-    public static boolean verifyItemGroup(ItemGroup itemGroup) {
-        ItemStack icon = itemGroup.getIcon();
-        NbtComponent nbtComponent = icon.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null) return false;
-        return nbtComponent.contains(MOD_ID);
+        RPRenamesItemGroup.register();
     }
 }
