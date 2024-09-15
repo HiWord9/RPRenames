@@ -152,10 +152,10 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         }
         if (!stack1.isOf(stack2.getItem())) return false;
         if (stack1.getCount() != stack2.getCount()) return false;
-        if (stack1.getNbt() == null || stack2.getNbt() == null) {
-            return stack1.getNbt() == stack2.getNbt();
+        if (stack1.getComponents() == null || stack2.getComponents() == null) {
+            return stack1.getComponents() == stack2.getComponents();
         }
-        return stack1.getNbt().toString().equals(stack2.getNbt().toString());
+        return stack1.getComponents().toString().equals(stack2.getComponents().toString());
     }
 
     @Inject(at = @At("HEAD"), method = "onSlotUpdate", cancellable = true)

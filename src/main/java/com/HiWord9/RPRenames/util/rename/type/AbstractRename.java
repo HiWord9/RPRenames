@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.util.rename.type;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.DefaultRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -112,7 +113,9 @@ public class AbstractRename {
     }
 
     public ItemStack toStack(int index) {
-        return new ItemStack(items.get(index)).setCustomName(Text.of(name));
+        ItemStack stack = new ItemStack(items.get(index));
+        stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(name));
+        return stack;
     }
 
     public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {

@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -37,7 +38,7 @@ public class DefaultRenameRenderer implements RenameRenderer {
         ArrayList<MultiItemTooltipComponent.TooltipItem> tooltipItems = new ArrayList<>();
         for (int i = 0; i < rename.getItems().size(); i++) {
             ItemStack itemStack = rename.toStack(i);
-            itemStack.removeCustomName();
+            itemStack.remove(DataComponentTypes.CUSTOM_NAME);
             tooltipItems.add(new MultiItemTooltipComponent.TooltipItem(itemStack, null));
         }
         return new MultiItemTooltipComponent(tooltipItems);

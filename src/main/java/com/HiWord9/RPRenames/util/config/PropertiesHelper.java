@@ -2,6 +2,7 @@ package com.HiWord9.RPRenames.util.config;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -312,8 +313,12 @@ public class PropertiesHelper {
     }
 
     public static int parseDamagePercent(int percent, Item item) {
-        int maxDamage = item.getMaxDamage();
-        return maxDamage * percent / 100;
+        Object maxDamageComponent = item.getComponents().get(DataComponentTypes.MAX_DAMAGE);
+        if (maxDamageComponent instanceof Integer maxDamage) {
+            return maxDamage * percent / 100;
+        } else {
+            return 0;
+        }
     }
 
     public static String getFirstValueInList(String list) {

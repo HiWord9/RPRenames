@@ -2,17 +2,24 @@ package com.HiWord9.RPRenames.util.rename.type;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.renderer.CITRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
-import com.HiWord9.RPRenames.util.rename.RenamesHelper;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 
 public class CITRename extends AbstractRename implements Describable {
     protected final Integer stackSize;
@@ -138,7 +145,7 @@ public class CITRename extends AbstractRename implements Describable {
     @Override
     public ItemStack toStack(int index) {
         ItemStack item = new ItemStack(this.getItems().get(index >= this.getItems().size() ? 0 : index));
-        item.setCustomName(Text.of(getName()));
+        item.set(DataComponentTypes.CUSTOM_NAME, Text.of(getName()));
         item.setCount(getStackSize());
         if (getDamage() != null) {
             item.setDamage(getDamage().getParsedDamage(item.getItem()));
@@ -174,16 +181,17 @@ public class CITRename extends AbstractRename implements Describable {
                 hasEnchant = true;
                 hasEnoughLevels = true;
             } else {
-                Map<Enchantment, Integer> enchantments;
-                enchantments = EnchantmentHelper.fromNbt(stack.getEnchantments());
+                ItemEnchantmentsComponent enchantments;
+                enchantments = EnchantmentHelper.getEnchantments(stack);
 
-                for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    Identifier id = Registries.ENCHANTMENT.getId(enchantment);
+                for (RegistryEntry<Enchantment> entry : enchantments.getEnchantments()) {
+                    Optional<RegistryKey<Enchantment>> key = entry.getKey();
+                    if (key.isEmpty()) continue;
+                    Identifier id = key.get().getValue();
                     if (id == null) continue;
                     if (id.equals(rename.getEnchantment())) {
                         hasEnchant = true;
-                        if (PropertiesHelper.matchesRange(entry.getValue(), rename.getOriginalEnchantmentLevel())) {
+                        if (PropertiesHelper.matchesRange(enchantments.getLevel(entry), rename.getOriginalEnchantmentLevel())) {
                             hasEnoughLevels = true;
                             break;
                         }

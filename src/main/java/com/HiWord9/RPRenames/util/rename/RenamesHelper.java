@@ -1,20 +1,24 @@
 package com.HiWord9.RPRenames.util.rename;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -49,13 +53,28 @@ public class RenamesHelper {
     }
 
     public static void enchantItemStackWithRename(CITRename rename, ItemStack itemStack) {
-        itemStack.getOrCreateNbt();
-        assert itemStack.getNbt() != null;
-        if (!itemStack.getNbt().contains("Enchantments", 9)) {
-            itemStack.getNbt().put("Enchantments", new NbtList());
+        if (MinecraftClient.getInstance().world == null) {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename {} cause client world is null",
+                    itemStack, rename
+            );
+            return;
         }
-        NbtList nbtList = itemStack.getNbt().getList("Enchantments", 10);
-        nbtList.add(EnchantmentHelper.createNbt(rename.getEnchantment(), rename.getEnchantmentLevel()));
+
+        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = MinecraftClient.getInstance()
+                .world
+                .getRegistryManager()
+                .get(RegistryKeys.ENCHANTMENT)
+                .getEntry(rename.getEnchantment());
+
+        if (optionalEnchantment.isPresent()) {
+            itemStack.addEnchantment(optionalEnchantment.get(), rename.getEnchantmentLevel());
+        } else {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename {} cause enchantment {} is not loaded",
+                    itemStack, rename, rename.getEnchantment()
+            );
+        }
     }
 
     public static ItemStack createItemOrSpawnEgg(AbstractRename rename) {

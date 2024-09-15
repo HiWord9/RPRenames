@@ -84,10 +84,6 @@ public class CITParser implements Parser {
         if (enchantIdProp != null) {
             String firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
             enchantment = Identifier.of(firstEnchantId);
-            if (Registries.ENCHANTMENT.get(enchantment) == null) {
-                RPRenames.LOGGER.warn("Could not get valid enchantment {} for {}", enchantment, path);
-                enchantment = null;
-            }
         }
 
         String enchantLvlProp = p.getProperty("enchantmentLevels");

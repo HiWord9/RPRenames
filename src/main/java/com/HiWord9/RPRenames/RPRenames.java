@@ -14,9 +14,12 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -81,20 +84,20 @@ public class RPRenames implements ClientModInitializer {
 
     private static ItemStack getItemGroupIcon() {
         ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
-        stack.getOrCreateNbt();
-        assert stack.getNbt() != null;
-        if (!stack.getNbt().contains("Enchantments", 9)) {
-            stack.getNbt().put("Enchantments", new NbtList());
-        }
-        NbtList nbtList = stack.getNbt().getList("Enchantments", NbtElement.COMPOUND_TYPE);
-        nbtList.add(EnchantmentHelper.createNbt(Identifier.of("mending"), 1));
-        stack.getOrCreateSubNbt(MOD_ID);
+
+        stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+
+        NbtCompound nbt = new NbtCompound();
+        nbt.put(MOD_ID, null);
+        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+
         return stack;
     }
 
     public static boolean verifyItemGroup(ItemGroup itemGroup) {
         ItemStack icon = itemGroup.getIcon();
-        icon.getOrCreateNbt();
-        return icon.getSubNbt(MOD_ID) != null;
+        NbtComponent nbtComponent = icon.get(DataComponentTypes.CUSTOM_DATA);
+        if (nbtComponent == null) return false;
+        return nbtComponent.contains(MOD_ID);
     }
 }
