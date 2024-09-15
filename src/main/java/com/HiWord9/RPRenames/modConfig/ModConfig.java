@@ -103,7 +103,7 @@ public class ModConfig {
         }
     }
 
-    private Boolean shouldUpdateItemGroup = null;
+    protected Boolean shouldUpdateItemGroup = null;
 
     public ModConfig write() {
         if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) RPRenamesItemGroup.update();

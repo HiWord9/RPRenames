@@ -238,6 +238,7 @@ public class ModConfigScreenFactory {
                     }
                     return Text.translatable("rprenames.config.debug.recreateConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
                 })
+                .setSaveConsumer(newConfig -> currentConfig.shouldUpdateItemGroup = true)
                 .build();
 
         final PrevToggle prevToggleClearConfig = new PrevToggle();
@@ -251,6 +252,7 @@ public class ModConfigScreenFactory {
                     }
                     return Text.translatable("rprenames.config.debug.clearConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.RED));
                 })
+                .setSaveConsumer(newConfig -> currentConfig.shouldUpdateItemGroup = true)
                 .build();
 
         AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNamePattern)
