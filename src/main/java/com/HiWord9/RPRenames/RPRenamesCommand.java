@@ -10,18 +10,24 @@ import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.serialization.DynamicOps;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.component.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -232,23 +238,16 @@ public class RPRenamesCommand {
     }
 
     private static void printRenameList(ArrayList<AbstractRename> renames, FabricClientCommandSource source) {
+        RPRenames.LOGGER.warn("Generating give commands with components, this may crash!");
+        RPRenames.LOGGER.warn("If it is, please report the accident to https://github.com/HiWord9/RPRenames/issues");
         for (AbstractRename r : renames) {
             ItemStack itemStack = r.toStack();
 
-            assert itemStack.getNbt() != null;
-            String nbt = itemStack.getNbt().toString();
-            if (nbt.contains("Damage:0")) {
-                nbt = nbt.replace("Damage:0", "");
-                if (nbt.startsWith("{,")) {
-                    nbt = "{" + nbt.substring(2);
-                } else if (nbt.endsWith(",}")) {
-                    nbt = nbt.substring(0, nbt.length() - 2) + "}";
-                }
-            }
+            String components = getComponentsCommandArgument(source, itemStack);
 
             String giveCommand = "/give @s "
                     + ParserHelper.getIdAndPath(itemStack.getItem())
-                    + nbt
+                    + components
                     + (r instanceof CITRename citRename ?
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
 
@@ -272,6 +271,41 @@ public class RPRenamesCommand {
                     )
             );
         }
+    }
+
+    @SuppressWarnings("unchecked") // I am not quiet sure that this will not crash, but let's try as beta
+    private static <T> String getComponentsCommandArgument(FabricClientCommandSource source, ItemStack stack) {
+        ComponentChanges changes = ((ComponentMapImpl) stack.getComponents()).getChanges();
+        if (changes.isEmpty()) return "";
+
+        StringBuilder resultBuilder = new StringBuilder();
+
+        resultBuilder.append("[");
+
+        for (Map.Entry<ComponentType<?>, Optional<?>> entry : changes.entrySet()) {
+            ComponentType<T> componentType = (ComponentType<T>) entry.getKey();
+            Optional<?> optionalData = entry.getValue();
+
+            if (optionalData.isEmpty()) continue;
+
+            Identifier id = Registries.DATA_COMPONENT_TYPE.getId(componentType);
+            T data = (T) optionalData.get();
+            DynamicOps<NbtElement> nbtOps = source.getRegistryManager().getOps(NbtOps.INSTANCE);
+            Optional<NbtElement> optionalDataResult = componentType.getCodecOrThrow().encodeStart(nbtOps, data).result();
+
+            if (optionalDataResult.isEmpty()) continue;
+
+            resultBuilder.append(id);
+            resultBuilder.append("=");
+            resultBuilder.append(optionalDataResult.get());
+            resultBuilder.append(",");
+        }
+        if (resultBuilder.charAt(resultBuilder.length() - 1) == ',') {
+            resultBuilder.deleteCharAt(resultBuilder.length() - 1);
+        }
+        resultBuilder.append("]");
+
+        return resultBuilder.toString();
     }
 
     private static void printProperties(Properties properties, FabricClientCommandSource source) {
