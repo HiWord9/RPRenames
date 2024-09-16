@@ -6,7 +6,7 @@ import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.FileReader;
 import java.io.FileWriter;

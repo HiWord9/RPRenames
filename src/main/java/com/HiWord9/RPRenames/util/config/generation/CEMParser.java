@@ -130,7 +130,7 @@ public class CEMParser implements Parser {
         ArrayList<String> textures = objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture");
         if (textures.isEmpty()) return;
 
-        String textureName = prepareTexturePath(textures.get(0));
+        String textureName = prepareTexturePath(textures.getFirst());
 
         Identifier propId = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + textureName + PROP_EXTENSION);
         Optional<Resource> optionalResourceProp = resourceManager.getResource(propId);

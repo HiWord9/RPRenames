@@ -92,7 +92,7 @@ public class AbstractRename {
     }
 
     public Item getItem() {
-        return items.isEmpty() ? null : items.get(0);
+        return items.isEmpty() ? null : items.getFirst();
     }
 
     public void setItem(Item item) {
