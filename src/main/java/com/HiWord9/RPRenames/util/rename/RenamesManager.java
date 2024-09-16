@@ -26,17 +26,24 @@ public class RenamesManager {
     public static void updateRenames(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:reloading_renames");
 
-        clearRenames();
+        RPRenames.LOGGER.info("Started collecting resource pack renames");
         long startTime = System.currentTimeMillis();
-        RPRenames.LOGGER.info("Starting collecting renames");
+
+        clearRenames();
 
         for (Parser parser : parsers) {
             parser.parse(resourceManager, profiler);
         }
 
         RPRenamesItemGroup.update();
+
         long finishTime = System.currentTimeMillis() - startTime;
-        RPRenames.LOGGER.info("Finished collecting renames [{}.{}s]", finishTime / 1000, finishTime % 1000);
+        String ms = String.valueOf(finishTime % 1000);
+        switch (ms.length()) {
+            case 1 -> ms = "00" + ms;
+            case 2 -> ms = "0" + ms;
+        }
+        RPRenames.LOGGER.info("Finished collecting resource pack renames [{}.{}s]", finishTime / 1000, ms);
 
         profiler.pop();
     }
