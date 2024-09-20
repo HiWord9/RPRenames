@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
@@ -32,8 +33,16 @@ public class CEMParser implements Parser {
 
     private static final ArrayList<String> checked = new ArrayList<>();
 
+    // if in any circumstances it is needed to always show cem renames this boolean can be set to true;
+    public static boolean ignoreSkip = false;
+
     public void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cem_renames");
+
+        if (shouldSkipCemRenames()) {
+            profiler.pop();
+            return;
+        }
 
         checked.clear();
         for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(CEM_PATH,
@@ -254,5 +263,10 @@ public class CEMParser implements Parser {
             texturePath = texturePath.substring(16);
         }
         return texturePath;
+    }
+
+    private static boolean shouldSkipCemRenames() {
+        if (ignoreSkip) return true;
+        return ModConfig.INSTANCE.ignoreCEM;
     }
 }

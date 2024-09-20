@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.modConfig;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
@@ -14,6 +15,12 @@ import java.io.Reader;
 
 public class ModConfig {
     public boolean ignoreCEM = false;
+    public void setIgnoreCEM(boolean ignoreCEM) {
+        if (this.shouldUpdateRenamesList == null || !shouldUpdateRenamesList) {
+            this.shouldUpdateRenamesList = ignoreCEM != this.ignoreCEM;
+        }
+        this.ignoreCEM = ignoreCEM;
+    }
 
     public boolean enableAnvilModification = true;
 
@@ -79,7 +86,7 @@ public class ModConfig {
     public boolean showOriginalProperties = false;
     public boolean fixDelayedPacketsChangingTab = false;
 
-    public boolean showDescription = true;
+    public boolean showDescription = true; // todo ? add to config screen
 
     public int getSlotHighlightRGBA() {
         int a = (int) ((float) slotHighlightColorALPHA / 100 * 255);
@@ -104,9 +111,15 @@ public class ModConfig {
     }
 
     protected Boolean shouldUpdateItemGroup = null;
+    protected Boolean shouldUpdateRenamesList = null;
 
     public ModConfig write() {
-        if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) RPRenamesItemGroup.update();
+        if (shouldUpdateRenamesList != null && shouldUpdateRenamesList) {
+            RenamesManager.updateRenames();
+            shouldUpdateRenamesList = null;
+        } else if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) {
+            RPRenamesItemGroup.update();
+        }
         shouldUpdateItemGroup = null;
 
         Gson gson = new Gson();

@@ -33,7 +33,7 @@ public class ModConfigScreenFactory {
 
         AbstractConfigListEntry<Boolean> ignoreCEM = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.ignoreCEM"), currentConfig.ignoreCEM)
                 .setTooltip(Text.translatable("rprenames.config.general.ignoreCEM.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.ignoreCEM = newConfig)
+                .setSaveConsumer(currentConfig::setIgnoreCEM)
                 .setDefaultValue(defaultConfig.ignoreCEM)
                 .build();
 
