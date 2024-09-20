@@ -81,8 +81,6 @@
   "rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected": "Highlight selected item",
   "rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected.tooltip": "If true, selected item will be highlighted in Rename's Tooltip",
 
-  "rprenames.config.gui.renderCategory.renderMobRenamesAsEntities": "Render CEM Renames as Entities",
-  "rprenames.config.gui.renderCategory.renderMobRenamesAsEntities.tooltip": "If false, CEM Renames will be rendered as Spawn Eggs in Rename Button's Icon",
   "rprenames.config.gui.renderCategory.highlightSelected": "Highlight Selected Rename Button",
   "rprenames.config.gui.renderCategory.highlightSelected.tooltip": "If false, Rename Button for selected Rename won't be Highlighted",
   "rprenames.config.gui.renderCategory.recolorFavoriteTooltip": "Recolor Tooltip border for Favorites",

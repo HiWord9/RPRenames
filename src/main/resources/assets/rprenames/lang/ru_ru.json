@@ -81,8 +81,6 @@
   "rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected": "Выделять выбранный предмет",
   "rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected.tooltip": "Если включено, выбранный предмет будет выделен\nво всплывающей подсказке переименования",
 
-  "rprenames.config.gui.renderCategory.renderMobRenamesAsEntities": "Отображать переименования CEM как сущности",
-  "rprenames.config.gui.renderCategory.renderMobRenamesAsEntities.tooltip": "Если отключено, переименования CEM будут отображаться\nв виде яиц призыва на значке кнопки переименования",
   "rprenames.config.gui.renderCategory.highlightSelected": "Выделить кнопку с выбранным переименованием",
   "rprenames.config.gui.renderCategory.highlightSelected.tooltip": "Если отключено, кнопка переименования для\nвыбранного переименования не будет выделена",
   "rprenames.config.gui.renderCategory.recolorFavoriteTooltip": "Перекрасить рамку всплывающей подсказки для избранного",

@@ -50,7 +50,6 @@ public class ModConfig {
     public boolean showPackName = true;
     public boolean showExtraProperties = true;
 
-    public boolean renderMobRenamesAsEntities = true;
     public boolean highlightSelected = true;
     public boolean recolorFavoriteTooltip = true;
     public boolean renderStarInFavoriteTooltip = false;

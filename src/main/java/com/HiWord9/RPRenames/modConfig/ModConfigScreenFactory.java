@@ -105,12 +105,6 @@ public class ModConfigScreenFactory {
                 .setDefaultValue(defaultConfig.highlightTooltipSlotSelected)
                 .build();
 
-        AbstractConfigListEntry<Boolean> renderMobRenamesAsEntities = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.renderMobRenamesAsEntities"), currentConfig.renderMobRenamesAsEntities)
-                .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.renderMobRenamesAsEntities.tooltip"))
-                .setSaveConsumer(newConfig -> currentConfig.renderMobRenamesAsEntities = newConfig)
-                .setDefaultValue(defaultConfig.renderMobRenamesAsEntities)
-                .build();
-
         AbstractConfigListEntry<Boolean> highlightSelected = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSelected"), currentConfig.highlightSelected)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.highlightSelected.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightSelected = newConfig)
@@ -304,12 +298,11 @@ public class ModConfigScreenFactory {
         slotHighlightColorCategory.add(1, slotHighlightALPHA);
 
         SubCategoryBuilder renderCategory = entryBuilder.startSubCategory(Text.translatable("rprenames.config.gui.renderCategory"));
-        renderCategory.add(0, renderMobRenamesAsEntities);
-        renderCategory.add(1, highlightSelected);
-        renderCategory.add(2, recolorFavoriteTooltip);
-        renderCategory.add(3, renderStarInFavoriteTooltip);
-        renderCategory.add(4, highlightSlot);
-        renderCategory.add(5, slotHighlightColorCategory.build());
+        renderCategory.add(0, highlightSelected);
+        renderCategory.add(1, recolorFavoriteTooltip);
+        renderCategory.add(2, renderStarInFavoriteTooltip);
+        renderCategory.add(3, highlightSlot);
+        renderCategory.add(4, slotHighlightColorCategory.build());
 
         gui.addEntry(renderCategory.build());
 
