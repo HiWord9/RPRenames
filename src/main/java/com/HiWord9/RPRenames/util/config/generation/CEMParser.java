@@ -222,7 +222,6 @@ public class CEMParser implements Parser {
             AbstractRename renameNameOnly = new CEMRename(name);
             CEMRename.Mob mob = new CEMRename.Mob(
                     fileName,
-                    CEMList.iconFromType(fileName),
                     p,
                     path.replaceAll("\\\\", "/")
             );

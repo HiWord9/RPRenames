@@ -72,7 +72,7 @@ public class CEMRename extends AbstractRename {
         return spawnEgg;
     }
 
-    public record Mob(EntityType<?> entity, Item icon, Properties properties, String path) {
+    public record Mob(EntityType<?> entity, Properties properties, String path) {
         public String getPropName() {
             if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
