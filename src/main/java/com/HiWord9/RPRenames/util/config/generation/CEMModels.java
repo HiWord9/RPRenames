@@ -20,6 +20,7 @@ public class CEMModels {
                             "bee/bee", "bee/bee_angry", "bee/bee_angry_nectar", "bee/bee_nectar", "bee/bee_stinger"
                     }, EntityType.BEE),
             new ModelData("blaze", new String[]{"blaze"}, EntityType.BLAZE),
+            new ModelData("camel", new String[]{"camel/camel"}, EntityType.CAMEL),
             new ModelData("cat",
                     new String[]{
                             "cat/all_black", "cat/black", "cat/british_shorthair", "cat/calico", "cat/jellie",
