@@ -221,7 +221,7 @@ public class CEMParser implements Parser {
             ArrayList<AbstractRename> alreadyExist = RenamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
             AbstractRename rename;
-            AbstractRename renameNameOnly = new CEMRename(name);
+            AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
             CEMRename.Mob mob = new CEMRename.Mob(
                     entityType,
                     p,
@@ -253,9 +253,10 @@ public class CEMParser implements Parser {
                     citPath,
                     citProperties,
                     mob
-            ); //todo duplicated entries
+            );
 
-            if (!rename.isContainedIn(alreadyExist)) {
+            if (!new CEMRename(name, mob.getEntity())
+                    .isContainedIn(alreadyExist, true)) {
                 ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
                 renames.put(CEMRename.DEFAULT_MOB_ITEM, newConfig);

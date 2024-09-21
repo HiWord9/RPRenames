@@ -145,7 +145,7 @@ public class AbstractRename {
                 && paramsEquals(this.getItem(), obj.getItem(), ignoreNull);
     }
 
-    protected boolean paramsEquals(Object obj1, Object obj2, boolean ignoreNull) {
+    protected static boolean paramsEquals(Object obj1, Object obj2, boolean ignoreNull) {
         if (obj1 == null && obj2 == null) {
             return true;
         } else if (obj1 == null || obj2 == null) {

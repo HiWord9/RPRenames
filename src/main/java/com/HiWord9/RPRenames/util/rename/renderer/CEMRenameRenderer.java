@@ -34,7 +34,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
         this.rprWidget = rprWidget;
         this.favorite = favorite;
 
-        var entityType = rename.getMob().entity();
+        var entityType = rename.getMob().getEntity();
         var client = MinecraftClient.getInstance();
         this.entity = (LivingEntity) entityType.create(client.world);
         prepareEntity(entity, rename);
@@ -75,7 +75,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
     }
 
     public String getDisplayPackName() {
-        return rename.getMob().packName();
+        return rename.getMob().getPackName();
     }
 
     @Override

@@ -123,7 +123,7 @@ public class RPRenamesCommand {
     }
 
     public static void printCemRenameInfo(CEMRename rename, FabricClientCommandSource source) {
-        printRenameInfo(rename.getMob().packName(), rename.getMob().path(), rename.getMob().properties(), source);
+        printRenameInfo(rename.getMob().getPackName(), rename.getMob().getPath(), rename.getMob().getProperties(), source);
     }
 
     public static void printRenameInfo(String packName, String path, Properties properties, FabricClientCommandSource source) {

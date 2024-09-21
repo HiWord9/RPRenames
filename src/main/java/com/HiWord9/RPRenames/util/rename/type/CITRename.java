@@ -98,6 +98,13 @@ public class CITRename extends AbstractRename implements Describable {
         return properties == null ? null : properties.getProperty("enchantmentLevels");
     }
 
+    public boolean equals(AbstractRename obj, boolean ignoreNull) {
+        if (obj instanceof CITRename citRename) {
+            return equals(citRename, ignoreNull);
+        }
+        return false;
+    }
+
     public boolean equals(CITRename obj, boolean ignoreNull) {
         boolean originalNbtDisplayNameEquals = paramsEquals(this.getNamePattern(), obj.getNamePattern(), ignoreNull);
         boolean originalStackSizeEquals = paramsEquals(this.getOriginalStackSize(), obj.getOriginalStackSize(), ignoreNull);
@@ -113,6 +120,13 @@ public class CITRename extends AbstractRename implements Describable {
                 && originalEnchantmentEquals
                 && originalEnchantmentLevelEquals
                 && descriptionEquals;
+    }
+
+    public boolean same(AbstractRename obj, boolean ignoreNull) {
+        if (obj instanceof CITRename citRename) {
+            return same(citRename, ignoreNull);
+        }
+        return false;
     }
 
     public boolean same(CITRename obj, boolean ignoreNull) {

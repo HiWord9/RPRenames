@@ -22,13 +22,16 @@ public class CEMRename extends AbstractRename {
     protected Mob mob;
 
     public CEMRename(String name) {
-        this(name, null, null);
+        this(name, (Mob) null);
+    }
+
+    public CEMRename(String name, EntityType<?> entity) {
+        this(name, new Mob(entity));
     }
 
     public CEMRename(String name,
-                     String packName,
                      Mob mob) {
-        this(name, packName, null, null, mob);
+        this(name, null, null, null, mob);
     }
 
     public CEMRename(String name,
@@ -52,24 +55,94 @@ public class CEMRename extends AbstractRename {
     public String getNamePattern() {
         Mob mob = getMob();
         if (mob == null) return null;
-        return mob.getPropName();
+        return mob.propName;
     }
 
     public ItemStack toSpawnEgg() {
-        Item item = SpawnEggItem.forEntity(this.getMob().entity());
+        Item item = SpawnEggItem.forEntity(this.getMob().getEntity());
         ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
         spawnEgg.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.getName()));
         NbtCompound nbtName = new NbtCompound();
         nbtName.putString("CustomName", this.getName());
         if (item == null) {
-            nbtName.putString("id", Registries.ENTITY_TYPE.getId(this.getMob().entity()).toString());
+            nbtName.putString("id", Registries.ENTITY_TYPE.getId(this.getMob().getEntity()).toString());
             NbtComponent.set(DataComponentTypes.ENTITY_DATA, spawnEgg, nbtName);
         }
         return spawnEgg;
     }
 
-    public record Mob(EntityType<?> entity, Properties properties, String path, String packName) {
+    @Override
+    public boolean equals(AbstractRename obj, boolean ignoreNull) {
+        if (obj instanceof CEMRename cemRename) {
+            return equals(cemRename, ignoreNull);
+        }
+        return false;
+    }
+
+    public boolean equals(CEMRename obj, boolean ignoreNull) {
+        return super.equals(obj, ignoreNull) &&
+                (this.getMob() == null ? obj.getMob() == null || ignoreNull :
+                        this.getMob().equalsNoSame(obj.getMob(), ignoreNull));
+    }
+
+    @Override
+    public boolean same(AbstractRename obj, boolean ignoreNull) {
+        if (obj instanceof CEMRename cemRename) {
+            return same(cemRename, ignoreNull);
+        }
+        return false;
+    }
+
+    public boolean same(CEMRename obj, boolean ignoreNull) {
+        return super.same(obj, ignoreNull) &&
+                (this.getMob() == null ? obj.getMob() == null || ignoreNull :
+                        this.getMob().same(obj.getMob(), ignoreNull));
+    }
+
+    public static final class Mob {
+        private final EntityType<?> entity;
+        private final Properties properties;
+        private final String path;
+        private final String packName;
+        private final String propName;
+
+        public Mob(EntityType<?> entity) {
+            this(entity, null);
+        }
+
+        public Mob(EntityType<?> entity, String packName) {
+            this(entity, null, null, packName);
+        }
+
+        public Mob(EntityType<?> entity, Properties properties, String path, String packName) {
+            this.entity = entity;
+            this.properties = properties;
+            this.path = path;
+            this.packName = packName;
+            this.propName = properties == null ? null : findPropName(properties);
+        }
+
+        public EntityType<?> getEntity() {
+            return entity;
+        }
+
+        public Properties getProperties() {
+            return properties;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+        public String getPackName() {
+            return packName;
+        }
+
         public String getPropName() {
+            return propName;
+        }
+
+        public static String findPropName(Properties properties) {
             if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
             for (String s : propertyNames) {
@@ -80,6 +153,34 @@ public class CEMRename extends AbstractRename {
                 }
             }
             return null;
+        }
+
+        public boolean equals(Object obj) {
+            if (obj instanceof Mob mob) {
+                return this.equals(mob);
+            }
+            return false;
+        }
+
+        public boolean equals(Mob obj) {
+            return equals(obj, false);
+        }
+
+        public boolean equals(Mob obj, boolean ignoreNull) {
+            return this.same(obj, ignoreNull) && this.equalsNoSame(obj, ignoreNull);
+        }
+
+        public boolean equalsNoSame(Mob obj, boolean ignoreNull) {
+            if (obj == null) return ignoreNull;
+            return paramsEquals(this.packName, obj.packName, ignoreNull)
+                    && paramsEquals(this.path, obj.path, ignoreNull)
+                    && paramsEquals(this.properties, obj.properties, ignoreNull);
+        }
+
+        public boolean same(Mob obj, boolean ignoreNull) {
+            if (obj == null) return ignoreNull;
+            return paramsEquals(this.entity, obj.entity, ignoreNull)
+                    && paramsEquals(this.propName, obj.propName, ignoreNull);
         }
     }
 
