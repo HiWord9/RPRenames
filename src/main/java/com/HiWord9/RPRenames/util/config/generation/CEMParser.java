@@ -51,7 +51,7 @@ public class CEMParser implements Parser {
                     try {
                         String fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
                         if (!path.endsWith(".jem")) return false;
-                        return (Arrays.stream(CEMList.models).toList().contains(fileName));
+                        return (CEMModels.modelExists(fileName));
                     } catch (Exception e) {
                         return false;
                     }
@@ -74,7 +74,7 @@ public class CEMParser implements Parser {
                     try {
                         String fileName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
                         if (!path.endsWith(PROP_EXTENSION)) return false;
-                        return (Arrays.stream(CEMList.models).toList().contains(fileName));
+                        return (CEMModels.modelExists(fileName));
                     } catch (Exception e) {
                         return false;
                     }
@@ -96,12 +96,14 @@ public class CEMParser implements Parser {
             }
         }
 
-        for (int c = 0; c < CEMList.textures.length; c++) {
-            try {
-                parseRawPropertyFile(resourceManager, RANDOM_ENTITY_PATH, c);
-                parseRawPropertyFile(resourceManager, MOB_PATH, c);
-            } catch (IOException e) {
-                RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
+        for (CEMModels.ModelData modelData : CEMModels.data) {
+            for (String texture : modelData.textures()) {
+                try {
+                    parseRawPropertyFile(resourceManager, RANDOM_ENTITY_PATH, texture, modelData.mob());
+                    parseRawPropertyFile(resourceManager, MOB_PATH, texture, modelData.mob());
+                } catch (IOException e) {
+                    RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
+                }
             }
         }
         checked.clear();
@@ -109,11 +111,11 @@ public class CEMParser implements Parser {
         profiler.pop();
     }
 
-    private static void parseRawPropertyFile(ResourceManager resourceManager, String texturePath, int textureNum) throws IOException {
-        Identifier identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + CEMList.textures[textureNum] + PROP_EXTENSION);
+    private static void parseRawPropertyFile(ResourceManager resourceManager, String texturePath, String texture, EntityType<?> entityType) throws IOException {
+        Identifier identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + texture + PROP_EXTENSION);
         Optional<Resource> optionalResource = resourceManager.getResource(identifier);
         if (optionalResource.isEmpty()) {
-            identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + getLastPathPart(CEMList.textures[textureNum]) + PROP_EXTENSION);
+            identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + getLastPathPart(texture) + PROP_EXTENSION);
             optionalResource = resourceManager.getResource(identifier);
             if (optionalResource.isEmpty()) return;
         }
@@ -127,7 +129,7 @@ public class CEMParser implements Parser {
                 ParserHelper.getPropFromResource(resource),
                 packName,
                 path,
-                CEMList.mobs[textureNum]
+                entityType
         );
     }
 
@@ -151,14 +153,14 @@ public class CEMParser implements Parser {
         String path = ParserHelper.getFullPathFromIdentifier(packName, propId);
         checked.add(path);
 
-        int i = Arrays.stream(CEMList.models).toList().indexOf(fileName);
-        if (i < 0) return;
+        CEMModels.ModelData modelData = CEMModels.find(fileName);
+        if (modelData == null) return;
 
         propertiesToRenameMob(
                 ParserHelper.getPropFromResource(resourceProp),
                 packName,
                 path,
-                CEMList.mobs[i]
+                modelData.mob()
         );
     }
 
@@ -204,7 +206,7 @@ public class CEMParser implements Parser {
         return list;
     }
 
-    private static void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> fileName) {
+    private static void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> entityType) {
         ArrayList<String> skins = new ArrayList<>();
         for (String s : p.stringPropertyNames()) {
             if (!s.startsWith("name.")) continue;
@@ -221,7 +223,7 @@ public class CEMParser implements Parser {
             AbstractRename rename;
             AbstractRename renameNameOnly = new CEMRename(name);
             CEMRename.Mob mob = new CEMRename.Mob(
-                    fileName,
+                    entityType,
                     p,
                     path.replaceAll("\\\\", "/")
             );
