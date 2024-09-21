@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class CEMModels {
     public static final ModelData[] data = new ModelData[]{
             new ModelData("allay", new String[]{"allay/allay"}, EntityType.ALLAY),
+            new ModelData("armadillo", new String[]{"armadillo"}, EntityType.ARMADILLO),
             new ModelData("armor_stand", new String[]{"armorstand/wood"}, EntityType.ARMOR_STAND),
             new ModelData("axolotl",
                     new String[]{
@@ -20,6 +21,8 @@ public class CEMModels {
                             "bee/bee", "bee/bee_angry", "bee/bee_angry_nectar", "bee/bee_nectar", "bee/bee_stinger"
                     }, EntityType.BEE),
             new ModelData("blaze", new String[]{"blaze"}, EntityType.BLAZE),
+            new ModelData("bogged", new String[]{"skeleton/bogged"}, EntityType.BOGGED),
+            new ModelData("breeze", new String[]{"breeze/breeze", "breeze/breeze_wind"}, EntityType.BREEZE),
             new ModelData("camel", new String[]{"camel/camel"}, EntityType.CAMEL),
             new ModelData("cat",
                     new String[]{
