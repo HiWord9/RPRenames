@@ -105,37 +105,44 @@ public class RPRenamesCommand {
             );
         }
 
-        Properties properties = matchRename.getProperties();
-        if (properties != null) {
-            printProperties(properties, source);
-        }
-        if (matchRename.getPackName() != null) {
-            if (matchRename.getPath() != null) {
-                printPath(matchRename.getPath(), matchRename.getPackName(), source);
-            }
-        }
+        printAbstractRenameInfo(matchRename, source);
+
         if (matchRename instanceof CEMRename cemRename) {
             source.sendFeedback(
                     Text.translatable("rprenames.command.info.cemProperties")
                     .formatted(Formatting.LIGHT_PURPLE)
-        );
-            printProperties(cemRename.getMob().properties(), source);
-            if (cemRename.getPackName() != null) {
-                if (cemRename.getMob().path() != null) {
-                    printPath(cemRename.getMob().path(), cemRename.getPackName(), source);
-                }
-            }
+            );
+            printCemRenameInfo(cemRename, source);
         }
-        if (matchRename.getPath() == null && (
-                        !(matchRename instanceof CEMRename cemRename)
-                        || cemRename.getMob().path() == null
-                )) {
+
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public static void printAbstractRenameInfo(AbstractRename rename, FabricClientCommandSource source) {
+        printRenameInfo(rename.getPackName(), rename.getPath(), rename.getProperties(), source);
+    }
+
+    public static void printCemRenameInfo(CEMRename rename, FabricClientCommandSource source) {
+        printRenameInfo(rename.getMob().packName(), rename.getMob().path(), rename.getMob().properties(), source);
+    }
+
+    public static void printRenameInfo(String packName, String path, Properties properties, FabricClientCommandSource source) {
+        if (properties != null) {
+            printProperties(properties, source);
+        }
+
+        if (packName != null && path != null) {
+            printPath(path, packName, source);
+        }
+
+        if (path == null) {
             source.sendFeedback(
                     Text.translatable("rprenames.command.info.noPath")
-                    .formatted(Formatting.RED)
+                            .formatted(Formatting.RED)
             );
         }
-        if (matchRename.getPackName() == null) {
+
+        if (packName == null) {
             source.sendFeedback(
                     Text.translatable("rprenames.command.info.noRpName")
                             .formatted(Formatting.RED)
@@ -145,10 +152,9 @@ public class RPRenamesCommand {
                     Text.translatable("rprenames.command.info.rpName")
                             .formatted(Formatting.GOLD)
                             .append(Text.of(" = ").copy().formatted(Formatting.GRAY))
-                            .append(Text.of(matchRename.getPackName()).copy().formatted(Formatting.BLUE))
+                            .append(Text.of(packName).copy().formatted(Formatting.BLUE))
             );
         }
-        return Command.SINGLE_SUCCESS;
     }
 
     public static int list(FabricClientCommandSource source) {

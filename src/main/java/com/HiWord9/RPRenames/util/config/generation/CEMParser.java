@@ -225,8 +225,13 @@ public class CEMParser implements Parser {
             CEMRename.Mob mob = new CEMRename.Mob(
                     entityType,
                     p,
-                    path.replaceAll("\\\\", "/")
+                    path.replaceAll("\\\\", "/"),
+                    packName
             );
+
+            String citPackName = null;
+            String citPath = null;
+            Properties citProperties = null;
 
             int i = renameNameOnly.indexIn(alreadyExist, true);
             if (i != -1) {
@@ -234,15 +239,21 @@ public class CEMParser implements Parser {
                 if (renameForItem instanceof CITRename citRename) {
                     if (citRename.same(new CITRename(name, CEMRename.DEFAULT_MOB_ITEM), false)) {
                         alreadyExist.remove(i);
+
+                        citPackName = citRename.getPackName();
+                        citPath = citRename.getPath();
+                        citProperties = citRename.getProperties();
                     }
                 }
             }
+
             rename = new CEMRename(
                     name,
-                    packName,
-                    path,
+                    citPackName,
+                    citPath,
+                    citProperties,
                     mob
-            );
+            ); //todo duplicated entries
 
             if (!rename.isContainedIn(alreadyExist)) {
                 ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);

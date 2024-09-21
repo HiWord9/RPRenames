@@ -58,7 +58,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
 
         tooltipComponents.add(index++, mobNameTooltipComponent(entityType));
 
-        if (!config.showPackName && rename.getMob().packName() != null) {
+        if (!config.showPackName && getDisplayPackName() != null) {
             tooltipComponents.remove(index);
         }
         if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
@@ -72,6 +72,10 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
                 Text.translatable(entityType.getTranslationKey())
                         .copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW))
                         .asOrderedText());
+    }
+
+    public String getDisplayPackName() {
+        return rename.getMob().packName();
     }
 
     @Override

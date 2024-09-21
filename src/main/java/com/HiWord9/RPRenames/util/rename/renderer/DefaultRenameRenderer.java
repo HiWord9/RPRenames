@@ -28,12 +28,12 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
         this.rename = rename;
         stack = rename.toStack();
 
-        tooltipComponents.add(nameTooltipComponent(rename));
-        if (rename.getPackName() != null) tooltipComponents.add(packNameTooltipComponent(rename));
+        tooltipComponents.add(nameTooltipComponent());
+        if (getDisplayPackName() != null) tooltipComponents.add(packNameTooltipComponent());
     }
 
-    public static TooltipComponent nameTooltipComponent(AbstractRename rename) {
-        return TooltipComponent.of(Text.of(rename.getName()).asOrderedText());
+    public TooltipComponent nameTooltipComponent() {
+        return TooltipComponent.of(Text.of(getDisplayName()).asOrderedText());
     }
 
     public static MultiItemTooltipComponent multiItemTooltipComponent(AbstractRename rename) {
@@ -80,8 +80,8 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
         return null;
     }
 
-    public static TooltipComponent packNameTooltipComponent(AbstractRename rename) {
-        String packName = rename.getPackName();
+    public TooltipComponent packNameTooltipComponent() {
+        String packName = getDisplayPackName();
 
         boolean zip = false;
         if (packName.endsWith(".zip")) {
@@ -96,6 +96,14 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
                         .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
                         .asOrderedText()
         );
+    }
+
+    public String getDisplayName() {
+        return rename.getName();
+    }
+
+    public String getDisplayPackName() {
+        return rename.getPackName();
     }
 
     @Override

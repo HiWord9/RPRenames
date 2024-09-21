@@ -28,14 +28,15 @@ public class CEMRename extends AbstractRename {
     public CEMRename(String name,
                      String packName,
                      Mob mob) {
-        this(name, packName, null, mob);
+        this(name, packName, null, null, mob);
     }
 
     public CEMRename(String name,
                      String packName,
                      String path,
+                     Properties properties,
                      Mob mob) {
-        super(name, packName, path, mob == null ? null : mob.properties(), DEFAULT_MOB_ITEM);
+        super(name, packName, path, properties, DEFAULT_MOB_ITEM);
         this.mob = mob;
     }
 
@@ -45,11 +46,6 @@ public class CEMRename extends AbstractRename {
 
     public void setMob(Mob mob) {
         this.mob = mob;
-    }
-
-    @Override
-    public Properties getProperties() {
-        return mob == null ? null : mob.properties();
     }
 
     @Override
@@ -72,7 +68,7 @@ public class CEMRename extends AbstractRename {
         return spawnEgg;
     }
 
-    public record Mob(EntityType<?> entity, Properties properties, String path) {
+    public record Mob(EntityType<?> entity, Properties properties, String path, String packName) {
         public String getPropName() {
             if (properties == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
