@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRenderer.Preview {
+public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     private static final MutableText playerPreviewHintShift = Text.translatable(
@@ -55,7 +55,6 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
             Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.GRAY)
     ).formatted(Formatting.DARK_GRAY);
 
-    CITRename rename;
     RPRWidget rprWidget;
     boolean favorite;
 
@@ -64,7 +63,6 @@ public class CITRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
     public CITRenameRenderer(CITRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
-        this.rename = rename;
         this.rprWidget = rprWidget;
         this.favorite = favorite;
 

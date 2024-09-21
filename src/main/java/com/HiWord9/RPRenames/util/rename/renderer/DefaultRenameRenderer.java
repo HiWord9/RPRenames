@@ -19,11 +19,13 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 
-public class DefaultRenameRenderer implements RenameRenderer {
+public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRenderer {
+    T rename;
     ItemStack stack;
     ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
 
-    public DefaultRenameRenderer(AbstractRename rename) {
+    public DefaultRenameRenderer(T rename) {
+        this.rename = rename;
         stack = rename.toStack();
 
         tooltipComponents.add(nameTooltipComponent(rename));

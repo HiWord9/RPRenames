@@ -119,7 +119,7 @@ public class AbstractRename {
     }
 
     public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
-        return new DefaultRenameRenderer(this);
+        return new DefaultRenameRenderer<>(this);
     }
 
     public boolean equals(Object obj) {

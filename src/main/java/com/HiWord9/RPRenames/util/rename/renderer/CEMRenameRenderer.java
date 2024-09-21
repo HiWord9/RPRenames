@@ -20,10 +20,9 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 
-public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRenderer.Preview {
+public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
-    CEMRename rename;
     RPRWidget rprWidget;
     boolean favorite;
 
@@ -32,7 +31,6 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
     public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
         super(rename);
-        this.rename = rename;
         this.rprWidget = rprWidget;
         this.favorite = favorite;
 
@@ -60,7 +58,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer implements RenameRe
 
         tooltipComponents.add(index++, mobNameTooltipComponent(entityType));
 
-        if (!config.showPackName && rename.getPackName() != null) {
+        if (!config.showPackName && rename.getMob().packName() != null) {
             tooltipComponents.remove(index);
         }
         if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
