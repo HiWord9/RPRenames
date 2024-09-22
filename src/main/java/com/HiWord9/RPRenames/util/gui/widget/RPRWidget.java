@@ -255,9 +255,17 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             } else {
                 favoritesManager.removeFromFavorites(favoriteName, item);
             }
-            updateFavoriteButton();
-            if (open) {
-                screenUpdate(page);
+            updateAfterFavorite();
+        }
+    }
+
+    public void updateAfterFavorite() {
+        updateFavoriteButton();
+        if (isOpen()) {
+            if (currentTab == Tab.FAVORITE) {
+                screenUpdate(getPage());
+            } else {
+                updateWidgets();
             }
         }
     }
@@ -330,10 +338,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                         favoritesManager.removeFromFavorites(rename.getName(), i);
                     }
                 }
-                updateFavoriteButton();
-                if (isOpen()) {
-                    screenUpdate(getPage());
-                }
+                updateAfterFavorite();
             } else {
                 addOrRemoveFavorite(
                         true,
