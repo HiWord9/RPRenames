@@ -55,7 +55,12 @@ public class CITRename extends AbstractRename implements Describable {
     }
 
     public String getNamePattern() {
-        return properties == null ? null : properties.getProperty("nbt.display.Name");
+        if (properties == null) return null; // todo replace with more reliable logic
+        String nbtNamePattern = properties.getProperty("components.custom_name");
+        if (nbtNamePattern == null) nbtNamePattern = properties.getProperty("components.minecraft\\:custom_name");
+        if (nbtNamePattern == null) nbtNamePattern = properties.getProperty("components.~custom_name");
+        if (nbtNamePattern == null) nbtNamePattern = properties.getProperty("nbt.display.Name");
+        return nbtNamePattern;
     }
 
     public String getDescription() {
