@@ -174,4 +174,15 @@ public class AbstractRename {
         }
         return -1;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "{" +
+                "name='" + name + '\'' +
+                ", packName='" + packName + '\'' +
+                ", path='" + path + '\'' +
+                ", properties=" + properties +
+                ", items=" + items +
+                '}';
+    }
 }

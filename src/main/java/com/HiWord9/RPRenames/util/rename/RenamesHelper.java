@@ -55,7 +55,7 @@ public class RenamesHelper {
     public static void enchantItemStackWithRename(CITRename rename, ItemStack itemStack) {
         if (MinecraftClient.getInstance().world == null) {
             RPRenames.LOGGER.warn(
-                    "Could not enchant item stack {} with rename {} cause client world is null",
+                    "Could not enchant item stack {} with rename\n{}\ncause client world is null",
                     itemStack, rename
             );
             return;
@@ -71,7 +71,7 @@ public class RenamesHelper {
             itemStack.addEnchantment(optionalEnchantment.get(), rename.getEnchantmentLevel());
         } else {
             RPRenames.LOGGER.warn(
-                    "Could not enchant item stack {} with rename {} cause enchantment {} is not loaded",
+                    "Could not enchant item stack {} with rename\n{}\ncause enchantment {} is not loaded",
                     itemStack, rename, rename.getEnchantment()
             );
         }
