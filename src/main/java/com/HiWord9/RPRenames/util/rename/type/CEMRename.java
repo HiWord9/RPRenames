@@ -55,7 +55,7 @@ public class CEMRename extends AbstractRename {
     public String getNamePattern() {
         Mob mob = getMob();
         if (mob == null) return null;
-        return mob.propName;
+        return mob.getNamePattern();
     }
 
     public ItemStack toSpawnEgg() {
@@ -104,22 +104,24 @@ public class CEMRename extends AbstractRename {
         private final Properties properties;
         private final String path;
         private final String packName;
-        private final String propName;
+        private final String namePattern;
+        private final String nameIndex;
 
         public Mob(EntityType<?> entity) {
             this(entity, null);
         }
 
         public Mob(EntityType<?> entity, String packName) {
-            this(entity, null, null, packName);
+            this(entity, null, null, packName, null);
         }
 
-        public Mob(EntityType<?> entity, Properties properties, String path, String packName) {
+        public Mob(EntityType<?> entity, Properties properties, String path, String packName, String nameIndex) {
             this.entity = entity;
             this.properties = properties;
             this.path = path;
             this.packName = packName;
-            this.propName = properties == null ? null : findPropName(properties);
+            this.nameIndex = nameIndex;
+            this.namePattern = findPropName();
         }
 
         public EntityType<?> getEntity() {
@@ -138,18 +140,20 @@ public class CEMRename extends AbstractRename {
             return packName;
         }
 
-        public String getPropName() {
-            return propName;
+        public String getNamePattern() {
+            return namePattern;
         }
 
-        public static String findPropName(Properties properties) {
-            if (properties == null) return null;
+        public String findPropName() {
+            return findPropName(properties, nameIndex);
+        }
+
+        public static String findPropName(Properties properties, String nameIndex) {
+            if (properties == null || nameIndex == null) return null;
             Set<String> propertyNames = properties.stringPropertyNames();
             for (String s : propertyNames) {
-                if (s.startsWith("name.")) {
-                    if (propertyNames.contains("skins." + s.substring(5))) {
-                        return properties.getProperty(s);
-                    }
+                if (s.startsWith("name." + nameIndex)) {
+                    return properties.getProperty(s);
                 }
             }
             return null;
@@ -180,7 +184,7 @@ public class CEMRename extends AbstractRename {
         public boolean same(Mob obj, boolean ignoreNull) {
             if (obj == null) return ignoreNull;
             return paramsEquals(this.entity, obj.entity, ignoreNull)
-                    && paramsEquals(this.propName, obj.propName, ignoreNull);
+                    && paramsEquals(this.namePattern, obj.namePattern, ignoreNull);
         }
     }
 

@@ -211,7 +211,9 @@ public class CEMParser implements Parser {
         for (String s : p.stringPropertyNames()) {
             if (!s.startsWith("name.")) continue;
 
-            String skin = p.getProperty("skins." + s.substring(5));
+            String nameIndex = s.substring(5);
+
+            String skin = p.getProperty("skins." + nameIndex);
             if (skins.contains(skin)) continue;
             skins.add(skin);
 
@@ -220,14 +222,16 @@ public class CEMParser implements Parser {
 
             ArrayList<AbstractRename> alreadyExist = RenamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
-            AbstractRename rename;
-            AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
             CEMRename.Mob mob = new CEMRename.Mob(
                     entityType,
                     p,
                     path.replaceAll("\\\\", "/"),
-                    packName
+                    packName,
+                    nameIndex
             );
+
+            AbstractRename rename;
+            AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
 
             String citPackName = null;
             String citPath = null;
