@@ -53,7 +53,7 @@ public class CITParser implements Parser {
         if (items.isEmpty()) return;
 
         String nbtNamePattern = p.getProperty("components.custom_name"); // todo replace with more reliable logic
-        if (nbtNamePattern == null) nbtNamePattern = p.getProperty("components.minecraft\\:custom_name");
+        if (nbtNamePattern == null) nbtNamePattern = p.getProperty("components.minecraft:custom_name");
         if (nbtNamePattern == null) nbtNamePattern = p.getProperty("components.~custom_name");
         if (nbtNamePattern == null) nbtNamePattern = p.getProperty("nbt.display.Name");
 
