@@ -49,5 +49,9 @@
   },
   "recommends": {
     "cloth-config": "${cloth_config_version_range}"
+  },
+  "breaks": {
+    "easyanvils": "*",
+    "legendarytooltips": "<1.4.11"
   }
 }
