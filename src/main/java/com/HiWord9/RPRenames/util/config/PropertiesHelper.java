@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class PropertiesHelper {
@@ -33,10 +34,18 @@ public class PropertiesHelper {
                 name = name.substring(1);
             }
             name = name.replaceFirst("regex:", "");
+
+            String originalRegex = name;
             name = name.replace(".*", "");
             name = name.replace(".+", "_");
 
-            String originalRegex = name;
+            try {
+                Pattern.compile(originalRegex);
+            } catch (PatternSyntaxException e) {
+                RPRenames.LOGGER.error("\"{}\" is not a valid regex!{}", originalRegex, path != null ? " From: " + path : "");
+                return name;
+            }
+
             name = solveRegex(name);
             try {
                 if (!name.matches(originalRegex)) {
@@ -77,7 +86,6 @@ public class PropertiesHelper {
                     stringBuilder.append("\t");
                 } else {
                     stringBuilder.append(chars[i]);
-                    i++;
                 }
             } else {
                 stringBuilder.append(chars[i]);
@@ -102,15 +110,17 @@ public class PropertiesHelper {
             StringBuilder builder2 = new StringBuilder();
             if (chars[i] == '[') {
                 if (chars[i + 1] != '^') {
+                    if (chars[i + 1] == '\\') i++;
                     builder2.append(chars[i + 1]);
                     i += 2;
-                    while (chars[i] != ']') {
+                    while (chars[i] != ']' || chars[i - 1] == '\\') {
                         i++;
                     }
                 } else {
+                    if (chars[i + 2] == '\\') i++;
                     int start = i;
                     i += 3;
-                    while (chars[i] != ']') {
+                    while (chars[i] != ']' || chars[i - 1] != '\\') {
                         i++;
                     }
                     int ch = chars[start + 2];
@@ -136,10 +146,14 @@ public class PropertiesHelper {
                 ArrayList<Character> bracketsOrder = new ArrayList<>();
                 while (i + 1 < chars.length) {
                     i++;
+                    if (chars[i - 1] == '\\') {
+                        builder3.append(chars[i]);
+                        continue;
+                    }
                     if (chars[i] == '(') {
                         bracketsOrder.add('(');
                         brackets++;
-                    } else if (chars[i] == ')' && (bracketsOrder.isEmpty() || bracketsOrder.get(bracketsOrder.size() - 1) != '[')) {
+                    } else if (chars[i] == ')' && (bracketsOrder.isEmpty() || bracketsOrder.getLast() != '[')) {
                         if (brackets == 0) {
                             break;
                         }
