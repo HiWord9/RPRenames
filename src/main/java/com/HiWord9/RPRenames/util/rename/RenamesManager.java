@@ -43,7 +43,10 @@ public class RenamesManager {
             case 1 -> ms = "00" + ms;
             case 2 -> ms = "0" + ms;
         }
-        RPRenames.LOGGER.info("Finished collecting resource pack renames [{}.{}s]", finishTime / 1000, ms);
+        RPRenames.LOGGER.info(
+                "Finished collecting resource pack renames [{}.{}s] ({} in total)",
+                finishTime / 1000, ms, getAllRenames().size()
+        );
 
         profiler.pop();
     }
