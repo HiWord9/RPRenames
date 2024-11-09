@@ -41,7 +41,7 @@ public class CITParser implements Parser {
     }
 
     private static void propertiesToRename(Properties p, String packName, String path) {
-        String matchItems = p.getProperty("matchItems"); // todo nbt -> components
+        String matchItems = p.getProperty("matchItems");
         if (matchItems == null) matchItems = p.getProperty("items");
         if (matchItems == null) return;
 
@@ -52,10 +52,9 @@ public class CITParser implements Parser {
         ArrayList<Item> items = itemsFromMatchItems(matchItems);
         if (items.isEmpty()) return;
 
-        String nbtNamePattern = p.getProperty("components.custom_name"); // todo replace with more reliable logic
-        if (nbtNamePattern == null) nbtNamePattern = p.getProperty("components.minecraft:custom_name");
-        if (nbtNamePattern == null) nbtNamePattern = p.getProperty("components.~custom_name");
-        if (nbtNamePattern == null) nbtNamePattern = p.getProperty("nbt.display.Name");
+        String customName = PropertiesHelper.getCustomName(p);
+        if (customName == null) return;
+        //todo lore
 
         String stackSizeProp = p.getProperty("stackSize");
         String firstStackSize = PropertiesHelper.getFirstValueInList(stackSizeProp == null ? "" : stackSizeProp);
@@ -97,10 +96,8 @@ public class CITParser implements Parser {
         if (description == null) description = p.getProperty("%rpr.description");
         if (description == null) description = p.getProperty("%description");
 
-        if (nbtNamePattern == null) return;
-
         CITRename rename = new CITRename(
-                PropertiesHelper.getFirstName(nbtNamePattern, path),
+                PropertiesHelper.getFirstName(customName, path),
                 items,
                 packName,
                 path,

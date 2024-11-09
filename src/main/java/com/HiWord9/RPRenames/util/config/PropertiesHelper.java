@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -350,5 +351,23 @@ public class PropertiesHelper {
             builder.append("%");
         }
         return builder.toString();
+    }
+
+    public static String getCustomName(Properties properties) {
+        return getComponentOrLegacyProperty(properties, "custom_name", "nbt.display.Name");
+    }
+
+    public static String getComponentWithNamespaceProperty(Properties properties, String component) {
+        String keyPattern = "components.~" + component;
+        String value = properties.getProperty(keyPattern.replace("~", ""));
+        if (value == null) value = properties.getProperty(keyPattern.replace("~", "minecraft:"));
+        if (value == null) value = properties.getProperty(keyPattern);
+        return value;
+    }
+
+    public static String getComponentOrLegacyProperty(Properties properties, String component, String legacy) {
+        String value = getComponentWithNamespaceProperty(properties, component);
+        if (value == null) value = properties.getProperty(legacy);
+        return value;
     }
 }
