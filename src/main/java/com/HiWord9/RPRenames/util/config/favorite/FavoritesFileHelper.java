@@ -96,7 +96,7 @@ public class FavoritesFileHelper {
         Path path = Path.of(pathToFavoriteFile(item));
         try {
             Files.deleteIfExists(path);
-        } catch (IOException e) {
+        } catch (Exception e) {
             RPRenames.LOGGER.error("Could not delete file for Favorites {}", path, e);
         }
     }

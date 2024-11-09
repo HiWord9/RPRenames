@@ -63,7 +63,7 @@ public class CEMParser implements Parser {
                     String path = entry.getKey().getPath();
                     parseTextureSourceFile(resourceManager, jpmFileName, path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")), RANDOM_ENTITY_PATH);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
             }
         }
@@ -91,7 +91,7 @@ public class CEMParser implements Parser {
                     String jem = pathInCem + n + ".jem";
                     parseTextureSourceFile(resourceManager, jem, pathInCem.substring(pathInCem.lastIndexOf("/") + 1), MOB_PATH);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
             }
         }
@@ -101,7 +101,7 @@ public class CEMParser implements Parser {
                 try {
                     parseRawPropertyFile(resourceManager, RANDOM_ENTITY_PATH, texture, modelData.mob());
                     parseRawPropertyFile(resourceManager, MOB_PATH, texture, modelData.mob());
-                } catch (IOException e) {
+                } catch (Exception e) {
                     RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
                 }
             }
@@ -187,7 +187,7 @@ public class CEMParser implements Parser {
             Gson gson = new Gson();
             obj = gson.fromJson(bufferedReader, type);
             bufferedReader.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
         }
         return obj;

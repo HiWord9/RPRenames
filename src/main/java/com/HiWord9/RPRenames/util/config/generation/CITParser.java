@@ -12,7 +12,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class CITParser implements Parser {
                             packName,
                             ParserHelper.getFullPathFromIdentifier(packName, entry.getKey())
                     );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     RPRenames.LOGGER.error("Something went wrong while parsing CIT Renames", e);
                 }
             }
