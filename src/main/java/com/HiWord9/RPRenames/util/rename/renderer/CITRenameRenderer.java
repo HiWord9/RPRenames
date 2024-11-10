@@ -52,8 +52,8 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
 
     private static final MutableText disableHint = Text.translatable(
             "rprenames.gui.tooltipHint.disable",
-            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.RED)
+    ).formatted(Formatting.DARK_RED);
 
     RPRWidget rprWidget;
     boolean favorite;
