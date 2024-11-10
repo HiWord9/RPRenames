@@ -9,9 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class RenamesManager {
     public static final ArrayList<Parser> parsers = new ArrayList<>();
@@ -56,13 +55,11 @@ public class RenamesManager {
     }
 
     public static ArrayList<AbstractRename> getAllRenames() {
-        ArrayList<AbstractRename> names = new ArrayList<>();
-        for (Map.Entry<Item, ArrayList<AbstractRename>> entry : renames.entrySet()) {
-            for (AbstractRename r : entry.getValue()) {
-                if (!r.isContainedIn(names)) names.add(r);
-            }
-        }
-        return names;
+        return (ArrayList<AbstractRename>) renames
+                .entrySet().stream()
+                .flatMap(entry -> entry.getValue().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public static ArrayList<AbstractRename> getRenames(Item item) {
