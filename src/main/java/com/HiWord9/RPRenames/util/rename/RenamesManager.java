@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class RenamesManager {
     public static final ArrayList<Parser> parsers = new ArrayList<>();
 
-    public static final Map<Item, ArrayList<AbstractRename>> renames = new HashMap<>();
+    private static final Map<Item, ArrayList<AbstractRename>> renames = new HashMap<>();
 
     public static void updateRenames() {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -78,5 +78,19 @@ public class RenamesManager {
             arrayList.add(rename);
             renames.put(item, arrayList);
         }
+    }
+
+    public static void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
+        renames.put(item, newRenames);
+    }
+
+    public static void removeRename(Item item, AbstractRename rename) {
+        if (renames.containsKey(item)) {
+            renames.get(item).remove(rename);
+        }
+    }
+
+    public static ArrayList<Item> renamedItems() {
+        return new ArrayList<>(renames.keySet());
     }
 }

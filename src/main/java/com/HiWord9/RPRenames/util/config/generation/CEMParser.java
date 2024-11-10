@@ -21,8 +21,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.HiWord9.RPRenames.util.rename.RenamesManager.*;
-
 public class CEMParser implements Parser {
 
     private static final String CEM_PATH = "optifine/cem";
@@ -263,7 +261,7 @@ public class CEMParser implements Parser {
                     .isContainedIn(alreadyExist, true)) {
                 ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
-                renames.put(CEMRename.DEFAULT_MOB_ITEM, newConfig);
+                RenamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);
             }
         }
     }
