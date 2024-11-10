@@ -158,19 +158,14 @@ public class RPRenamesItemGroup {
 
     public static ArrayList<ItemStack> getAllRenamedStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        ArrayList<AbstractRename> parsedRenames = new ArrayList<>();
-        for (Item key : RenamesManager.renames.keySet()) {
-            for (AbstractRename r : RenamesManager.renames.get(key)) {
-                if (parsedRenames.contains(r)) continue;
-                parsedRenames.add(r);
-                if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config.compareItemGroupRenames) {
-                    for (int i = 0; i < citRename.getItems().size(); i++) {
-                        ItemStack stack = RenamesHelper.createItemOrSpawnEgg(citRename, i);
-                        list.add(stack);
-                    }
-                } else {
-                    list.add(RenamesHelper.createItemOrSpawnEgg(r));
+        for (AbstractRename r : RenamesManager.getAllRenames()) {
+            if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config.compareItemGroupRenames) {
+                for (int i = 0; i < citRename.getItems().size(); i++) {
+                    ItemStack stack = RenamesHelper.createItemOrSpawnEgg(citRename, i);
+                    list.add(stack);
                 }
+            } else {
+                list.add(RenamesHelper.createItemOrSpawnEgg(r));
             }
         }
         return list;

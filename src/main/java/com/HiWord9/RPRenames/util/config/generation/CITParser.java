@@ -108,18 +108,21 @@ public class CITParser implements Parser {
                 description
         );
 
+        CITRename simplifiedRename = new CITRename(
+                rename.getName(),
+                null,
+                null,
+                null,
+                rename.getStackSize(),
+                rename.getDamage(),
+                rename.getEnchantment(),
+                rename.getEnchantmentLevel(),
+                null,
+                null
+        );
+
         for (Item item : items) {
-            CITRename simplifiedRename = new CITRename(rename.getName(),
-                    null,
-                    null,
-                    null,
-                    rename.getStackSize(),
-                    rename.getDamage(),
-                    rename.getEnchantment(),
-                    rename.getEnchantmentLevel(),
-                    null,
-                    null);
-            if (!simplifiedRename.isContainedIn(RenamesManager.renames.get(item), true)) {
+            if (!simplifiedRename.isContainedIn(RenamesManager.getRenames(item), true)) {
                 RenamesManager.addRename(item, rename);
             }
         }
