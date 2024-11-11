@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FavoritesFileHelper {
+public class FavoritesFileManager {
     Path configPathFavorite;
 
-    public FavoritesFileHelper(Path configPathFavorite) {
+    public FavoritesFileManager(Path configPathFavorite) {
         this.configPathFavorite = configPathFavorite;
     }
 

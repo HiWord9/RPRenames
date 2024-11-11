@@ -13,22 +13,22 @@ public class FavoritesManager {
     private final Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
     private final TaskQueueThread taskQueue = new TaskQueueThread();
 
-    private final FavoritesFileHelper favoritesFileHelper;
+    private final FavoritesFileManager favoritesFileManager;
 
     public static synchronized FavoritesManager getInstance() {
         if (instance == null) {
-            instance = new FavoritesManager(new FavoritesFileHelper(RPRenames.configPathFavorite));
+            instance = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
         }
         return instance;
     }
 
-    protected FavoritesManager(FavoritesFileHelper favoritesFileHelper) {
-        this.favoritesFileHelper = favoritesFileHelper;
+    protected FavoritesManager(FavoritesFileManager favoritesFileManager) {
+        this.favoritesFileManager = favoritesFileManager;
         taskQueue.start();
     }
 
     public void loadSavedFavorites() {
-        favoriteRenames.putAll(favoritesFileHelper.getAllSavedFavorites());
+        favoriteRenames.putAll(favoritesFileManager.getAllSavedFavorites());
     }
 
     public Map<Item, ArrayList<AbstractRename>> getAllFavorites() {
@@ -53,7 +53,7 @@ public class FavoritesManager {
         }
 
         favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> favoritesFileHelper.setFavorites(renames, item));
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(renames, item));
     }
 
     public void removeFromFavorites(String favoriteName, Item item) {
@@ -64,7 +64,7 @@ public class FavoritesManager {
         }
 
         favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> favoritesFileHelper.setFavorites(renames, item));
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(renames, item));
     }
 
     public boolean isFavorite(Item item, String name) {
