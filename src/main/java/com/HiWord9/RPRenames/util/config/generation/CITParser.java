@@ -91,9 +91,9 @@ public class CITParser implements Parser {
         String firstEnchantLvl = PropertiesHelper.getFirstValueInList(enchantLvlProp == null ? "" : enchantLvlProp);
         Integer enchantLvl = firstEnchantLvl.isEmpty() ? null : Integer.parseInt(firstEnchantLvl) <= 0 ? null : Integer.parseInt(firstEnchantLvl);
 
-        String description = p.getProperty("%rprenames.description");
-        if (description == null) description = p.getProperty("%rpr.description");
-        if (description == null) description = p.getProperty("%description");
+        String description = p.getProperty("$rprenames.description");
+        if (description == null) description = p.getProperty("$rpr.description");
+        if (description == null) description = p.getProperty("$description");
 
         CITRename rename = new CITRename(
                 PropertiesHelper.getFirstName(customName, path),
