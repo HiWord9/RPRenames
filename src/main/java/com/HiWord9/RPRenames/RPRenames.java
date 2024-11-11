@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,14 @@ public class RPRenames implements ClientModInitializer {
         if (config.loadModBuiltinResources) {
             LOGGER.info("Loading RPRenames built-in resource packs");
             FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
-                ResourceManagerHelper.registerBuiltinResourcePack(asId("vanillish"), container, ResourcePackActivationType.NORMAL);
-                ResourceManagerHelper.registerBuiltinResourcePack(asId("default_dark_mode"), container, ResourcePackActivationType.NORMAL);
-                ResourceManagerHelper.registerBuiltinResourcePack(asId("high_contrasted"), container, ResourcePackActivationType.NORMAL);
+                for (String pack : new String[]{"vanillish", "default_dark_mode", "high_contrasted"}) {
+                    ResourceManagerHelper.registerBuiltinResourcePack(
+                            asId(pack),
+                            container,
+                            Text.translatable("rprenames.builtinResourcePack." + pack),
+                            ResourcePackActivationType.NORMAL
+                    );
+                }
             });
         }
 

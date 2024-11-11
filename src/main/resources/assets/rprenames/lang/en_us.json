@@ -149,5 +149,9 @@
   "rprenames.config.gui.previewCategory.previewScaleCategory": "Scale",
   "rprenames.config.gui.previewCategory.playerCategory": "Player",
   "rprenames.config.gui.previewCategory.entityCategory": "Mob",
-  "rprenames.config.gui.hintsCategory": "Hints"
+  "rprenames.config.gui.hintsCategory": "Hints",
+
+  "rprenames.builtinResourcePack.vanillish": "RPRenames Vannilish",
+  "rprenames.builtinResourcePack.default_dark_mode": "RPRenames Default Dark Mode",
+  "rprenames.builtinResourcePack.high_contrasted": "RPRenames High Constasted"
 }
