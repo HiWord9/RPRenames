@@ -1,6 +1,5 @@
 package com.HiWord9.RPRenames.util.config.favorite;
 
-import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.item.Item;
 
@@ -9,20 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FavoritesManager {
-    static FavoritesManager instance;
     private final Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
     private final TaskQueueThread taskQueue = new TaskQueueThread();
 
     private final FavoritesFileManager favoritesFileManager;
 
-    public static synchronized FavoritesManager getInstance() {
-        if (instance == null) {
-            instance = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
-        }
-        return instance;
-    }
-
-    protected FavoritesManager(FavoritesFileManager favoritesFileManager) {
+    public FavoritesManager(FavoritesFileManager favoritesFileManager) {
         this.favoritesFileManager = favoritesFileManager;
         taskQueue.start();
     }

@@ -87,6 +87,10 @@ public class RenamesHelper {
     }
 
     public static ArrayList<AbstractRename> search(ArrayList<AbstractRename> list, String match) {
+        return search(list, match, RPRenames.favoritesManager);
+    }
+
+    public static ArrayList<AbstractRename> search(ArrayList<AbstractRename> list, String match, FavoritesManager favoritesManager) {
         ArrayList<AbstractRename> cutList = new ArrayList<>();
         if (match.startsWith("#")) {
             String matchTag = match.substring(1);
@@ -193,7 +197,7 @@ public class RenamesHelper {
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("FAV:") || matchTag.toUpperCase(Locale.ROOT).startsWith("FAVORITE:")) {
                 for (AbstractRename r : list) {
                     for (Item item : r.getItems()) {
-                        if (FavoritesManager.getInstance().isFavorite(item, r.getName())) {
+                        if (favoritesManager.isFavorite(item, r.getName())) {
                             cutList.add(r);
                             break;
                         }
@@ -201,9 +205,9 @@ public class RenamesHelper {
                 }
             }
             if (match.substring(1).contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
-                cutList = search(cutList, match.substring(match.indexOf(" ") + 1));
+                cutList = search(cutList, match.substring(match.indexOf(" ") + 1), favoritesManager);
             } else if (match.substring(1).contains(" #")) {
-                cutList = search(cutList, match.substring(match.indexOf(" #") + 1));
+                cutList = search(cutList, match.substring(match.indexOf(" #") + 1), favoritesManager);
             }
         } else {
             if (match.startsWith("\\#")) {

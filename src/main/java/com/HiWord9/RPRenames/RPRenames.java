@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
@@ -31,6 +32,7 @@ public class RPRenames implements ClientModInitializer {
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
     public static RenamesManager renamesManager = new RenamesManager();
+    public static FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
     @Override
     public void onInitializeClient() {
@@ -56,7 +58,7 @@ public class RPRenames implements ClientModInitializer {
         renamesManager.parsers.add(new CITParser(renamesManager));
         renamesManager.parsers.add(new CEMParser(renamesManager));
 
-        FavoritesManager.getInstance().loadSavedFavorites();
+        favoritesManager.loadSavedFavorites();
     }
 
     public static Identifier asId(String path) {

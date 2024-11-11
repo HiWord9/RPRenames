@@ -613,7 +613,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     private void updateSearchRequest(int page) {
-        currentRenameList = RenamesHelper.search(originalRenameList, searchTag);
+        currentRenameList = RenamesHelper.search(originalRenameList, searchTag, favoritesManager);
 
         this.page = page;
         if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {

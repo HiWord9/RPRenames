@@ -144,7 +144,7 @@ public class RPRenamesItemGroup {
 
     public static ArrayList<ItemStack> getFavoriteStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        Map<Item, ArrayList<AbstractRename>> favoriteRenames = FavoritesManager.getInstance().getAllFavorites();
+        Map<Item, ArrayList<AbstractRename>> favoriteRenames = RPRenames.favoritesManager.getAllFavorites();
         for (Item key : favoriteRenames.keySet()) {
             for (AbstractRename r : favoriteRenames.get(key)) {
                 for (int i = 0; i < r.getItems().size(); i++) {
