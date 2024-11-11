@@ -158,7 +158,7 @@ public class RPRenamesItemGroup {
 
     public static ArrayList<ItemStack> getAllRenamedStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        for (AbstractRename r : RenamesManager.getAllRenames()) {
+        for (AbstractRename r : RPRenames.renamesManager.getAllRenames()) {
             if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config.compareItemGroupRenames) {
                 for (int i = 0; i < citRename.getItems().size(); i++) {
                     ItemStack stack = RenamesHelper.createItemOrSpawnEgg(citRename, i);

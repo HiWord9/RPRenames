@@ -30,6 +30,8 @@ public class RPRenames implements ClientModInitializer {
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
+    public static RenamesManager renamesManager = new RenamesManager();
+
     @Override
     public void onInitializeClient() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
@@ -51,8 +53,8 @@ public class RPRenames implements ClientModInitializer {
 
         registerItemGroup();
 
-        RenamesManager.parsers.add(new CITParser());
-        RenamesManager.parsers.add(new CEMParser());
+        renamesManager.parsers.add(new CITParser(renamesManager));
+        renamesManager.parsers.add(new CEMParser(renamesManager));
 
         FavoritesManager.getInstance().loadSavedFavorites();
     }

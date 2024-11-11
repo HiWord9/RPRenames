@@ -87,7 +87,7 @@ public class RPRenamesCommand {
 
         AbstractRename matchRename = null;
 
-        ArrayList<AbstractRename> renames = RenamesManager.getRenames(itemStack.getItem());
+        ArrayList<AbstractRename> renames = RPRenames.renamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
             matchRename = getMatch(renames, itemStack);
         }
@@ -162,7 +162,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<AbstractRename> renames = RenamesManager.getRenames(item);
+        ArrayList<AbstractRename> renames = RPRenames.renamesManager.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(
                     Text.translatable(

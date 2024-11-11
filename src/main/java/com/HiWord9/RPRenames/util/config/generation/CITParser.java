@@ -20,13 +20,19 @@ import java.util.Properties;
 public class CITParser implements Parser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
 
+    public RenamesManager renamesManager;
+
+    public CITParser(RenamesManager renamesManager) {
+        this.renamesManager = renamesManager;
+    }
+
     public void parse(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:collecting_cit_renames");
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
                     String packName = ParserHelper.validatePackName(entry.getValue().getPack().getId());
-                    CITParser.propertiesToRename(
+                    propertiesToRename(
                             ParserHelper.getPropFromResource(entry.getValue()),
                             packName,
                             ParserHelper.getFullPathFromIdentifier(packName, entry.getKey())
@@ -39,7 +45,7 @@ public class CITParser implements Parser {
         profiler.pop();
     }
 
-    private static void propertiesToRename(Properties p, String packName, String path) {
+    private void propertiesToRename(Properties p, String packName, String path) {
         String matchItems = p.getProperty("matchItems");
         if (matchItems == null) matchItems = p.getProperty("items");
         if (matchItems == null) return;
@@ -122,8 +128,8 @@ public class CITParser implements Parser {
         );
 
         for (Item item : items) {
-            if (!simplifiedRename.isContainedIn(RenamesManager.getRenames(item), true)) {
-                RenamesManager.addRename(item, rename);
+            if (!simplifiedRename.isContainedIn(renamesManager.getRenames(item), true)) {
+                renamesManager.addRename(item, rename);
             }
         }
     }

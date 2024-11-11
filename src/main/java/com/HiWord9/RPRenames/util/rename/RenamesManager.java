@@ -13,16 +13,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class RenamesManager {
-    public static final ArrayList<Parser> parsers = new ArrayList<>();
+    public final ArrayList<Parser> parsers = new ArrayList<>();
 
-    private static final Map<Item, ArrayList<AbstractRename>> renames = new HashMap<>();
+    private final Map<Item, ArrayList<AbstractRename>> renames = new HashMap<>();
 
-    public static void updateRenames() {
+    public void updateRenames() {
         MinecraftClient client = MinecraftClient.getInstance();
         updateRenames(client.getResourceManager(), client.getProfiler());
     }
 
-    public static void updateRenames(ResourceManager resourceManager, Profiler profiler) {
+    public void updateRenames(ResourceManager resourceManager, Profiler profiler) {
         profiler.push("rprenames:reloading_renames");
 
         RPRenames.LOGGER.info("Started collecting resource pack renames");
@@ -50,11 +50,11 @@ public class RenamesManager {
         profiler.pop();
     }
 
-    public static void clearRenames() {
+    public void clearRenames() {
         renames.clear();
     }
 
-    public static ArrayList<AbstractRename> getAllRenames() {
+    public ArrayList<AbstractRename> getAllRenames() {
         return (ArrayList<AbstractRename>) renames
                 .entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
@@ -62,7 +62,7 @@ public class RenamesManager {
                 .collect(Collectors.toList());
     }
 
-    public static ArrayList<AbstractRename> getRenames(Item item) {
+    public ArrayList<AbstractRename> getRenames(Item item) {
         if (renames.containsKey(item)) {
             return renames.get(item);
         } else {
@@ -70,7 +70,7 @@ public class RenamesManager {
         }
     }
 
-    public static void addRename(Item item, AbstractRename rename) {
+    public void addRename(Item item, AbstractRename rename) {
         if (renames.containsKey(item)) {
             renames.get(item).add(rename);
         } else {
@@ -80,17 +80,17 @@ public class RenamesManager {
         }
     }
 
-    public static void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
+    public void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
         renames.put(item, newRenames);
     }
 
-    public static void removeRename(Item item, AbstractRename rename) {
+    public void removeRename(Item item, AbstractRename rename) {
         if (renames.containsKey(item)) {
             renames.get(item).remove(rename);
         }
     }
 
-    public static ArrayList<Item> renamedItems() {
+    public ArrayList<Item> renamedItems() {
         return new ArrayList<>(renames.keySet());
     }
 }

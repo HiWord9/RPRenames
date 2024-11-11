@@ -57,6 +57,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     MinecraftClient client;
     RPRInteractableScreen interactableScreen;
+    RenamesManager renamesManager;
     FavoritesManager favoritesManager;
 
     TextFieldWidget nameField;
@@ -114,6 +115,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     public void init(int x, int y,
                      @Nullable RPRInteractableScreen parentScreen,
+                     RenamesManager renamesManager,
                      FavoritesManager favoritesManager,
                      TextFieldWidget nameField,
                      OpenerButton openerButton,
@@ -122,6 +124,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         this.init = true;
 
         this.client = MinecraftClient.getInstance();
+
+        this.renamesManager = renamesManager;
         this.favoritesManager = favoritesManager;
 
         this.nameField = nameField;
@@ -584,7 +588,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     private void calcRenameList() {
         switch (currentTab) {
-            case SEARCH -> originalRenameList = RenamesManager.getRenames(getItemInFirstSlot());
+            case SEARCH -> originalRenameList = renamesManager.getRenames(getItemInFirstSlot());
             case FAVORITE -> originalRenameList = favoritesManager.getFavorites(getItemInFirstSlot());
             case INVENTORY -> {
                 ArrayList<Item> checked = new ArrayList<>();
@@ -592,7 +596,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                 for (Item item : inventory) {
                     if (item != Items.AIR && !checked.contains(item)) {
                         checked.add(item);
-                        ArrayList<AbstractRename> renames = RenamesManager.getRenames(item);
+                        ArrayList<AbstractRename> renames = renamesManager.getRenames(item);
                         for (AbstractRename r : renames) {
                             if (!names.contains(r)) names.add(r);
                         }
@@ -600,7 +604,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                 }
                 originalRenameList = names;
             }
-            case GLOBAL -> originalRenameList = RenamesManager.getAllRenames();
+            case GLOBAL -> originalRenameList = renamesManager.getAllRenames();
         }
     }
 

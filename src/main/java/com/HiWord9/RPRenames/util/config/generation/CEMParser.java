@@ -22,14 +22,19 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 public class CEMParser implements Parser {
-
     private static final String CEM_PATH = "optifine/cem";
     private static final String RANDOM_ENTITY_PATH = "optifine/random/entity/";
     private static final String MOB_PATH = "optifine/mob/";
 
     private static final String PROP_EXTENSION = ".properties";
 
-    private static final ArrayList<String> checked = new ArrayList<>();
+    private final ArrayList<String> checked = new ArrayList<>();
+
+    public RenamesManager renamesManager;
+
+    public CEMParser(RenamesManager renamesManager) {
+        this.renamesManager = renamesManager;
+    }
 
     // if in any circumstances it is needed to always show cem renames this boolean can be set to true;
     public static boolean ignoreSkip = false;
@@ -109,7 +114,7 @@ public class CEMParser implements Parser {
         profiler.pop();
     }
 
-    private static void parseRawPropertyFile(ResourceManager resourceManager, String texturePath, String texture, EntityType<?> entityType) throws IOException {
+    private void parseRawPropertyFile(ResourceManager resourceManager, String texturePath, String texture, EntityType<?> entityType) throws IOException {
         Identifier identifier = Identifier.of(Identifier.DEFAULT_NAMESPACE, texturePath + texture + PROP_EXTENSION);
         Optional<Resource> optionalResource = resourceManager.getResource(identifier);
         if (optionalResource.isEmpty()) {
@@ -131,7 +136,7 @@ public class CEMParser implements Parser {
         );
     }
 
-    private static void parseTextureSourceFile(ResourceManager resourceManager, String fileWithTextureName, String fileName, String texturePath) throws IOException {
+    private void parseTextureSourceFile(ResourceManager resourceManager, String fileWithTextureName, String fileName, String texturePath) throws IOException {
         Optional<Resource> optionalResourceJpm = resourceManager.getResource(Identifier.of(Identifier.DEFAULT_NAMESPACE, CEM_PATH + "/" + fileWithTextureName));
         if (optionalResourceJpm.isEmpty()) return;
 
@@ -162,49 +167,7 @@ public class CEMParser implements Parser {
         );
     }
 
-    private static ArrayList<String> getModelNumsFromProp(Properties models) {
-        ArrayList<String> numbers = new ArrayList<>();
-        try {
-            for (String p : models.stringPropertyNames()) {
-                if (!p.startsWith("models.")) continue;
-                String num = models.getProperty(p);
-                if (!numbers.contains(num)) numbers.addAll(List.of(num.split(" ")));
-            }
-        } catch (Exception e) {
-            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
-        }
-        return numbers;
-    }
-
-    private static Object objFromInputStream(InputStream inputStream) {
-        Object obj = null;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        try {
-            Type type = new com.google.gson.reflect.TypeToken<>() {
-            }.getType();
-            Gson gson = new Gson();
-            obj = gson.fromJson(bufferedReader, type);
-            bufferedReader.close();
-        } catch (Exception e) {
-            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
-        }
-        return obj;
-    }
-
-    private static ArrayList<String> objToParamList(Object obj, String param) {
-        String string = obj.toString();
-        ArrayList<String> list = new ArrayList<>();
-        int j = string.length() - param.length();
-        for (int i = 0; i < j; i++) {
-            if (!string.startsWith(param + "=", i) || (i != 0 && String.valueOf(string.charAt(i - 1)).matches("[a-zA-Z]"))) continue;
-            int start = i + param.length() + 1;
-            if (!string.contains(",")) continue;
-            list.add(string.substring(start, string.indexOf(',', start)));
-        }
-        return list;
-    }
-
-    private static void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> entityType) {
+    private void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> entityType) {
         ArrayList<String> skins = new ArrayList<>();
         for (String s : p.stringPropertyNames()) {
             if (!s.startsWith("name.")) continue;
@@ -218,7 +181,7 @@ public class CEMParser implements Parser {
             String name = PropertiesHelper.getFirstName(p.getProperty(s), path);
             if (name == null) continue;
 
-            ArrayList<AbstractRename> alreadyExist = RenamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
+            ArrayList<AbstractRename> alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
             CEMRename.Mob mob = new CEMRename.Mob(
                     entityType,
@@ -261,9 +224,51 @@ public class CEMParser implements Parser {
                     .isContainedIn(alreadyExist, true)) {
                 ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
-                RenamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);
+                renamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);
             }
         }
+    }
+
+    private static ArrayList<String> getModelNumsFromProp(Properties models) {
+        ArrayList<String> numbers = new ArrayList<>();
+        try {
+            for (String p : models.stringPropertyNames()) {
+                if (!p.startsWith("models.")) continue;
+                String num = models.getProperty(p);
+                if (!numbers.contains(num)) numbers.addAll(List.of(num.split(" ")));
+            }
+        } catch (Exception e) {
+            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
+        }
+        return numbers;
+    }
+
+    private static Object objFromInputStream(InputStream inputStream) {
+        Object obj = null;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        try {
+            Type type = new com.google.gson.reflect.TypeToken<>() {
+            }.getType();
+            Gson gson = new Gson();
+            obj = gson.fromJson(bufferedReader, type);
+            bufferedReader.close();
+        } catch (Exception e) {
+            RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
+        }
+        return obj;
+    }
+
+    private static ArrayList<String> objToParamList(Object obj, String param) {
+        String string = obj.toString();
+        ArrayList<String> list = new ArrayList<>();
+        int j = string.length() - param.length();
+        for (int i = 0; i < j; i++) {
+            if (!string.startsWith(param + "=", i) || (i != 0 && String.valueOf(string.charAt(i - 1)).matches("[a-zA-Z]"))) continue;
+            int start = i + param.length() + 1;
+            if (!string.contains(",")) continue;
+            list.add(string.substring(start, string.indexOf(',', start)));
+        }
+        return list;
     }
 
     private static String getLastPathPart(String path) {

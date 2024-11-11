@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.mixin;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
@@ -77,6 +78,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         rprWidget.init(
                 x - RPRWidget.WIDGET_WIDTH - menuXOffset, y,
                 rprInteractableScreen,
+                RPRenames.renamesManager,
                 FavoritesManager.getInstance(),
                 nameField,
                 opener,
