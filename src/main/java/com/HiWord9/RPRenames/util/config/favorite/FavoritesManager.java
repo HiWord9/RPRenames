@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.config.favorite;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.item.Item;
 
@@ -12,19 +13,22 @@ public class FavoritesManager {
     private final Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
     private final TaskQueueThread taskQueue = new TaskQueueThread();
 
+    private final FavoritesFileHelper favoritesFileHelper;
+
     public static synchronized FavoritesManager getInstance() {
         if (instance == null) {
-            instance = new FavoritesManager();
+            instance = new FavoritesManager(new FavoritesFileHelper(RPRenames.configPathFavorite));
         }
         return instance;
     }
 
-    protected FavoritesManager() {
+    protected FavoritesManager(FavoritesFileHelper favoritesFileHelper) {
+        this.favoritesFileHelper = favoritesFileHelper;
         taskQueue.start();
     }
 
     public void loadSavedFavorites() {
-        favoriteRenames.putAll(FavoritesFileHelper.getAllSavedFavorites());
+        favoriteRenames.putAll(favoritesFileHelper.getAllSavedFavorites());
     }
 
     public Map<Item, ArrayList<AbstractRename>> getAllFavorites() {
@@ -49,7 +53,7 @@ public class FavoritesManager {
         }
 
         favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> FavoritesFileHelper.setFavorites(renames, item));
+        taskQueue.addTask(() -> favoritesFileHelper.setFavorites(renames, item));
     }
 
     public void removeFromFavorites(String favoriteName, Item item) {
@@ -60,7 +64,7 @@ public class FavoritesManager {
         }
 
         favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> FavoritesFileHelper.setFavorites(renames, item));
+        taskQueue.addTask(() -> favoritesFileHelper.setFavorites(renames, item));
     }
 
     public boolean isFavorite(Item item, String name) {

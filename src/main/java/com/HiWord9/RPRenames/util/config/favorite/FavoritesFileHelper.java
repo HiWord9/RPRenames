@@ -13,7 +13,6 @@ import net.minecraft.item.Items;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,9 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FavoritesFileHelper {
-    static Path configPathFavorite = RPRenames.configPathFavorite;
+    Path configPathFavorite;
 
-    public static Map<Item, ArrayList<AbstractRename>> getAllSavedFavorites() {
+    public FavoritesFileHelper(Path configPathFavorite) {
+        this.configPathFavorite = configPathFavorite;
+    }
+
+    public Map<Item, ArrayList<AbstractRename>> getAllSavedFavorites() {
         Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
         File[] files = configPathFavorite.toFile().listFiles();
         if (files == null) return favoriteRenames;
@@ -35,7 +38,7 @@ public class FavoritesFileHelper {
         return favoriteRenames;
     }
 
-    public static void setFavorites(ArrayList<AbstractRename> renames, Item item) {
+    public void setFavorites(ArrayList<AbstractRename> renames, Item item) {
         if (!renames.isEmpty()) {
             writeFavoriteFile(renames, item);
         } else {
@@ -43,7 +46,7 @@ public class FavoritesFileHelper {
         }
     }
 
-    public static ArrayList<AbstractRename> savedFavorites(Item item) {
+    public ArrayList<AbstractRename> savedFavorites(Item item) {
         ArrayList<AbstractRename> renames = new ArrayList<>();
         File favoritesFile = new File(pathToFavoriteFile(item));
         if (favoritesFile.exists()) {
@@ -55,7 +58,7 @@ public class FavoritesFileHelper {
         return renames;
     }
 
-    private static ArrayList<AbstractRename> readFavoriteFile(File file) {
+    private ArrayList<AbstractRename> readFavoriteFile(File file) {
         ArrayList<AbstractRename> renames = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(file);
@@ -71,7 +74,7 @@ public class FavoritesFileHelper {
         return renames;
     }
 
-    private static void writeFavoriteFile(ArrayList<AbstractRename> renames, Item item) {
+    private void writeFavoriteFile(ArrayList<AbstractRename> renames, Item item) {
         try {
             if (configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: {}", configPathFavorite);
@@ -92,7 +95,7 @@ public class FavoritesFileHelper {
         }
     }
 
-    private static void deleteFavoriteConfigFile(Item item) {
+    private void deleteFavoriteConfigFile(Item item) {
         Path path = Path.of(pathToFavoriteFile(item));
         try {
             Files.deleteIfExists(path);
@@ -107,7 +110,7 @@ public class FavoritesFileHelper {
         return ParserHelper.itemFromName(itemFromFileName);
     }
 
-    private static String pathToFavoriteFile(Item item) {
+    private String pathToFavoriteFile(Item item) {
         return configPathFavorite + File.separator + fileNameFromItem(item);
     }
 
