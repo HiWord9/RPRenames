@@ -1,16 +1,13 @@
 package com.HiWord9.RPRenames.util.config.favorite;
 
+import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.item.Item;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-public class FavoritesManager {
-    private final Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
+public class FavoritesManager extends RenamesManagerImpl {
     private final TaskQueueThread taskQueue = new TaskQueueThread();
-
     private final FavoritesFileManager favoritesFileManager;
 
     public FavoritesManager(FavoritesFileManager favoritesFileManager) {
@@ -19,47 +16,31 @@ public class FavoritesManager {
     }
 
     public void loadSavedFavorites() {
-        favoriteRenames.putAll(favoritesFileManager.getAllSavedFavorites());
+        renames.putAll(favoritesFileManager.getAllSavedFavorites());
     }
 
-    public Map<Item, ArrayList<AbstractRename>> getAllFavorites() {
-        return new HashMap<>(favoriteRenames);
+    public void addRename(Item item, AbstractRename rename) {
+        super.addRename(item, rename);
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
-    public ArrayList<AbstractRename> getFavorites(Item item) {
-        ArrayList<AbstractRename> renames = favoriteRenames.get(item);
-        return renames == null ? new ArrayList<>() : new ArrayList<>(renames);
+    public void removeRename(Item item, AbstractRename rename) {
+        super.removeRename(item, rename);
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
-    public void addToFavorites(String favoriteName, Item item) {
-        ArrayList<AbstractRename> renames = new ArrayList<>();
-        AbstractRename rename = new AbstractRename(favoriteName, item);
-        ArrayList<AbstractRename> alreadyExist = getFavorites(item);
-        if (!alreadyExist.isEmpty()) {
-            ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
-            newConfig.add(rename);
-            renames.addAll(newConfig);
-        } else {
-            renames.add(rename);
-        }
-
-        favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> favoritesFileManager.setFavorites(renames, item));
+    public void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
+        super.overrideRenames(item, newRenames);
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
-    public void removeFromFavorites(String favoriteName, Item item) {
-        ArrayList<AbstractRename> renames = getFavorites(item);
-        int indexInRenamesList = new AbstractRename(favoriteName).indexIn(renames, true);
-        if (indexInRenamesList >= 0) {
-            renames.remove(indexInRenamesList);
-        }
-
-        favoriteRenames.put(item, renames);
-        taskQueue.addTask(() -> favoritesFileManager.setFavorites(renames, item));
+    public void clearRenames() {
+        super.clearRenames();
+        taskQueue.addTask(() -> favoritesFileManager.doomConfigs(renamedItems()));
     }
 
     public boolean isFavorite(Item item, String name) {
-        ArrayList<AbstractRename> favoriteList = getFavorites(item);
+        ArrayList<AbstractRename> favoriteList = getRenames(item);
         for (AbstractRename r : favoriteList) {
             if (r.getName().equals(name)) {
                 return true;
@@ -67,5 +48,4 @@ public class FavoritesManager {
         }
         return false;
     }
-
 }

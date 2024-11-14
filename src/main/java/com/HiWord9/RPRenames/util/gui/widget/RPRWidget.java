@@ -255,9 +255,9 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public void addOrRemoveFavorite(boolean add, String favoriteName, Item item) {
         if (item != Items.AIR) {
             if (add) {
-                favoritesManager.addToFavorites(favoriteName, item);
+                favoritesManager.addRename(item, new AbstractRename(favoriteName, item));
             } else {
-                favoritesManager.removeFromFavorites(favoriteName, item);
+                favoritesManager.removeRename(item, new AbstractRename(favoriteName, item));
             }
             updateAfterFavorite();
         }
@@ -339,7 +339,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             if (favorite) {
                 for (Item i : rename.getItems()) {
                     if (favoritesManager.isFavorite(i, rename.getName())) {
-                        favoritesManager.removeFromFavorites(rename.getName(), i);
+                        favoritesManager.removeRename(i, new AbstractRename(rename.getName(), i));
                     }
                 }
                 updateAfterFavorite();
@@ -589,7 +589,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     private void calcRenameList() {
         switch (currentTab) {
             case SEARCH -> originalRenameList = renamesManager.getRenames(getItemInFirstSlot());
-            case FAVORITE -> originalRenameList = favoritesManager.getFavorites(getItemInFirstSlot());
+            case FAVORITE -> originalRenameList = favoritesManager.getRenames(getItemInFirstSlot());
             case INVENTORY -> {
                 ArrayList<Item> checked = new ArrayList<>();
                 ArrayList<AbstractRename> names = new ArrayList<>();

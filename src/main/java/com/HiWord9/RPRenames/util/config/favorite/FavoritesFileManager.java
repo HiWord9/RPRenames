@@ -104,6 +104,10 @@ public class FavoritesFileManager {
         }
     }
 
+    protected void doomConfigs(ArrayList<Item> items) {
+        items.forEach(this::deleteFavoriteConfigFile);
+    }
+
     private static Item itemFromFavoriteFileName(String fileName) {
         if (!fileName.endsWith(".json")) return Items.AIR;
         String itemFromFileName = fileName.substring(0, fileName.length() - 5).replace(".", ":");
