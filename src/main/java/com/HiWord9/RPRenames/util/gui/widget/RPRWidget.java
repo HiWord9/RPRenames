@@ -255,9 +255,9 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public void addOrRemoveFavorite(boolean add, String favoriteName, Item item) {
         if (item != Items.AIR) {
             if (add) {
-                favoritesManager.addRename(item, new AbstractRename(favoriteName, item));
+                favoritesManager.addRename(item, favoriteName);
             } else {
-                favoritesManager.removeRename(item, new AbstractRename(favoriteName, item));
+                favoritesManager.removeRename(item, favoriteName);
             }
             updateAfterFavorite();
         }
@@ -339,7 +339,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             if (favorite) {
                 for (Item i : rename.getItems()) {
                     if (favoritesManager.isFavorite(i, rename.getName())) {
-                        favoritesManager.removeRename(i, new AbstractRename(rename.getName(), i));
+                        favoritesManager.removeRename(i, rename.getName());
                     }
                 }
                 updateAfterFavorite();

@@ -19,9 +19,17 @@ public class FavoritesManager extends RenamesManagerImpl {
         renames.putAll(favoritesFileManager.getAllSavedFavorites());
     }
 
+    public void addRename(Item item, String name) {
+        addRename(item, new AbstractRename(name, item));
+    }
+
     public void addRename(Item item, AbstractRename rename) {
         super.addRename(item, rename);
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
+    }
+
+    public void removeRename(Item item, String name) {
+        removeRename(item, new AbstractRename(name, item));
     }
 
     public void removeRename(Item item, AbstractRename rename) {
@@ -47,5 +55,9 @@ public class FavoritesManager extends RenamesManagerImpl {
             }
         }
         return false;
+    }
+
+    public boolean isFavorite(Item item, AbstractRename rename) {
+        return getRenames(item).contains(rename);
     }
 }

@@ -11,7 +11,15 @@ public interface RenamesManager {
 
     ArrayList<AbstractRename> getRenames(Item item);
 
+    default void addRename(AbstractRename rename) {
+        addRename(rename.getItem(), rename);
+    }
+
     void addRename(Item item, AbstractRename rename);
+
+    default void removeRename(AbstractRename rename) {
+        removeRename(rename.getItem(), rename);
+    }
 
     void removeRename(Item item, AbstractRename rename);
 
