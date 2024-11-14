@@ -1,16 +1,13 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
-import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -24,7 +21,6 @@ import net.minecraft.util.Unit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 
 public class RPRenamesItemGroup {
     private static final ModConfig config = ModConfig.INSTANCE;
@@ -144,13 +140,10 @@ public class RPRenamesItemGroup {
 
     public static ArrayList<ItemStack> getFavoriteStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        Map<Item, ArrayList<AbstractRename>> favoriteRenames = RPRenames.favoritesManager.getAllFavorites();
-        for (Item key : favoriteRenames.keySet()) {
-            for (AbstractRename r : favoriteRenames.get(key)) {
-                for (int i = 0; i < r.getItems().size(); i++) {
-                    ItemStack stack = RenamesHelper.createItemOrSpawnEgg(r, i);
-                    list.add(stack);
-                }
+        for (AbstractRename r : RPRenames.favoritesManager.getAllRenames()) {
+            for (int i = 0; i < r.getItems().size(); i++) {
+                ItemStack stack = RenamesHelper.createItemOrSpawnEgg(r, i);
+                list.add(stack);
             }
         }
         return list;

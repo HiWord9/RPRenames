@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
-import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.config.generation.UpdatableRenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -31,7 +31,7 @@ public class RPRenames implements ClientModInitializer {
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
-    public static RenamesManager renamesManager = new RenamesManager();
+    public static UpdatableRenamesManager renamesManager = new UpdatableRenamesManager();
     public static FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
     @Override
