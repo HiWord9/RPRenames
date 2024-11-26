@@ -27,7 +27,7 @@
   "license": "${mod_license} ${mod_license_version}",
   "icon": "assets/${mod_id}/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       "${mod_main_dir}.${mod_client_class}"
