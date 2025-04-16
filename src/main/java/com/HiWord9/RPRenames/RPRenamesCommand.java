@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.rename.*;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
@@ -191,8 +190,8 @@ public class RPRenamesCommand {
                     Text.of(result).copy()
                     .fillStyle(Style.EMPTY
                             .withColor(Formatting.LIGHT_PURPLE)
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.of(regex)))
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, result))
+                            .withHoverEvent(new HoverEvent.ShowText(Text.of(regex)))
+                            .withClickEvent(new ClickEvent.CopyToClipboard(result))
                     )
             );
         } else {
@@ -200,8 +199,7 @@ public class RPRenamesCommand {
                     Text.translatable("rprenames.command.solveRegex.error")
                     .fillStyle(Style.EMPTY
                             .withColor(Formatting.RED)
-                            .withHoverEvent(new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
+                            .withHoverEvent(new HoverEvent.ShowText(
                                     Text.of(regex).copy()
                                             .formatted(Formatting.RED)
                             ))
@@ -257,23 +255,21 @@ public class RPRenamesCommand {
                     + (r instanceof CITRename citRename ?
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
 
-            ClickEvent runGive = new ClickEvent(ClickEvent.Action.RUN_COMMAND, giveCommand);
+            ClickEvent runGive = new ClickEvent.RunCommand(giveCommand);
             source.sendFeedback(
                     Text.translatable("rprenames.command.list.givePrefix")
                     .fillStyle(Style.EMPTY
                             .withColor(Formatting.GRAY)
                             .withClickEvent(runGive)
                             .withInsertion(giveCommand)
-                            .withHoverEvent(new HoverEvent(
-                                    HoverEvent.Action.SHOW_TEXT,
+                            .withHoverEvent(new HoverEvent.ShowText(
                                     Text.translatable("rprenames.command.list.runGive")
                             ))
                     )
                     .append(itemStack.toHoverableText().copy()
-                            .styled(style -> style.withClickEvent(new ClickEvent(
-                                    ClickEvent.Action.COPY_TO_CLIPBOARD,
-                                    r.getName()
-                            )))
+                            .styled(style -> style.withClickEvent(
+                                    new ClickEvent.CopyToClipboard(r.getName())
+                            ))
                     )
             );
         }
@@ -281,7 +277,7 @@ public class RPRenamesCommand {
 
     @SuppressWarnings("unchecked") // I am not quiet sure that this will not crash, but let's try as beta
     private static <T> String getComponentsCommandArgument(FabricClientCommandSource source, ItemStack stack) {
-        ComponentChanges changes = ((ComponentMapImpl) stack.getComponents()).getChanges();
+        ComponentChanges changes = ((MergedComponentMap) stack.getComponents()).getChanges();
         if (changes.isEmpty()) return "";
 
         StringBuilder resultBuilder = new StringBuilder();
@@ -333,8 +329,7 @@ public class RPRenamesCommand {
                                 .fillStyle(Style.EMPTY
                                         .withColor(Formatting.YELLOW)
                                         .withUnderline(true)
-                                        .withClickEvent(new ClickEvent(
-                                                ClickEvent.Action.OPEN_FILE,
+                                        .withClickEvent(new ClickEvent.OpenFile(
                                                 packName.equals("server") ? "server-resource-packs/" : "resourcepacks/"
                                                         + (packName.endsWith(".zip") ? packName : dirPath)
                                         ))
