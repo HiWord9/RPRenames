@@ -23,7 +23,7 @@ public class EntityPreviewTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(TextRenderer textRenderer) {
         return height;
     }
 
@@ -33,9 +33,9 @@ public class EntityPreviewTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height,  DrawContext context) {
         Graphics.renderEntityInBox(context,
-                new ScreenRect(x - 2, y - 2, width + 4, height + 2),
+                new ScreenRect(x - 2, y - 2, getWidth(textRenderer) + 4, getHeight(textRenderer) + 2),
                 size, entity, spin);
     }
 }

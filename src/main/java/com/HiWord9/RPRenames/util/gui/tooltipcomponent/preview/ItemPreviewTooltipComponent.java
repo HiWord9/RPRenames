@@ -26,7 +26,7 @@ public class ItemPreviewTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(TextRenderer textRenderer) {
         return height;
     }
 
@@ -36,7 +36,7 @@ public class ItemPreviewTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         Graphics.renderStack(context, stack, x + stackRenderStartX, y + stackRenderStartY, 400, size);
     }
 }

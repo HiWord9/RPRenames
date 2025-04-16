@@ -6,9 +6,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 
 public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent {
@@ -22,13 +22,19 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
         super(entity, width, height, size, spin);
         this.stack = stack;
 
-        if (this.stack.getItem() instanceof ArmorItem armorItem) {
-            extraEquipmentSlot = armorItem.getSlotType();
+        ComponentMap components = this.stack.getComponents();
+        if (components.contains(DataComponentTypes.EQUIPPABLE)) {
+            var component = components.get(DataComponentTypes.EQUIPPABLE);
+            if (component != null) {
+                extraEquipmentSlot = component.slot();
+            } else {
+                extraSlotAvailable = false;
+            }
         } else if (Block.getBlockFromItem(this.stack.getItem()) == Blocks.CARVED_PUMPKIN) {
             extraEquipmentSlot = EquipmentSlot.HEAD;
         } else if (Block.getBlockFromItem(this.stack.getItem()) instanceof AbstractSkullBlock) {
             extraEquipmentSlot = EquipmentSlot.HEAD;
-        } else if (this.stack.getItem() instanceof ElytraItem) {
+        } else if (components.contains(DataComponentTypes.GLIDER)) {
             extraEquipmentSlot = EquipmentSlot.CHEST;
         } else {
             extraSlotAvailable = false;
@@ -42,44 +48,29 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         ClientPlayerEntity player = (ClientPlayerEntity) entity;
-
-        boolean isArmor = false;
-        int armorSlot = 0;
-        if (equipmentSlot != EquipmentSlot.MAINHAND && equipmentSlot != EquipmentSlot.OFFHAND) {
-            isArmor = true;
-            armorSlot = equipmentSlot.getEntitySlotId();
-        }
 
         assert player != null;
         ItemStack temp = player.getEquippedStack(equipmentSlot);
 
-        if (isArmor) {
-            player.getInventory().armor.set(armorSlot, stack);
-        } else {
-            player.equipStack(equipmentSlot, stack);
-        }
+        player.equipStack(equipmentSlot, stack);
 
         float h = player.bodyYaw;
         float i = player.getYaw();
         float j = player.getPitch();
-        float k = player.prevHeadYaw;
+        float k = player.lastHeadYaw;
         float l = player.headYaw;
 
-        super.drawItems(textRenderer, x, y, context);
+        super.drawItems(textRenderer, x, y, width, height, context);
 
         player.bodyYaw = h;
         player.setYaw(i);
         player.setPitch(j);
-        player.prevHeadYaw = k;
+        player.lastHeadYaw = k;
         player.headYaw = l;
 
-        if (isArmor) {
-            player.getInventory().armor.set(armorSlot, temp);
-        } else {
-            player.equipStack(equipmentSlot, temp);
-        }
+        player.equipStack(equipmentSlot, temp);
     }
 
     public void cycleSlots() {
