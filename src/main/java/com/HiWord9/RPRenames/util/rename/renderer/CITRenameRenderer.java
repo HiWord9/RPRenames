@@ -232,7 +232,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
                 && !asCurrentItem && isInInventory) {
             assert MinecraftClient.getInstance().player != null;
             PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
-            stack = playerInventory.main.get(indexInInventory);
+            stack = playerInventory.getMainStacks().get(indexInInventory);
         }
         return stack;
     }

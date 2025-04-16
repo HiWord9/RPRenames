@@ -36,7 +36,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
 
         var entityType = rename.getMob().getEntity();
         var client = MinecraftClient.getInstance();
-        this.entity = (LivingEntity) entityType.create(client.world);
+        this.entity = (LivingEntity) entityType.create(client.world, null);
         prepareEntity(entity, rename);
 
         int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);

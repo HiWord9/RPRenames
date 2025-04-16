@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import org.joml.Vector2i;
@@ -30,7 +31,7 @@ public class PreviewTooltipPositioner implements TooltipPositioner {
             int yOffset = -12;
             int tooltipHeight = tooltipComponents.size() == 1 ? -2 : 0;
             for (TooltipComponent component : tooltipComponents) {
-                tooltipHeight += component.getHeight();
+                tooltipHeight += component.getHeight(MinecraftClient.getInstance().textRenderer);
             }
             yOffset += tooltipHeight + 10;
 
