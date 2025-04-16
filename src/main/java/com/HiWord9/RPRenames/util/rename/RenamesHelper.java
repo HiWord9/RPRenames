@@ -13,6 +13,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
@@ -61,10 +62,21 @@ public class RenamesHelper {
             return;
         }
 
-        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = MinecraftClient.getInstance()
+        Optional<Registry<Enchantment>> optionalRegistry = MinecraftClient.getInstance()
                 .world
                 .getRegistryManager()
-                .get(RegistryKeys.ENCHANTMENT)
+                .getOptional(RegistryKeys.ENCHANTMENT);
+
+        if (optionalRegistry.isEmpty()) {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename\n{}\ncause {} registry was not found",
+                    itemStack, rename, RegistryKeys.ENCHANTMENT.getRegistry()
+            );
+            return;
+        }
+
+        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = optionalRegistry
+                .get()
                 .getEntry(rename.getEnchantment());
 
         if (optionalEnchantment.isPresent()) {
