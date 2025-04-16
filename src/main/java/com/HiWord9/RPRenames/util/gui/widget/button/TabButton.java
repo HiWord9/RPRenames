@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -44,7 +45,7 @@ public class TabButton extends ClickableWidget {
         RPRWidget.Tab currentTab = rprWidget.getCurrentTab();
         int u = currentTab == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
         if (isMouseOver(mouseX, mouseY)) {
             Graphics.drawTooltip(
@@ -59,7 +60,7 @@ public class TabButton extends ClickableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             rprWidget.setTab(tab);
             return true;
         }

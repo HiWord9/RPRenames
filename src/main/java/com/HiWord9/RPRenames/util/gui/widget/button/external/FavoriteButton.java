@@ -5,6 +5,7 @@ import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 public class FavoriteButton extends ClickableWidget {
@@ -35,7 +36,7 @@ public class FavoriteButton extends ClickableWidget {
         if (!active) return;
         int u = 0;
         int v = favorite ? 0 : V_OFFSET;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class FavoriteButton extends ClickableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             rprWidget.addOrRemoveFavorite(!favorite);
             return true;
         }

@@ -6,6 +6,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -38,7 +39,7 @@ public class RandomButton extends ClickableWidget {
         if (!active) return;
         int u = 0;
         int v = V_OFFSET * side;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
         if (!hovered) return;
         context.drawTooltip(MinecraftClient.getInstance().textRenderer, Text.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }
@@ -48,7 +49,7 @@ public class RandomButton extends ClickableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             rprWidget.chooseRandomRename();
             return true;
         }

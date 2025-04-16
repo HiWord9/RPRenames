@@ -5,6 +5,7 @@ import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 public class OpenerButton extends ClickableWidget {
@@ -31,12 +32,12 @@ public class OpenerButton extends ClickableWidget {
         int v = 0;
         v += rprWidget.isOpen() ? OPENED_OFFSET_V : 0;
         v += hovered ? FOCUSED_OFFSET_V : 0;
-        context.drawTexture(TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.clicked(mouseX, mouseY)) {
+        if (this.isMouseOver(mouseX, mouseY)) {
             execute();
             return true;
         }
