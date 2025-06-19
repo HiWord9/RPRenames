@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.gui;
 
+import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -18,6 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.joml.Quaternionf;
 
 import java.util.List;
@@ -37,6 +40,8 @@ public class Graphics {
     static public final int DEFAULT_TEXT_COLOR = 0xffffff;
 
     static public boolean renderTooltipAsFavorite = false;
+
+    public static final Identifier FAVORITE_TOOLTIP_FRAME_TEXTURE = Identifier.of(RPRenames.MOD_ID, "favorite_tooltip");
 
     public static void renderText(DrawContext context, Text text, int x, int y, boolean shadow, boolean centered) {
         renderText(context, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
