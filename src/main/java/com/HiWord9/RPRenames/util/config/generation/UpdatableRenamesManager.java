@@ -2,19 +2,26 @@ package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;
+import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-public class UpdatableRenamesManager extends RenamesManagerImpl {
+public class UpdatableRenamesManager extends RenamesManagerImpl implements ResourceReloader {
+    private static final ModConfig config = ModConfig.INSTANCE;
+
     public final ArrayList<Parser> parsers = new ArrayList<>();
 
     public void updateRenames() {
         MinecraftClient client = MinecraftClient.getInstance();
-        updateRenames(client.getResourceManager(), client.getProfiler());
+        updateRenames(client.getResourceManager(), Profilers.get());
     }
 
     public void updateRenames(ResourceManager resourceManager, Profiler profiler) {
@@ -43,5 +50,13 @@ public class UpdatableRenamesManager extends RenamesManagerImpl {
         );
 
         profiler.pop();
+    }
+
+    @Override
+    public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (config.updateConfig) updateRenames(manager, Profilers.get());
+            return null;
+        }, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(o -> {}, applyExecutor);
     }
 }

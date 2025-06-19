@@ -6,7 +6,7 @@
   "client": [
     "AnvilScreenMixin",
     "CreativeInventoryScreenMixin",
-    "ModelLoaderMixin",
+    "MinecraftClientMixin",
     "TooltipBackgroundRendererMixin"
   ],
   "injectors": {
