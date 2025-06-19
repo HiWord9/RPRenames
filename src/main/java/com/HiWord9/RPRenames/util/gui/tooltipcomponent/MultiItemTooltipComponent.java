@@ -40,7 +40,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
         return SLOT_SIZE * Math.min(4, 3 + (size - 4) / 3);
     }
 
-    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         int i = 0;
         int size = items.size();
         ArrayList<TooltipItem> sorted = sort(items);

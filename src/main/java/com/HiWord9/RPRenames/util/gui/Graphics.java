@@ -115,7 +115,7 @@ public class Graphics {
         entityRenderDispatcher.setRenderShadows(false);
         var immediate = client.getBufferBuilders().getEntityVertexConsumers();
 
-        entityRenderDispatcher.render(entity, 0, 0, 0, 0.f, 1.f, context.getMatrices(), immediate,
+        entityRenderDispatcher.render(entity, 0, 0, 0, 1.f, context.getMatrices(), immediate,
                 LightmapTextureManager.MAX_LIGHT_COORDINATE
         );
         immediate.draw();
@@ -157,7 +157,7 @@ public class Graphics {
         drawTooltip(context, textRenderer,
                 List.of(component,
                         new TooltipComponent() { //dump tooltip component to increase list size
-                            public int getHeight() {return 0;}
+                            public int getHeight(TextRenderer textRenderer) {return 0;}
                             public int getWidth(TextRenderer textRenderer) {return 0;}
                         }
                 ),
@@ -170,18 +170,22 @@ public class Graphics {
                                    TooltipPositioner positioner,
                                    boolean favorite) {
         renderTooltipAsFavorite = favorite;
-        context.drawTooltip(textRenderer, components, x, y, positioner);
+        context.drawTooltip(textRenderer, components, x, y, positioner, null);
         renderTooltipAsFavorite = false;
     }
 
     public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width, int z) {
+        context.getMatrices().push();
+        context.getMatrices().translate(0,0,z + 1);
         context.drawTexture(
+                RenderLayer::getGuiTextured,
                 FavoriteButton.TEXTURE,
-                x + width - (FavoriteButton.BUTTON_WIDTH + 3), y + 3, z,
+                x + width - (FavoriteButton.BUTTON_WIDTH), y,
                 0, 0,
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
+        context.getMatrices().pop();
     }
 
     public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {

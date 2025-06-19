@@ -15,7 +15,6 @@ import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -25,6 +24,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -450,7 +450,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         ArrayList<Item> inventoryList = new ArrayList<>();
         assert MinecraftClient.getInstance().player != null;
         PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
-        for (ItemStack itemStack : inventory.main) {
+        for (ItemStack itemStack : inventory.getMainStacks()) {
             inventoryList.add(itemStack.getItem());
         }
         inventoryList.add(currentItem.getItem());
@@ -504,11 +504,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         }
         checkForInvChanges();
 
-        RenderSystem.enableDepthTest();
         context.drawTexture(
+                RenderLayer::getGuiTextured,
                 MENU_TEXTURE,
-                this.x + MENU_START_X, this.y, 0,
-                0, 0,
+                this.x + MENU_START_X, this.y,
+                0,0,
                 MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT,
                 MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT
         );
@@ -545,7 +545,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         for (RenameButton renameButton : buttons) {
             renameButton.postRender(context, mouseX, mouseY);
         }
-        RenderSystem.disableDepthTest();
     }
 
     @Override
