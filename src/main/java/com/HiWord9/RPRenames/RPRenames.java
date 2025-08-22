@@ -5,6 +5,7 @@ import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
+import com.HiWord9.RPRenames.util.config.generation.ItemModelParser;
 import com.HiWord9.RPRenames.util.config.generation.UpdatableRenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
@@ -31,7 +32,11 @@ public class RPRenames implements ClientModInitializer {
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
-    public static UpdatableRenamesManager renamesManager = new UpdatableRenamesManager();
+    public static final UpdatableRenamesManager renamesManager = new UpdatableRenamesManager();
+    public static final ItemModelParser itemModelParser = new ItemModelParser(renamesManager);
+    public static final CITParser citParser = new CITParser(renamesManager);
+    public static final CEMParser cemParser = new CEMParser(renamesManager);
+
     public static FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
     @Override
@@ -55,8 +60,9 @@ public class RPRenames implements ClientModInitializer {
 
         registerItemGroup();
 
-        renamesManager.parsers.add(new CITParser(renamesManager));
-        renamesManager.parsers.add(new CEMParser(renamesManager));
+        renamesManager.parsers.add(itemModelParser);
+        renamesManager.parsers.add(citParser);
+        renamesManager.parsers.add(cemParser);
 
         favoritesManager.loadSavedFavorites();
     }
