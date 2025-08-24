@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;
 import com.HiWord9.RPRenames.util.config.generation.CITParser;
-import com.HiWord9.RPRenames.util.config.generation.ItemModelParser;
+import com.HiWord9.RPRenames.util.config.generation.itemModel.ItemModelParser;
 import com.HiWord9.RPRenames.util.config.generation.UpdatableRenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;

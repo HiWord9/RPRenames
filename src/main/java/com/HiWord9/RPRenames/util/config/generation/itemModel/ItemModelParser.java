@@ -1,5 +1,6 @@
-package com.HiWord9.RPRenames.util.config.generation;
+package com.HiWord9.RPRenames.util.config.generation.itemModel;
 
+import com.HiWord9.RPRenames.util.config.generation.Parser;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import net.minecraft.client.item.ItemAsset;
 import net.minecraft.resource.ResourceManager;
