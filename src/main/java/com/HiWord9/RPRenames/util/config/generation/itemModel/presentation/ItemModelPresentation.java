@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
 
+import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.Condition;
 import net.minecraft.client.render.item.model.*;
 
 import java.util.ArrayList;
@@ -14,11 +15,10 @@ public abstract class ItemModelPresentation {
 
     protected void addFallback(ItemModel.Unbaked fallback) {
         if (fallback == null) return;
-        cases.add(new Case(new Case.Condition("fallback"), fallback));
+        cases.add(new Case(new Condition("fallback"), fallback));
     }
 
     public record Case(Condition condition, ItemModel.Unbaked result) {
-        public record Condition(String condition) {}
     }
 
     public static ItemModelPresentation of(ItemModel.Unbaked unbakedModel) {
