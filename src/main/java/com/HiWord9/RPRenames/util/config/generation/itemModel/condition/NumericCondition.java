@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition;
+package com.HiWord9.RPRenames.util.config.generation.itemModel.condition;
 
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
 

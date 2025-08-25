@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
 
-import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.Condition;
+import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.Condition;
 import net.minecraft.client.render.item.model.*;
 
 import java.util.ArrayList;

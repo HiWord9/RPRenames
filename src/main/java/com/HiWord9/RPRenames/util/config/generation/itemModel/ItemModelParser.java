@@ -2,8 +2,8 @@ package com.HiWord9.RPRenames.util.config.generation.itemModel;
 
 import com.HiWord9.RPRenames.util.config.generation.Parser;
 import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.ItemModelPresentation;
-import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.Condition;
-import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.SelectCondition;
+import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.Condition;
+import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.SelectCondition;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import net.minecraft.client.item.ItemAsset;
 import net.minecraft.client.render.item.model.ItemModel;
