@@ -1,10 +1,8 @@
 package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
 
-import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.Condition;
+import com.HiWord9.RPRenames.util.config.generation.itemModel.presentation.condition.select.SelectCondition;
 import net.minecraft.client.render.item.model.SelectItemModel;
 import net.minecraft.client.render.item.property.select.SelectProperty;
-
-import java.util.List;
 
 public class SelectPresentation extends ItemModelPresentation {
     public SelectPresentation(SelectItemModel.Unbaked unbakedModel) {
@@ -14,14 +12,13 @@ public class SelectPresentation extends ItemModelPresentation {
 
     private <P extends SelectProperty<T>, T> void addSwitchCases(SelectItemModel.UnbakedSwitch<P, T> unbakedSwitch) {
         for (SelectItemModel.SwitchCase<T> switchCase : unbakedSwitch.cases()) {
-            cases.add(new Case(new Condition(
-                    new PropertyValuesHolder<T>( // todo define select properties
+            cases.add(new Case(
+                    SelectCondition.of(
                             unbakedSwitch.property(),
                             switchCase.values()
-                    ).toString()
-            ), switchCase.model()));
+                    ),
+                    switchCase.model()
+            ));
         }
     }
-
-    private record PropertyValuesHolder<T>(SelectProperty<T> property, List<T> values) {}
 }

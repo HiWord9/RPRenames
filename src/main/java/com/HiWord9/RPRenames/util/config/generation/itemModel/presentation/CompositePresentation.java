@@ -7,7 +7,7 @@ import net.minecraft.client.render.item.model.ItemModel;
 public class CompositePresentation extends ItemModelPresentation {
     public CompositePresentation(CompositeItemModel.Unbaked unbakedModel) {
         for (ItemModel.Unbaked model : unbakedModel.models()) {
-            cases.add(new Case(new Condition("composite"), model));
+            cases.add(new Case(Condition.COMPOSITE, model));
         }
     }
 }

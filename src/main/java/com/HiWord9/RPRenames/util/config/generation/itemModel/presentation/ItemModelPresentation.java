@@ -15,11 +15,10 @@ public abstract class ItemModelPresentation {
 
     protected void addFallback(ItemModel.Unbaked fallback) {
         if (fallback == null) return;
-        cases.add(new Case(new Condition("fallback"), fallback));
+        cases.add(new Case(Condition.FALLBACK, fallback));
     }
 
-    public record Case(Condition condition, ItemModel.Unbaked result) {
-    }
+    public record Case(Condition condition, ItemModel.Unbaked result) {}
 
     public static ItemModelPresentation of(ItemModel.Unbaked unbakedModel) {
         return switch (unbakedModel) {
