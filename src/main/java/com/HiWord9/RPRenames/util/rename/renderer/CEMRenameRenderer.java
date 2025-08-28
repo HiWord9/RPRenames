@@ -74,10 +74,6 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
                         .asOrderedText());
     }
 
-    public String getDisplayPackName() {
-        return rename.getMob().getPackName();
-    }
-
     @Override
     public void onRender(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         Graphics.renderEntityInBox(context,

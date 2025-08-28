@@ -32,7 +32,6 @@ public class RenameSerializer implements JsonSerializer<AbstractRename>, JsonDes
                 context.deserialize(jsonObject.get("name"), String.class),
                 context.deserialize(jsonObject.get("packName"), String.class),
                 null,
-                null,
                 item
         );
     }

@@ -10,13 +10,11 @@ import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class AbstractRename {
     String name;
     String packName;
     String path;
-    Properties properties;
     ArrayList<Item> items = new ArrayList<>();
 
     public AbstractRename(String name) {
@@ -24,26 +22,27 @@ public class AbstractRename {
     }
 
     public AbstractRename(String name, Item item) {
-        this(name, null, null, null, item);
+        this(name, null, null, item);
     }
 
-    public AbstractRename(String name,
-                          String packName,
-                          String path,
-                          Properties properties,
-                          Item item) {
-        this(name, packName, path, properties, item == null ? null : new ArrayList<>(List.of(item)));
+    public AbstractRename(
+            String name,
+            String packName,
+            String path,
+            Item item
+    ) {
+        this(name, packName, path, item == null ? null : new ArrayList<>(List.of(item)));
     }
 
-    public AbstractRename(String name,
-                          String packName,
-                          String path,
-                          Properties properties,
-                          ArrayList<Item> items) {
+    public AbstractRename(
+            String name,
+            String packName,
+            String path,
+            ArrayList<Item> items
+    ) {
         this.name = name;
         this.packName = packName;
         this.path = path == null ? null : path.replace("\\", "/");
-        this.properties = properties;
         this.setItems(items);
     }
 
@@ -69,14 +68,6 @@ public class AbstractRename {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
     }
 
     public ArrayList<Item> getItems() {
@@ -136,8 +127,7 @@ public class AbstractRename {
     public boolean equals(AbstractRename obj, boolean ignoreNull) {
         return this.same(obj, ignoreNull)
                 && paramsEquals(this.packName, obj.packName, ignoreNull)
-                && paramsEquals(this.path, obj.path, ignoreNull)
-                && paramsEquals(this.properties, obj.properties, ignoreNull);
+                && paramsEquals(this.path, obj.path, ignoreNull);
     }
 
     public boolean same(AbstractRename obj, boolean ignoreNull) {
@@ -181,7 +171,6 @@ public class AbstractRename {
                 "name='" + name + '\'' +
                 ", packName='" + packName + '\'' +
                 ", path='" + path + '\'' +
-                ", properties=" + properties +
                 ", items=" + items +
                 '}';
     }

@@ -15,11 +15,13 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 
 import java.util.Properties;
-import java.util.Set;
 
 public class CEMRename extends AbstractRename {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
-    protected Mob mob;
+
+    private final Mob mob;
+    private final String namePattern;
+    private final AbstractRename itemRename;
 
     public CEMRename(String name) {
         this(name, (Mob) null);
@@ -29,33 +31,35 @@ public class CEMRename extends AbstractRename {
         this(name, new Mob(entity));
     }
 
-    public CEMRename(String name,
-                     Mob mob) {
-        this(name, null, null, null, mob);
+    public CEMRename(String name, Mob mob) {
+        this(name, null, null, null, mob, null);
     }
 
-    public CEMRename(String name,
-                     String packName,
-                     String path,
-                     Properties properties,
-                     Mob mob) {
-        super(name, packName, path, properties, DEFAULT_MOB_ITEM);
+    public CEMRename(
+            String name,
+            String packName,
+            String path,
+            String namePattern,
+            Mob mob,
+            AbstractRename itemRename
+    ) {
+        super(name, packName, path, DEFAULT_MOB_ITEM);
         this.mob = mob;
+        this.namePattern = namePattern;
+        this.itemRename = itemRename;
     }
 
     public Mob getMob() {
         return mob;
     }
 
-    public void setMob(Mob mob) {
-        this.mob = mob;
+    public AbstractRename getItemRename() {
+        return itemRename;
     }
 
     @Override
     public String getNamePattern() {
-        Mob mob = getMob();
-        if (mob == null) return null;
-        return mob.getNamePattern();
+        return namePattern;
     }
 
     public ItemStack toSpawnEgg() {
@@ -80,8 +84,10 @@ public class CEMRename extends AbstractRename {
     }
 
     public boolean equals(CEMRename obj, boolean ignoreNull) {
-        return super.equals(obj, ignoreNull) &&
-                (this.getMob() == null ? obj.getMob() == null || ignoreNull :
+        return super.equals(obj, ignoreNull)
+                && paramsEquals(this.namePattern, obj.namePattern, ignoreNull)
+                && paramsEquals(this.itemRename, obj.itemRename, ignoreNull)
+                && (this.getMob() == null ? obj.getMob() == null || ignoreNull :
                         this.getMob().equalsNoSame(obj.getMob(), ignoreNull));
     }
 
@@ -102,26 +108,14 @@ public class CEMRename extends AbstractRename {
     public static final class Mob {
         private final EntityType<?> entity;
         private final Properties properties;
-        private final String path;
-        private final String packName;
-        private final String namePattern;
-        private final String nameIndex;
 
         public Mob(EntityType<?> entity) {
             this(entity, null);
         }
 
-        public Mob(EntityType<?> entity, String packName) {
-            this(entity, null, null, packName, null);
-        }
-
-        public Mob(EntityType<?> entity, Properties properties, String path, String packName, String nameIndex) {
+        public Mob(EntityType<?> entity, Properties properties) {
             this.entity = entity;
             this.properties = properties;
-            this.path = path;
-            this.packName = packName;
-            this.nameIndex = nameIndex;
-            this.namePattern = findPropName();
         }
 
         public EntityType<?> getEntity() {
@@ -130,33 +124,6 @@ public class CEMRename extends AbstractRename {
 
         public Properties getProperties() {
             return properties;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getPackName() {
-            return packName;
-        }
-
-        public String getNamePattern() {
-            return namePattern;
-        }
-
-        public String findPropName() {
-            return findPropName(properties, nameIndex);
-        }
-
-        public static String findPropName(Properties properties, String nameIndex) {
-            if (properties == null || nameIndex == null) return null;
-            Set<String> propertyNames = properties.stringPropertyNames();
-            for (String s : propertyNames) {
-                if (s.startsWith("name." + nameIndex)) {
-                    return properties.getProperty(s);
-                }
-            }
-            return null;
         }
 
         public boolean equals(Object obj) {
@@ -176,15 +143,12 @@ public class CEMRename extends AbstractRename {
 
         public boolean equalsNoSame(Mob obj, boolean ignoreNull) {
             if (obj == null) return ignoreNull;
-            return paramsEquals(this.packName, obj.packName, ignoreNull)
-                    && paramsEquals(this.path, obj.path, ignoreNull)
-                    && paramsEquals(this.properties, obj.properties, ignoreNull);
+            return paramsEquals(this.properties, obj.properties, ignoreNull);
         }
 
         public boolean same(Mob obj, boolean ignoreNull) {
             if (obj == null) return ignoreNull;
-            return paramsEquals(this.entity, obj.entity, ignoreNull)
-                    && paramsEquals(this.namePattern, obj.namePattern, ignoreNull);
+            return paramsEquals(this.entity, obj.entity, ignoreNull);
         }
     }
 

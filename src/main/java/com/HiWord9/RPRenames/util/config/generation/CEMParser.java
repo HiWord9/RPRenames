@@ -181,22 +181,16 @@ public class CEMParser implements Parser {
             String name = PropertiesHelper.getFirstName(p.getProperty(s), path);
             if (name == null) continue;
 
-            ArrayList<AbstractRename> alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
+            String namePattern = findPropName(p, nameIndex);
+            path = path.replaceAll("\\\\", "/");
 
-            CEMRename.Mob mob = new CEMRename.Mob(
-                    entityType,
-                    p,
-                    path.replaceAll("\\\\", "/"),
-                    packName,
-                    nameIndex
-            );
+            CEMRename.Mob mob = new CEMRename.Mob(entityType, p);
 
-            AbstractRename rename;
             AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
 
-            String citPackName = null;
-            String citPath = null;
-            Properties citProperties = null;
+            AbstractRename itemRename = null;
+
+            ArrayList<AbstractRename> alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
             int i = renameNameOnly.indexIn(alreadyExist, true);
             if (i != -1) {
@@ -204,20 +198,18 @@ public class CEMParser implements Parser {
                 if (renameForItem instanceof CITRename citRename) {
                     if (citRename.same(new CITRename(name, CEMRename.DEFAULT_MOB_ITEM), false)) {
                         alreadyExist.remove(i);
-
-                        citPackName = citRename.getPackName();
-                        citPath = citRename.getPath();
-                        citProperties = citRename.getProperties();
+                        itemRename = citRename;
                     }
                 }
             }
 
-            rename = new CEMRename(
+            AbstractRename rename = new CEMRename(
                     name,
-                    citPackName,
-                    citPath,
-                    citProperties,
-                    mob
+                    packName,
+                    path,
+                    namePattern,
+                    mob,
+                    itemRename
             );
 
             if (!new CEMRename(name, mob.getEntity())
@@ -228,6 +220,18 @@ public class CEMParser implements Parser {
             }
         }
     }
+
+    private static String findPropName(Properties properties, String nameIndex) {
+        if (properties == null || nameIndex == null) return null;
+        Set<String> propertyNames = properties.stringPropertyNames();
+        for (String s : propertyNames) {
+            if (s.startsWith("name." + nameIndex)) {
+                return properties.getProperty(s);
+            }
+        }
+        return null;
+    }
+
 
     private static ArrayList<String> getModelNumsFromProp(Properties models) {
         ArrayList<String> numbers = new ArrayList<>();
