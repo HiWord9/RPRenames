@@ -52,7 +52,7 @@ public class FavoritesFileManager {
         if (favoritesFile.exists()) {
             renames = readFavoriteFile(favoritesFile);
             for (AbstractRename r : renames) {
-                if (r.getItem() == null) r.setItem(item);
+                if (r.getItems().isEmpty()) r.getItems().add(item);
             }
         }
         return renames;

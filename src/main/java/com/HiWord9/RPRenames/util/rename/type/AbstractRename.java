@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AbstractRename {
-    String name;
-    String packName;
-    String path;
-    ArrayList<Item> items = new ArrayList<>();
+    protected final String name;
+    protected final String packName;
+    protected final String path;
+    protected final List<Item> items = new ArrayList<>();
 
     public AbstractRename(String name) {
         this(name, null);
@@ -43,56 +43,27 @@ public class AbstractRename {
         this.name = name;
         this.packName = packName;
         this.path = path == null ? null : path.replace("\\", "/");
-        this.setItems(items);
+        if (items != null) this.items.addAll(items);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getPackName() {
         return packName;
-    }
-
-    public void setPackName(String packName) {
-        this.packName = packName;
     }
 
     public String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public ArrayList<Item> getItems() {
+    public List<Item> getItems() {
         return items;
-    }
-
-    public void setItems(ArrayList<Item> items) {
-        if (items == null) {
-            this.items = new ArrayList<>();
-            return;
-        }
-        this.items = items;
     }
 
     public Item getItem() {
         return items.isEmpty() ? null : items.getFirst();
-    }
-
-    public void setItem(Item item) {
-        if (items == null || items.isEmpty()) {
-            items = new ArrayList<>();
-            items.add(item);
-        } else {
-            this.items.set(0, item);
-        }
     }
 
     public ItemStack toStack() {
