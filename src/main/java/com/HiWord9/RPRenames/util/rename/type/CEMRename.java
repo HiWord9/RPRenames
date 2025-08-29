@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 
 import java.util.Properties;
 
-public class CEMRename extends AbstractRename implements HasNamePattern {
+public class CEMRename extends AbstractRename implements HasProperties, HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
@@ -57,6 +57,7 @@ public class CEMRename extends AbstractRename implements HasNamePattern {
         return namePattern;
     }
 
+    @Override
     public Properties getProperties() {
         return properties;
     }

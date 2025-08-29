@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-public class CITRename extends AbstractRename implements HasNamePattern, Describable {
+public class CITRename extends AbstractRename implements HasProperties, HasNamePattern, Describable {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -104,6 +104,7 @@ public class CITRename extends AbstractRename implements HasNamePattern, Describ
         return properties == null ? null : properties.getProperty("enchantmentLevels");
     }
 
+    @Override
     public Properties getProperties() {
         return properties;
     }
