@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-public class CITRename extends AbstractRename implements Describable {
+public class CITRename extends AbstractRename implements HasNamePattern, Describable {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -59,6 +59,7 @@ public class CITRename extends AbstractRename implements Describable {
         this.properties = properties;
     }
 
+    @Override
     public String getNamePattern() {
         return properties == null ? null : PropertiesHelper.getCustomName(properties);
     }

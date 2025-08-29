@@ -95,10 +95,6 @@ public class AbstractRename {
         }
     }
 
-    public String getNamePattern() {
-        return null;
-    }
-
     public ItemStack toStack() {
         return toStack(0);
     }

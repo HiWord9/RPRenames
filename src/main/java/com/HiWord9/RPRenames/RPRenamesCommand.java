@@ -3,9 +3,7 @@ package com.HiWord9.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.type.CEMRename;
-import com.HiWord9.RPRenames.util.rename.type.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.*;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -212,26 +210,27 @@ public class RPRenamesCommand {
     private static AbstractRename getMatch(ArrayList<AbstractRename> renames, ItemStack stack) {
         String name = stack.getName().getString();
         for (AbstractRename r : renames) {
-            boolean nameValid;
-            String nbtName = r.getNamePattern();
-            boolean caseInsensitive = false;
-            if (nbtName.startsWith("iregex:") || nbtName.startsWith("ipattern:")) {
-                nbtName = nbtName.substring(1);
-                caseInsensitive = true;
-            }
-            if (nbtName.startsWith("regex:") || nbtName.startsWith("pattern:")) {
-                if (nbtName.startsWith("regex:")) {
-                    nbtName = nbtName.substring(6);
-                } else if (nbtName.startsWith("pattern:")) {
-                    nbtName = nbtName.substring(8);
-                    nbtName = nbtName.replace("*", ".*").replace("?", ".+");
+            Boolean nameValid = null;
+            if (r instanceof HasNamePattern hasNamePattern) {
+                String nbtName = hasNamePattern.getNamePattern();
+                boolean caseInsensitive = false;
+                if (nbtName.startsWith("iregex:") || nbtName.startsWith("ipattern:")) {
+                    nbtName = nbtName.substring(1);
+                    caseInsensitive = true;
                 }
-                nbtName = PropertiesHelper.parseEscapes(nbtName);
-                Pattern pattern = Pattern.compile(caseInsensitive ? nbtName.toUpperCase(Locale.ROOT) : nbtName);
-                nameValid = pattern.matcher(caseInsensitive ? name.toUpperCase(Locale.ROOT) : name).matches();
-            } else {
-                nameValid = name.equals(r.getName());
+                if (nbtName.startsWith("regex:") || nbtName.startsWith("pattern:")) {
+                    if (nbtName.startsWith("regex:")) {
+                        nbtName = nbtName.substring(6);
+                    } else if (nbtName.startsWith("pattern:")) {
+                        nbtName = nbtName.substring(8);
+                        nbtName = nbtName.replace("*", ".*").replace("?", ".+");
+                    }
+                    nbtName = PropertiesHelper.parseEscapes(nbtName);
+                    Pattern pattern = Pattern.compile(caseInsensitive ? nbtName.toUpperCase(Locale.ROOT) : nbtName);
+                    nameValid = pattern.matcher(caseInsensitive ? name.toUpperCase(Locale.ROOT) : name).matches();
+                }
             }
+            if (nameValid == null) nameValid = name.equals(r.getName());
             if (!nameValid) continue;
             if (r instanceof CITRename citRename) {
                 if (!new CITRename.CraftMatcher(citRename, stack).matches()) continue;

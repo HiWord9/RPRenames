@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 
 import java.util.Properties;
 
-public class CEMRename extends AbstractRename {
+public class CEMRename extends AbstractRename implements HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final Mob mob;

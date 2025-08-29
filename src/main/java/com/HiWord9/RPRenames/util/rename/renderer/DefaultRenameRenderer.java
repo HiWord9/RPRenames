@@ -6,6 +6,7 @@ import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.Describable;
+import com.HiWord9.RPRenames.util.rename.type.HasNamePattern;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -69,8 +70,8 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
         return linesComponents;
     }
 
-    public static TooltipComponent namePatternTooltipComponent(AbstractRename rename) {
-        String pattern = rename.getNamePattern();
+    public static TooltipComponent namePatternTooltipComponent(HasNamePattern hasNamePattern) {
+        String pattern = hasNamePattern.getNamePattern();
         if (pattern != null) {
             return TooltipComponent.of(
                     Text.of("Name Pattern: " + pattern).copy()
