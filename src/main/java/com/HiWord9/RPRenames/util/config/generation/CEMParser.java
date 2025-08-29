@@ -5,7 +5,6 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
-import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.google.gson.Gson;
 import net.minecraft.entity.EntityType;
@@ -184,20 +183,14 @@ public class CEMParser implements Parser {
             String namePattern = findPropName(p, nameIndex);
             path = path.replaceAll("\\\\", "/");
 
-            AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
-
             AbstractRename itemRename = null;
-
             ArrayList<AbstractRename> alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
-            int i = renameNameOnly.indexIn(alreadyExist, true);
-            if (i != -1) {
-                AbstractRename renameForItem = alreadyExist.get(i);
-                if (renameForItem instanceof CITRename citRename) {
-                    if (citRename.same(new CITRename(name, CEMRename.DEFAULT_MOB_ITEM), false)) {
-                        alreadyExist.remove(i);
-                        itemRename = citRename;
-                    }
+            var renameNameOnly = new AbstractRename(name, CEMRename.DEFAULT_MOB_ITEM);
+            for (var abstractRename : alreadyExist) {
+                if (abstractRename.baseEquals(renameNameOnly)) {
+                    itemRename = abstractRename;
+                    break;
                 }
             }
 
@@ -212,7 +205,8 @@ public class CEMParser implements Parser {
             );
 
             if (!new CEMRename(name, entityType).isContainedIn(alreadyExist, true)) {
-                ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
+                var newConfig = new ArrayList<>(alreadyExist);
+                if (itemRename != null) newConfig.remove(itemRename);
                 newConfig.add(rename);
                 renamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);
             }

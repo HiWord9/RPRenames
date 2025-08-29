@@ -110,48 +110,32 @@ public class CITRename extends AbstractRename implements HasProperties, HasNameP
     }
 
     public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        if (obj instanceof CITRename citRename) {
-            return equals(citRename, ignoreNull);
-        }
-        return false;
+        return obj instanceof CITRename citRename
+                && equals(citRename, ignoreNull);
     }
 
     public boolean equals(CITRename obj, boolean ignoreNull) {
-        boolean originalNbtDisplayNameEquals = paramsEquals(this.getNamePattern(), obj.getNamePattern(), ignoreNull);
-        boolean originalStackSizeEquals = paramsEquals(this.getOriginalStackSize(), obj.getOriginalStackSize(), ignoreNull);
-        boolean originalDamageEquals = paramsEquals(this.getOriginalDamage(), obj.getOriginalDamage(), ignoreNull);
-        boolean originalEnchantmentEquals = paramsEquals(this.getOriginalEnchantment(), obj.getOriginalEnchantment(), ignoreNull);
-        boolean originalEnchantmentLevelEquals = paramsEquals(this.getOriginalEnchantmentLevel(), obj.getOriginalEnchantmentLevel(), ignoreNull);
-        boolean descriptionEquals = paramsEquals(this.getDescription(), obj.getDescription(), ignoreNull);
-        boolean propsEquals = paramsEquals(this.properties, obj.properties, ignoreNull);
-
-        return super.equals(obj, ignoreNull) && this.same(obj, ignoreNull)
-                && originalNbtDisplayNameEquals
-                && originalStackSizeEquals
-                && originalDamageEquals
-                && originalEnchantmentEquals
-                && originalEnchantmentLevelEquals
-                && descriptionEquals
-                && propsEquals;
+        return super.equals(obj, ignoreNull)
+//                && paramsEquals(this.getNamePattern(), obj.getNamePattern(), ignoreNull)
+//                && paramsEquals(this.getOriginalStackSize(), obj.getOriginalStackSize(), ignoreNull)
+//                && paramsEquals(this.getOriginalDamage(), obj.getOriginalDamage(), ignoreNull)
+//                && paramsEquals(this.getOriginalEnchantment(), obj.getOriginalEnchantment(), ignoreNull)
+//                && paramsEquals(this.getOriginalEnchantmentLevel(), obj.getOriginalEnchantmentLevel(), ignoreNull)
+                && paramsEquals(this.description, obj.description, ignoreNull)
+//                && paramsEquals(this.properties, obj.properties, ignoreNull)
+                && paramsEquals(this.stackSize, obj.stackSize, ignoreNull)
+                && paramsEquals(this.damage, obj.damage, ignoreNull)
+                && paramsEquals(this.enchantment, obj.enchantment, ignoreNull)
+                && paramsEquals(this.enchantmentLevel, obj.enchantmentLevel, ignoreNull);
     }
 
-    public boolean same(AbstractRename obj, boolean ignoreNull) {
-        if (obj instanceof CITRename citRename) {
-            return same(citRename, ignoreNull);
-        }
-        return false;
-    }
-
-    public boolean same(CITRename obj, boolean ignoreNull) {
-        boolean stackSizeEquals = paramsEquals(this.getStackSize(), obj.getStackSize(), ignoreNull);
-        boolean damageEquals = paramsEquals(this.getDamage(), obj.getDamage(), ignoreNull);
-        boolean enchantmentEquals = paramsEquals(this.getEnchantment(), obj.getEnchantment(), ignoreNull);
-        boolean enchantmentLevelEquals = paramsEquals(this.getEnchantmentLevel(), obj.getEnchantmentLevel(), ignoreNull);
-        return super.same(obj, ignoreNull)
-                && stackSizeEquals
-                && damageEquals
-                && enchantmentEquals
-                && enchantmentLevelEquals;
+    @Override
+    public boolean baseEquals(AbstractRename abstractRename) {
+        return stackSize == null
+                && damage == null
+                && enchantment == null
+                && enchantmentLevel == null
+                && super.equals(abstractRename, false);
     }
 
     public static class Damage {

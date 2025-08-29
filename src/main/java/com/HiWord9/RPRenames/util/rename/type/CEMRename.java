@@ -81,32 +81,21 @@ public class CEMRename extends AbstractRename implements HasProperties, HasNameP
 
     @Override
     public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        if (obj instanceof CEMRename cemRename) {
-            return equals(cemRename, ignoreNull);
-        }
-        return false;
+        return obj instanceof CEMRename cemRename
+                && equals(cemRename, ignoreNull);
     }
 
     public boolean equals(CEMRename obj, boolean ignoreNull) {
         return super.equals(obj, ignoreNull)
                 && paramsEquals(this.entity, obj.entity, ignoreNull)
-                && paramsEquals(this.properties, obj.properties, ignoreNull)
-                && paramsEquals(this.namePattern, obj.namePattern, ignoreNull)
-                && paramsEquals(this.itemRename, obj.itemRename, ignoreNull);
+//                && paramsEquals(this.properties, obj.properties, ignoreNull)
+                /*&& paramsEquals(this.namePattern, obj.namePattern, ignoreNull)
+                && paramsEquals(this.itemRename, obj.itemRename, ignoreNull)*/;
     }
 
     @Override
-    public boolean same(AbstractRename obj, boolean ignoreNull) {
-        if (obj instanceof CEMRename cemRename) {
-            return same(cemRename, ignoreNull);
-        }
-        return false;
-    }
-
-    public boolean same(CEMRename obj, boolean ignoreNull) {
-        return super.same(obj, ignoreNull)
-                && paramsEquals(this.entity, obj.entity, ignoreNull)
-                && paramsEquals(this.properties, obj.properties, ignoreNull);
+    public boolean baseEquals(AbstractRename abstractRename) {
+        return super.equals(abstractRename, false);
     }
 
     public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {

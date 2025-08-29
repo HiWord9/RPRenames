@@ -91,15 +91,15 @@ public class AbstractRename {
         return equals(obj, false);
     }
 
-    public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        return this.same(obj, ignoreNull)
-                && paramsEquals(this.packName, obj.packName, ignoreNull)
-                && paramsEquals(this.path, obj.path, ignoreNull);
+    public boolean baseEquals(AbstractRename abstractRename) {
+        return equals(abstractRename);
     }
 
-    public boolean same(AbstractRename obj, boolean ignoreNull) {
+    public boolean equals(AbstractRename obj, boolean ignoreNull) {
         return paramsEquals(this.name, obj.name, ignoreNull)
-                && paramsEquals(this.getItem(), obj.getItem(), ignoreNull);
+                && paramsEquals(this.getItem(), obj.getItem(), ignoreNull)
+                /*&& paramsEquals(this.packName, obj.packName, ignoreNull)
+                && paramsEquals(this.path, obj.path, ignoreNull)*/;
     }
 
     protected static boolean paramsEquals(Object obj1, Object obj2, boolean ignoreNull) {
