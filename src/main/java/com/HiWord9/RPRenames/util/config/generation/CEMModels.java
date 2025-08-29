@@ -163,12 +163,10 @@ public class CEMModels {
     }
 
     public static ModelData find(String model) {
-        for (ModelData modelData : data) {
-            if (modelData.model().equals(model)) {
-                return modelData;
-            }
-        }
-        return null;
+        return Arrays.stream(data)
+                .filter(d -> d.model().equals(model))
+                .findFirst()
+                .orElse(null);
     }
 
     public record ModelData(
