@@ -184,8 +184,6 @@ public class CEMParser implements Parser {
             String namePattern = findPropName(p, nameIndex);
             path = path.replaceAll("\\\\", "/");
 
-            CEMRename.Mob mob = new CEMRename.Mob(entityType, p);
-
             AbstractRename renameNameOnly = new CITRename(name, CEMRename.DEFAULT_MOB_ITEM);
 
             AbstractRename itemRename = null;
@@ -208,12 +206,12 @@ public class CEMParser implements Parser {
                     packName,
                     path,
                     namePattern,
-                    mob,
+                    entityType,
+                    p,
                     itemRename
             );
 
-            if (!new CEMRename(name, mob.getEntity())
-                    .isContainedIn(alreadyExist, true)) {
+            if (!new CEMRename(name, entityType).isContainedIn(alreadyExist, true)) {
                 ArrayList<AbstractRename> newConfig = new ArrayList<>(alreadyExist);
                 newConfig.add(rename);
                 renamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);

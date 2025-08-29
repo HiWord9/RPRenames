@@ -119,7 +119,7 @@ public class RPRenamesCommand {
     public static void printAbstractRenameInfo(AbstractRename rename, FabricClientCommandSource source) {
         Properties props = switch (rename) {
             case CITRename citRename -> citRename.getProperties();
-            case CEMRename cemRename -> cemRename.getMob().getProperties();
+            case CEMRename cemRename -> cemRename.getProperties();
             default -> null;
         };
         if (props != null) printProperties(props, source);

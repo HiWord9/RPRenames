@@ -34,7 +34,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
         this.rprWidget = rprWidget;
         this.favorite = favorite;
 
-        var entityType = rename.getMob().getEntity();
+        var entityType = rename.getEntity();
         var client = MinecraftClient.getInstance();
         this.entity = (LivingEntity) entityType.create(client.world, null);
         prepareEntity(entity, rename);
