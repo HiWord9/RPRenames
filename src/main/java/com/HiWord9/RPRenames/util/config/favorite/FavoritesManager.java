@@ -48,13 +48,7 @@ public class FavoritesManager extends RenamesManagerImpl {
     }
 
     public boolean isFavorite(Item item, String name) {
-        var favoriteList = getRenames(item);
-        for (AbstractRename r : favoriteList) {
-            if (r.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        return getRenames(item).stream().anyMatch(r -> r.getName().equals(name));
     }
 
     public boolean isFavorite(Item item, AbstractRename rename) {

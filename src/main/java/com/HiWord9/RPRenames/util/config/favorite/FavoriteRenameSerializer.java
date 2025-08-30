@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.rename;
+package com.HiWord9.RPRenames.util.config.favorite;
 
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
@@ -7,15 +7,13 @@ import net.minecraft.item.Item;
 
 import java.lang.reflect.Type;
 
-public class RenameSerializer implements JsonSerializer<AbstractRename>, JsonDeserializer<AbstractRename> {
+public class FavoriteRenameSerializer implements JsonSerializer<AbstractRename>, JsonDeserializer<AbstractRename> {
 
     @Override
     public JsonElement serialize(AbstractRename rename, Type type, JsonSerializationContext context) {
         JsonObject result = new JsonObject();
 
         result.addProperty("name", rename.getName());
-//        result.addProperty("item", ParserHelper.idFromItem(rename.getItem()));
-//        result.addProperty("packName", rename.packName);
 
         return result;
     }

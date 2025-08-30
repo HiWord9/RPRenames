@@ -23,8 +23,7 @@ public class TaskQueueThread extends Thread {
                 Runnable method = taskQueue.take();
                 method.run();
             } catch (Exception e) {
-                RPRenames.LOGGER.error("Something went wrong in " + this, e);
-                // Handle interruption
+                RPRenames.LOGGER.error("Something went wrong in {}", this, e);
             }
         }
     }

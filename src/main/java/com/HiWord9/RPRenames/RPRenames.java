@@ -37,7 +37,7 @@ public class RPRenames implements ClientModInitializer {
     public static final CITParser citParser = new CITParser(renamesManager);
     public static final CEMParser cemParser = new CEMParser(renamesManager);
 
-    public static FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
+    public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
     @Override
     public void onInitializeClient() {

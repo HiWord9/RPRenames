@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames.util.config.favorite;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
-import com.HiWord9.RPRenames.util.rename.RenameSerializer;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FavoritesFileManager {
-    Path configPathFavorite;
+    private final Path configPathFavorite;
 
     public FavoritesFileManager(Path configPathFavorite) {
         this.configPathFavorite = configPathFavorite;
@@ -49,7 +48,7 @@ public class FavoritesFileManager {
 
     public List<AbstractRename> savedFavorites(Item item) {
         List<AbstractRename> renames = null;
-        File favoritesFile = new File(pathToFavoriteFile(item));
+        File favoritesFile = new File(itemToFavoriteFile(item));
         if (favoritesFile.exists()) {
             renames = readFavoriteFile(favoritesFile);
             for (AbstractRename r : renames) {
@@ -65,7 +64,7 @@ public class FavoritesFileManager {
             FileReader fileReader = new FileReader(file);
             Type type = new TypeToken<ArrayList<AbstractRename>>(){}.getType();
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(AbstractRename.class, new RenameSerializer())
+                    .registerTypeAdapter(AbstractRename.class, new FavoriteRenameSerializer())
                     .create();
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
@@ -80,14 +79,14 @@ public class FavoritesFileManager {
             if (configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: {}", configPathFavorite);
             }
-            File file = new File(pathToFavoriteFile(item));
+            File file = new File(itemToFavoriteFile(item));
             if (!file.exists()) {
-                RPRenames.LOGGER.info("Creating new file for favorites config: {}", pathToFavoriteFile(item));
+                RPRenames.LOGGER.info("Creating new file for favorites config: {}", itemToFavoriteFile(item));
             }
             FileWriter fileWriter = new FileWriter(file);
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
-                    .registerTypeAdapter(AbstractRename.class, new RenameSerializer())
+                    .registerTypeAdapter(AbstractRename.class, new FavoriteRenameSerializer())
                     .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();
@@ -97,7 +96,7 @@ public class FavoritesFileManager {
     }
 
     private void deleteFavoriteConfigFile(Item item) {
-        Path path = Path.of(pathToFavoriteFile(item));
+        Path path = Path.of(itemToFavoriteFile(item));
         try {
             Files.deleteIfExists(path);
         } catch (Exception e) {
@@ -115,7 +114,7 @@ public class FavoritesFileManager {
         return ParserHelper.itemFromName(itemFromFileName);
     }
 
-    private String pathToFavoriteFile(Item item) {
+    private String itemToFavoriteFile(Item item) {
         return configPathFavorite + File.separator + fileNameFromItem(item);
     }
 
