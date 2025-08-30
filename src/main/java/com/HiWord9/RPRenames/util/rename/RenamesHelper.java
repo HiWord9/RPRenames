@@ -18,6 +18,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -98,12 +99,12 @@ public class RenamesHelper {
         return rename.toStack(itemIndex);
     }
 
-    public static ArrayList<AbstractRename> search(ArrayList<AbstractRename> list, String match) {
+    public static List<AbstractRename> search(List<AbstractRename> list, String match) {
         return search(list, match, RPRenames.favoritesManager);
     }
 
-    public static ArrayList<AbstractRename> search(ArrayList<AbstractRename> list, String match, FavoritesManager favoritesManager) {
-        ArrayList<AbstractRename> cutList = new ArrayList<>();
+    public static List<AbstractRename> search(List<AbstractRename> list, String match, FavoritesManager favoritesManager) {
+        List<AbstractRename> cutList = new ArrayList<>();
         if (match.startsWith("#")) {
             String matchTag = match.substring(1);
             if (matchTag.contains(" ") && !matchTag.toUpperCase(Locale.ROOT).contains("#REGEX:") && !matchTag.toUpperCase(Locale.ROOT).contains("#IREGEX:")) {
@@ -196,7 +197,7 @@ public class RenamesHelper {
                 for (AbstractRename r : list) {
                     if (r instanceof CITRename citRename) {
                         if (citRename.getEnchantment() != null) {
-                            ArrayList<String> split = PropertiesHelper.splitList(citRename.getOriginalEnchantment());
+                            var split = PropertiesHelper.splitList(citRename.getOriginalEnchantment());
                             for (String s : split) {
                                 if (s.toUpperCase(Locale.ROOT).contains(enchant)) {
                                     cutList.add(r);

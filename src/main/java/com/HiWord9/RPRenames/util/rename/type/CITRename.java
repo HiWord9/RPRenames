@@ -34,13 +34,13 @@ public class CITRename extends AbstractRename implements HasProperties, HasNameP
         this(name, new ArrayList<>(List.of(item)));
     }
 
-    public CITRename(String name, ArrayList<Item> items) {
+    public CITRename(String name, List<Item> items) {
         this(name, items, null, null, null, null, null, null, null, null);
     }
 
     public CITRename(
             String name,
-            ArrayList<Item> items,
+            List<Item> items,
             String packName,
             String path,
             Integer stackSize,

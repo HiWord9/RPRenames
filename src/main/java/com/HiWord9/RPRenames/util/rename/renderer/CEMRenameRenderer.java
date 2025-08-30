@@ -18,7 +18,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
@@ -93,7 +93,7 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> mainTooltip) {
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 MinecraftClient.getInstance().textRenderer,

@@ -92,8 +92,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     Tab currentTab = Tab.SEARCH;
 
-    ArrayList<AbstractRename> originalRenameList = new ArrayList<>();
-    ArrayList<AbstractRename> currentRenameList = new ArrayList<>();
+    final ArrayList<AbstractRename> originalRenameList = new ArrayList<>();
+    final ArrayList<AbstractRename> currentRenameList = new ArrayList<>();
 
     final TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
 
@@ -109,7 +109,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     ItemStack currentItem = ItemStack.EMPTY;
     public boolean shouldNotUpdateTab = false;
     int tempPage;
-    ArrayList<Item> inventory = new ArrayList<>();
+    final ArrayList<Item> inventory = new ArrayList<>();
 
     public RPRWidget() {}
 
@@ -426,10 +426,10 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     private void checkForInvChanges() {
         if (inventory.isEmpty()) {
-            inventory = getInventory();
+            inventory.addAll(getInventory());
             return;
         }
-        ArrayList<Item> temp = getInventory();
+        var temp = getInventory();
         boolean equal = true;
         if (temp.size() != inventory.size()) {
             equal = false;
@@ -442,11 +442,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             }
         }
         if (equal) return;
-        inventory = temp;
+        inventory.addAll(temp);
         screenUpdate(page);
     }
 
-    public ArrayList<Item> getInventory() {
+    public List<Item> getInventory() {
         ArrayList<Item> inventoryList = new ArrayList<>();
         assert MinecraftClient.getInstance().player != null;
         PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
@@ -586,24 +586,25 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public boolean isFocused() {return false;}
 
     private void calcRenameList() {
+        originalRenameList.clear();
         switch (currentTab) {
-            case SEARCH -> originalRenameList = renamesManager.getRenames(getItemInFirstSlot());
-            case FAVORITE -> originalRenameList = favoritesManager.getRenames(getItemInFirstSlot());
+            case SEARCH -> originalRenameList.addAll(renamesManager.getRenames(getItemInFirstSlot()));
+            case FAVORITE -> originalRenameList.addAll(favoritesManager.getRenames(getItemInFirstSlot()));
             case INVENTORY -> {
                 ArrayList<Item> checked = new ArrayList<>();
                 ArrayList<AbstractRename> names = new ArrayList<>();
                 for (Item item : inventory) {
                     if (item != Items.AIR && !checked.contains(item)) {
                         checked.add(item);
-                        ArrayList<AbstractRename> renames = renamesManager.getRenames(item);
+                        var renames = renamesManager.getRenames(item);
                         for (AbstractRename r : renames) {
                             if (!names.contains(r)) names.add(r);
                         }
                     }
                 }
-                originalRenameList = names;
+                originalRenameList.addAll(names);
             }
-            case GLOBAL -> originalRenameList = renamesManager.getAllRenames();
+            case GLOBAL -> originalRenameList.addAll(renamesManager.getAllRenames());
         }
     }
 
@@ -612,7 +613,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     private void updateSearchRequest(int page) {
-        currentRenameList = RenamesHelper.search(originalRenameList, searchTag, favoritesManager);
+        currentRenameList.clear();
+        currentRenameList.addAll(RenamesHelper.search(originalRenameList, searchTag, favoritesManager));
 
         this.page = page;
         if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {

@@ -38,7 +38,7 @@ public class AbstractRename {
             String name,
             String packName,
             String path,
-            ArrayList<Item> items
+            List<Item> items
     ) {
         this.name = name;
         this.packName = packName;
@@ -112,15 +112,15 @@ public class AbstractRename {
         }
     }
 
-    public boolean isContainedIn(ArrayList<AbstractRename> list) {
+    public boolean isContainedIn(List<AbstractRename> list) {
         return isContainedIn(list, false);
     }
 
-    public boolean isContainedIn(ArrayList<AbstractRename> list, boolean ignoreNull) {
+    public boolean isContainedIn(List<AbstractRename> list, boolean ignoreNull) {
         return this.indexIn(list, ignoreNull) != -1;
     }
 
-    public int indexIn(ArrayList<AbstractRename> list, boolean ignoreNull) {
+    public int indexIn(List<AbstractRename> list, boolean ignoreNull) {
         int i = -1;
         if (list == null) return i;
         for (AbstractRename r : list) {

@@ -12,6 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.HiWord9.RPRenames.util.gui.Graphics.*;
 
@@ -20,10 +21,10 @@ public class MultiItemTooltipComponent implements TooltipComponent {
 
     static final Identifier SLOT = Identifier.of(RPRenames.MOD_ID, "textures/gui/slot.png");
 
-    public final ArrayList<TooltipItem> items;
+    public final ArrayList<TooltipItem> items = new ArrayList<>();
 
-    public MultiItemTooltipComponent(ArrayList<TooltipItem> items) {
-        this.items = items;
+    public MultiItemTooltipComponent(List<TooltipItem> items) {
+        this.items.addAll(items);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         int i = 0;
         int size = items.size();
-        ArrayList<TooltipItem> sorted = sort(items);
+        var sorted = sort(items);
         for (TooltipItem item : sorted) {
             int xOffset;
             int yOffset = 0;
@@ -80,7 +81,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
         }
     }
 
-    private static ArrayList<TooltipItem> sort(ArrayList<TooltipItem> list) {
+    private static List<TooltipItem> sort(List<TooltipItem> list) {
         ArrayList<TooltipItem> sorted = new ArrayList<>();
         int i = 0;
         int j = 0;

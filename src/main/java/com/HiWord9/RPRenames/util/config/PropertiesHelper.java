@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -210,7 +211,7 @@ public class PropertiesHelper {
         return builder.toString();
     }
 
-    public static ArrayList<Text> parseCustomDescription(String description) {
+    public static List<Text> parseCustomDescription(String description) {
         ArrayList<Text> lines = new ArrayList<>();
         String[] split = description
                 .replaceAll("\\\\&", String.valueOf(Formatting.FORMATTING_CODE_PREFIX))
@@ -309,7 +310,7 @@ public class PropertiesHelper {
         return false;
     }
 
-    public static ArrayList<String> splitList(String list) {
+    public static List<String> splitList(String list) {
         ArrayList<String> split = new ArrayList<>();
         if (list.contains(" ")) {
             int i = 0;

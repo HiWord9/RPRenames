@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRenderer {
     T rename;
@@ -56,11 +57,11 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
         return component;
     }
 
-    public static ArrayList<TooltipComponent> descriptionTooltipsComponentsList(Describable describable) {
+    public static List<TooltipComponent> descriptionTooltipsComponentsList(Describable describable) {
         String description = describable.getDescription();
         ArrayList<TooltipComponent> linesComponents = new ArrayList<>();
         if (description != null) {
-            ArrayList<Text> lines = PropertiesHelper.parseCustomDescription(description);
+            var lines = PropertiesHelper.parseCustomDescription(description);
             for (Text line : lines) {
                 linesComponents.add(TooltipComponent.of(
                         line.asOrderedText()

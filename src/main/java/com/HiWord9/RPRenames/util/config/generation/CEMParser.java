@@ -85,7 +85,7 @@ public class CEMParser implements Parser {
             try {
                 Properties p = new Properties();
                 p.load(entry.getValue().getInputStream());
-                ArrayList<String> numbers = getModelNumsFromProp(p);
+                var numbers = getModelNumsFromProp(p);
                 String path = entry.getKey().getPath();
                 String pathInCem = path.substring(CEM_PATH.length() + 1, path.lastIndexOf("."));
                 for (String n : numbers) {
@@ -140,7 +140,7 @@ public class CEMParser implements Parser {
         if (optionalResourceJpm.isEmpty()) return;
 
         Resource resourceJpm = optionalResourceJpm.get();
-        ArrayList<String> textures = objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture");
+        var textures = objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture");
         if (textures.isEmpty()) return;
 
         String textureName = prepareTexturePath(textures.getFirst());
@@ -184,7 +184,7 @@ public class CEMParser implements Parser {
             path = path.replaceAll("\\\\", "/");
 
             AbstractRename itemRename = null;
-            ArrayList<AbstractRename> alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
+            var alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
             var renameNameOnly = new AbstractRename(name, CEMRename.DEFAULT_MOB_ITEM);
             for (var abstractRename : alreadyExist) {
@@ -225,7 +225,7 @@ public class CEMParser implements Parser {
     }
 
 
-    private static ArrayList<String> getModelNumsFromProp(Properties models) {
+    private static List<String> getModelNumsFromProp(Properties models) {
         ArrayList<String> numbers = new ArrayList<>();
         try {
             for (String p : models.stringPropertyNames()) {
@@ -254,7 +254,7 @@ public class CEMParser implements Parser {
         return obj;
     }
 
-    private static ArrayList<String> objToParamList(Object obj, String param) {
+    private static List<String> objToParamList(Object obj, String param) {
         String string = obj.toString();
         ArrayList<String> list = new ArrayList<>();
         int j = string.length() - param.length();

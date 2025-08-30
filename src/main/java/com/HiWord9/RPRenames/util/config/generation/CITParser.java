@@ -54,7 +54,7 @@ public class CITParser implements Parser {
             matchItems = matchItems.substring(0, matchItems.length() - 1);
         }
 
-        ArrayList<Item> items = itemsFromMatchItems(matchItems);
+        var items = itemsFromMatchItems(matchItems);
         if (items.isEmpty()) return;
 
         String customName = PropertiesHelper.getCustomName(p);
@@ -134,7 +134,7 @@ public class CITParser implements Parser {
         }
     }
 
-    private static ArrayList<String> splitMatchItems(String matchItems) {
+    private static List<String> splitMatchItems(String matchItems) {
         ArrayList<String> items = new ArrayList<>();
         int start = 0;
         while (start <= matchItems.length()) {
@@ -151,7 +151,7 @@ public class CITParser implements Parser {
         return items;
     }
 
-    private static ArrayList<Item> itemsFromMatchList(ArrayList<String> matchItemsList) {
+    private static List<Item> itemsFromMatchList(List<String> matchItemsList) {
         ArrayList<Item> items = new ArrayList<>();
         for (String matchItem : matchItemsList) {
             Item item = Registries.ITEM.get(Identifier.of(matchItem));
@@ -161,7 +161,7 @@ public class CITParser implements Parser {
         return items;
     }
 
-    private static ArrayList<Item> itemsFromMatchItems(String matchItems) {
+    private static List<Item> itemsFromMatchItems(String matchItems) {
         return itemsFromMatchList(splitMatchItems(matchItems));
     }
 }

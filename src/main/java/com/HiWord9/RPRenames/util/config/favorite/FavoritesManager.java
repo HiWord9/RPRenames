@@ -4,7 +4,7 @@ import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.item.Item;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class FavoritesManager extends RenamesManagerImpl {
     private final TaskQueueThread taskQueue = new TaskQueueThread();
@@ -37,7 +37,7 @@ public class FavoritesManager extends RenamesManagerImpl {
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
-    public void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
+    public void overrideRenames(Item item, List<AbstractRename> newRenames) {
         super.overrideRenames(item, newRenames);
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
@@ -48,7 +48,7 @@ public class FavoritesManager extends RenamesManagerImpl {
     }
 
     public boolean isFavorite(Item item, String name) {
-        ArrayList<AbstractRename> favoriteList = getRenames(item);
+        var favoriteList = getRenames(item);
         for (AbstractRename r : favoriteList) {
             if (r.getName().equals(name)) {
                 return true;

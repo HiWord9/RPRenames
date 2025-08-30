@@ -3,13 +3,13 @@ package com.HiWord9.RPRenames.util.rename;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import net.minecraft.item.Item;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface RenamesManager {
 
-    ArrayList<AbstractRename> getAllRenames();
+    List<AbstractRename> getAllRenames();
 
-    ArrayList<AbstractRename> getRenames(Item item);
+    List<AbstractRename> getRenames(Item item);
 
     default void addRename(AbstractRename rename) {
         addRename(rename.getItem(), rename);
@@ -25,7 +25,7 @@ public interface RenamesManager {
 
     void clearRenames();
 
-    void overrideRenames(Item item, ArrayList<AbstractRename> newRenames);
+    void overrideRenames(Item item, List<AbstractRename> newRenames);
 
-    ArrayList<Item> renamedItems();
+    List<Item> renamedItems();
 }

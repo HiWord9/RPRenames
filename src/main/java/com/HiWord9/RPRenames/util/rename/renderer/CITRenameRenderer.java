@@ -24,6 +24,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
@@ -105,7 +106,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         int index = 1;
 
         if (config.showDescription) {
-            ArrayList<TooltipComponent> description = descriptionTooltipsComponentsList(rename);
+            var description = descriptionTooltipsComponentsList(rename);
             tooltipComponents.addAll(index, description);
             index += description.size();
         }
@@ -116,7 +117,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         }
 
         if (config.showExtraProperties) {
-            ArrayList<TooltipComponent> extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
+            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
             tooltipComponents.addAll(index, extraProperties);
             index += extraProperties.size();
         }
@@ -130,7 +131,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         }
     }
 
-    public static ArrayList<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
+    public static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
         ArrayList<Text> extraProperties = new ArrayList<>();
 
         Item item = rprWidget.firstItemInInventory(citRename);
@@ -266,7 +267,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, ArrayList<TooltipComponent> mainTooltip) {
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
         boolean shouldPreviewPlayer = hasShiftDown() != config.playerPreviewByDefault;
         TooltipPositioner positioner = new PreviewTooltipPositioner(mainTooltip);
 

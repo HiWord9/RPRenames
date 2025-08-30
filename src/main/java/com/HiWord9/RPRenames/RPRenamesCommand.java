@@ -84,7 +84,7 @@ public class RPRenamesCommand {
 
         AbstractRename matchRename = null;
 
-        ArrayList<AbstractRename> renames = RPRenames.renamesManager.getRenames(itemStack.getItem());
+        var renames = RPRenames.renamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
             matchRename = getMatch(renames, itemStack);
         }
@@ -157,7 +157,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        ArrayList<AbstractRename> renames = RPRenames.renamesManager.getRenames(item);
+        var renames = RPRenames.renamesManager.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(
                     Text.translatable(
@@ -205,7 +205,7 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static AbstractRename getMatch(ArrayList<AbstractRename> renames, ItemStack stack) {
+    private static AbstractRename getMatch(List<AbstractRename> renames, ItemStack stack) {
         String name = stack.getName().getString();
         for (AbstractRename r : renames) {
             Boolean nameValid = null;
@@ -238,7 +238,7 @@ public class RPRenamesCommand {
         return null;
     }
 
-    private static void printRenameList(ArrayList<AbstractRename> renames, FabricClientCommandSource source) {
+    private static void printRenameList(List<AbstractRename> renames, FabricClientCommandSource source) {
         RPRenames.LOGGER.warn("Generating give commands with components, this may crash!");
         RPRenames.LOGGER.warn("If it is, please report the accident to https://github.com/HiWord9/RPRenames/issues");
         for (AbstractRename r : renames) {

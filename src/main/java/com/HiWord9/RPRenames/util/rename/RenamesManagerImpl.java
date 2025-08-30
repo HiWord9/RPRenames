@@ -5,36 +5,31 @@ import net.minecraft.item.Item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RenamesManagerImpl implements RenamesManager {
-    protected final Map<Item, ArrayList<AbstractRename>> renames = new HashMap<>();
+    protected final Map<Item, List<AbstractRename>> renames = new HashMap<>();
 
-    public ArrayList<AbstractRename> getAllRenames() {
-        return (ArrayList<AbstractRename>) renames
+    public List<AbstractRename> getAllRenames() {
+        return renames
                 .entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
                 .distinct()
                 .collect(Collectors.toList());
     }
 
-    public ArrayList<AbstractRename> getRenames(Item item) {
+    public List<AbstractRename> getRenames(Item item) {
         if (renames.containsKey(item)) {
-            return renames.get(item);
+            return List.copyOf(renames.get(item));
         } else {
-            return new ArrayList<>();
+            return List.of();
         }
     }
 
     public void addRename(Item item, AbstractRename rename) {
-        if (renames.containsKey(item)) {
-            renames.get(item).add(rename);
-        } else {
-            ArrayList<AbstractRename> arrayList = new ArrayList<>();
-            arrayList.add(rename);
-            renames.put(item, arrayList);
-        }
+        renames.computeIfAbsent(item, i -> new ArrayList<>()).add(rename);
     }
 
     public void removeRename(Item item, AbstractRename rename) {
@@ -47,11 +42,11 @@ public class RenamesManagerImpl implements RenamesManager {
         renames.clear();
     }
 
-    public void overrideRenames(Item item, ArrayList<AbstractRename> newRenames) {
-        renames.put(item, newRenames);
+    public void overrideRenames(Item item, List<AbstractRename> newRenames) {
+        renames.put(item, new ArrayList<>(newRenames));
     }
 
-    public ArrayList<Item> renamedItems() {
-        return new ArrayList<>(renames.keySet());
+    public List<Item> renamedItems() {
+        return List.copyOf(renames.keySet());
     }
 }

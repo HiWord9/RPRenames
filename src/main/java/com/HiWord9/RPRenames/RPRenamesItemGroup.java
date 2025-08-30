@@ -20,6 +20,7 @@ import net.minecraft.util.Unit;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class RPRenamesItemGroup {
@@ -66,7 +67,7 @@ public class RPRenamesItemGroup {
         return nbtComponent.contains(RPRenames.MOD_ID);
     }
 
-    public static ArrayList<ItemStack> searchStacks(ArrayList<ItemStack> renamedItemStacks, String search) {
+    public static List<ItemStack> searchStacks(List<ItemStack> renamedItemStacks, String search) {
         ArrayList<ItemStack> list = new ArrayList<>();
 
         for (ItemStack stack : renamedItemStacks) {
@@ -92,15 +93,15 @@ public class RPRenamesItemGroup {
         return itemStack;
     }
 
-    public static ArrayList<ItemStack> getDisplayStacks(String search) {
+    public static List<ItemStack> getDisplayStacks(String search) {
         return search(search, renamedItemStacks);
     }
 
-    public static ArrayList<ItemStack> search(String search, ArrayList<ItemStack> itemList) {
+    public static List<ItemStack> search(String search, List<ItemStack> itemList) {
         ArrayList<ItemStack> list = new ArrayList<>();
 
         if (!search.isEmpty()) {
-            ArrayList<ItemStack> filteredList = searchStacks(itemList, search);
+            var filteredList = searchStacks(itemList, search);
             if (filteredList.isEmpty()) {
                 list.add(getNoRenamesFoundItem());
             } else {
@@ -118,7 +119,7 @@ public class RPRenamesItemGroup {
         return list;
     }
 
-    public static void addFavoriteStacks(ArrayList<ItemStack> itemList) {
+    public static void addFavoriteStacks(List<ItemStack> itemList) {
         File[] favoriteDirFiles = RPRenames.configPathFavorite.toFile().listFiles();
 
         if (favoriteDirFiles == null || favoriteDirFiles.length == 0) {
@@ -138,7 +139,7 @@ public class RPRenamesItemGroup {
         itemList.addAll(getFavoriteStacks());
     }
 
-    public static ArrayList<ItemStack> getFavoriteStacks() {
+    public static List<ItemStack> getFavoriteStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
         for (AbstractRename r : RPRenames.favoritesManager.getAllRenames()) {
             for (int i = 0; i < r.getItems().size(); i++) {
@@ -149,7 +150,7 @@ public class RPRenamesItemGroup {
         return list;
     }
 
-    public static ArrayList<ItemStack> getAllRenamedStacks() {
+    public static List<ItemStack> getAllRenamedStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
         for (AbstractRename r : RPRenames.renamesManager.getAllRenames()) {
             if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config.compareItemGroupRenames) {

@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FavoritesFileManager {
@@ -27,8 +28,8 @@ public class FavoritesFileManager {
         this.configPathFavorite = configPathFavorite;
     }
 
-    public Map<Item, ArrayList<AbstractRename>> getAllSavedFavorites() {
-        Map<Item, ArrayList<AbstractRename>> favoriteRenames = new HashMap<>();
+    public Map<Item, List<AbstractRename>> getAllSavedFavorites() {
+        Map<Item, List<AbstractRename>> favoriteRenames = new HashMap<>();
         File[] files = configPathFavorite.toFile().listFiles();
         if (files == null) return favoriteRenames;
         for (File file : files) {
@@ -38,7 +39,7 @@ public class FavoritesFileManager {
         return favoriteRenames;
     }
 
-    public void setFavorites(ArrayList<AbstractRename> renames, Item item) {
+    public void setFavorites(List<AbstractRename> renames, Item item) {
         if (!renames.isEmpty()) {
             writeFavoriteFile(renames, item);
         } else {
@@ -46,8 +47,8 @@ public class FavoritesFileManager {
         }
     }
 
-    public ArrayList<AbstractRename> savedFavorites(Item item) {
-        ArrayList<AbstractRename> renames = new ArrayList<>();
+    public List<AbstractRename> savedFavorites(Item item) {
+        List<AbstractRename> renames = null;
         File favoritesFile = new File(pathToFavoriteFile(item));
         if (favoritesFile.exists()) {
             renames = readFavoriteFile(favoritesFile);
@@ -55,10 +56,10 @@ public class FavoritesFileManager {
                 if (r.getItems().isEmpty()) r.getItems().add(item);
             }
         }
-        return renames;
+        return renames == null ? new ArrayList<>() : renames;
     }
 
-    private ArrayList<AbstractRename> readFavoriteFile(File file) {
+    private List<AbstractRename> readFavoriteFile(File file) {
         ArrayList<AbstractRename> renames = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(file);
@@ -74,7 +75,7 @@ public class FavoritesFileManager {
         return renames;
     }
 
-    private void writeFavoriteFile(ArrayList<AbstractRename> renames, Item item) {
+    private void writeFavoriteFile(List<AbstractRename> renames, Item item) {
         try {
             if (configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: {}", configPathFavorite);
@@ -104,7 +105,7 @@ public class FavoritesFileManager {
         }
     }
 
-    protected void doomConfigs(ArrayList<Item> items) {
+    protected void doomConfigs(List<Item> items) {
         items.forEach(this::deleteFavoriteConfigFile);
     }
 

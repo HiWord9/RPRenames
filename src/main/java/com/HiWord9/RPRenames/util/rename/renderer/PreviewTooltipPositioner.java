@@ -7,13 +7,13 @@ import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class PreviewTooltipPositioner implements TooltipPositioner {
     private static final ModConfig config = ModConfig.INSTANCE;
-    ArrayList<TooltipComponent> tooltipComponents;
+    List<TooltipComponent> tooltipComponents;
 
-    PreviewTooltipPositioner(ArrayList<TooltipComponent> mainTooltipsComponents) {
+    PreviewTooltipPositioner(List<TooltipComponent> mainTooltipsComponents) {
         this.tooltipComponents = mainTooltipsComponents;
     }
 
