@@ -16,10 +16,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 public class CITRename extends AbstractRename implements HasProperties, HasNamePattern, Describable {
     protected final Integer stackSize;
@@ -109,33 +106,23 @@ public class CITRename extends AbstractRename implements HasProperties, HasNameP
         return properties;
     }
 
-    public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        return obj instanceof CITRename citRename
-                && equals(citRename, ignoreNull);
-    }
-
-    public boolean equals(CITRename obj, boolean ignoreNull) {
-        return super.equals(obj, ignoreNull)
-//                && paramsEquals(this.getNamePattern(), obj.getNamePattern(), ignoreNull)
-//                && paramsEquals(this.getOriginalStackSize(), obj.getOriginalStackSize(), ignoreNull)
-//                && paramsEquals(this.getOriginalDamage(), obj.getOriginalDamage(), ignoreNull)
-//                && paramsEquals(this.getOriginalEnchantment(), obj.getOriginalEnchantment(), ignoreNull)
-//                && paramsEquals(this.getOriginalEnchantmentLevel(), obj.getOriginalEnchantmentLevel(), ignoreNull)
-                && paramsEquals(this.description, obj.description, ignoreNull)
-//                && paramsEquals(this.properties, obj.properties, ignoreNull)
-                && paramsEquals(this.stackSize, obj.stackSize, ignoreNull)
-                && paramsEquals(this.damage, obj.damage, ignoreNull)
-                && paramsEquals(this.enchantment, obj.enchantment, ignoreNull)
-                && paramsEquals(this.enchantmentLevel, obj.enchantmentLevel, ignoreNull);
-    }
-
     @Override
     public boolean baseEquals(AbstractRename abstractRename) {
         return stackSize == null
                 && damage == null
                 && enchantment == null
                 && enchantmentLevel == null
-                && super.equals(abstractRename, false);
+                && super.equals(abstractRename);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj)
+                && obj instanceof CITRename citRename
+                && Objects.equals(stackSize, citRename.stackSize)
+                && Objects.equals(damage, citRename.damage)
+                && Objects.equals(enchantment, citRename.enchantment)
+                && Objects.equals(enchantmentLevel, citRename.enchantmentLevel);
     }
 
     public static class Damage {

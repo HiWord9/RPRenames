@@ -204,7 +204,14 @@ public class CEMParser implements Parser {
                     itemRename
             );
 
-            if (!new CEMRename(name, entityType).isContainedIn(alreadyExist, true)) {
+            boolean contained = false;
+            for (AbstractRename abstractRename : alreadyExist) {
+                if (abstractRename instanceof CEMRename cemRename
+                        && Objects.equals(name, cemRename.getName())
+                        && Objects.equals(entityType, cemRename.getEntity())
+                ) contained = true;
+            }
+            if (!contained) {
                 var newConfig = new ArrayList<>(alreadyExist);
                 if (itemRename != null) newConfig.remove(itemRename);
                 newConfig.add(rename);

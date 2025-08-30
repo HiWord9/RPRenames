@@ -10,6 +10,7 @@ import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AbstractRename {
     protected final String name;
@@ -80,65 +81,14 @@ public class AbstractRename {
         return new DefaultRenameRenderer<>(this);
     }
 
+    @Override
     public boolean equals(Object obj) {
-        if (obj instanceof AbstractRename abstractRename) {
-            return this.equals(abstractRename);
-        }
-        return false;
-    }
-
-    public boolean equals(AbstractRename obj) {
-        return equals(obj, false);
+        return obj instanceof AbstractRename abstractRename
+                && Objects.equals(name, abstractRename.name)
+                && Objects.equals(items, abstractRename.items);
     }
 
     public boolean baseEquals(AbstractRename abstractRename) {
         return equals(abstractRename);
-    }
-
-    public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        return paramsEquals(this.name, obj.name, ignoreNull)
-                && paramsEquals(this.getItem(), obj.getItem(), ignoreNull)
-                /*&& paramsEquals(this.packName, obj.packName, ignoreNull)
-                && paramsEquals(this.path, obj.path, ignoreNull)*/;
-    }
-
-    protected static boolean paramsEquals(Object obj1, Object obj2, boolean ignoreNull) {
-        if (obj1 == null && obj2 == null) {
-            return true;
-        } else if (obj1 == null || obj2 == null) {
-            return ignoreNull;
-        } else {
-            return obj1.equals(obj2);
-        }
-    }
-
-    public boolean isContainedIn(List<AbstractRename> list) {
-        return isContainedIn(list, false);
-    }
-
-    public boolean isContainedIn(List<AbstractRename> list, boolean ignoreNull) {
-        return this.indexIn(list, ignoreNull) != -1;
-    }
-
-    public int indexIn(List<AbstractRename> list, boolean ignoreNull) {
-        int i = -1;
-        if (list == null) return i;
-        for (AbstractRename r : list) {
-            i++;
-            if (r.equals(this, ignoreNull)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public String toString() {
-        return this.getClass().getName() + "{" +
-                "name='" + name + '\'' +
-                ", packName='" + packName + '\'' +
-                ", path='" + path + '\'' +
-                ", items=" + items +
-                '}';
     }
 }

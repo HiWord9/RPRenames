@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 
+import java.util.Objects;
 import java.util.Properties;
 
 public class CEMRename extends AbstractRename implements HasProperties, HasNamePattern {
@@ -79,26 +80,14 @@ public class CEMRename extends AbstractRename implements HasProperties, HasNameP
         return spawnEgg;
     }
 
-    @Override
-    public boolean equals(AbstractRename obj, boolean ignoreNull) {
-        return obj instanceof CEMRename cemRename
-                && equals(cemRename, ignoreNull);
-    }
-
-    public boolean equals(CEMRename obj, boolean ignoreNull) {
-        return super.equals(obj, ignoreNull)
-                && paramsEquals(this.entity, obj.entity, ignoreNull)
-//                && paramsEquals(this.properties, obj.properties, ignoreNull)
-                /*&& paramsEquals(this.namePattern, obj.namePattern, ignoreNull)
-                && paramsEquals(this.itemRename, obj.itemRename, ignoreNull)*/;
-    }
-
-    @Override
-    public boolean baseEquals(AbstractRename abstractRename) {
-        return super.equals(abstractRename, false);
-    }
-
     public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
         return new CEMRenameRenderer(this, rprWidget, favorite);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj)
+                && obj instanceof CEMRename cemRename
+                && Objects.equals(entity, cemRename.entity);
     }
 }

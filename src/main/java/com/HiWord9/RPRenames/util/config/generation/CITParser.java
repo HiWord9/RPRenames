@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.util.config.generation;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -12,10 +13,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class CITParser implements Parser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
@@ -114,21 +112,18 @@ public class CITParser implements Parser {
                 description
         );
 
-        CITRename simplifiedRename = new CITRename(
-                rename.getName(),
-                null,
-                null,
-                null,
-                rename.getStackSize(),
-                rename.getDamage(),
-                rename.getEnchantment(),
-                rename.getEnchantmentLevel(),
-                null,
-                null
-        );
-
         for (Item item : items) {
-            if (!simplifiedRename.isContainedIn(renamesManager.getRenames(item), true)) {
+            boolean contained = false;
+            for (AbstractRename abstractRename : renamesManager.getRenames(item)) {
+                if (abstractRename instanceof CITRename citRename
+                        && Objects.equals(citRename.getName(), rename.getName())
+                        && Objects.equals(citRename.getStackSize(), rename.getStackSize())
+                        && Objects.equals(citRename.getDamage(), rename.getDamage())
+                        && Objects.equals(citRename.getEnchantment(), rename.getEnchantment())
+                        && Objects.equals(citRename.getEnchantmentLevel(), rename.getEnchantmentLevel())
+                ) contained = true;
+            }
+            if (!contained) {
                 renamesManager.addRename(item, rename);
             }
         }
