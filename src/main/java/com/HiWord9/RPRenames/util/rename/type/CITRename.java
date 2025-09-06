@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.*;
 
-public class CITRename extends AbstractRename implements HasProperties, HasNamePattern, Describable {
+public class CITRename extends Rename implements HasProperties, HasNamePattern, Describable {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -107,12 +107,12 @@ public class CITRename extends AbstractRename implements HasProperties, HasNameP
     }
 
     @Override
-    public boolean baseEquals(AbstractRename abstractRename) {
+    public boolean baseEquals(Rename rename) {
         return stackSize == null
                 && damage == null
                 && enchantment == null
                 && enchantmentLevel == null
-                && super.equals(abstractRename);
+                && super.equals(rename);
     }
 
     @Override

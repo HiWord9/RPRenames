@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.util.config.favorite;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,8 +27,8 @@ public class FavoritesFileManager {
         this.configPathFavorite = configPathFavorite;
     }
 
-    public Map<Item, List<AbstractRename>> getAllSavedFavorites() {
-        Map<Item, List<AbstractRename>> favoriteRenames = new HashMap<>();
+    public Map<Item, List<Rename>> getAllSavedFavorites() {
+        Map<Item, List<Rename>> favoriteRenames = new HashMap<>();
         File[] files = configPathFavorite.toFile().listFiles();
         if (files == null) return favoriteRenames;
         for (File file : files) {
@@ -38,7 +38,7 @@ public class FavoritesFileManager {
         return favoriteRenames;
     }
 
-    public void setFavorites(List<AbstractRename> renames, Item item) {
+    public void setFavorites(List<Rename> renames, Item item) {
         if (!renames.isEmpty()) {
             writeFavoriteFile(renames, item);
         } else {
@@ -46,25 +46,25 @@ public class FavoritesFileManager {
         }
     }
 
-    public List<AbstractRename> savedFavorites(Item item) {
-        List<AbstractRename> renames = null;
+    public List<Rename> savedFavorites(Item item) {
+        List<Rename> renames = null;
         File favoritesFile = new File(itemToFavoriteFile(item));
         if (favoritesFile.exists()) {
             renames = readFavoriteFile(favoritesFile);
-            for (AbstractRename r : renames) {
+            for (Rename r : renames) {
                 if (r.getItems().isEmpty()) r.getItems().add(item);
             }
         }
         return renames == null ? new ArrayList<>() : renames;
     }
 
-    private List<AbstractRename> readFavoriteFile(File file) {
-        ArrayList<AbstractRename> renames = new ArrayList<>();
+    private List<Rename> readFavoriteFile(File file) {
+        ArrayList<Rename> renames = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(file);
-            Type type = new TypeToken<ArrayList<AbstractRename>>(){}.getType();
+            Type type = new TypeToken<ArrayList<Rename>>(){}.getType();
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(AbstractRename.class, new FavoriteRenameSerializer())
+                    .registerTypeAdapter(Rename.class, new FavoriteRenameSerializer())
                     .create();
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
@@ -74,7 +74,7 @@ public class FavoritesFileManager {
         return renames;
     }
 
-    private void writeFavoriteFile(List<AbstractRename> renames, Item item) {
+    private void writeFavoriteFile(List<Rename> renames, Item item) {
         try {
             if (configPathFavorite.toFile().mkdirs()) {
                 RPRenames.LOGGER.info("Created folder for favorites config: {}", configPathFavorite);
@@ -86,7 +86,7 @@ public class FavoritesFileManager {
             FileWriter fileWriter = new FileWriter(file);
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
-                    .registerTypeAdapter(AbstractRename.class, new FavoriteRenameSerializer())
+                    .registerTypeAdapter(Rename.class, new FavoriteRenameSerializer())
                     .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();

@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.client.MinecraftClient;
@@ -141,7 +141,7 @@ public class RPRenamesItemGroup {
 
     public static List<ItemStack> getFavoriteStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        for (AbstractRename r : RPRenames.favoritesManager.getAllRenames()) {
+        for (Rename r : RPRenames.favoritesManager.getAllRenames()) {
             for (int i = 0; i < r.getItems().size(); i++) {
                 ItemStack stack = RenamesHelper.createItemOrSpawnEgg(r, i);
                 list.add(stack);
@@ -152,7 +152,7 @@ public class RPRenamesItemGroup {
 
     public static List<ItemStack> getAllRenamedStacks() {
         ArrayList<ItemStack> list = new ArrayList<>();
-        for (AbstractRename r : RPRenames.renamesManager.getAllRenames()) {
+        for (Rename r : RPRenames.renamesManager.getAllRenames()) {
             if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config.compareItemGroupRenames) {
                 for (int i = 0; i < citRename.getItems().size(); i++) {
                     ItemStack stack = RenamesHelper.createItemOrSpawnEgg(citRename, i);

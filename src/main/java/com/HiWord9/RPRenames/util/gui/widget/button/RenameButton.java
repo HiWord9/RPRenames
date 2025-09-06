@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -38,9 +38,9 @@ public class RenameButton extends ClickableWidget {
 
     final public boolean favorite;
     RenameRenderer renameRendered;
-    final public AbstractRename rename;
+    final public Rename rename;
 
-    public RenameButton(RPRWidget instance, AbstractRename rename,
+    public RenameButton(RPRWidget instance, Rename rename,
                         int x, int y,
                         boolean favorite) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);

@@ -82,7 +82,7 @@ public class RPRenamesCommand {
             return Command.SINGLE_SUCCESS;
         }
 
-        AbstractRename matchRename = null;
+        Rename matchRename = null;
 
         var renames = RPRenames.renamesManager.getRenames(itemStack.getItem());
         if (!renames.isEmpty()) {
@@ -104,28 +104,28 @@ public class RPRenamesCommand {
 
         if (matchRename instanceof CEMRename cemRename) {
             if (cemRename.getItemRename() != null) {
-                printAbstractRenameInfo(cemRename.getItemRename(), source);
+                printRenameInfo(cemRename.getItemRename(), source);
             }
             source.sendFeedback(
                     Text.translatable("rprenames.command.info.cemProperties")
                     .formatted(Formatting.LIGHT_PURPLE)
             );
         }
-        printAbstractRenameInfo(matchRename, source);
+        printRenameInfo(matchRename, source);
 
         return Command.SINGLE_SUCCESS;
     }
 
-    public static void printAbstractRenameInfo(AbstractRename rename, FabricClientCommandSource source) {
+    public static void printRenameInfo(Rename rename, FabricClientCommandSource source) {
         Properties props = null;
         if (rename instanceof HasProperties hasProperties) props = hasProperties.getProperties();
 
         if (props != null) printProperties(props, source);
 
-        printRenameInfo(rename.getPackName(), rename.getPath(), source);
+        printRPPath(rename.getPackName(), rename.getPath(), source);
     }
 
-    public static void printRenameInfo(String packName, String path, FabricClientCommandSource source) {
+    public static void printRPPath(String packName, String path, FabricClientCommandSource source) {
         if (packName != null && path != null) {
             printPath(path, packName, source);
         }
@@ -205,9 +205,9 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static AbstractRename getMatch(List<AbstractRename> renames, ItemStack stack) {
+    private static Rename getMatch(List<Rename> renames, ItemStack stack) {
         String name = stack.getName().getString();
-        for (AbstractRename r : renames) {
+        for (Rename r : renames) {
             Boolean nameValid = null;
             if (r instanceof HasNamePattern hasNamePattern) {
                 String nbtName = hasNamePattern.getNamePattern();
@@ -238,10 +238,10 @@ public class RPRenamesCommand {
         return null;
     }
 
-    private static void printRenameList(List<AbstractRename> renames, FabricClientCommandSource source) {
+    private static void printRenameList(List<Rename> renames, FabricClientCommandSource source) {
         RPRenames.LOGGER.warn("Generating give commands with components, this may crash!");
         RPRenames.LOGGER.warn("If it is, please report the accident to https://github.com/HiWord9/RPRenames/issues");
-        for (AbstractRename r : renames) {
+        for (Rename r : renames) {
             ItemStack itemStack = r.toStack();
 
             String components = getComponentsCommandArgument(source, itemStack);

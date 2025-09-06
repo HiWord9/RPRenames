@@ -12,21 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AbstractRename {
+public class Rename {
     protected final String name;
     protected final String packName;
     protected final String path;
     protected final List<Item> items = new ArrayList<>();
 
-    public AbstractRename(String name) {
+    public Rename(String name) {
         this(name, null);
     }
 
-    public AbstractRename(String name, Item item) {
+    public Rename(String name, Item item) {
         this(name, null, null, item);
     }
 
-    public AbstractRename(
+    public Rename(
             String name,
             String packName,
             String path,
@@ -35,7 +35,7 @@ public class AbstractRename {
         this(name, packName, path, item == null ? null : new ArrayList<>(List.of(item)));
     }
 
-    public AbstractRename(
+    public Rename(
             String name,
             String packName,
             String path,
@@ -83,12 +83,12 @@ public class AbstractRename {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof AbstractRename abstractRename
-                && Objects.equals(name, abstractRename.name)
-                && Objects.equals(items, abstractRename.items);
+        return obj instanceof Rename rename
+                && Objects.equals(name, rename.name)
+                && Objects.equals(items, rename.items);
     }
 
-    public boolean baseEquals(AbstractRename abstractRename) {
-        return equals(abstractRename);
+    public boolean baseEquals(Rename rename) {
+        return equals(rename);
     }
 }

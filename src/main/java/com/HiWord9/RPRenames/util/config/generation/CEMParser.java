@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.config.generation;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.google.gson.Gson;
@@ -183,18 +183,18 @@ public class CEMParser implements Parser {
             String namePattern = findPropName(p, nameIndex);
             path = path.replaceAll("\\\\", "/");
 
-            AbstractRename itemRename = null;
+            Rename itemRename = null;
             var alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
-            var renameNameOnly = new AbstractRename(name, CEMRename.DEFAULT_MOB_ITEM);
-            for (var abstractRename : alreadyExist) {
-                if (abstractRename.baseEquals(renameNameOnly)) {
-                    itemRename = abstractRename;
+            var renameNameOnly = new Rename(name, CEMRename.DEFAULT_MOB_ITEM);
+            for (var r : alreadyExist) {
+                if (r.baseEquals(renameNameOnly)) {
+                    itemRename = r;
                     break;
                 }
             }
 
-            AbstractRename rename = new CEMRename(
+            Rename rename = new CEMRename(
                     name,
                     packName,
                     path,
@@ -205,8 +205,8 @@ public class CEMParser implements Parser {
             );
 
             boolean contained = false;
-            for (AbstractRename abstractRename : alreadyExist) {
-                if (abstractRename instanceof CEMRename cemRename
+            for (Rename r : alreadyExist) {
+                if (r instanceof CEMRename cemRename
                         && Objects.equals(name, cemRename.getName())
                         && Objects.equals(entityType, cemRename.getEntity())
                 ) contained = true;

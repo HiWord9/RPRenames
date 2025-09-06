@@ -13,7 +13,7 @@ import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -92,8 +92,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     Tab currentTab = Tab.SEARCH;
 
-    final ArrayList<AbstractRename> originalRenameList = new ArrayList<>();
-    final ArrayList<AbstractRename> currentRenameList = new ArrayList<>();
+    final ArrayList<Rename> originalRenameList = new ArrayList<>();
+    final ArrayList<Rename> currentRenameList = new ArrayList<>();
 
     final TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
 
@@ -274,7 +274,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         }
     }
 
-    public void onRenameButton(int button, boolean favorite, AbstractRename rename) {
+    public void onRenameButton(int button, boolean favorite, Rename rename) {
         Item item = firstItemInInventory(rename);
         boolean asCurrentItem = item == getItemInFirstSlot();
         int indexInInventory = inventory.indexOf(item);
@@ -288,7 +288,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         executeRename(rename, isInInventory, indexInInventory, asCurrentItem);
     }
 
-    private void executeRename(AbstractRename rename, boolean isInInventory, int indexInInventory, boolean asCurrentItem) {
+    private void executeRename(Rename rename, boolean isInInventory, int indexInInventory, boolean asCurrentItem) {
         ghostCraft.reset();
         if (isInInventory) {
             if (indexInInventory != 36) { //in inventory
@@ -328,7 +328,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         setNameText(rename.getName());
     }
 
-    private void favoriteInGui(boolean favorite, AbstractRename rename, boolean asCurrentItem, boolean isInInventory, int indexInInventory) {
+    private void favoriteInGui(boolean favorite, Rename rename, boolean asCurrentItem, boolean isInInventory, int indexInInventory) {
         if (getCurrentTab() == Tab.SEARCH || getCurrentTab() == Tab.FAVORITE || asCurrentItem) {
             addOrRemoveFavorite(
                     !favorite,
@@ -462,7 +462,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         return client.player.getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
     }
 
-    public Item firstItemInInventory(AbstractRename rename) {
+    public Item firstItemInInventory(Rename rename) {
         Item item;
         if (currentTab == Tab.SEARCH) {
             item = getItemInFirstSlot();
@@ -592,12 +592,12 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             case FAVORITE -> originalRenameList.addAll(favoritesManager.getRenames(getItemInFirstSlot()));
             case INVENTORY -> {
                 ArrayList<Item> checked = new ArrayList<>();
-                ArrayList<AbstractRename> names = new ArrayList<>();
+                ArrayList<Rename> names = new ArrayList<>();
                 for (Item item : inventory) {
                     if (item != Items.AIR && !checked.contains(item)) {
                         checked.add(item);
                         var renames = renamesManager.getRenames(item);
-                        for (AbstractRename r : renames) {
+                        for (Rename r : renames) {
                             if (!names.contains(r)) names.add(r);
                         }
                     }
@@ -627,7 +627,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         updateWidgets();
     }
 
-    private RenameButton createButton(int orderOnPage, AbstractRename rename) {
+    private RenameButton createButton(int orderOnPage, Rename rename) {
         boolean favorite = false;
         if (currentTab != Tab.SEARCH) {
             for (Item i : rename.getItems()) {

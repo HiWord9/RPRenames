@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.rename.renderer;
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.Describable;
 import com.HiWord9.RPRenames.util.rename.type.HasNamePattern;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RenameRendererHelper {
 
-    public static MultiItemTooltipComponent multiItemTooltipComponent(AbstractRename rename) {
+    public static MultiItemTooltipComponent multiItemTooltipComponent(Rename rename) {
         ArrayList<MultiItemTooltipComponent.TooltipItem> tooltipItems = new ArrayList<>();
         for (int i = 0; i < rename.getItems().size(); i++) {
             ItemStack itemStack = rename.toStack(i);
@@ -28,7 +28,7 @@ public class RenameRendererHelper {
         return new MultiItemTooltipComponent(tooltipItems);
     }
 
-    public static MultiItemTooltipComponent multiItemTooltipComponent(RPRWidget rprWidget, AbstractRename rename) {
+    public static MultiItemTooltipComponent multiItemTooltipComponent(RPRWidget rprWidget, Rename rename) {
         MultiItemTooltipComponent component = multiItemTooltipComponent(rename);
         int i = 0;
         for (MultiItemTooltipComponent.TooltipItem item : component.items) {

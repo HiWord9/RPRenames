@@ -17,13 +17,13 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 import java.util.Properties;
 
-public class CEMRename extends AbstractRename implements HasProperties, HasNamePattern {
+public class CEMRename extends Rename implements HasProperties, HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
     private final Properties properties;
     private final String namePattern;
-    private final AbstractRename itemRename;
+    private final Rename itemRename;
 
     public CEMRename(String name, EntityType<?> entity) {
         this(name, entity, null);
@@ -40,7 +40,7 @@ public class CEMRename extends AbstractRename implements HasProperties, HasNameP
             String namePattern,
             EntityType<?> entity,
             Properties properties,
-            AbstractRename itemRename
+            Rename itemRename
     ) {
         super(name, packName, path, DEFAULT_MOB_ITEM);
         this.entity = entity;
@@ -49,7 +49,7 @@ public class CEMRename extends AbstractRename implements HasProperties, HasNameP
         this.itemRename = itemRename;
     }
 
-    public AbstractRename getItemRename() {
+    public Rename getItemRename() {
         return itemRename;
     }
 
