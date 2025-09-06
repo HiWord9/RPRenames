@@ -6,6 +6,7 @@ import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.PlayerPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
+import com.HiWord9.RPRenames.util.gui.widget.RPRWidget.Tab;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -13,7 +14,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
@@ -68,35 +68,27 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         this.rprWidget = rprWidget;
         this.favorite = favorite;
 
-        int itemWidth;
-        int itemHeight;
-        int itemSize;
-
-        int playerWidth;
-        int playerHeight;
-        int playerSize;
-
         int width = Graphics.DEFAULT_PREVIEW_WIDTH;
         int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
 
-        var client = MinecraftClient.getInstance();
-        assert client.player != null;
+        var player = MinecraftClient.getInstance().player;
+        assert player != null;
 
-        playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
-        playerWidth = (int) (width + playerSize * client.player.getWidth() - 1);
-        playerHeight = (int) (height + playerSize * client.player.getHeight() - 1);
+        int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
+        int playerWidth = (int) (width + playerSize * player.getWidth() - 1);
+        int playerHeight = (int) (height + playerSize * player.getHeight() - 1);
 
         playerPreviewTooltipComponent = new PlayerPreviewTooltipComponent(
-                client.player, stack,
+                player, stack,
                 playerWidth, playerHeight,
                 playerSize,
                 config.spinPlayerPreview
         );
 
         double scaleFactorItem = config.scaleFactorItem;
-        itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
-        itemWidth = (int) (width / 2 * scaleFactorItem);
-        itemHeight = (int) (height / 2 * scaleFactorItem);
+        int itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
+        int itemWidth = (int) ((double) width / 2 * scaleFactorItem);
+        int itemHeight = (int) ((double) height / 2 * scaleFactorItem);
 
         itemPreviewTooltipComponent = new ItemPreviewTooltipComponent(
                 stack,
@@ -112,7 +104,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
             index += description.size();
         }
 
-        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
+        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(index++, component);
         }
@@ -126,7 +118,7 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         if (!config.showPackName && rename.getPackName() != null) {
             tooltipComponents.remove(index);
         }
-        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
+        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
@@ -144,76 +136,66 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
 
         if (asOriginal) {
             if (citRename.getStackSize() > 1) {
-                extraProperties.add(Text.of("stackSize")
-                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                        .append(Text.of("=")
-                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .append(Text.of(citRename.getOriginalStackSize())
-                                .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.enoughStackSize()
-                                        ? Formatting.GREEN
-                                        : Formatting.DARK_RED))));
+                extraProperties.add(rawPropertyText(
+                        "stackSize",
+                        citRename.getOriginalStackSize(),
+                        craftMatcher.enoughStackSize()
+                ));
             }
             if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
-                extraProperties.add(Text.of("damage")
-                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                        .append(Text.of("=")
-                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .append(Text.of(citRename.getOriginalDamage())
-                                .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.enoughDamage()
-                                        ? Formatting.GREEN
-                                        : Formatting.DARK_RED))));
+                extraProperties.add(rawPropertyText(
+                        "damage",
+                        citRename.getOriginalDamage(),
+                        craftMatcher.enoughDamage()
+                ));
             }
             if (citRename.getEnchantment() != null) {
-                extraProperties.add(Text.of("enchantmentIDs")
-                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                        .append(Text.of("=")
-                                .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .append(Text.of(citRename.getOriginalEnchantment())
-                                .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.hasEnchant()
-                                        ? Formatting.GREEN
-                                        : Formatting.DARK_RED))));
+                extraProperties.add(rawPropertyText(
+                        "enchantmentIDs",
+                        citRename.getOriginalEnchantment(),
+                        craftMatcher.hasEnchant()
+                ));
                 if (citRename.getOriginalEnchantmentLevel() != null) {
-                    extraProperties.add(Text.of("enchantmentLevels")
-                            .copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                            .append(Text.of("=")
-                                    .copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                            .append(Text.of(citRename.getOriginalEnchantmentLevel())
-                                    .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.hasEnchant()
-                                            ? Formatting.GREEN
-                                            : Formatting.DARK_RED))));
+                    extraProperties.add(rawPropertyText(
+                            "enchantmentLevels",
+                            citRename.getOriginalEnchantmentLevel(),
+                            craftMatcher.hasEnchant()
+                    ));
                 }
             }
         } else {
             if (citRename.getStackSize() > 1) {
-                extraProperties.add(Text.of(
-                                Text.translatable("rprenames.gui.tooltipHint.stackSize").getString()
-                                        + " " + citRename.getStackSize())
-                        .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.enoughStackSize()
-                                ? Formatting.GRAY
-                                : Formatting.DARK_RED)));
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.stackSize")
+                                .append(" " + citRename.getStackSize()),
+                        craftMatcher.enoughStackSize(),
+                        Formatting.GRAY
+                ));
             }
             if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
-                extraProperties.add(Text.of(
-                                Text.translatable("rprenames.gui.tooltipHint.damage").getString()
-                                        + " " + citRename.getDamage().damage
-                                        + (citRename.getDamage().percent ? "%" : ""))
-                        .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.enoughDamage()
-                                ? Formatting.GRAY
-                                : Formatting.DARK_RED)));
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.damage")
+                                .append(" %s%s".formatted(
+                                        citRename.getDamage().damage,
+                                        citRename.getDamage().percent ? "%" : ""
+                                )),
+                        craftMatcher.enoughDamage(),
+                        Formatting.GRAY
+                ));
             }
             if (citRename.getEnchantment() != null) {
                 Identifier enchant = citRename.getEnchantment();
-                String namespace = enchant.getNamespace();
-                String path = enchant.getPath();
-                Text translatedEnchant = Text.translatable("enchantment." + namespace + "." + path);
-                Text translatedEnchantLevel = Text.translatable("enchantment.level." + citRename.getEnchantmentLevel());
-                extraProperties.add(Text.of(
-                                Text.translatable("rprenames.gui.tooltipHint.enchantment").getString()
-                                        + " " + translatedEnchant.getString()
-                                        + " " + translatedEnchantLevel.getString())
-                        .copy().fillStyle(Style.EMPTY.withColor(craftMatcher.hasEnchant() && craftMatcher.hasEnoughLevels()
-                                ? Formatting.GRAY
-                                : Formatting.DARK_RED)));
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.enchantment")
+                                .append(Text.of(" ")).append(Text.translatable(
+                                        "enchantment." + enchant.getNamespace() + "." + enchant.getPath()
+                                ))
+                                .append(Text.of(" ")).append(Text.translatable(
+                                        "enchantment.level." + citRename.getEnchantmentLevel()
+                                )),
+                        craftMatcher.hasEnchant() && craftMatcher.hasEnoughLevels(),
+                        Formatting.GRAY
+                ));
             }
         }
 
@@ -226,44 +208,64 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         return propertiesComponents;
     }
 
+    private static MutableText rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
+        return Text
+                .literal(propertyName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
+                .append(Text.literal("=").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
+                .append(styledCondition(Text.literal(propertyValue), isGood, Formatting.GREEN));
+    }
+
+    private static MutableText styledCondition(MutableText text, boolean isGood, Formatting goodColor) {
+        return text.fillStyle(
+                Style.EMPTY.withColor(isGood ? goodColor : Formatting.DARK_RED)
+        );
+    }
+
     private static ItemStack getItemStackForStack(RPRWidget rprWidget, int indexInInventory, boolean asCurrentItem) {
         boolean isInInventory = indexInInventory != -1;
+        var tab = rprWidget.getCurrentTab();
+        var player = MinecraftClient.getInstance().player;
 
-        ItemStack stack = rprWidget.getCurrentItem();
-        if ((rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL)
-                && !asCurrentItem && isInInventory) {
-            assert MinecraftClient.getInstance().player != null;
-            PlayerInventory playerInventory = MinecraftClient.getInstance().player.getInventory();
-            stack = playerInventory.getMainStacks().get(indexInInventory);
+        if (
+                (tab == Tab.INVENTORY || tab == Tab.GLOBAL)
+                        && !asCurrentItem && isInInventory
+                        && player != null
+        ) {
+            return player.getInventory().getMainStacks().get(indexInInventory);
+        } else {
+            return rprWidget.getCurrentItem();
         }
-        return stack;
     }
 
     @Override
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
+
         if (config.enablePreview) {
-            if (!hasShiftDown() && !config.playerPreviewByDefault) {
+            boolean shiftDown = hasShiftDown();
+
+            if (!shiftDown && !config.playerPreviewByDefault) {
                 if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintShift));
-            } else if (hasShiftDown() != config.playerPreviewByDefault) {
+            } else if (shiftDown != config.playerPreviewByDefault) {
                 if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintF));
+
                 Screen screen = MinecraftClient.getInstance().currentScreen;
                 if (screen != null) screen.setFocused(null);
             }
         }
+
         if (!config.disableTooltipHints) {
             tooltipAddition.add(favorite ? tooltipOf(favoriteHintRemove) : tooltipOf(favoriteHintAdd));
             tooltipAddition.add(tooltipOf(disableHint));
         }
+
         tooltipComponents.addAll(tooltipAddition);
+
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
         if (config.enablePreview) {
-            drawPreview(
-                    context,
-                    mouseX, mouseY,
-                    tooltipComponents
-            );
+            drawPreview(context, mouseX, mouseY, tooltipComponents);
         }
+
         tooltipComponents.removeAll(tooltipAddition);
     }
 
@@ -273,17 +275,9 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
         TooltipPositioner positioner = new PreviewTooltipPositioner(mainTooltip);
 
         if (shouldPreviewPlayer) {
-            playerPreview(
-                    context,
-                    mouseX, mouseY,
-                    positioner
-            );
+            playerPreview(context, mouseX, mouseY, positioner);
         } else {
-            itemPreview(
-                    context,
-                    mouseX, mouseY,
-                    positioner
-            );
+            itemPreview(context, mouseX, mouseY, positioner);
         }
     }
 
