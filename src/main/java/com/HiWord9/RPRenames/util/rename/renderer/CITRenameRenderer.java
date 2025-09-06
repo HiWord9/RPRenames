@@ -96,32 +96,34 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
                 itemSize
         );
 
-        int index = 1;
+        addAdditionalTooltips();
+        if (shouldAddPackNameTooltip()) tooltipComponents.add(packNameTooltipComponent());
 
-        if (config.showDescription) {
-            var description = descriptionTooltipsComponentsList(rename);
-            tooltipComponents.addAll(index, description);
-            index += description.size();
-        }
-
-        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
-            MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
-            tooltipComponents.add(index++, component);
-        }
-
-        if (config.showExtraProperties) {
-            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
-            tooltipComponents.addAll(index, extraProperties);
-            index += extraProperties.size();
-        }
-
-        if (!config.showPackName && rename.getPackName() != null) {
-            tooltipComponents.remove(index);
-        }
         if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
+    }
+
+    protected void addAdditionalTooltips() {
+        if (config.showDescription) {
+            var description = descriptionTooltipsComponentsList(rename);
+            tooltipComponents.addAll(description);
+        }
+
+        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
+            MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
+            tooltipComponents.add(component);
+        }
+
+        if (config.showExtraProperties) {
+            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
+            tooltipComponents.addAll(extraProperties);
+        }
+    }
+
+    protected boolean shouldAddPackNameTooltip() {
+        return config.showPackName && getDisplayPackName() != null;
     }
 
     public static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {

@@ -24,7 +24,6 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
         stack = rename.toStack();
 
         tooltipComponents.add(nameTooltipComponent());
-        if (getDisplayPackName() != null) tooltipComponents.add(packNameTooltipComponent());
     }
 
     public TooltipComponent nameTooltipComponent() {

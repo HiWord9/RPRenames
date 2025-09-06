@@ -51,22 +51,26 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
                 config.spinMobPreview
         );
 
-        int index = 1;
+        addAdditionalTooltips();
+        if (shouldAddPackNameTooltip()) tooltipComponents.add(packNameTooltipComponent());
 
-        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
-            MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
-            tooltipComponents.add(index++, component);
-        }
-
-        tooltipComponents.add(index++, mobNameTooltipComponent(entityType));
-
-        if (!config.showPackName && getDisplayPackName() != null) {
-            tooltipComponents.remove(index);
-        }
         if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
+    }
+
+    protected void addAdditionalTooltips() {
+        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
+            MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
+            tooltipComponents.add(component);
+        }
+
+        tooltipComponents.add(mobNameTooltipComponent(rename.getEntity()));
+    }
+
+    protected boolean shouldAddPackNameTooltip() {
+        return config.showPackName && getDisplayPackName() != null;
     }
 
     public static TooltipComponent mobNameTooltipComponent(EntityType<?> entityType) {
