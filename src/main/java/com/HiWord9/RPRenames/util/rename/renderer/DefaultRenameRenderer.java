@@ -1,17 +1,11 @@
 package com.HiWord9.RPRenames.util.rename.renderer;
 
-import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
-import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.AbstractRename;
-import com.HiWord9.RPRenames.util.rename.type.Describable;
-import com.HiWord9.RPRenames.util.rename.type.HasNamePattern;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -19,7 +13,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRenderer {
     T rename;
@@ -36,50 +29,6 @@ public class DefaultRenameRenderer<T extends AbstractRename> implements RenameRe
 
     public TooltipComponent nameTooltipComponent() {
         return TooltipComponent.of(Text.of(getDisplayName()).asOrderedText());
-    }
-
-    public static MultiItemTooltipComponent multiItemTooltipComponent(AbstractRename rename) {
-        ArrayList<MultiItemTooltipComponent.TooltipItem> tooltipItems = new ArrayList<>();
-        for (int i = 0; i < rename.getItems().size(); i++) {
-            ItemStack itemStack = rename.toStack(i);
-            itemStack.remove(DataComponentTypes.CUSTOM_NAME);
-            tooltipItems.add(new MultiItemTooltipComponent.TooltipItem(itemStack, null));
-        }
-        return new MultiItemTooltipComponent(tooltipItems);
-    }
-
-    public static MultiItemTooltipComponent multiItemTooltipComponent(RPRWidget rprWidget, AbstractRename rename) {
-        MultiItemTooltipComponent component = multiItemTooltipComponent(rename);
-        int i = 0;
-        for (MultiItemTooltipComponent.TooltipItem item : component.items) {
-            item.setIsInInventory(rprWidget.getInventory().contains(rename.getItems().get(i++)));
-        }
-        return component;
-    }
-
-    public static List<TooltipComponent> descriptionTooltipsComponentsList(Describable describable) {
-        String description = describable.getDescription();
-        ArrayList<TooltipComponent> linesComponents = new ArrayList<>();
-        if (description != null) {
-            var lines = PropertiesHelper.parseCustomDescription(description);
-            for (Text line : lines) {
-                linesComponents.add(TooltipComponent.of(
-                        line.asOrderedText()
-                ));
-            }
-        }
-        return linesComponents;
-    }
-
-    public static TooltipComponent namePatternTooltipComponent(HasNamePattern hasNamePattern) {
-        String pattern = hasNamePattern.getNamePattern();
-        if (pattern != null) {
-            return TooltipComponent.of(
-                    Text.of("Name Pattern: " + pattern).copy()
-                            .fillStyle(Style.EMPTY.withColor(Formatting.BLUE))
-                            .asOrderedText());
-        }
-        return null;
     }
 
     public TooltipComponent packNameTooltipComponent() {

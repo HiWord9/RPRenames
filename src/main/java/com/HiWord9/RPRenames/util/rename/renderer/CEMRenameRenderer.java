@@ -20,6 +20,8 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
+import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
+
 public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 

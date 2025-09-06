@@ -26,6 +26,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implements RenameRenderer.Preview {
