@@ -29,7 +29,7 @@ import java.util.List;
 import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implements RenameRenderer.Preview {
+public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     private static final MutableText playerPreviewHintShift = Text.translatable(
@@ -96,16 +96,10 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
                 itemSize
         );
 
-        addAdditionalTooltips();
-        if (shouldAddPackNameTooltip()) tooltipComponents.add(packNameTooltipComponent());
-
-        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename);
-            if (pattern != null) tooltipComponents.add(pattern);
-        }
+        addTooltips();
     }
 
-    protected void addAdditionalTooltips() {
+    protected void addTooltips() {
         if (config.showDescription) {
             var description = descriptionTooltipsComponentsList(rename);
             tooltipComponents.addAll(description);
@@ -120,10 +114,15 @@ public class CITRenameRenderer extends DefaultRenameRenderer<CITRename> implemen
             var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
             tooltipComponents.addAll(extraProperties);
         }
-    }
 
-    protected boolean shouldAddPackNameTooltip() {
-        return config.showPackName && getDisplayPackName() != null;
+        if (config.showPackName && rename.getPackName() != null) {
+            tooltipComponents.add(packNameTooltipComponent(rename.getPackName()));
+        }
+
+        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
+            TooltipComponent pattern = namePatternTooltipComponent(rename);
+            if (pattern != null) tooltipComponents.add(pattern);
+        }
     }
 
     public static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {

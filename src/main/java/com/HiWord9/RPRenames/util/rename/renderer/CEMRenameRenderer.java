@@ -22,7 +22,7 @@ import java.util.List;
 
 import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
 
-public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implements RenameRenderer.Preview {
+public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implements RenameRenderer.Preview {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     RPRWidget rprWidget;
@@ -51,26 +51,25 @@ public class CEMRenameRenderer extends DefaultRenameRenderer<CEMRename> implemen
                 config.spinMobPreview
         );
 
-        addAdditionalTooltips();
-        if (shouldAddPackNameTooltip()) tooltipComponents.add(packNameTooltipComponent());
-
-        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename);
-            if (pattern != null) tooltipComponents.add(pattern);
-        }
+        addTooltips();
     }
 
-    protected void addAdditionalTooltips() {
+    protected void addTooltips() {
         if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(component);
         }
 
         tooltipComponents.add(mobNameTooltipComponent(rename.getEntity()));
-    }
 
-    protected boolean shouldAddPackNameTooltip() {
-        return config.showPackName && getDisplayPackName() != null;
+        if (config.showPackName && rename.getPackName() != null) {
+            tooltipComponents.add(packNameTooltipComponent(rename.getPackName()));
+        }
+
+        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
+            TooltipComponent pattern = namePatternTooltipComponent(rename);
+            if (pattern != null) tooltipComponents.add(pattern);
+        }
     }
 
     public static TooltipComponent mobNameTooltipComponent(EntityType<?> entityType) {

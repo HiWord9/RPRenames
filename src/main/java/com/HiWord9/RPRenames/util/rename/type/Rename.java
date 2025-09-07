@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.rename.type;
 
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import com.HiWord9.RPRenames.util.rename.renderer.DefaultRenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.SimpleRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
@@ -65,7 +65,7 @@ public class Rename {
     }
 
     public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
-        return new DefaultRenameRenderer<>(this);
+        return new SimpleRenameRenderer<>(this);
     }
 
     @Override

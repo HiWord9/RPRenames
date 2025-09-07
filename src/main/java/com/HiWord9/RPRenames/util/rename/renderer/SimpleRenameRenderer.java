@@ -7,53 +7,23 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 
-public class DefaultRenameRenderer<T extends Rename> implements RenameRenderer {
+public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     T rename;
     ItemStack stack;
     ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
 
-    public DefaultRenameRenderer(T rename) {
+    public SimpleRenameRenderer(T rename) {
         this.rename = rename;
         stack = rename.toStack();
 
-        tooltipComponents.add(nameTooltipComponent());
+        addNameTooltip();
     }
 
-    public TooltipComponent nameTooltipComponent() {
-        return TooltipComponent.of(Text.of(getDisplayName()).asOrderedText());
-    }
-
-    public TooltipComponent packNameTooltipComponent() {
-        String packName = getDisplayPackName();
-
-        boolean zip = false;
-        if (packName.endsWith(".zip")) {
-            zip = true;
-            packName = packName.substring(0, packName.length() - 4);
-        }
-
-        MutableText packNameText = Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
-
-        return TooltipComponent.of(
-                !zip ? packNameText.asOrderedText() : packNameText
-                        .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .asOrderedText()
-        );
-    }
-
-    public String getDisplayName() {
-        return rename.getName();
-    }
-
-    public String getDisplayPackName() {
-        return rename.getPackName();
+    protected void addNameTooltip() {
+        tooltipComponents.add(RenameRendererHelper.nameTooltipComponent(rename.getName()));
     }
 
     @Override

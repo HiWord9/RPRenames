@@ -9,6 +9,7 @@ import com.HiWord9.RPRenames.util.rename.type.HasNamePattern;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -60,5 +61,25 @@ public class RenameRendererHelper {
                             .asOrderedText());
         }
         return null;
+    }
+
+    public static TooltipComponent packNameTooltipComponent(String packName) {
+        boolean zip = false;
+        if (packName.endsWith(".zip")) {
+            zip = true;
+            packName = packName.substring(0, packName.length() - 4);
+        }
+
+        MutableText packNameText = Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
+
+        return TooltipComponent.of(
+                !zip ? packNameText.asOrderedText() : packNameText
+                        .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
+                        .asOrderedText()
+        );
+    }
+
+    public static TooltipComponent nameTooltipComponent(String name) {
+        return TooltipComponent.of(Text.of(name).asOrderedText());
     }
 }
