@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.*;
 
-public class CITRename extends Rename implements HasProperties, HasNamePattern, Describable {
+public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, Describable {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;

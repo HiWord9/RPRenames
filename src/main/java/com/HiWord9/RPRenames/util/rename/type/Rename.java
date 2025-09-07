@@ -14,36 +14,15 @@ import java.util.Objects;
 
 public class Rename {
     protected final String name;
-    protected final String packName;
-    protected final String path;
     protected final List<Item> items = new ArrayList<>();
 
     public Rename(String name, Item... items) {
-        this(name, null, null, items);
-    }
-
-    public Rename(
-            String name,
-            String packName,
-            String path,
-            Item... items
-    ) {
         this.name = name;
-        this.packName = packName;
-        this.path = path == null ? null : path.replace("\\", "/");
         for (Item item : items) if (item != null) this.items.add(item);
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getPackName() {
-        return packName;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public List<Item> getItems() {

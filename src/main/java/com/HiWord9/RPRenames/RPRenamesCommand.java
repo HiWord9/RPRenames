@@ -122,7 +122,9 @@ public class RPRenamesCommand {
 
         if (props != null) printProperties(props, source);
 
-        printRPPath(rename.getPackName(), rename.getPath(), source);
+        if (rename instanceof ResourcePackRename rpRename) {
+            printRPPath(rpRename.getPackName(), rpRename.getPath(), source);
+        }
     }
 
     public static void printRPPath(String packName, String path, FabricClientCommandSource source) {

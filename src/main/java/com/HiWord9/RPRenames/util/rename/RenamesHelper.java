@@ -8,6 +8,7 @@ import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
+import com.HiWord9.RPRenames.util.rename.type.ResourcePackRename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -143,11 +144,12 @@ public class RenamesHelper {
                 }
                 packName = packName.substring(1);
                 for (Rename r : list) {
-                    if (r.getPackName() != null
-                            && r.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT)
-                            .contains(packName.toUpperCase(Locale.ROOT))) {
-                        cutList.add(r);
-                    }
+                    if (
+                            r instanceof ResourcePackRename rpRename
+                            && rpRename.getPackName() != null
+                            && rpRename.getPackName().replace(" ", "_").toUpperCase(Locale.ROOT)
+                                    .contains(packName.toUpperCase(Locale.ROOT))
+                    ) cutList.add(rpRename);
                 }
             } else if (matchTag.toUpperCase(Locale.ROOT).startsWith("ITEM:")) {
                 String itemName = matchTag.substring(5);

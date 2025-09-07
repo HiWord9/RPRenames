@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 import java.util.Properties;
 
-public class CEMRename extends Rename implements HasProperties, HasNamePattern {
+public class CEMRename extends ResourcePackRename implements HasProperties, HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
