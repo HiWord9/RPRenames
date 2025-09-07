@@ -17,6 +17,8 @@ import net.minecraft.util.Formatting;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.HiWord9.RPRenames.util.gui.Graphics.tooltipOf;
+
 public class RenameRendererHelper {
 
     public static MultiItemTooltipComponent multiItemTooltipComponent(Rename rename) {
@@ -43,11 +45,7 @@ public class RenameRendererHelper {
         ArrayList<TooltipComponent> linesComponents = new ArrayList<>();
         if (description != null) {
             var lines = PropertiesHelper.parseCustomDescription(description);
-            for (Text line : lines) {
-                linesComponents.add(TooltipComponent.of(
-                        line.asOrderedText()
-                ));
-            }
+            for (Text line : lines) linesComponents.add(tooltipOf(line));
         }
         return linesComponents;
     }
@@ -55,10 +53,10 @@ public class RenameRendererHelper {
     public static TooltipComponent namePatternTooltipComponent(HasNamePattern hasNamePattern) {
         String pattern = hasNamePattern.getNamePattern();
         if (pattern != null) {
-            return TooltipComponent.of(
-                    Text.of("Name Pattern: " + pattern).copy()
+            return tooltipOf(
+                    Text.literal("Name Pattern: " + pattern)
                             .fillStyle(Style.EMPTY.withColor(Formatting.BLUE))
-                            .asOrderedText());
+            );
         }
         return null;
     }
@@ -70,16 +68,11 @@ public class RenameRendererHelper {
             packName = packName.substring(0, packName.length() - 4);
         }
 
-        MutableText packNameText = Text.of(packName).copy().fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
+        MutableText packNameText = Text.literal(packName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
 
-        return TooltipComponent.of(
-                !zip ? packNameText.asOrderedText() : packNameText
-                        .append(Text.of(".zip").copy().fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                        .asOrderedText()
+        return tooltipOf(
+                !zip ? packNameText : packNameText
+                        .append(Text.literal(".zip").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
         );
-    }
-
-    public static TooltipComponent nameTooltipComponent(String name) {
-        return TooltipComponent.of(Text.of(name).asOrderedText());
     }
 }

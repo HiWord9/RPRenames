@@ -26,6 +26,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.HiWord9.RPRenames.util.gui.Graphics.tooltipOf;
 import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
@@ -125,7 +126,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
     }
 
-    public static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
+    private static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
         ArrayList<Text> extraProperties = new ArrayList<>();
 
         Item item = rprWidget.firstItemInInventory(citRename);
@@ -201,11 +202,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
 
         ArrayList<TooltipComponent> propertiesComponents = new ArrayList<>();
-        for (Text line : extraProperties) {
-            propertiesComponents.add(TooltipComponent.of(
-                    line.asOrderedText()
-            ));
-        }
+        for (Text line : extraProperties) propertiesComponents.add(tooltipOf(line));
         return propertiesComponents;
     }
 
@@ -320,9 +317,5 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
             fPressFuse = false;
         }
         return false;
-    }
-
-    private TooltipComponent tooltipOf(MutableText mutableText) {
-        return TooltipComponent.of(mutableText.asOrderedText());
     }
 }

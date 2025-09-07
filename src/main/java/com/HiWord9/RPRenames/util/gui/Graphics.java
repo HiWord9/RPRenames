@@ -198,4 +198,12 @@ public class Graphics {
         int y = yOffset + slot.y - 1;
         context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, color, color);
     }
+
+    public static TooltipComponent tooltipOf(String string) {
+        return tooltipOf(Text.of(string));
+    }
+
+    public static TooltipComponent tooltipOf(Text mutableText) {
+        return TooltipComponent.of(mutableText.asOrderedText());
+    }
 }

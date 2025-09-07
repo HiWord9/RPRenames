@@ -73,10 +73,10 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     public static TooltipComponent mobNameTooltipComponent(EntityType<?> entityType) {
-        return TooltipComponent.of(
+        return Graphics.tooltipOf(
                 Text.translatable(entityType.getTranslationKey())
-                        .copy().fillStyle(Style.EMPTY.withColor(Formatting.YELLOW))
-                        .asOrderedText());
+                        .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW))
+        );
     }
 
     @Override
@@ -111,8 +111,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
     private void prepareEntity(Entity entity, CEMRename rename) {
         if (entity == null) return;
-        if (entity instanceof SnowGolemEntity) {
-            ((SnowGolemEntity) entity).setHasPumpkin(!config.disableSnowGolemPumpkin);
+        if (entity instanceof SnowGolemEntity snowGolem) {
+            snowGolem.setHasPumpkin(!config.disableSnowGolemPumpkin);
         }
         entity.setCustomName(Text.of(rename.getName()));
     }

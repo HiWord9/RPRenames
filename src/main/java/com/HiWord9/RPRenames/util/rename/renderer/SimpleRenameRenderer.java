@@ -23,7 +23,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     protected void addNameTooltip() {
-        tooltipComponents.add(RenameRendererHelper.nameTooltipComponent(rename.getName()));
+        tooltipComponents.add(Graphics.tooltipOf(rename.getName()));
     }
 
     @Override

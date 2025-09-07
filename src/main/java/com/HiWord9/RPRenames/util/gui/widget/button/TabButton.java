@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
@@ -51,7 +50,7 @@ public class TabButton extends ClickableWidget {
             Graphics.drawTooltip(
                     context,
                     MinecraftClient.getInstance().textRenderer,
-                    List.of(TooltipComponent.of(Text.translatable(TRANSLATION_PREFIX + tab.toString()).asOrderedText())),
+                    List.of(Graphics.tooltipOf(Text.translatable(TRANSLATION_PREFIX + tab.toString()))),
                     mouseX, mouseY,
                     HoveredTooltipPositioner.INSTANCE
             );
