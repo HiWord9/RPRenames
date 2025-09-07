@@ -101,7 +101,6 @@ public class CITParser implements Parser {
 
         CITRename rename = new CITRename(
                 PropertiesHelper.getFirstName(customName, path),
-                items,
                 packName,
                 path,
                 stackSize,
@@ -109,7 +108,8 @@ public class CITParser implements Parser {
                 enchantment,
                 enchantLvl,
                 p,
-                description
+                description,
+                items.toArray(new Item[]{})
         );
 
         for (Item item : items) {

@@ -27,17 +27,12 @@ public class CITRename extends Rename implements HasProperties, HasNamePattern, 
 
     protected final Properties properties;
 
-    public CITRename(String name, Item item) {
-        this(name, new ArrayList<>(List.of(item)));
-    }
-
-    public CITRename(String name, List<Item> items) {
-        this(name, items, null, null, null, null, null, null, null, null);
+    public CITRename(String name, Item... items) {
+        this(name, null, null, null, null, null, null, null, null, items);
     }
 
     public CITRename(
             String name,
-            List<Item> items,
             String packName,
             String path,
             Integer stackSize,
@@ -45,7 +40,8 @@ public class CITRename extends Rename implements HasProperties, HasNamePattern, 
             Identifier enchantment,
             Integer enchantmentLevel,
             Properties properties,
-            String description
+            String description,
+            Item... items
     ) {
         super(name, packName, path, items);
         this.stackSize = stackSize;

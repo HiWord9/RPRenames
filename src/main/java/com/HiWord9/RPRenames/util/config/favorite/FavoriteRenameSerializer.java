@@ -28,8 +28,6 @@ public class FavoriteRenameSerializer implements JsonSerializer<Rename>, JsonDes
 
         return new Rename(
                 context.deserialize(jsonObject.get("name"), String.class),
-                context.deserialize(jsonObject.get("packName"), String.class),
-                null,
                 item
         );
     }
