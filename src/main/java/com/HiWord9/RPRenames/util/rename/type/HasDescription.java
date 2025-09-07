@@ -1,6 +1,5 @@
 package com.HiWord9.RPRenames.util.rename.type;
 
-public interface Describable {
+public interface HasDescription {
     String getDescription();
-    void setDescription(String description);
 }

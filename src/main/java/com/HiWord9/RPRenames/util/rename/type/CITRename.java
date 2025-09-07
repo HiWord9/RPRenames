@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.*;
 
-public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, Describable {
+public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, HasDescription {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -57,12 +57,9 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
         return properties == null ? null : PropertiesHelper.getCustomName(properties);
     }
 
+    @Override
     public String getDescription() {
         return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public int getStackSize() {

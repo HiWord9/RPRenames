@@ -4,7 +4,7 @@ import com.HiWord9.RPRenames.util.config.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
-import com.HiWord9.RPRenames.util.rename.type.Describable;
+import com.HiWord9.RPRenames.util.rename.type.HasDescription;
 import com.HiWord9.RPRenames.util.rename.type.HasNamePattern;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
@@ -40,8 +40,8 @@ public class RenameRendererHelper {
         return component;
     }
 
-    public static List<TooltipComponent> descriptionTooltipsComponentsList(Describable describable) {
-        String description = describable.getDescription();
+    public static List<TooltipComponent> descriptionTooltipsComponentsList(HasDescription hasDescription) {
+        String description = hasDescription.getDescription();
         ArrayList<TooltipComponent> linesComponents = new ArrayList<>();
         if (description != null) {
             var lines = PropertiesHelper.parseCustomDescription(description);
