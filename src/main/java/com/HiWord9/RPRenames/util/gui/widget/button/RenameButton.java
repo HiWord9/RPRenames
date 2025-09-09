@@ -5,6 +5,8 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsFavorite;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsRPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -37,7 +39,7 @@ public class RenameButton extends ClickableWidget {
     boolean selected = false;
 
     final public boolean favorite;
-    RenameRenderer renameRendered;
+    final public RenameRenderer renameRendered;
     final public Rename rename;
 
     public RenameButton(RPRWidget instance, Rename rename,
@@ -48,7 +50,10 @@ public class RenameButton extends ClickableWidget {
         this.favorite = favorite;
         this.rename = rename;
 
-        renameRendered = rename.getNewRenderer(rprWidget, favorite);
+        var builder = rename.getNewRendererBuilder();
+        if (builder instanceof AcceptsRPRWidget b) b.setRPRWidget(rprWidget);
+        if (builder instanceof AcceptsFavorite b) b.setFavorite(favorite);
+        renameRendered = builder.build();
     }
 
     @Override

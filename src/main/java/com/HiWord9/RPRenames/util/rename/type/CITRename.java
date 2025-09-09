@@ -1,10 +1,9 @@
 package com.HiWord9.RPRenames.util.rename.type;
 
 import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
-import com.HiWord9.RPRenames.util.rename.renderer.CITRenameRenderer;
-import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.CITRenameRendererBuilder;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.RenameRendererBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -16,7 +15,9 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 
 public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, HasDescription {
     protected final Integer stackSize;
@@ -232,7 +233,7 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
         }
     }
 
-    public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
-        return new CITRenameRenderer(this, rprWidget, favorite);
+    public RenameRendererBuilder<CITRename> getNewRendererBuilder() {
+        return new CITRenameRendererBuilder(this);
     }
 }

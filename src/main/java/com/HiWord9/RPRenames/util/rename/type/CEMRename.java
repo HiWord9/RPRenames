@@ -1,8 +1,7 @@
 package com.HiWord9.RPRenames.util.rename.type;
 
-import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
-import com.HiWord9.RPRenames.util.rename.renderer.CEMRenameRenderer;
-import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.CEMRenameRendererBuilder;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.RenameRendererBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -80,8 +79,8 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
         return spawnEgg;
     }
 
-    public RenameRenderer getNewRenderer(RPRWidget rprWidget, boolean favorite) {
-        return new CEMRenameRenderer(this, rprWidget, favorite);
+    public RenameRendererBuilder<CEMRename> getNewRendererBuilder() {
+        return new CEMRenameRendererBuilder(this);
     }
 
     @Override
