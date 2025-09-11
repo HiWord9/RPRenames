@@ -13,6 +13,7 @@ import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.gui.widget.button.external.OpenerButton;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
+import com.HiWord9.RPRenames.util.rename.RenamesSearchEngine;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
@@ -614,7 +615,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     private void updateSearchRequest(int page) {
         currentRenameList.clear();
-        currentRenameList.addAll(RenamesHelper.search(originalRenameList, searchTag, favoritesManager));
+        currentRenameList.addAll(RenamesSearchEngine.search(originalRenameList, searchTag, favoritesManager));
 
         this.page = page;
         if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {
