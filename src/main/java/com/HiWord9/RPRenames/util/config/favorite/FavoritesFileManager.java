@@ -15,10 +15,7 @@ import java.io.FileWriter;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FavoritesFileManager {
     private final Path configPathFavorite;
@@ -104,7 +101,7 @@ public class FavoritesFileManager {
         }
     }
 
-    protected void doomConfigs(List<Item> items) {
+    protected void doomConfigs(Collection<Item> items) {
         items.forEach(this::deleteFavoriteConfigFile);
     }
 

@@ -41,12 +41,4 @@ public class RenamesManagerImpl implements RenamesManager {
     public void clearRenames() {
         renames.clear();
     }
-
-    public void overrideRenames(Item item, List<Rename> newRenames) {
-        renames.put(item, new ArrayList<>(newRenames));
-    }
-
-    public List<Item> renamedItems() {
-        return List.copyOf(renames.keySet());
-    }
 }

@@ -4,7 +4,7 @@ import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.item.Item;
 
-import java.util.List;
+import java.util.Set;
 
 public class FavoritesManager extends RenamesManagerImpl {
     private final TaskQueueThread taskQueue = new TaskQueueThread();
@@ -37,14 +37,10 @@ public class FavoritesManager extends RenamesManagerImpl {
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
-    public void overrideRenames(Item item, List<Rename> newRenames) {
-        super.overrideRenames(item, newRenames);
-        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
-    }
-
     public void clearRenames() {
+        var items = Set.copyOf(renames.keySet());
         super.clearRenames();
-        taskQueue.addTask(() -> favoritesFileManager.doomConfigs(renamedItems()));
+        taskQueue.addTask(() -> favoritesFileManager.doomConfigs(items));
     }
 
     public boolean isFavorite(Item item, String name) {

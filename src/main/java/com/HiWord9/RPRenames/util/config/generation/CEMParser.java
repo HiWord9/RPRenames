@@ -212,10 +212,10 @@ public class CEMParser implements Parser {
                 ) contained = true;
             }
             if (!contained) {
-                var newConfig = new ArrayList<>(alreadyExist);
-                if (itemRename != null) newConfig.remove(itemRename);
-                newConfig.add(rename);
-                renamesManager.overrideRenames(CEMRename.DEFAULT_MOB_ITEM, newConfig);
+                if (itemRename != null) {
+                    renamesManager.removeRename(CEMRename.DEFAULT_MOB_ITEM, itemRename);
+                }
+                renamesManager.addRename(CEMRename.DEFAULT_MOB_ITEM, rename);
             }
         }
     }

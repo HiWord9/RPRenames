@@ -24,8 +24,4 @@ public interface RenamesManager {
     void removeRename(Item item, Rename rename);
 
     void clearRenames();
-
-    void overrideRenames(Item item, List<Rename> newRenames);
-
-    List<Item> renamedItems();
 }
