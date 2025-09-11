@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 
 import java.util.Set;
 
-public class FavoritesManager extends RenamesManagerImpl {
+public class FavoritesManager extends RenamesManagerImpl<Rename> {
     private final TaskQueueThread taskQueue = new TaskQueueThread();
     private final FavoritesFileManager favoritesFileManager;
 

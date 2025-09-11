@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class RenamesManagerImpl implements RenamesManager {
-    protected final Map<Item, List<Rename>> renames = new HashMap<>();
+public class RenamesManagerImpl<R extends Rename> implements RenamesManager<R> {
+    protected final Map<Item, List<R>> renames = new HashMap<>();
 
-    public List<Rename> getAllRenames() {
+    public List<R> getAllRenames() {
         return renames
                 .entrySet().stream()
                 .flatMap(entry -> entry.getValue().stream())
@@ -20,7 +20,7 @@ public class RenamesManagerImpl implements RenamesManager {
                 .collect(Collectors.toList());
     }
 
-    public List<Rename> getRenames(Item item) {
+    public List<R> getRenames(Item item) {
         if (renames.containsKey(item)) {
             return List.copyOf(renames.get(item));
         } else {
@@ -28,11 +28,11 @@ public class RenamesManagerImpl implements RenamesManager {
         }
     }
 
-    public void addRename(Item item, Rename rename) {
+    public void addRename(Item item, R rename) {
         renames.computeIfAbsent(item, i -> new ArrayList<>()).add(rename);
     }
 
-    public void removeRename(Item item, Rename rename) {
+    public void removeRename(Item item, R rename) {
         if (renames.containsKey(item)) {
             renames.get(item).remove(rename);
         }

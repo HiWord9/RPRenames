@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
+import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -14,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class UpdatableRenamesManager extends RenamesManagerImpl implements ResourceReloader {
+public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implements ResourceReloader {
     private static final ModConfig config = ModConfig.INSTANCE;
 
     public final ArrayList<Parser> parsers = new ArrayList<>();

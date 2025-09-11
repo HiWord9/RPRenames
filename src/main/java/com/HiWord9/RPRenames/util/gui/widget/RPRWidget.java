@@ -58,7 +58,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     MinecraftClient client;
     RPRInteractableScreen interactableScreen;
-    RenamesManager renamesManager;
+    RenamesManager<?> renamesManager;
     FavoritesManager favoritesManager;
 
     TextFieldWidget nameField;
@@ -116,7 +116,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     public void init(int x, int y,
                      @Nullable RPRInteractableScreen parentScreen,
-                     RenamesManager renamesManager,
+                     RenamesManager<?> renamesManager,
                      FavoritesManager favoritesManager,
                      TextFieldWidget nameField,
                      OpenerButton openerButton,

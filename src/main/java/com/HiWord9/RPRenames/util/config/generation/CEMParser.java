@@ -29,9 +29,9 @@ public class CEMParser implements Parser {
 
     private final ArrayList<String> checked = new ArrayList<>();
 
-    public RenamesManager renamesManager;
+    public RenamesManager<Rename> renamesManager;
 
-    public CEMParser(RenamesManager renamesManager) {
+    public CEMParser(RenamesManager<Rename> renamesManager) {
         this.renamesManager = renamesManager;
     }
 

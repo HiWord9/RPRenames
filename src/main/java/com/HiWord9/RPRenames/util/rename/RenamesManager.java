@@ -5,23 +5,23 @@ import net.minecraft.item.Item;
 
 import java.util.List;
 
-public interface RenamesManager {
+public interface RenamesManager<R extends Rename> {
 
-    List<Rename> getAllRenames();
+    List<R> getAllRenames();
 
-    List<Rename> getRenames(Item item);
+    List<R> getRenames(Item item);
 
-    default void addRename(Rename rename) {
+    default void addRename(R rename) {
         addRename(rename.getItem(), rename);
     }
 
-    void addRename(Item item, Rename rename);
+    void addRename(Item item, R rename);
 
-    default void removeRename(Rename rename) {
+    default void removeRename(R rename) {
         removeRename(rename.getItem(), rename);
     }
 
-    void removeRename(Item item, Rename rename);
+    void removeRename(Item item, R rename);
 
     void clearRenames();
 }

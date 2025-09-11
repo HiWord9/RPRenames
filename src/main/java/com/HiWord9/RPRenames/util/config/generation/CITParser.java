@@ -18,9 +18,9 @@ import java.util.*;
 public class CITParser implements Parser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");
 
-    public RenamesManager renamesManager;
+    public RenamesManager<? super CITRename> renamesManager;
 
-    public CITParser(RenamesManager renamesManager) {
+    public CITParser(RenamesManager<? super CITRename> renamesManager) {
         this.renamesManager = renamesManager;
     }
 
