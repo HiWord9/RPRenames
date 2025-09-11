@@ -1,12 +1,11 @@
 package com.HiWord9.RPRenames.util.config.favorite;
 
 import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
-import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.item.Item;
 
 import java.util.Set;
 
-public class FavoritesManager extends RenamesManagerImpl<Rename> {
+public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
     private final TaskQueueThread taskQueue = new TaskQueueThread();
     private final FavoritesFileManager favoritesFileManager;
 
@@ -20,19 +19,19 @@ public class FavoritesManager extends RenamesManagerImpl<Rename> {
     }
 
     public void addRename(Item item, String name) {
-        addRename(item, new Rename(name, item));
+        addRename(item, new FavoriteRename(name, item));
     }
 
-    public void addRename(Item item, Rename rename) {
+    public void addRename(Item item, FavoriteRename rename) {
         super.addRename(item, rename);
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 
     public void removeRename(Item item, String name) {
-        removeRename(item, new Rename(name, item));
+        removeRename(item, new FavoriteRename(name, item));
     }
 
-    public void removeRename(Item item, Rename rename) {
+    public void removeRename(Item item, FavoriteRename rename) {
         super.removeRename(item, rename);
         taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
@@ -47,7 +46,7 @@ public class FavoritesManager extends RenamesManagerImpl<Rename> {
         return getRenames(item).stream().anyMatch(r -> r.getName().equals(name));
     }
 
-    public boolean isFavorite(Item item, Rename rename) {
+    public boolean isFavorite(Item item, FavoriteRename rename) {
         return getRenames(item).contains(rename);
     }
 }
