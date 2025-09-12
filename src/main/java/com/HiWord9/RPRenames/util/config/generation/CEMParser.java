@@ -194,7 +194,7 @@ public class CEMParser implements Parser {
                 }
             }
 
-            Rename rename = new CEMRename(
+            var rename = new CEMRename(
                     name,
                     packName,
                     path,
@@ -215,7 +215,7 @@ public class CEMParser implements Parser {
                 if (itemRename != null) {
                     renamesManager.removeRename(CEMRename.DEFAULT_MOB_ITEM, itemRename);
                 }
-                renamesManager.addRename(CEMRename.DEFAULT_MOB_ITEM, rename);
+                renamesManager.addRename(rename);
             }
         }
     }
@@ -289,7 +289,7 @@ public class CEMParser implements Parser {
     }
 
     private static boolean shouldSkipCemRenames() {
-        if (ignoreSkip) return true;
+        if (ignoreSkip) return false;
         return ModConfig.INSTANCE.ignoreCEM;
     }
 }
