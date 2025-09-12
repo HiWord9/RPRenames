@@ -159,11 +159,8 @@ public class RenamesSearchEngine {
 
     private static void handleFavorite(List<Rename> renames, FavoritesManager favoritesManager, List<Rename> resultList) {
         for (Rename r : renames) {
-            for (Item item : r.getItems()) {
-                if (favoritesManager.isFavorite(item, r.getName())) {
-                    resultList.add(r);
-                    break;
-                }
+            if (favoritesManager.isFavoriteAny(r.getItems(), r.getName())) {
+                resultList.add(r);
             }
         }
     }

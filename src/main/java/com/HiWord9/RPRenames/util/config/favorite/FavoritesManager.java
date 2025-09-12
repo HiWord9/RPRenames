@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.util.config.favorite;
 import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import net.minecraft.item.Item;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
@@ -18,13 +19,21 @@ public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
         renames.putAll(favoritesFileManager.getAllSavedFavorites());
     }
 
+    public void addRenames(Collection<Item> items, String name) {
+        items.forEach(item -> addRename(item, name));
+    }
+
     public void addRename(Item item, String name) {
         addRename(item, new FavoriteRename(name, item));
     }
 
     public void addRename(Item item, FavoriteRename rename) {
         super.addRename(item, rename);
-        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
+        updateFile(item);
+    }
+
+    public void removeRenames(Collection<Item> items, String name) {
+        items.forEach(item -> removeRename(item, name));
     }
 
     public void removeRename(Item item, String name) {
@@ -32,8 +41,9 @@ public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
     }
 
     public void removeRename(Item item, FavoriteRename rename) {
+        if (!isFavorite(item, rename)) return;
         super.removeRename(item, rename);
-        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
+        updateFile(item);
     }
 
     public void clearRenames() {
@@ -48,5 +58,13 @@ public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
 
     public boolean isFavorite(Item item, FavoriteRename rename) {
         return getRenames(item).contains(rename);
+    }
+
+    public boolean isFavoriteAny(Collection<Item> items, String name) {
+        return items.stream().anyMatch(item -> isFavorite(item, name));
+    }
+
+    private void updateFile(Item item) {
+        taskQueue.addTask(() -> favoritesFileManager.setFavorites(getRenames(item), item));
     }
 }
