@@ -13,15 +13,13 @@ public class CEMRenameRendererBuilder extends RenameRendererBuilder<CEMRename> i
     }
 
     @Override
-    public CEMRenameRendererBuilder setFavorite(boolean favorite) {
+    public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-        return this;
     }
 
     @Override
-    public CEMRenameRendererBuilder setRPRWidget(RPRWidget rprWidget) {
+    public void setRPRWidget(RPRWidget rprWidget) {
         this.rprWidget = rprWidget;
-        return this;
     }
 
     @Override

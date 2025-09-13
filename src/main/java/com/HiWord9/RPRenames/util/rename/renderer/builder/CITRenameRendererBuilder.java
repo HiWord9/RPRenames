@@ -13,15 +13,13 @@ public class CITRenameRendererBuilder extends RenameRendererBuilder<CITRename> i
     }
 
     @Override
-    public CITRenameRendererBuilder setFavorite(boolean favorite) {
+    public void setFavorite(boolean favorite) {
         this.favorite = favorite;
-        return this;
     }
 
     @Override
-    public CITRenameRendererBuilder setRPRWidget(RPRWidget rprWidget) {
+    public void setRPRWidget(RPRWidget rprWidget) {
         this.rprWidget = rprWidget;
-        return this;
     }
 
     @Override
