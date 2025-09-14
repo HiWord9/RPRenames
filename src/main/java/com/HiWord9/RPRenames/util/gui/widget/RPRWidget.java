@@ -620,21 +620,31 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         updateWidgets();
     }
 
-    private RenameButton createButton(int orderOnPage, Rename rename) {
-        boolean favorite = currentTab == Tab.SEARCH
-                ? favoritesManager.isFavorite(getItemInFirstSlot(), rename.getName())
-                : favoritesManager.isFavoriteAny(rename.getItems(), rename.getName());
+    protected RenameButton createButton(int orderOnPage, Rename rename) {
+        boolean favorite = shouldRenameButtonBeFavorite(rename);
 
-        int buttonX = this.x + MENU_START_X + BUTTON_X_OFFSET;
-        int buttonY = this.y + 30;
-        int x = buttonX + 1 + (orderOnPage % 5 * RenameButton.BUTTON_WIDTH);
-        int y = buttonY + 1 + (orderOnPage / 5 * RenameButton.BUTTON_HEIGHT);
+        int buttonsZoneX = this.x + MENU_START_X + BUTTON_X_OFFSET;
+        int buttonsZoneY = this.y + 30;
+        int x = buttonsZoneX + 1 + (orderOnPage % 5 * RenameButton.BUTTON_WIDTH);
+        int y = buttonsZoneY + 1 + (orderOnPage / 5 * RenameButton.BUTTON_HEIGHT);
 
         return new RenameButton(
                 this, rename,
                 x, y,
                 favorite
         );
+    }
+
+    protected void updateFavorite() {
+        for (RenameButton button : buttons) {
+            button.favorite = shouldRenameButtonBeFavorite(button.rename);
+        }
+    }
+
+    protected boolean shouldRenameButtonBeFavorite(Rename rename) {
+        return currentTab == Tab.SEARCH
+                ? favoritesManager.isFavorite(getItemInFirstSlot(), rename.getName())
+                : favoritesManager.isFavoriteAny(rename.getItems(), rename.getName());
     }
 
     private void updateWidgets() {

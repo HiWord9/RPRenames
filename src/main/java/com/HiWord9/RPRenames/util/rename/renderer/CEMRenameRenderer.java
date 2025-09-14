@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
 
@@ -26,15 +27,15 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     private static final ModConfig config = ModConfig.INSTANCE;
 
     RPRWidget rprWidget;
-    boolean favorite;
+    Supplier<Boolean> favoriteSupplier;
 
     LivingEntity entity;
     EntityPreviewTooltipComponent entityPreviewTooltipComponent;
 
-    public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, boolean favorite) {
+    public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
         this.rprWidget = rprWidget;
-        this.favorite = favorite;
+        this.favoriteSupplier = favoriteSupplier;
 
         var entityType = rename.getEntity();
         var client = MinecraftClient.getInstance();
@@ -105,7 +106,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
                 entityPreviewTooltipComponent,
                 mouseX, mouseY,
                 new PreviewTooltipPositioner(mainTooltip),
-                favorite
+                favoriteSupplier.get()
         );
     }
 

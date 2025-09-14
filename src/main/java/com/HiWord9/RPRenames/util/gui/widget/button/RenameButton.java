@@ -5,12 +5,11 @@ import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
-import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsFavorite;
+import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsRPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -37,14 +36,17 @@ public class RenameButton extends ClickableWidget {
     static final int FAVORITE_OFFSET_U = BUTTON_HEIGHT;
 
     boolean selected = false;
+    public boolean favorite;
 
-    final public boolean favorite;
-    final public RenameRenderer renameRendered;
+    final public RenameRenderer renameRenderer;
     final public Rename rename;
 
-    public RenameButton(RPRWidget instance, Rename rename,
-                        int x, int y,
-                        boolean favorite) {
+    public RenameButton(
+            RPRWidget instance,
+            Rename rename,
+            int x, int y,
+            boolean favorite
+    ) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
         rprWidget = instance;
         this.favorite = favorite;
@@ -52,31 +54,53 @@ public class RenameButton extends ClickableWidget {
 
         var builder = rename.getNewRendererBuilder();
         if (builder instanceof AcceptsRPRWidget b) b.setRPRWidget(rprWidget);
-        if (builder instanceof AcceptsFavorite b) b.setFavorite(favorite);
-        renameRendered = builder.build();
+        if (builder instanceof AcceptsFavoriteSupplier b) b.setFavoriteSupplier(() -> this.favorite);
+        renameRenderer = builder.build();
     }
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
         int v = hovered || (selected && config.highlightSelected) ? FOCUSED_OFFSET_V : 0;
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        renameRendered.onRender(context, mouseX, mouseY, getX(), getY(), getWidth() - 1, getHeight() - 1); // -1 cause of shadow
+        context.drawTexture(
+                RenderLayer::getGuiTextured,
+                TEXTURE,
+                getX(), getY(),
+                u, v,
+                getWidth(), getHeight(),
+                TEXTURE_WIDTH, TEXTURE_HEIGHT
+        );
+        renameRenderer.onRender(
+                context,
+                mouseX, mouseY,
+                getX(), getY(),
+                getWidth() - 1,
+                getHeight() - 1 // -1 cause of shadow
+        );
     }
 
     public void postRender(DrawContext context, int mouseX, int mouseY) {
         if (!isMouseOver(mouseX, mouseY)) return;
 
-        Screen screen = MinecraftClient.getInstance().currentScreen;
         if (
-                (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL)
+                MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> handledScreen
+                && (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL)
                 && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)
         ) {
-            if (screen instanceof HandledScreen<?> handledScreen) {
-                highlightSlot(context, handledScreen.x, handledScreen.y, handledScreen.getScreenHandler().slots, highlightColor);
-            }
+            highlightSlot(
+                    context,
+                    handledScreen.x, handledScreen.y,
+                    handledScreen.getScreenHandler().slots,
+                    highlightColor
+            );
         }
-        renameRendered.onRenderTooltip(context, mouseX, mouseY, getX(), getY(), getWidth() - 1, getHeight() - 1);
+        renameRenderer.onRenderTooltip(
+                context,
+                mouseX, mouseY,
+                getX(), getY(),
+                getWidth() - 1,
+                getHeight() - 1
+        );
     }
 
     @Override

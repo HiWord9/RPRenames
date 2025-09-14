@@ -4,8 +4,10 @@ import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.CEMRenameRenderer;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 
-public class CEMRenameRendererBuilder extends RenameRendererBuilder<CEMRename> implements AcceptsRPRWidget, AcceptsFavorite {
-    private boolean favorite = false;
+import java.util.function.Supplier;
+
+public class CEMRenameRendererBuilder extends RenameRendererBuilder<CEMRename> implements AcceptsRPRWidget, AcceptsFavoriteSupplier {
+    private Supplier<Boolean> favoriteSupplier = () -> false;
     private RPRWidget rprWidget = null;
 
     public CEMRenameRendererBuilder(CEMRename rename) {
@@ -13,8 +15,8 @@ public class CEMRenameRendererBuilder extends RenameRendererBuilder<CEMRename> i
     }
 
     @Override
-    public void setFavorite(boolean favorite) {
-        this.favorite = favorite;
+    public void setFavoriteSupplier(Supplier<Boolean> favoriteSupplier) {
+        this.favoriteSupplier = favoriteSupplier;
     }
 
     @Override
@@ -24,6 +26,6 @@ public class CEMRenameRendererBuilder extends RenameRendererBuilder<CEMRename> i
 
     @Override
     public CEMRenameRenderer build() {
-        return new CEMRenameRenderer(rename, rprWidget, favorite);
+        return new CEMRenameRenderer(rename, rprWidget, favoriteSupplier);
     }
 }

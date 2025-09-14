@@ -25,6 +25,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.HiWord9.RPRenames.util.gui.Graphics.tooltipOf;
 import static com.HiWord9.RPRenames.util.rename.renderer.RenameRendererHelper.*;
@@ -59,15 +60,15 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     ).formatted(Formatting.DARK_RED);
 
     RPRWidget rprWidget;
-    boolean favorite;
+    Supplier<Boolean> favoriteSupplier;
 
     ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
-    public CITRenameRenderer(CITRename rename, RPRWidget rprWidget, boolean favorite) {
+    public CITRenameRenderer(CITRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
         this.rprWidget = rprWidget;
-        this.favorite = favorite;
+        this.favoriteSupplier = favoriteSupplier;
 
         int width = Graphics.DEFAULT_PREVIEW_WIDTH;
         int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
@@ -253,7 +254,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
 
         if (!config.disableTooltipHints) {
-            tooltipAddition.add(favorite ? tooltipOf(favoriteHintRemove) : tooltipOf(favoriteHintAdd));
+            tooltipAddition.add(tooltipOf(favoriteSupplier.get() ? favoriteHintRemove : favoriteHintAdd));
             tooltipAddition.add(tooltipOf(disableHint));
         }
 
@@ -290,7 +291,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
                 playerPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,
-                favorite
+                favoriteSupplier.get()
         );
     }
 
@@ -301,7 +302,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
                 itemPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,
-                favorite
+                favoriteSupplier.get()
         );
     }
 
