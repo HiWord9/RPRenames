@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.gui.widget.button.external;
+package com.HiWord9.RPRenames.util.gui.widget.external;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;

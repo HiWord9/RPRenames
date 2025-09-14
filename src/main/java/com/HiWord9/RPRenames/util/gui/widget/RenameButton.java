@@ -1,9 +1,8 @@
-package com.HiWord9.RPRenames.util.gui.widget.button;
+package com.HiWord9.RPRenames.util.gui.widget;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsRPRWidget;

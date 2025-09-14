@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

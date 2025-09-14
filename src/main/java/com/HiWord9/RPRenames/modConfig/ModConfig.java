@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.modConfig;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;
-import com.HiWord9.RPRenames.util.gui.widget.button.external.FavoriteButton;
+import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;

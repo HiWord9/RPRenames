@@ -1,7 +1,6 @@
-package com.HiWord9.RPRenames.util.gui.widget.button;
+package com.HiWord9.RPRenames.util.gui.widget;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
