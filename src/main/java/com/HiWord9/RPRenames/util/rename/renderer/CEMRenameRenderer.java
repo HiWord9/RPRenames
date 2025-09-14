@@ -56,7 +56,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     protected void addTooltips() {
-        if (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL) {
+        if (!rprWidget.getCurrentTab().forCurrentItemOnly) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(component);
         }

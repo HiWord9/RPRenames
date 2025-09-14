@@ -290,7 +290,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         ghostCraft.reset();
         if (isInInventory) {
             if (indexInInventory != 36) { //in inventory
-                shouldNotUpdateTab = getCurrentTab() == Tab.INVENTORY || getCurrentTab() == Tab.GLOBAL;
+                shouldNotUpdateTab = !getCurrentTab().forCurrentItemOnly;
                 tempPage = page;
                 if (!asCurrentItem) {
                     interactableScreen.moveToCraft(indexInInventory, 0);
@@ -679,9 +679,15 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public enum Tab {
-        SEARCH,
-        FAVORITE,
-        INVENTORY,
-        GLOBAL
+        SEARCH(true),
+        FAVORITE(true),
+        INVENTORY(false),
+        GLOBAL(false);
+
+        public final boolean forCurrentItemOnly;
+
+        Tab(boolean forCurrentItemOnly) {
+            this.forCurrentItemOnly = forCurrentItemOnly;
+        }
     }
 }

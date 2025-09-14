@@ -139,7 +139,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (ghostCraft.mouseClicked(mouseX, mouseY, button)) {
             if (rprWidget.getCurrentItem().isEmpty()) {
                 nameField.setText("");
-                if (rprWidget.getCurrentTab() == RPRWidget.Tab.SEARCH || rprWidget.getCurrentTab() == RPRWidget.Tab.FAVORITE) {
+                if (rprWidget.getCurrentTab().forCurrentItemOnly) {
                     rprWidget.screenUpdate();
                 }
             }

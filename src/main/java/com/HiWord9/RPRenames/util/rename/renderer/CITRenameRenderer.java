@@ -107,7 +107,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
             tooltipComponents.addAll(description);
         }
 
-        if (rprWidget.getCurrentTab() == Tab.INVENTORY || rprWidget.getCurrentTab() == Tab.GLOBAL) {
+        if (!rprWidget.getCurrentTab().forCurrentItemOnly) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(component);
         }

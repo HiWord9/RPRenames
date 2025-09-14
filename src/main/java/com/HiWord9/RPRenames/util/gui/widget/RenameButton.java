@@ -83,7 +83,7 @@ public class RenameButton extends ClickableWidget {
 
         if (
                 MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> handledScreen
-                && (rprWidget.getCurrentTab() == RPRWidget.Tab.INVENTORY || rprWidget.getCurrentTab() == RPRWidget.Tab.GLOBAL)
+                && !rprWidget.getCurrentTab().forCurrentItemOnly
                 && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)
         ) {
             highlightSlot(
