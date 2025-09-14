@@ -20,7 +20,7 @@ public class RenamesHelper {
 
     public static ItemStack[] getGhostCraftItems(Rename rename) {
         ItemStack ghostSource = new ItemStack(rename.getItem());
-        ItemStack ghostEnchant = ItemStack.EMPTY;
+        ItemStack ghostEnchant = null;
         ItemStack ghostResult = rename.toStack();
 
         if (rename instanceof CITRename citRename) {
@@ -36,7 +36,7 @@ public class RenamesHelper {
     }
 
     public static ItemStack getGhostCraftEnchant(CITRename rename) {
-        ItemStack ghostEnchant = ItemStack.EMPTY;
+        ItemStack ghostEnchant = null;
         if (rename.getEnchantment() != null) {
             ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
             enchantItemStackWithRename(rename, ghostEnchant);

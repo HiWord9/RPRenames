@@ -238,10 +238,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public Item getItemInFirstSlot() {
-        Item item = currentItem.getItem();
-        if (item == Items.AIR && !ghostCraft.getStackInFirstSlot().isEmpty()) {
-            item = ghostCraft.getStackInFirstSlot().getItem();
-        }
+        var item = currentItem.getItem();
+        var ghostItem = ghostCraft.getStackInFirstSlot();
+        if (item == Items.AIR && ghostItem != null)
+            item = ghostItem.getItem();
+
         return item;
     }
 
@@ -306,7 +307,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                     ghostCraft.setRender(true);
                 }
                 if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
-                    ghostCraft.setStacks(ItemStack.EMPTY, RenamesHelper.getGhostCraftEnchant(citRename), ItemStack.EMPTY);
+                    ghostCraft.setStacks(null, RenamesHelper.getGhostCraftEnchant(citRename), null);
                     ghostCraft.setSpecialHighlight(null, null, true);
                     ghostCraft.setRender(true);
                 }
@@ -316,9 +317,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                 interactableScreen.moveToInventory(s);
             }
 
-            ItemStack[] ghostCraftStacks = RenamesHelper.getGhostCraftItems(rename);
-
-            ghostCraft.setStacks(ghostCraftStacks[0], ghostCraftStacks[1], ghostCraftStacks[2]);
+            ghostCraft.setStacks(RenamesHelper.getGhostCraftItems(rename));
             ghostCraft.setRender(true);
         }
 
