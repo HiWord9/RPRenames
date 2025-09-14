@@ -46,9 +46,12 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     OpenerButton opener;
     FavoriteButton favoriteButton;
 
+    boolean init = false;
+
     @Inject(at = @At("TAIL"), method = "setup")
     private void init(CallbackInfo ci) {
         if (shouldNotModify()) return;
+        init = true;
 
         assert client != null && client.currentScreen != null;
         int x = ((AnvilScreen) client.currentScreen).x;
@@ -85,7 +88,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     @Inject(at = @At("RETURN"), method = "onRenamed")
     private void newNameEntered(CallbackInfo ci) {
         if (shouldNotModify()) return;
-        if (!rprWidget.init) return;
+        if (!init) return;
         rprWidget.updateName();
     }
 

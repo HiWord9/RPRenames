@@ -63,7 +63,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     int x;
     int y;
 
-    public boolean init = false;
 
     boolean open;
 
@@ -117,7 +116,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             FavoriteButton favoriteButton,
             GhostCraft ghostCraft
     ) {
-        this.init = true;
         this.client = MinecraftClient.getInstance();
 
         this.renamesManager = renamesManager;
