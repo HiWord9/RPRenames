@@ -6,7 +6,6 @@ import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
-import com.HiWord9.RPRenames.util.gui.widget.external.OpenerButton;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import com.HiWord9.RPRenames.util.rename.RenamesSearchEngine;
@@ -58,7 +57,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     FavoritesManager favoritesManager;
 
     TextFieldWidget nameField;
-    OpenerButton openerButton;
     FavoriteButton favoriteButton;
     GhostCraft ghostCraft;
 
@@ -110,23 +108,22 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     public RPRWidget() {}
 
-    public void init(int x, int y,
-                     @Nullable RPRInteractableScreen parentScreen,
-                     RenamesManager<?> renamesManager,
-                     FavoritesManager favoritesManager,
-                     TextFieldWidget nameField,
-                     OpenerButton openerButton,
-                     FavoriteButton favoriteButton,
-                     GhostCraft ghostCraft) {
+    public void init(
+            int x, int y,
+            @Nullable RPRInteractableScreen parentScreen,
+            RenamesManager<?> renamesManager,
+            FavoritesManager favoritesManager,
+            TextFieldWidget nameField,
+            FavoriteButton favoriteButton,
+            GhostCraft ghostCraft
+    ) {
         this.init = true;
-
         this.client = MinecraftClient.getInstance();
 
         this.renamesManager = renamesManager;
         this.favoritesManager = favoritesManager;
 
         this.nameField = nameField;
-        this.openerButton = openerButton;
         this.favoriteButton = favoriteButton;
         this.ghostCraft = ghostCraft;
 

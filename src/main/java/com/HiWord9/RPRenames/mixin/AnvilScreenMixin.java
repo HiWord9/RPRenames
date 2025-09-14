@@ -81,7 +81,6 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
                 RPRenames.renamesManager,
                 RPRenames.favoritesManager,
                 nameField,
-                opener,
                 favoriteButton,
                 ghostCraft
         );
