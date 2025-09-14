@@ -246,7 +246,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         matrices.pop();
     }
 
-    public void moveToCraft(int slotInInventory, int workSlot) {
+    public void moveToCraft(int inventorySlot, int craftSlot) {
         if (client == null) return;
 
         if (
@@ -255,7 +255,11 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
                 && !rprWidget.getCurrentItem().isEmpty()
         ) afterPutInAnvilFirst = true;
 
-        // using internal method to be able to add extra logic
-        RPRInteractableScreen.moveToCraftInternal(slotInInventory, workSlot, 3);
+        RPRInteractableScreen.super.moveToCraft(inventorySlot, craftSlot);
+    }
+
+    @Override
+    public int getCraftSlotsAmount() {
+        return 3;
     }
 }

@@ -16,15 +16,33 @@ import net.minecraft.screen.slot.SlotActionType;
  */
 public interface RPRInteractableScreen {
     /**
-     * Place stack from inventorySlot to workSlot.
+     * Place stack from inventorySlot to craftSlot.
      *
      * @param inventorySlot id of slot in inventory
-     * @param workSlot id of slot in crafting grid
-     *
-     * @see #moveToCraftInternal(int, int, int)
+     * @param craftSlot id of slot in crafting grid
      */
-    // moveToWorkSlotInternal may be used here
-    void moveToCraft(int inventorySlot, int workSlot);
+    default void moveToCraft(int inventorySlot, int craftSlot) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null) return;
+        ClientPlayerEntity player = client.player;
+        ClientPlayerInteractionManager interactionManager = client.interactionManager;
+        if (player == null || interactionManager == null) return;
+
+        int syncId = player.currentScreenHandler.syncId;
+
+        // swapping in hotbar but picking in inventory cause server will ignore swapping if slot >= 9
+        if (inventorySlot >= 9) {
+            int i = inventorySlot - 9;
+            i += getCraftSlotsAmount();
+            // adding number of crafting slots because they are first in slots list, and we need to avoid them
+
+            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player);
+            interactionManager.clickSlot(syncId, craftSlot, 0, SlotActionType.PICKUP, player);
+            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player);
+        } else {
+            interactionManager.clickSlot(syncId, craftSlot, inventorySlot, SlotActionType.SWAP, player);
+        }
+    }
 
     /**
      * Default logic: Place stack from workSlot to first suitable slot in inventory.
@@ -50,38 +68,7 @@ public interface RPRInteractableScreen {
         }
     }
 
-    /**
-     * Place stack from slotInInventory to workSlot.
-     * Note that {@code slotInInventory == 0} is first slot in inventory,
-     * and {@code workSlot == 0} is first slot in workbench.
-     * <p> Intended to be implemented in {@link #moveToCraft(int, int)}
-     *
-     * @param slotInInventory id of slot in inventory
-     * @param workSlot id of slot in crafting grid
-     * @param craftSlotsOffset number of crafting slots on screen
-     */
-    static void moveToCraftInternal(int slotInInventory, int workSlot, int craftSlotsOffset) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
-        ClientPlayerEntity player = client.player;
-        ClientPlayerInteractionManager interactionManager = client.interactionManager;
-        if (player == null || interactionManager == null) return;
-
-        int syncId = player.currentScreenHandler.syncId;
-
-        // swapping in hotbar but picking in inventory cause server will ignore swapping if slot >= 9
-        if (slotInInventory >= 9) {
-            int i = slotInInventory - 9;
-            i += craftSlotsOffset;
-            // adding number of crafting slots because they are first in slots list, and we need to avoid them
-
-            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player);
-            interactionManager.clickSlot(syncId, workSlot, 0, SlotActionType.PICKUP, player);
-            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player);
-        } else {
-            interactionManager.clickSlot(syncId, workSlot, slotInInventory, SlotActionType.SWAP, player);
-        }
-    }
+    int getCraftSlotsAmount();
 
     void updateMenuShift();
 }
