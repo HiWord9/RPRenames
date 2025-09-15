@@ -12,7 +12,6 @@ import com.HiWord9.RPRenames.util.rename.RenamesSearchEngine;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -21,7 +20,6 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,10 +27,13 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
@@ -44,66 +45,66 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public static final int MENU_TEXTURE_HEIGHT = 166;
     public static final int WIDGET_WIDTH = 177;
     public static final int WIDGET_HEIGHT = MENU_TEXTURE_HEIGHT;
-    static int MENU_START_X = WIDGET_WIDTH - MENU_TEXTURE_WIDTH;
-    static final int TAB_OFFSET_Y = 6;
-    static final int START_TAB_OFFSET_Y = 6;
-    static final int BUTTON_X_OFFSET = 10;
-    static final int SEARCH_FIELD_X_OFFSET = 24;
-    static final int PAGE_BUTTONS_Y = 136;
+    protected static int MENU_START_X = WIDGET_WIDTH - MENU_TEXTURE_WIDTH;
+    protected static final int TAB_OFFSET_Y = 6;
+    protected static final int START_TAB_OFFSET_Y = 6;
+    protected static final int BUTTON_X_OFFSET = 10;
+    protected static final int SEARCH_FIELD_X_OFFSET = 24;
+    protected static final int PAGE_BUTTONS_Y = 136;
 
-    MinecraftClient client;
-    RPRInteractableScreen interactableScreen;
-    RenamesManager<?> renamesManager;
-    FavoritesManager favoritesManager;
+    protected int x;
+    protected int y;
 
-    TextFieldWidget nameField;
-    FavoriteButton favoriteButton;
-    GhostCraft ghostCraft;
+    protected boolean open;
 
-    int x;
-    int y;
+    protected MinecraftClient client;
 
+    protected RPRInteractableScreen screen;
+    protected RenamesManager<?> renamesManager;
+    protected FavoritesManager favoritesManager;
 
-    boolean open;
+    protected TextFieldWidget nameField;
+    protected FavoriteButton favoriteButton;
+    protected GhostCraft ghostCraft;
 
-    TabButton searchTab;
-    TabButton favoriteTab;
-    TabButton inventoryTab;
-    TabButton globalTab;
+    protected TabButton searchTab;
+    protected TabButton favoriteTab;
+    protected TabButton inventoryTab;
+    protected TabButton globalTab;
 
-    RandomButton randomButton;
+    protected RandomButton randomButton;
 
     public TextFieldWidget searchField;
 
-    PageButton pageDown;
-    PageButton pageUp;
+    protected PageButton pageDown;
+    protected PageButton pageUp;
 
-    public ArrayList<ClickableWidget> widgets = new ArrayList<>();
+    protected final ArrayList<ClickableWidget> widgets = new ArrayList<>();
 
-    Text pageCount = Text.empty();
+    protected Text pageCount = Text.empty();
 
-    final ArrayList<RenameButton> buttons = new ArrayList<>();
+    protected final ArrayList<RenameButton> buttons = new ArrayList<>();
 
-    Tab currentTab = Tab.SEARCH;
+    protected Tab currentTab = Tab.SEARCH;
 
-    final ArrayList<Rename> originalRenameList = new ArrayList<>();
-    final ArrayList<Rename> currentRenameList = new ArrayList<>();
+    protected final ArrayList<Rename> originalRenameList = new ArrayList<>();
+    protected final ArrayList<Rename> currentRenameList = new ArrayList<>(); // todo rename
 
-    final TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+    final Text SEARCH_HINT_TEXT = Text.translatable("rprenames.gui.searchHintText")
+            .formatted(Formatting.ITALIC)
+            .formatted(Formatting.GRAY);
 
-    final Text SEARCH_HINT_TEXT = Text.translatable("rprenames.gui.searchHintText").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+    protected String searchTag = "";
 
-    String searchTag = "";
+    protected int page = 0;
 
-    int page = 0;
-    int rows = 4;
-    int columns = 5;
-    int maxPageElements = rows * columns;
+    public static final int ROWS = 4;
+    public static final int COLUMNS = 5;
+    public static final int BUTTONS_ON_PAGE = ROWS * COLUMNS;
 
-    ItemStack currentItem = ItemStack.EMPTY;
-    public boolean shouldNotUpdateTab = false;
-    int tempPage;
-    final ArrayList<Item> inventory = new ArrayList<>();
+    protected ItemStack currentItemStack = ItemStack.EMPTY;
+    protected boolean shouldNotUpdateTab = false;
+    protected final List<ItemStack> inventoryStacks = new ArrayList<>();
 
     public RPRWidget() {}
 
@@ -125,30 +126,52 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         this.favoriteButton = favoriteButton;
         this.ghostCraft = ghostCraft;
 
-        this.interactableScreen = parentScreen;
+        this.screen = parentScreen;
         this.x = x;
         this.y = y;
 
-        pageDown = new PageButton(this, this.x + MENU_START_X + BUTTON_X_OFFSET, this.y + PAGE_BUTTONS_Y, PageButton.Type.DOWN);
-        pageUp = new PageButton(this, this.x + WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH, this.y + PAGE_BUTTONS_Y, PageButton.Type.UP);
+        pageDown = new PageButton(
+                this,
+                this.x + MENU_START_X + BUTTON_X_OFFSET,
+                this.y + PAGE_BUTTONS_Y,
+                PageButton.Type.DOWN
+        );
+        pageUp = new PageButton(
+                this,
+                this.x + WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH,
+                this.y + PAGE_BUTTONS_Y,
+                PageButton.Type.UP
+        );
 
-        searchTab = new TabButton(this, this.x, this.y + START_TAB_OFFSET_Y, Tab.SEARCH);
-        favoriteTab = new TabButton(this, this.x, this.y + START_TAB_OFFSET_Y + (TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y), Tab.FAVORITE);
-        inventoryTab = new TabButton(this, this.x, this.y + START_TAB_OFFSET_Y + (TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y) * 2, Tab.INVENTORY);
-        globalTab = new TabButton(this, this.x, this.y + START_TAB_OFFSET_Y + (TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y) * 4, Tab.GLOBAL);
+        int tabsOffset = TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y;
+        int tabsY = this.y + START_TAB_OFFSET_Y;
+        searchTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.SEARCH.displayIndex, Tab.SEARCH);
+        favoriteTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.FAVORITE.displayIndex, Tab.FAVORITE);
+        inventoryTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.INVENTORY.displayIndex, Tab.INVENTORY);
+        globalTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.GLOBAL.displayIndex, Tab.GLOBAL);
 
-        randomButton = new RandomButton(this, this.x + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH, this.y + 14, randomNumber() % RandomButton.SIDES);
+        randomButton = new RandomButton(
+                this,
+                this.x + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
+                this.y + 14, RandomButton.randomNumber() % RandomButton.SIDES
+        );
 
-        searchField = new TextFieldWidget(renderer, this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET, this.y + 15, MENU_TEXTURE_WIDTH - 53, 10, Text.of(""));
+        searchField = new TextFieldWidget(
+                client.textRenderer,
+                this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET,
+                this.y + 15,
+                MENU_TEXTURE_WIDTH - 53, 10,
+                Text.of("")
+        );
         searchField.setChangedListener(this::onSearch);
         searchField.setDrawsBackground(false);
         searchField.setMaxLength(1024);
 
-        widgets = new ArrayList<>(List.of(
+        widgets.addAll(List.of(
+                randomButton, searchField,
                 searchTab, favoriteTab,
                 inventoryTab, globalTab,
-                pageDown, pageUp,
-                randomButton, searchField
+                pageDown, pageUp
         ));
 
         updateFavoriteButton();
@@ -160,21 +183,18 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public void toggleOpen() {
-        if (!open) {
-            open();
-        } else {
-            close();
-        }
-        interactableScreen.updateMenuShift();
+        if (open) close();
+        else open();
+
+        screen.updateMenuShift();
     }
 
     public void open() {
         open = true;
-        if (currentItem.isEmpty()) {
-            currentTab = Tab.GLOBAL;
-        } else {
-            currentTab = Tab.SEARCH;
-        }
+        currentTab = currentItemStack.isEmpty()
+                ? Tab.GLOBAL
+                : Tab.SEARCH;
+
         screenUpdate();
 
         nameField.setFocused(false);
@@ -183,10 +203,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     public void close() {
         open = false;
+
         searchField.setFocused(false);
         searchField.setFocusUnlocked(false);
         searchField.setText("");
-        updateWidgets();
+
         currentTab = Tab.SEARCH;
 
         nameField.setFocused(true);
@@ -201,7 +222,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         nameField.setText(text);
     }
 
-    public void setTab(Tab tab) {
+    public void openTab(Tab tab) {
         if (tab == currentTab) return;
         currentTab = tab;
         screenUpdate();
@@ -225,78 +246,40 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public void nextPage() {
-        setPage(hasShiftDown() ? ((currentRenameList.size() + maxPageElements - 1) / maxPageElements - 1) : page + 1);
+        setPage(hasShiftDown() ? getMaxPageIndex() : page + 1);
     }
 
-    public ItemStack getCurrentItem() {
-        return currentItem;
+    public ItemStack getCurrentItemStack() {
+        return currentItemStack;
     }
 
     public Item getItemInFirstSlot() {
-        var item = currentItem.getItem();
+        var item = currentItemStack.getItem();
+        if (item != Items.AIR) return item;
+
         var ghostItem = ghostCraft.getStackInFirstSlot();
-        if (item == Items.AIR && ghostItem != null)
-            item = ghostItem.getItem();
+        if (ghostItem != null) item = ghostItem.getItem();
 
         return item;
     }
 
-    public void addOrRemoveFavorite(boolean add) {
-        addOrRemoveFavorite(add, getNameText(), getItemInFirstSlot());
-    }
-
-    public void addOrRemoveFavorite(boolean add, String favoriteName, Item item) {
-        if (item != Items.AIR) {
-            if (add) {
-                favoritesManager.addRename(item, favoriteName);
-            } else {
-                favoritesManager.removeRename(item, favoriteName);
-            }
-            updateAfterFavorite();
-        }
-    }
-
-    public void updateAfterFavorite() {
-        updateFavoriteButton();
-        if (isOpen()) {
-            if (currentTab == Tab.FAVORITE) {
-                screenUpdate(getPage());
-            } else {
-                updateWidgets();
-            }
-        }
-    }
-
-    public void onRenameButton(int button, boolean favorite, Rename rename) {
-        Item item = firstItemInInventory(rename);
-        boolean asCurrentItem = item == getItemInFirstSlot();
-        int indexInInventory = inventory.indexOf(item);
-        boolean isInInventory = indexInInventory != -1;
-
-        if (button == 1 && rename.getItem() != null) {
-            favoriteInGui(favorite, rename, asCurrentItem);
-            return;
-        }
-
-        executeRename(rename, isInInventory, indexInInventory, asCurrentItem);
-    }
-
-    private void executeRename(Rename rename, boolean isInInventory, int indexInInventory, boolean asCurrentItem) {
+    public void doRename(Rename rename) {
         ghostCraft.reset();
-        if (isInInventory) {
-            if (indexInInventory != 36) { //in inventory
+
+        int indexInInventory = inventoryStacks.indexOf(pickItemStackForRename(rename));
+        boolean forCurrentItem = isRenameForCurrentItem(rename);
+
+        if (indexInInventory != -1 || forCurrentItem) {
+            if (forCurrentItem) { //in work slot
+                for (int s = 1; s < screen.getCraftSlotsAmount() - 1; s++) screen.moveToInventory(s);
+            } else { //in inventory
                 shouldNotUpdateTab = !getCurrentTab().forCurrentItemOnly;
-                tempPage = page;
-                if (!asCurrentItem) {
-                    interactableScreen.moveToCraft(indexInInventory, 0);
-                }
+                screen.moveToCraft(indexInInventory, 0);
                 shouldNotUpdateTab = false;
-            } else { //in work slot
-                interactableScreen.moveToInventory(1);
             }
 
             if (rename instanceof CITRename citRename) {
-                CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, currentItem);
+                var craftMatcher = new CITRename.CraftMatcher(citRename, currentItemStack);
                 if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
                     ghostCraft.setSpecialHighlight(true, null, true);
                     ghostCraft.setRender(true);
@@ -308,9 +291,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                 }
             }
         } else { //not in inventory
-            for (int s = 0; s < 2; s++) {
-                interactableScreen.moveToInventory(s);
-            }
+            for (int s = 0; s < screen.getCraftSlotsAmount() - 1; s++) screen.moveToInventory(s);
 
             ghostCraft.setStacks(RenamesHelper.getGhostCraftItems(rename));
             ghostCraft.setRender(true);
@@ -319,31 +300,15 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         setNameText(rename.getName());
     }
 
-    private void favoriteInGui(boolean favorite, Rename rename, boolean asCurrentItem) {
-        if (getCurrentTab() == Tab.SEARCH || getCurrentTab() == Tab.FAVORITE || asCurrentItem) {
-            addOrRemoveFavorite(
-                    !favorite,
-                    rename.getName(),
-                    getItemInFirstSlot()
-            );
-        } else {
-            if (favorite) {
-                favoritesManager.removeRenames(rename.getItems(), rename.getName());
-            } else {
-                favoritesManager.addRenames(rename.getItems(), rename.getName());
-            }
-            updateAfterFavorite();
-        }
-    }
+    public void addOrRemoveFavorite(boolean add, List<Item> items, String name) {
+        if (add) favoritesManager.addRenames(items, name);
+        else favoritesManager.removeRenames(items, name);
 
-    public void chooseRandomRename() {
-        int randomNumber = randomNumber();
-        int randomSide = randomNumber % RandomButton.SIDES;
-        randomButton.setSide(randomSide);
-        if (currentRenameList.isEmpty()) return;
-        int renameNumber = randomNumber % currentRenameList.size();
-        setPage(renameNumber / maxPageElements);
-        buttons.get(renameNumber % maxPageElements).execute(0);
+        updateFavoriteButton();
+        if (!isOpen()) return;
+
+        if (currentTab == Tab.FAVORITE) screenUpdate(getPage());
+        else updateFavorite();
     }
 
     public void screenUpdate() {
@@ -351,10 +316,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public void screenUpdate(int savedPage) {
-        page = savedPage;
-        if (shouldNotUpdateTab) {
-            page = tempPage;
-        }
+        if (!shouldNotUpdateTab) page = savedPage;
+
         calcRenameList();
 
         if (open) {
@@ -363,14 +326,14 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         }
     }
 
-    public void updateName() {
+    public void updatedName() {
         updateFavoriteButton();
         updateSelected();
     }
 
-    public void itemUpdate(int slotId, ItemStack stack) {
+    public void updatedItem(int slotId, ItemStack stack) {
         if (slotId == 0) {
-            currentItem = stack.copy();
+            currentItemStack = stack.copy();
             if (stack.isEmpty()) {
                 Screen screen = client.currentScreen;
                 if (screen != null && screen.getFocused() == searchField) {
@@ -380,18 +343,15 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             } else {
                 if (!shouldNotUpdateTab) currentTab = Tab.SEARCH;
             }
-            if (!open || currentTab != Tab.GLOBAL) {
-                screenUpdate();
-            } else {
-                updateSearchRequest(page);
-            }
+
+            if (currentTab != Tab.GLOBAL) screenUpdate();
+            else updateSearchRequest(page);
+
             updateFavoriteButton();
         }
         if (slotId == 0 || slotId == 1) {
             ghostCraft.reset();
-            if (currentItem.isEmpty()) {
-                setNameText("");
-            }
+            if (currentItemStack.isEmpty()) setNameText("");
         }
     }
 
@@ -407,73 +367,51 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         }
     }
 
-    private void checkForInvChanges() {
-        if (inventory.isEmpty()) {
-            inventory.addAll(getInventory());
+    protected void checkForInvChanges() {
+        if (inventoryStacks.isEmpty()) {
+            inventoryStacks.addAll(playersInventory());
             return;
         }
-        var temp = getInventory();
+
+        var newStacks = playersInventory();
+
         boolean equal = true;
-        if (temp.size() != inventory.size()) {
+
+        if (inventoryStacks.size() != newStacks.size()) {
             equal = false;
         } else {
-            for (int i = 0; i < temp.size(); i++) {
-                if (!inventory.get(i).equals(temp.get(i))) {
+            for (int i = 0; i < newStacks.size(); i++) {
+                if (!ItemStack.areEqual(inventoryStacks.get(i), newStacks.get(i))) {
                     equal = false;
                     break;
                 }
             }
         }
+
         if (equal) return;
-        inventory.addAll(temp);
+
+        inventoryStacks.clear();
+        inventoryStacks.addAll(newStacks);
+
         screenUpdate(page);
     }
 
-    public List<Item> getInventory() {
-        ArrayList<Item> inventoryList = new ArrayList<>();
-        assert MinecraftClient.getInstance().player != null;
-        PlayerInventory inventory = MinecraftClient.getInstance().player.getInventory();
-        for (ItemStack itemStack : inventory.getMainStacks()) {
-            inventoryList.add(itemStack.getItem());
-        }
-        inventoryList.add(currentItem.getItem());
-        return inventoryList;
+    public ItemStack pickItemStackForRename(Rename rename) {
+        if (isRenameForCurrentItem(rename))
+            return currentItemStack;
+
+        for (ItemStack stack : inventoryStacks)
+            if (rename.getItems().contains(stack.getItem()))
+                return stack;
+
+        return null;
     }
 
-    private int randomNumber() {
-        assert client != null && client.player != null;
-        return client.player.getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
-    }
-
-    public Item firstItemInInventory(Rename rename) {
-        Item item;
-        if (currentTab == Tab.SEARCH) {
-            item = getItemInFirstSlot();
-        } else {
-            item = rename.getItem();
-            for (Item i : rename.getItems()) {
-                if (inventory.contains(i)) {
-                    item = i;
-                    break;
-                }
-            }
-        }
-        return item;
-    }
-
-    private void updateFavoriteButton() {
-        updateFavoriteButton(getNameText());
-    }
-
-    private void updateFavoriteButton(String name) {
-        updateFavoriteButton(name, getItemInFirstSlot());
-    }
-
-    private void updateFavoriteButton(String name, Item item) {
+    protected void updateFavoriteButton() {
+        var name = getNameText();
         if (!name.isEmpty()) {
             favoriteButton.active = true;
-            boolean favorite = favoritesManager.isFavorite(item, name);
-            favoriteButton.setFavorite(favorite);
+            favoriteButton.favorite = favoritesManager.isFavorite(getItemInFirstSlot(), name);
         } else {
             favoriteButton.active = false;
         }
@@ -505,7 +443,9 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             if (getItemInFirstSlot() == Items.AIR && (currentTab == Tab.FAVORITE || currentTab == Tab.SEARCH)) {
                 key = "putItem";
             } else {
-                key = currentTab == Tab.FAVORITE ? "noFavoriteRenamesFound" : "noRenamesFound";
+                key = currentTab == Tab.FAVORITE
+                        ? "noFavoriteRenamesFound"
+                        : "noRenamesFound";
             }
             Graphics.renderText(context,
                     Text.translatable("rprenames.gui." + key).copy()
@@ -514,41 +454,48 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                     this.x + MENU_START_X + (MENU_TEXTURE_WIDTH / 2), this.y + 37,
                     true, true);
         } else {
-            Graphics.renderText(context, pageCount,
+            Graphics.renderText(
+                    context, pageCount,
                     this.x + MENU_START_X + (MENU_TEXTURE_WIDTH / 2),
                     this.y + 140,
-                    false, true);
+                    false, true
+            );
         }
+
+        RenameButton focusedButton = null;
         for (RenameButton renameButton : buttons) {
             renameButton.render(context, mouseX, mouseY, 0);
+            if (renameButton.isHovered()) focusedButton = renameButton;
         }
+
         for (Drawable widget : widgets) {
             widget.render(context, mouseX, mouseY, 0);
         }
-        for (RenameButton renameButton : buttons) {
-            renameButton.postRender(context, mouseX, mouseY);
-        }
+
+        if (focusedButton != null) focusedButton.renderTooltip(context, mouseX, mouseY);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (open) {
-            Screen screen =  client.currentScreen;
-            for (Element widget : widgets) {
-                if (widget.mouseClicked(mouseX, mouseY, button)) {
-                    if (widget == searchField && screen != null) {
-                        screen.setFocused(searchField);
-                    }
-                    return true;
-                } else {
-                    if (widget == searchField && screen != null) {
-                        if (screen.getFocused() == searchField) screen.setFocused(null);
-                    }
+        if (!open) return false;
+
+        var screen = client.currentScreen;
+        for (Element widget : widgets) {
+            if (widget.mouseClicked(mouseX, mouseY, button)) {
+                if (widget == searchField && screen != null) {
+                    screen.setFocused(searchField);
                 }
+                return true;
+            } else if (
+                    widget == searchField
+                    && screen != null
+                    && screen.getFocused() == searchField
+            ) {
+                screen.setFocused(null);
             }
-            for (RenameButton renameButton : buttons) {
-                if (renameButton.mouseClicked(mouseX, mouseY, button)) return true;
-            }
+        }
+        for (RenameButton renameButton : buttons) {
+            if (renameButton.mouseClicked(mouseX, mouseY, button)) return true;
         }
 
         return false;
@@ -568,44 +515,36 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     @Override
     public boolean isFocused() {return false;}
 
-    private void calcRenameList() {
+    protected void calcRenameList() {
         originalRenameList.clear();
         switch (currentTab) {
             case SEARCH -> originalRenameList.addAll(renamesManager.getRenames(getItemInFirstSlot()));
             case FAVORITE -> originalRenameList.addAll(favoritesManager.getRenames(getItemInFirstSlot()));
-            case INVENTORY -> {
-                ArrayList<Item> checked = new ArrayList<>();
-                ArrayList<Rename> names = new ArrayList<>();
-                for (Item item : inventory) {
-                    if (item != Items.AIR && !checked.contains(item)) {
-                        checked.add(item);
-                        var renames = renamesManager.getRenames(item);
-                        for (Rename r : renames) {
-                            if (!names.contains(r)) names.add(r);
-                        }
-                    }
-                }
-                originalRenameList.addAll(names);
-            }
+            case INVENTORY -> originalRenameList.addAll(getInventoryRenames());
             case GLOBAL -> originalRenameList.addAll(renamesManager.getAllRenames());
         }
     }
 
-    private void updateSearchRequest() {
-        updateSearchRequest(0);
-    }
-
-    private void updateSearchRequest(int page) {
-        currentRenameList.clear();
-        currentRenameList.addAll(RenamesSearchEngine.search(originalRenameList, searchTag, favoritesManager));
-
-        this.page = page;
-        if (this.page >= (currentRenameList.size() + maxPageElements - 1) / maxPageElements) {
-            this.page = ((currentRenameList.size() + maxPageElements - 1) / maxPageElements) - 1;
-            if (this.page == -1) {
-                this.page = 0;
+    protected @NotNull List<Rename> getInventoryRenames() {
+        var checked = new HashSet<Item>();
+        var renames = new ArrayList<Rename>();
+        for (Item item : getAvailableItems()) {
+            if (item != Items.AIR && checked.add(item)) {
+                for (Rename r : renamesManager.getRenames(item)) {
+                    if (!renames.contains(r)) renames.add(r);
+                }
             }
         }
+        return renames;
+    }
+
+    protected void updateSearchRequest(int page) {
+        currentRenameList.clear();
+        currentRenameList.addAll(RenamesSearchEngine.search(
+                originalRenameList, searchTag, favoritesManager
+        ));
+
+        this.page = Math.min(page, getMaxPageIndex());
 
         updateWidgets();
     }
@@ -643,45 +582,73 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         updatePageWidgets();
     }
 
-    private void updateButtons() {
+    protected void updateButtons() {
+        int maxIndex = currentRenameList.size() - 1;
+        int offset = page * BUTTONS_ON_PAGE;
+
         buttons.clear();
-        for (int n = 0; n < maxPageElements; n++) {
-            if (n + page * maxPageElements <= currentRenameList.size() - 1) {
-                buttons.add(createButton(n, currentRenameList.get(n + page * maxPageElements)));
-            }
+        for (int i = 0; i < BUTTONS_ON_PAGE; i++) {
+            int index = i + offset;
+            if (index <= maxIndex)
+                buttons.add(createButton(i, currentRenameList.get(index)));
         }
     }
 
-    private void updateSelected() {
+    protected void updateSelected() {
+        Item itemInFirstSlot = getItemInFirstSlot();
+        String nameText = getNameText();
+
         for (RenameButton button : buttons) {
-            if (button == null) continue;
-            button.setSelected(button.rename.getItems().contains(getItemInFirstSlot())
-                    && button.rename.getName().equals(getNameText()));
+            button.selected =
+                    button.rename.getItems().contains(itemInFirstSlot)
+                    && button.rename.getName().equals(nameText);
         }
     }
 
-    private void updatePageWidgets() {
+    protected void updatePageWidgets() {
         pageDown.active = page > 0;
-        pageUp.active = (page + 1) * maxPageElements <= currentRenameList.size() - 1;
-        pageCount = Text.of(page + 1 + "/" + (currentRenameList.size() + maxPageElements - 1) / maxPageElements);
+        pageUp.active = (page + 1) * BUTTONS_ON_PAGE <= currentRenameList.size() - 1;
+        pageCount = Text.of(page + 1 + "/" + (currentRenameList.size() + BUTTONS_ON_PAGE - 1) / BUTTONS_ON_PAGE);
     }
 
     private void onSearch(String search) {
         searchTag = search;
-        if (open) {
-            updateSearchRequest();
-        }
+        if (open) updateSearchRequest(0);
+    }
+
+    // todo move to util
+    public List<ItemStack> playersInventory() {
+        assert client.player != null;
+        return List.copyOf(client.player.getInventory().getMainStacks());
+    }
+
+    public List<Item> getAvailableItems() {
+        var items = inventoryStacks.stream()
+                .map(ItemStack::getItem)
+                .collect(Collectors.toList());
+        items.add(currentItemStack.getItem());
+        return items;
+    }
+
+    protected int getMaxPageIndex() {
+        return Math.max(0, (currentRenameList.size() - 1)) / BUTTONS_ON_PAGE;
+    }
+
+    public boolean isRenameForCurrentItem(Rename rename) {
+        return rename.getItems().contains(getItemInFirstSlot());
     }
 
     public enum Tab {
-        SEARCH(true),
-        FAVORITE(true),
-        INVENTORY(false),
-        GLOBAL(false);
+        SEARCH(0, true),
+        FAVORITE(1, true),
+        INVENTORY(2, false),
+        GLOBAL(4, false);
 
+        public final int displayIndex;
         public final boolean forCurrentItemOnly;
 
-        Tab(boolean forCurrentItemOnly) {
+        Tab(int displayIndex, boolean forCurrentItemOnly) {
+            this.displayIndex = displayIndex;
             this.forCurrentItemOnly = forCurrentItemOnly;
         }
     }

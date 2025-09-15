@@ -89,7 +89,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     private void newNameEntered(CallbackInfo ci) {
         if (shouldNotModify()) return;
         if (!init) return;
-        rprWidget.updateName();
+        rprWidget.updatedName();
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"), method = "resize")
@@ -134,7 +134,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (opener.mouseClicked(mouseX, mouseY, button)) return true;
         if (favoriteButton.mouseClicked(mouseX, mouseY, button)) return true;
         if (ghostCraft.mouseClicked(mouseX, mouseY, button)) {
-            if (rprWidget.getCurrentItem().isEmpty()) {
+            if (rprWidget.getCurrentItemStack().isEmpty()) {
                 nameField.setText("");
                 if (rprWidget.getCurrentTab().forCurrentItemOnly) {
                     rprWidget.screenUpdate();
@@ -185,13 +185,13 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         }
 
         // Ignoring changes if stack did not change. Works for manual moving stacks too.
-        if (ItemStack.areEqual(stack, rprWidget.getCurrentItem())) ci.cancel();
+        if (ItemStack.areEqual(stack, rprWidget.getCurrentItemStack())) ci.cancel();
     }
 
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
     private void itemUpdateReturn(ScreenHandler handler, int slotId, ItemStack stack, CallbackInfo ci) {
         if (shouldNotModify()) return;
-        rprWidget.itemUpdate(slotId, stack);
+        rprWidget.updatedItem(slotId, stack);
     }
 
     @Override
@@ -239,7 +239,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (
                 config.fixDelayedPacketsChangingTab
                 && !client.isInSingleplayer()
-                && !rprWidget.getCurrentItem().isEmpty()
+                && !rprWidget.getCurrentItemStack().isEmpty()
         ) afterPutInAnvilFirst = true;
 
         RPRInteractableScreen.super.moveToCraft(inventorySlot, craftSlot);

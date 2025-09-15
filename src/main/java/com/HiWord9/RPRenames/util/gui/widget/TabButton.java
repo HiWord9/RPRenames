@@ -40,8 +40,7 @@ public class TabButton extends ClickableWidget {
 
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        RPRWidget.Tab currentTab = rprWidget.getCurrentTab();
-        int u = currentTab == tab ? SELECTED_OFFSET_U : 0;
+        int u = rprWidget.getCurrentTab() == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
         context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
@@ -59,7 +58,7 @@ public class TabButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isMouseOver(mouseX, mouseY)) {
-            rprWidget.setTab(tab);
+            rprWidget.openTab(tab);
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);

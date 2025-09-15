@@ -13,9 +13,12 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.Item;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+
+import java.util.List;
 
 public class RenameButton extends ClickableWidget {
     private static final ModConfig config = ModConfig.INSTANCE;
@@ -34,7 +37,7 @@ public class RenameButton extends ClickableWidget {
     static final int FOCUSED_OFFSET_V = BUTTON_WIDTH;
     static final int FAVORITE_OFFSET_U = BUTTON_HEIGHT;
 
-    boolean selected = false;
+    public boolean selected = false;
     public boolean favorite;
 
     final public RenameRenderer renameRenderer;
@@ -78,9 +81,7 @@ public class RenameButton extends ClickableWidget {
         );
     }
 
-    public void postRender(DrawContext context, int mouseX, int mouseY) {
-        if (!isMouseOver(mouseX, mouseY)) return;
-
+    public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
         if (
                 MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> handledScreen
                 && !rprWidget.getCurrentTab().forCurrentItemOnly
@@ -104,23 +105,24 @@ public class RenameButton extends ClickableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isMouseOver(mouseX, mouseY)) {
-            return execute(button);
-        }
-        return false;
-    }
+        if (!this.isMouseOver(mouseX, mouseY)) return false;
 
-    public boolean execute(int button) {
-        rprWidget.onRenameButton(button, favorite, rename);
+        if (button == 1) {
+            List<Item> items;
+
+            if (rprWidget.getCurrentTab().forCurrentItemOnly) items = List.of(rprWidget.getItemInFirstSlot());
+            else items = List.copyOf(rename.getItems());
+
+            rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName());
+        } else {
+            rprWidget.doRename(rename);
+        }
+
         return true;
     }
 
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
-
-    public void setSelected(boolean selected) {
-        this.selected = selected;
-    }
 
     public void highlightSlot(DrawContext context, int xOffset, int yOffset, DefaultedList<Slot> slots, int highlightColor) {
         for (int i = 0; i < slots.size(); i++) {

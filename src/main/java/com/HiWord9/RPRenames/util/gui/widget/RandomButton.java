@@ -49,7 +49,17 @@ public class RandomButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isMouseOver(mouseX, mouseY)) {
-            rprWidget.chooseRandomRename();
+            int randomNumber = randomNumber();
+
+            setSide(randomNumber % SIDES);
+
+            if (rprWidget.currentRenameList.isEmpty()) return true;
+
+            int renameIndex = randomNumber % rprWidget.currentRenameList.size();
+
+            rprWidget.setPage(renameIndex / RPRWidget.BUTTONS_ON_PAGE);
+            rprWidget.doRename(rprWidget.currentRenameList.get(renameIndex));
+
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -57,5 +67,11 @@ public class RandomButton extends ClickableWidget {
 
     public void setSide(int side) {
         this.side = side;
+    }
+
+    protected static int randomNumber() {
+        var client = MinecraftClient.getInstance();
+        assert client != null && client.player != null;
+        return client.player.getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
     }
 }

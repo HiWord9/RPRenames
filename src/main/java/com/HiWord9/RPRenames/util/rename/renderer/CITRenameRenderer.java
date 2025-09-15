@@ -14,8 +14,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -130,12 +128,10 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     private static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
         ArrayList<Text> extraProperties = new ArrayList<>();
 
-        Item item = rprWidget.firstItemInInventory(citRename);
-        boolean asCurrentItem = item == rprWidget.getItemInFirstSlot();
-        int indexInInventory = rprWidget.getInventory().indexOf(item);
+        var stack = rprWidget.pickItemStackForRename(citRename);
+        if (stack == null) stack = rprWidget.getCurrentItemStack();
 
-        ItemStack stack = getItemStackForStack(rprWidget, indexInInventory, asCurrentItem);
-        CITRename.CraftMatcher craftMatcher = new CITRename.CraftMatcher(citRename, stack);
+        var craftMatcher = new CITRename.CraftMatcher(citRename, stack);
 
         if (asOriginal) {
             if (citRename.getStackSize() > 1) {
@@ -218,22 +214,6 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         return text.fillStyle(
                 Style.EMPTY.withColor(isGood ? goodColor : Formatting.DARK_RED)
         );
-    }
-
-    private static ItemStack getItemStackForStack(RPRWidget rprWidget, int indexInInventory, boolean asCurrentItem) {
-        boolean isInInventory = indexInInventory != -1;
-        var tab = rprWidget.getCurrentTab();
-        var player = MinecraftClient.getInstance().player;
-
-        if (
-                (tab == Tab.INVENTORY || tab == Tab.GLOBAL)
-                        && !asCurrentItem && isInInventory
-                        && player != null
-        ) {
-            return player.getInventory().getMainStacks().get(indexInInventory);
-        } else {
-            return rprWidget.getCurrentItem();
-        }
     }
 
     @Override

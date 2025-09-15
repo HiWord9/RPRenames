@@ -104,15 +104,11 @@ public class MultiItemTooltipComponent implements TooltipComponent {
     }
 
     public static class TooltipItem {
-        private final ItemStack stack;
-        private Boolean isInInventory;
+        public final ItemStack stack;
+        public Boolean isInInventory;
 
         public TooltipItem(ItemStack stack, Boolean isInInventory) {
             this.stack = stack;
-            this.isInInventory = isInInventory;
-        }
-
-        public void setIsInInventory(Boolean isInInventory) {
             this.isInInventory = isInInventory;
         }
     }

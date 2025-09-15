@@ -32,11 +32,13 @@ public class RenameRendererHelper {
     }
 
     public static MultiItemTooltipComponent multiItemTooltipComponent(RPRWidget rprWidget, Rename rename) {
-        MultiItemTooltipComponent component = multiItemTooltipComponent(rename);
-        int i = 0;
-        for (MultiItemTooltipComponent.TooltipItem item : component.items) {
-            item.setIsInInventory(rprWidget.getInventory().contains(rename.getItems().get(i++)));
+        var component = multiItemTooltipComponent(rename);
+
+        for (var tooltipItem : component.items) {
+            tooltipItem.isInInventory = rprWidget.getAvailableItems()
+                    .contains(tooltipItem.stack.getItem());
         }
+
         return component;
     }
 
