@@ -1,11 +1,13 @@
 package com.HiWord9.RPRenames.util.gui;
 
 import com.HiWord9.RPRenames.RPRenames;
+import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.DiffuseLighting;
@@ -17,12 +19,15 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Quaternionf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Graphics {
@@ -80,7 +85,7 @@ public class Graphics {
                 rect.getLeft(), rect.getTop(),
                 rect.getRight(), rect.getBottom()
         );
-        renderEntity(context, rect.getLeft() + rect.width() / 2, (int) ((rect.getTop() + rect.height() / 2) + (size * entity.getHeight()) / 2), z, size, entity, spin);
+        renderEntity(context, rect.getLeft() + rect.width() / 2, (int) ((rect.getTop() + (double) rect.height() / 2) + (size * entity.getHeight()) / 2), z, size, entity, spin);
         context.disableScissor();
     }
 
@@ -191,6 +196,31 @@ public class Graphics {
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
         context.getMatrices().pop();
+    }
+
+    public static <H extends ScreenHandler, S extends HandledScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
+            List<Item> items, DrawContext context, S screen, int color
+    ) {
+        var allSlots = screen.getScreenHandler().slots;
+
+        var slotsToHighlight = new ArrayList<Slot>();
+        slotsToHighlight.add(allSlots.getFirst());
+        slotsToHighlight.addAll(
+                allSlots.subList(screen.getCraftSlotsAmount(), allSlots.size())
+        );
+
+        highlightSlots(items, slotsToHighlight, context, screen.x, screen.y, color);
+    }
+
+    public static void highlightSlots(
+            List<Item> items, List<Slot> slots,
+            DrawContext context,
+            int xOffset, int yOffset,
+            int color
+    ) {
+        for (Slot slot : slots)
+            if (items.contains(slot.getStack().getItem()))
+                highlightSlot(context, xOffset, yOffset, slot, color);
     }
 
     public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {

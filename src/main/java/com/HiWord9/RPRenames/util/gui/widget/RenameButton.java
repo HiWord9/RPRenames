@@ -2,21 +2,20 @@ package com.HiWord9.RPRenames.util.gui.widget;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.util.RPRInteractableScreen;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.AcceptsRPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 import java.util.List;
 
@@ -82,17 +81,11 @@ public class RenameButton extends ClickableWidget {
     }
 
     public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
-        if (
-                MinecraftClient.getInstance().currentScreen instanceof HandledScreen<?> handledScreen
-                && !rprWidget.getCurrentTab().forCurrentItemOnly
-                && (config.slotHighlightColorALPHA > 0 && config.highlightSlot)
+        if (!rprWidget.getCurrentTab().forCurrentItemOnly
+                && config.slotHighlightColorALPHA > 0
+                && config.highlightSlot
         ) {
-            highlightSlot(
-                    context,
-                    handledScreen.x, handledScreen.y,
-                    handledScreen.getScreenHandler().slots,
-                    highlightColor
-            );
+            highlightSlots(context, rprWidget.screen, highlightColor);
         }
         renameRenderer.onRenderTooltip(
                 context,
@@ -124,13 +117,11 @@ public class RenameButton extends ClickableWidget {
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
-    public void highlightSlot(DrawContext context, int xOffset, int yOffset, DefaultedList<Slot> slots, int highlightColor) {
-        for (int i = 0; i < slots.size(); i++) {
-            if (i == 1 || i == 2) continue;
-            Slot slot = slots.get(i);
-            if (rename.getItems().contains(slot.getStack().getItem())) {
-                Graphics.highlightSlot(context, xOffset, yOffset, slot, highlightColor);
-            }
-        }
+    private <H extends ScreenHandler> void highlightSlots(
+            DrawContext context, RPRInteractableScreen screen, int highlightColor
+    ) {
+        if (!(screen instanceof HandledScreen<?> handledScreen)) return;
+        var s = (HandledScreen<H> & RPRInteractableScreen) handledScreen;
+        Graphics.highlightAvailableSlots(rename.getItems(), context, s, highlightColor);
     }
 }
