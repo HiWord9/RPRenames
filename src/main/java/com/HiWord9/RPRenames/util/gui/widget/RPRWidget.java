@@ -619,7 +619,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     // todo move to util
     public List<ItemStack> playersInventory() {
         assert client.player != null;
-        return List.copyOf(client.player.getInventory().getMainStacks());
+        return client.player.getInventory().getMainStacks()
+                .stream().map(ItemStack::copy).toList();
     }
 
     public List<Item> getAvailableItems() {
