@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.gui.tooltipcomponent;
+package com.HiWord9.RPRenames.util.gui.tooltip_component;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.modConfig.ModConfig;

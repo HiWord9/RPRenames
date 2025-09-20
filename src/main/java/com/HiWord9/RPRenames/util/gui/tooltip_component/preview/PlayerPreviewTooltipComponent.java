@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview;
+package com.HiWord9.RPRenames.util.gui.tooltip_component.preview;
 
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;

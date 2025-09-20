@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview;
+package com.HiWord9.RPRenames.util.gui.tooltip_component.preview;
 
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.font.TextRenderer;

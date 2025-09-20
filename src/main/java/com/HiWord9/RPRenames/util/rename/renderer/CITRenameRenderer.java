@@ -2,9 +2,9 @@ package com.HiWord9.RPRenames.util.rename.renderer;
 
 import com.HiWord9.RPRenames.modConfig.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
-import com.HiWord9.RPRenames.util.gui.tooltipcomponent.MultiItemTooltipComponent;
-import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.ItemPreviewTooltipComponent;
-import com.HiWord9.RPRenames.util.gui.tooltipcomponent.preview.PlayerPreviewTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltip_component.MultiItemTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
+import com.HiWord9.RPRenames.util.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget.Tab;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
