@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
+package com.HiWord9.RPRenames.util.config.generation.item_model.presentation;
 
-import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.SelectCondition;
+import com.HiWord9.RPRenames.util.config.generation.item_model.condition.SelectCondition;
 import net.minecraft.client.render.item.model.SelectItemModel;
 import net.minecraft.client.render.item.property.select.SelectProperty;
 

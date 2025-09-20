@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
+package com.HiWord9.RPRenames.util.config.generation.item_model.presentation;
 
-import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.BooleanCondition;
+import com.HiWord9.RPRenames.util.config.generation.item_model.condition.BooleanCondition;
 import net.minecraft.client.render.item.model.ConditionItemModel;
 
 public class ConditionPresentation extends ItemModelPresentation {

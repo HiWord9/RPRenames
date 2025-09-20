@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.util.config.generation.itemModel.presentation;
+package com.HiWord9.RPRenames.util.config.generation.item_model.presentation;
 
-import com.HiWord9.RPRenames.util.config.generation.itemModel.condition.NumericCondition;
+import com.HiWord9.RPRenames.util.config.generation.item_model.condition.NumericCondition;
 import net.minecraft.client.render.item.model.RangeDispatchItemModel;
 
 public class RangeDispatchPresentation extends ItemModelPresentation {
