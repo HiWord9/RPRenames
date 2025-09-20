@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.favorite;
 
-import com.HiWord9.RPRenames.mod.util.ParserHelper;
+import com.HiWord9.RPRenames.mod.util.Util;
 import com.google.gson.*;
 import net.minecraft.item.Item;
 
@@ -23,7 +23,7 @@ public class FavoriteRenameSerializer implements JsonSerializer<FavoriteRename>,
 
         Item item = null;
         String jsonItem = context.deserialize(jsonObject.get("item"), String.class);
-        if (jsonItem != null) item = ParserHelper.itemFromId(jsonItem);
+        if (jsonItem != null) item = Util.itemFromId(jsonItem);
 
         return new FavoriteRename(
                 context.deserialize(jsonObject.get("name"), String.class),

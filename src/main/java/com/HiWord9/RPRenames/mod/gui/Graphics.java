@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames.mod.gui;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
@@ -29,6 +28,8 @@ import org.joml.Quaternionf;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 public class Graphics {
     static public final int DEFAULT_PREVIEW_WIDTH = 42;
     static public final int DEFAULT_PREVIEW_HEIGHT = 42;
@@ -52,7 +53,7 @@ public class Graphics {
     }
 
     public static void renderText(DrawContext context, Text text, int color, int x, int y, boolean shadow, boolean centered) {
-        var renderer = MinecraftClient.getInstance().textRenderer;
+        var renderer = textRenderer();
         int xOffset = centered ? renderer.getWidth(text) / 2 : 0;
         context.drawText(renderer, text, x - xOffset, y, color, shadow);
     }
@@ -87,7 +88,6 @@ public class Graphics {
     }
 
     public static void renderEntity(DrawContext context, int x, int y, int z, double size, Entity entity, boolean spin) {
-        MinecraftClient client = MinecraftClient.getInstance();
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
 
@@ -104,21 +104,23 @@ public class Graphics {
         var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
         quaternion.mul(quaternion2);
         context.getMatrices().multiply(quaternion);
-        if (client.cameraEntity != null) {
-            entity.setPos(client.cameraEntity.getX(), client.cameraEntity.getY(), client.cameraEntity.getZ());
+
+        var camera = client().cameraEntity;
+        if (camera != null) {
+            entity.setPos(camera.getX(), camera.getY(), camera.getZ());
         }
 
         if (!(entity instanceof PlayerEntity)) {
-            assert client.player != null;
-            entity.age = client.player.age;
+            assert player() != null;
+            entity.age = player().age;
         }
         setupAngles(entity, spin);
 
-        var entityRenderDispatcher = client.getEntityRenderDispatcher();
+        var entityRenderDispatcher = client().getEntityRenderDispatcher();
         quaternion2.conjugate();
         entityRenderDispatcher.setRotation(quaternion2);
         entityRenderDispatcher.setRenderShadows(false);
-        var immediate = client.getBufferBuilders().getEntityVertexConsumers();
+        var immediate = client().getBufferBuilders().getEntityVertexConsumers();
 
         entityRenderDispatcher.render(entity, 0, 0, 0, 1.f, context.getMatrices(), immediate,
                 LightmapTextureManager.MAX_LIGHT_COORDINATE

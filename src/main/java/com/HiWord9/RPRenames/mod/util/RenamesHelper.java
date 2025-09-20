@@ -1,11 +1,9 @@
 package com.HiWord9.RPRenames.mod.util;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,9 +13,9 @@ import net.minecraft.registry.entry.RegistryEntry;
 
 import java.util.Optional;
 
-public class RenamesHelper {
-    private static final ModConfig config = ModConfig.INSTANCE;
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
+public class RenamesHelper {
     public static ItemStack[] getGhostCraftItems(Rename rename) {
         ItemStack ghostSource = new ItemStack(rename.getItem());
         ItemStack ghostEnchant = null;
@@ -46,7 +44,7 @@ public class RenamesHelper {
     }
 
     public static void enchantItemStackWithRename(CITRename rename, ItemStack itemStack) {
-        if (MinecraftClient.getInstance().world == null) {
+        if (client().world == null) {
             RPRenames.LOGGER.warn(
                     "Could not enchant item stack {} with rename\n{}\ncause client world is null",
                     itemStack, rename
@@ -54,7 +52,7 @@ public class RenamesHelper {
             return;
         }
 
-        Optional<Registry<Enchantment>> optionalRegistry = MinecraftClient.getInstance()
+        Optional<Registry<Enchantment>> optionalRegistry = client()
                 .world
                 .getRegistryManager()
                 .getOptional(RegistryKeys.ENCHANTMENT);
@@ -86,7 +84,7 @@ public class RenamesHelper {
     }
 
     public static ItemStack createItemOrSpawnEgg(Rename rename, int itemIndex) {
-        if (rename instanceof CEMRename cemRename && config.generateSpawnEggsInItemGroup)
+        if (rename instanceof CEMRename cemRename && config().generateSpawnEggsInItemGroup)
             return cemRename.toSpawnEgg();
         return rename.toStack(itemIndex);
     }

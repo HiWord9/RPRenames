@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.gui.widget;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
@@ -19,9 +18,10 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 public class RenameButton extends ClickableWidget {
-    private static final ModConfig config = ModConfig.INSTANCE;
-    final int highlightColor = config.getSlotHighlightRGBA();
+    final int highlightColor = config().getSlotHighlightRGBA();
 
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/button.png");
 
@@ -62,7 +62,7 @@ public class RenameButton extends ClickableWidget {
     @Override
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
-        int v = hovered || (selected && config.highlightSelected) ? FOCUSED_OFFSET_V : 0;
+        int v = hovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
         context.drawTexture(
                 RenderLayer::getGuiTextured,
                 TEXTURE,
@@ -82,8 +82,8 @@ public class RenameButton extends ClickableWidget {
 
     public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
         if (!rprWidget.getCurrentTab().forCraftItemOnly
-                && config.slotHighlightColorALPHA > 0
-                && config.highlightSlot
+                && config().slotHighlightColorALPHA > 0
+                && config().highlightSlot
         ) {
             highlightSlots(context, rprWidget.screen, highlightColor);
         }

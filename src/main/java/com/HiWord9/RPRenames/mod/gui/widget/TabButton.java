@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames.mod.gui.widget;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -13,6 +12,8 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class TabButton extends ClickableWidget {
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/tabs.png");
@@ -47,7 +48,7 @@ public class TabButton extends ClickableWidget {
         if (isMouseOver(mouseX, mouseY)) {
             Graphics.drawTooltip(
                     context,
-                    MinecraftClient.getInstance().textRenderer,
+                    textRenderer(),
                     List.of(Graphics.tooltipOf(Text.translatable(TRANSLATION_PREFIX + tab.toString()))),
                     mouseX, mouseY,
                     HoveredTooltipPositioner.INSTANCE

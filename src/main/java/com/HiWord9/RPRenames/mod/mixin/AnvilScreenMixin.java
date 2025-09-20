@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.mixin;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
@@ -24,10 +23,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 @Mixin(value = AnvilScreen.class, priority = 1200)
 public abstract class AnvilScreenMixin extends Screen implements RPRInteractableScreen {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
     protected AnvilScreenMixin(Text title) {
         super(title);
     }
@@ -58,7 +57,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         int y = ((AnvilScreen) client.currentScreen).y;
 
         opener = new OpenerButton(rprWidget, x + 3, y + 44);
-        favoriteButton = new FavoriteButton(rprWidget, x, y, config.favoriteButtonPosition);
+        favoriteButton = new FavoriteButton(rprWidget, x, y, config().favoriteButtonPosition);
 
         var slots = ((AnvilScreen) client.currentScreen).getScreenHandler().slots;
         ghostCraft = new GhostCraft(
@@ -82,7 +81,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
                 ghostCraft
         );
 
-        if (config.openByDefault) opener.execute();
+        if (config().openByDefault) opener.execute();
     }
 
     @Inject(at = @At("RETURN"), method = "onRenamed")
@@ -168,7 +167,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
 
             There is no such problem in singleplayer, so in singleplayer this is not proceeded.
         */
-        if (config.fixDelayedPacketsChangingTab) {
+        if (config().fixDelayedPacketsChangingTab) {
             // Executing local changes normally and setting flag
             if (afterPutInAnvilFirst) {
                 afterPutInAnvilFirst = false;
@@ -196,7 +195,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
 
     @Override
     public void updateMenuShift() {
-        if (!config.offsetMenu) return;
+        if (!config().offsetMenu) return;
         offsetX(MENU_SHIFT * (rprWidget.isOpen() ? 1 : -1));
     }
 
@@ -237,7 +236,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (client == null) return;
 
         if (
-                config.fixDelayedPacketsChangingTab
+                config().fixDelayedPacketsChangingTab
                 && !client.isInSingleplayer()
                 && !rprWidget.getActiveItemStack().isEmpty()
         ) afterPutInAnvilFirst = true;
@@ -251,6 +250,6 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     }
 
     private boolean shouldNotModify() {
-        return !config.enableAnvilModification;
+        return !config().enableAnvilModification;
     }
 }

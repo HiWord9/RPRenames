@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.gui.tooltip_component;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -15,10 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.HiWord9.RPRenames.mod.gui.Graphics.*;
+import static com.HiWord9.RPRenames.mod.util.Util.config;
 
 public class MultiItemTooltipComponent implements TooltipComponent {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
     static final Identifier SLOT = Identifier.of(RPRenames.MOD_ID, "textures/gui/slot.png");
 
     public final ArrayList<TooltipItem> items = new ArrayList<>();
@@ -66,10 +64,10 @@ public class MultiItemTooltipComponent implements TooltipComponent {
                 Graphics.renderText(context, Text.of("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
             } else {
                 if (item.isInInventory != null) {
-                    if (!item.isInInventory && config.highlightTooltipSlotWrong) {
+                    if (!item.isInInventory && config().highlightTooltipSlotWrong) {
                         context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_WRONG);
                     }
-                    if (item.isInInventory && i == 0 && config.highlightTooltipSlotSelected) {
+                    if (item.isInInventory && i == 0 && config().highlightTooltipSlotSelected) {
                         context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
                     }
                 }

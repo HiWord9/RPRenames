@@ -1,10 +1,9 @@
 package com.HiWord9.RPRenames.mod;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.impl.rename.*;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
-import com.HiWord9.RPRenames.mod.util.ParserHelper;
+import com.HiWord9.RPRenames.mod.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -30,6 +29,7 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class RPRenamesCommand {
@@ -49,10 +49,9 @@ public class RPRenamesCommand {
     }
 
     private static int disableHints(FabricClientCommandSource source) {
-        ModConfig config = ModConfig.INSTANCE;
-        config.disableTooltipHints = !config.disableTooltipHints;
-        config.write();
-        if (config.disableTooltipHints) {
+        config().disableTooltipHints = !config().disableTooltipHints;
+        config().write();
+        if (config().disableTooltipHints) {
             source.sendFeedback(
                     Text.translatable("rprenames.command.disableHints.disabled")
                     .formatted(Formatting.GOLD)
@@ -250,7 +249,7 @@ public class RPRenamesCommand {
             String components = getComponentsCommandArgument(source, itemStack);
 
             String giveCommand = "/give @s "
-                    + ParserHelper.idFromItem(itemStack.getItem())
+                    + Util.idFromItem(itemStack.getItem())
                     + components
                     + (r instanceof CITRename citRename ?
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");

@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames.mod.impl.rename.renderer;
 
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.api.rename.renderer.SimpleRenameRenderer;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
@@ -10,7 +9,6 @@ import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.PlayerPreviewTool
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget.Tab;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -29,11 +27,10 @@ import java.util.function.Supplier;
 
 import static com.HiWord9.RPRenames.mod.gui.Graphics.tooltipOf;
 import static com.HiWord9.RPRenames.mod.util.RenameRendererHelper.*;
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implements RenameRenderer.Preview {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
     private static final MutableText playerPreviewHintShift = Text.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
             Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
@@ -73,21 +70,20 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         int width = Graphics.DEFAULT_PREVIEW_WIDTH;
         int height = Graphics.DEFAULT_PREVIEW_HEIGHT;
 
-        var player = MinecraftClient.getInstance().player;
-        assert player != null;
+        assert player() != null;
 
-        int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
-        int playerWidth = (int) (width + playerSize * player.getWidth() - 1);
-        int playerHeight = (int) (height + playerSize * player.getHeight() - 1);
+        int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
+        int playerWidth = (int) (width + playerSize * player().getWidth() - 1);
+        int playerHeight = (int) (height + playerSize * player().getHeight() - 1);
 
         playerPreviewTooltipComponent = new PlayerPreviewTooltipComponent(
-                player, stack,
+                player(), stack,
                 playerWidth, playerHeight,
                 playerSize,
-                config.spinPlayerPreview
+                config().spinPlayerPreview
         );
 
-        double scaleFactorItem = config.scaleFactorItem;
+        double scaleFactorItem = config().scaleFactorItem;
         int itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
         int itemWidth = (int) ((double) width / 2 * scaleFactorItem);
         int itemHeight = (int) ((double) height / 2 * scaleFactorItem);
@@ -102,7 +98,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     }
 
     protected void addTooltips() {
-        if (config.showDescription) {
+        if (config().showDescription) {
             var description = descriptionTooltipsComponentsList(rename);
             tooltipComponents.addAll(description);
         }
@@ -112,16 +108,16 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
             tooltipComponents.add(component);
         }
 
-        if (config.showExtraProperties) {
-            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config.showOriginalProperties);
+        if (config().showExtraProperties) {
+            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config().showOriginalProperties);
             tooltipComponents.addAll(extraProperties);
         }
 
-        if (config.showPackName && rename.getPackName() != null) {
+        if (config().showPackName && rename.getPackName() != null) {
             tooltipComponents.add(packNameTooltipComponent(rename.getPackName()));
         }
 
-        if (config.showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
+        if (config().showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
@@ -222,20 +218,19 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
 
-        if (config.enablePreview) {
+        if (config().enablePreview) {
             boolean shiftDown = hasShiftDown();
 
-            if (!shiftDown && !config.playerPreviewByDefault) {
-                if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintShift));
-            } else if (shiftDown != config.playerPreviewByDefault) {
-                if (!config.disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintF));
+            if (!shiftDown && !config().playerPreviewByDefault) {
+                if (!config().disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintShift));
+            } else if (shiftDown != config().playerPreviewByDefault) {
+                if (!config().disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintF));
 
-                Screen screen = MinecraftClient.getInstance().currentScreen;
-                if (screen != null) screen.setFocused(null);
+                if (currentScreen() != null) currentScreen().setFocused(null);
             }
         }
 
-        if (!config.disableTooltipHints) {
+        if (!config().disableTooltipHints) {
             tooltipAddition.add(tooltipOf(favoriteSupplier.get() ? favoriteHintRemove : favoriteHintAdd));
             tooltipAddition.add(tooltipOf(disableHint));
         }
@@ -243,7 +238,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         tooltipComponents.addAll(tooltipAddition);
 
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
-        if (config.enablePreview) {
+        if (config().enablePreview) {
             drawPreview(context, mouseX, mouseY, tooltipComponents);
         }
 
@@ -252,7 +247,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
 
     @Override
     public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
-        boolean shouldPreviewPlayer = hasShiftDown() != config.playerPreviewByDefault;
+        boolean shouldPreviewPlayer = hasShiftDown() != config().playerPreviewByDefault;
         TooltipPositioner positioner = new PreviewTooltipPositioner(mainTooltip);
 
         if (shouldPreviewPlayer) {
@@ -264,12 +259,12 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
 
     private void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         if (isFKeyJustPressed()) {
-            playerPreviewTooltipComponent.cycleSlots(config.alwaysAllowPlayerPreviewHead);
+            playerPreviewTooltipComponent.cycleSlots(config().alwaysAllowPlayerPreviewHead);
         }
 
         Graphics.drawTooltipWithFixedBorders(
                 context,
-                MinecraftClient.getInstance().textRenderer,
+                textRenderer(),
                 playerPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,
@@ -280,7 +275,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     private void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
-                MinecraftClient.getInstance().textRenderer,
+                textRenderer(),
                 itemPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,
@@ -291,7 +286,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     private boolean fPressFuse = false;
 
     private boolean isFKeyJustPressed() {
-        if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F)) {
+        if (InputUtil.isKeyPressed(client().getWindow().getHandle(), GLFW.GLFW_KEY_F)) {
             if (!fPressFuse) {
                 fPressFuse = true;
                 return true;

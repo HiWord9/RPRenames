@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 @Mixin(CreativeInventoryScreen.class)
 public abstract class CreativeInventoryScreenMixin {
 
@@ -24,10 +26,10 @@ public abstract class CreativeInventoryScreenMixin {
     private void onSearch(CallbackInfo ci) {
         if (!RPRenamesItemGroup.verifyItemGroup(selectedTab)) return;
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player == null) return;
+        if (player() == null) return;
 
-        CreativeInventoryScreen.CreativeScreenHandler handler = ((CreativeInventoryScreen.CreativeScreenHandler) client.player.currentScreenHandler);
+        CreativeInventoryScreen.CreativeScreenHandler handler =
+                ((CreativeInventoryScreen.CreativeScreenHandler) player().currentScreenHandler);
 
         String search = searchBox.getText();
 

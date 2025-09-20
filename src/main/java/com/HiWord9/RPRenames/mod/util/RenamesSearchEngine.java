@@ -96,7 +96,7 @@ public class RenamesSearchEngine {
 
         for (Rename r : renames) {
             for (Item item : r.getItems()) {
-                if (up(ParserHelper.idFromItem(item)).contains(itemNameUp)) {
+                if (up(Util.idFromItem(item)).contains(itemNameUp)) {
                     resultList.add(r);
                     break;
                 }

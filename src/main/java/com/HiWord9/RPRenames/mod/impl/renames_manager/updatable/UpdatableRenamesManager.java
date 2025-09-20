@@ -2,11 +2,9 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.RPRenamesItemGroup;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.RenamesManagerImpl;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.profiler.Profiler;
@@ -16,14 +14,13 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implements ResourceReloader {
-    private static final ModConfig config = ModConfig.INSTANCE;
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
+public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implements ResourceReloader {
     public final ArrayList<Parser> parsers = new ArrayList<>();
 
     public void updateRenames() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        updateRenames(client.getResourceManager(), Profilers.get());
+        updateRenames(client().getResourceManager(), Profilers.get());
     }
 
     public void updateRenames(ResourceManager resourceManager, Profiler profiler) {
@@ -57,7 +54,7 @@ public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implemen
     @Override
     public CompletableFuture<Void> reload(Synchronizer synchronizer, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
         return CompletableFuture.supplyAsync(() -> {
-            if (config.updateConfig) updateRenames(manager, Profilers.get());
+            if (config().updateConfig) updateRenames(manager, Profilers.get());
             return null;
         }, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(o -> {}, applyExecutor);
     }

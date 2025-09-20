@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
@@ -21,6 +20,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.*;
+
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class CEMParser implements Parser {
     private static final String CEM_PATH = "optifine/cem";
@@ -292,6 +293,6 @@ public class CEMParser implements Parser {
 
     private static boolean shouldSkipCemRenames() {
         if (ignoreSkip) return false;
-        return ModConfig.INSTANCE.ignoreCEM;
+        return config().ignoreCEM;
     }
 }

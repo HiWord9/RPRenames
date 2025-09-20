@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.gui.widget;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
@@ -11,11 +10,9 @@ import com.HiWord9.RPRenames.api.RenamesManager;
 import com.HiWord9.RPRenames.mod.util.RenamesSearchEngine;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -34,10 +31,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class RPRWidget implements Drawable, Element/*, Widget*/ {
-    protected ModConfig config = ModConfig.INSTANCE;
     protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
 
     public static final int MENU_TEXTURE_WIDTH = 147;
@@ -55,8 +52,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     protected int y;
 
     protected boolean open;
-
-    protected MinecraftClient client;
 
     protected RPRInteractableScreen screen;
     protected RenamesManager<?> renamesManager;
@@ -113,8 +108,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
             FavoriteButton favoriteButton,
             GhostCraft ghostCraft
     ) {
-        this.client = MinecraftClient.getInstance();
-
         this.renamesManager = renamesManager;
         this.favoritesManager = favoritesManager;
 
@@ -149,11 +142,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         randomButton = new RandomButton(
                 this,
                 this.x + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
-                this.y + 14, RandomButton.randomNumber() % RandomButton.SIDES
+                this.y + 14, randomNumber() % RandomButton.SIDES
         );
 
         searchField = new TextFieldWidget(
-                client.textRenderer,
+                textRenderer(),
                 this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET,
                 this.y + 15,
                 MENU_TEXTURE_WIDTH - 53, 10,
@@ -309,9 +302,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         if (slotId == 0) {
             activeItemStack = stack.copy();
             if (stack.isEmpty()) {
-                Screen screen = client.currentScreen;
-                if (screen != null && screen.getFocused() == searchField) {
-                    screen.setFocused(null);
+                if (currentScreen() != null && currentScreen().getFocused() == searchField) {
+                    currentScreen().setFocused(null);
                 }
                 searchField.setFocused(false);
 
@@ -418,19 +410,18 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!open) return false;
 
-        var screen = client.currentScreen;
         for (Element widget : widgets) {
             if (widget.mouseClicked(mouseX, mouseY, button)) {
-                if (widget == searchField && screen != null) {
-                    screen.setFocused(searchField);
+                if (widget == searchField && currentScreen() != null) {
+                    currentScreen().setFocused(searchField);
                 }
                 return true;
             } else if (
                     widget == searchField
-                            && screen != null
-                            && screen.getFocused() == searchField
+                            && currentScreen() != null
+                            && currentScreen().getFocused() == searchField
             ) {
-                screen.setFocused(null);
+                currentScreen().setFocused(null);
             }
         }
         for (RenameButton renameButton : buttons) {
@@ -456,11 +447,11 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     protected void checkForInvChanges() {
         if (inventoryStacks.isEmpty()) {
-            inventoryStacks.addAll(playersInventory());
+            inventoryStacks.addAll(inventoryCopy());
             return;
         }
 
-        var newStacks = playersInventory();
+        var newStacks = inventoryCopy();
 
         boolean equal = true;
 
@@ -634,13 +625,6 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
     protected String getSearchText() {
         return searchField.getText();
-    }
-
-    // todo move to util
-    public List<ItemStack> playersInventory() {
-        assert client.player != null;
-        return client.player.getInventory().getMainStacks()
-                .stream().map(ItemStack::copy).toList();
     }
 
     public List<Item> getAvailableItems() {

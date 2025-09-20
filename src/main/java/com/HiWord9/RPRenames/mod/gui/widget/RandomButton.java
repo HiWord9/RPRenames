@@ -1,13 +1,14 @@
 package com.HiWord9.RPRenames.mod.gui.widget;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class RandomButton extends ClickableWidget {
     public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/dice.png");
@@ -40,7 +41,7 @@ public class RandomButton extends ClickableWidget {
         int v = V_OFFSET * side;
         context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
         if (!hovered) return;
-        context.drawTooltip(MinecraftClient.getInstance().textRenderer, Text.translatable(TOOLTIP_KEY), mouseX, mouseY);
+        context.drawTooltip(textRenderer(), Text.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }
 
     @Override
@@ -67,11 +68,5 @@ public class RandomButton extends ClickableWidget {
 
     public void setSide(int side) {
         this.side = side;
-    }
-
-    protected static int randomNumber() {
-        var client = MinecraftClient.getInstance();
-        assert client != null && client.player != null;
-        return client.player.getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
     }
 }

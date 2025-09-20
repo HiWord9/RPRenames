@@ -2,13 +2,14 @@ package com.HiWord9.RPRenames.api.rename.renderer;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     protected T rename;
@@ -40,7 +41,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         Graphics.drawTooltip(
                 context,
-                MinecraftClient.getInstance().textRenderer,
+                textRenderer(),
                 tooltipComponents,
                 mouseX, mouseY,
                 HoveredTooltipPositioner.INSTANCE

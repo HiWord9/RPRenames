@@ -1,7 +1,6 @@
 package com.HiWord9.RPRenames.mod.gui.widget;
 
 import com.HiWord9.RPRenames.mod.gui.Graphics;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -9,10 +8,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
 
 import static com.HiWord9.RPRenames.mod.gui.Graphics.*;
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class GhostCraft implements Drawable, Element {
-    private static final MinecraftClient client = MinecraftClient.getInstance();
-
     GhostSlot[] slots;
     public final int length;
 
@@ -109,7 +107,7 @@ public class GhostCraft implements Drawable, Element {
             if (content != null && !content.isEmpty()) {
                 Graphics.renderStack(context, content, x + 1, y + 1);
                 if (isMouseOver(mouseX, mouseY)) {
-                    context.drawTooltip(client.textRenderer, Screen.getTooltipFromItem(client, content), mouseX, mouseY);
+                    context.drawTooltip(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
                 }
             }
             int color;

@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.favorite;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.util.ParserHelper;
+import com.HiWord9.RPRenames.mod.util.Util;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -107,7 +107,7 @@ public class FavoritesFileManager {
     private static Item itemFromFavoriteFileName(String fileName) {
         if (!fileName.endsWith(".json")) return Items.AIR;
         String itemFromFileName = fileName.substring(0, fileName.length() - 5).replace(".", ":");
-        return ParserHelper.itemFromId(itemFromFileName);
+        return Util.itemFromId(itemFromFileName);
     }
 
     private String itemToFavoriteFile(Item item) {
@@ -115,6 +115,6 @@ public class FavoritesFileManager {
     }
 
     private static String fileNameFromItem(Item item) {
-        return ParserHelper.idFromItem(item).replace(":", ".") + ".json";
+        return Util.idFromItem(item).replace(":", ".") + ".json";
     }
 }

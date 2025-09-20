@@ -1,6 +1,5 @@
 package com.HiWord9.RPRenames.mod.mixin;
 
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
@@ -12,10 +11,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static com.HiWord9.RPRenames.mod.util.Util.config;
+
 @Mixin(value = TooltipBackgroundRenderer.class)
 public abstract class TooltipBackgroundRendererMixin {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
     @Inject(
             at = @At(
                     value = "INVOKE",
@@ -24,7 +23,7 @@ public abstract class TooltipBackgroundRendererMixin {
             method = "render"
     )
     private static void onRender(DrawContext context, int x, int y, int width, int height, int z, Identifier texture, CallbackInfo ci) {
-        if (!Graphics.renderTooltipAsFavorite || !config.renderStarInFavoriteTooltip) return;
+        if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
         Graphics.renderStarInFavoriteTooltip(context, x, y, width, z);
     }
 
@@ -36,7 +35,7 @@ public abstract class TooltipBackgroundRendererMixin {
             method = "render"
     )
     private static @Nullable Identifier onGetFrameTexture(@Nullable Identifier texture) {
-        if (!Graphics.renderTooltipAsFavorite || texture != null || !config.recolorFavoriteTooltip) return texture;
+        if (!Graphics.renderTooltipAsFavorite || texture != null || !config().recolorFavoriteTooltip) return texture;
         return Graphics.FAVORITE_TOOLTIP_FRAME_TEXTURE;
     }
 }

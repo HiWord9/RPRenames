@@ -2,13 +2,11 @@ package com.HiWord9.RPRenames.mod.impl.rename.renderer;
 
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.api.rename.renderer.SimpleRenameRenderer;
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.EntityPreviewTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -24,10 +22,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static com.HiWord9.RPRenames.mod.util.RenameRendererHelper.*;
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implements RenameRenderer.Preview {
-    private static final ModConfig config = ModConfig.INSTANCE;
-
     RPRWidget rprWidget;
     Supplier<Boolean> favoriteSupplier;
 
@@ -40,18 +37,17 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         this.favoriteSupplier = favoriteSupplier;
 
         var entityType = rename.getEntity();
-        var client = MinecraftClient.getInstance();
-        this.entity = (LivingEntity) entityType.create(client.world, null);
+        this.entity = (LivingEntity) entityType.create(client().world, null);
         prepareEntity(entity, rename);
 
-        int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config.scaleFactorEntity);
+        int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
         int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getWidth() - 1);
         int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getHeight() - 1);
 
         entityPreviewTooltipComponent = new EntityPreviewTooltipComponent(
                 entity,
                 width, height, size,
-                config.spinMobPreview
+                config().spinMobPreview
         );
 
         addTooltips();
@@ -65,11 +61,11 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
         tooltipComponents.add(mobNameTooltipComponent(rename.getEntity()));
 
-        if (config.showPackName && rename.getPackName() != null) {
+        if (config().showPackName && rename.getPackName() != null) {
             tooltipComponents.add(packNameTooltipComponent(rename.getPackName()));
         }
 
-        if (config.showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
+        if (config().showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
             TooltipComponent pattern = namePatternTooltipComponent(rename);
             if (pattern != null) tooltipComponents.add(pattern);
         }
@@ -92,7 +88,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     @Override
     public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
         super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
-        if (!config.enablePreview) return;
+        if (!config().enablePreview) return;
         drawPreview(
                 context,
                 mouseX, mouseY,
@@ -104,7 +100,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
-                MinecraftClient.getInstance().textRenderer,
+                textRenderer(),
                 entityPreviewTooltipComponent,
                 mouseX, mouseY,
                 new PreviewTooltipPositioner(mainTooltip),
@@ -115,7 +111,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     private void prepareEntity(Entity entity, CEMRename rename) {
         if (entity == null) return;
         if (entity instanceof SnowGolemEntity snowGolem) {
-            snowGolem.setHasPumpkin(!config.disableSnowGolemPumpkin);
+            snowGolem.setHasPumpkin(!config().disableSnowGolemPumpkin);
         }
         entity.setCustomName(Text.of(rename.getName()));
     }

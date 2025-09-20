@@ -1,6 +1,5 @@
 package com.HiWord9.RPRenames.mod;
 
-import com.HiWord9.RPRenames.mod.config.ModConfig;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem.CEMParser;
@@ -23,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 public class RPRenames implements ClientModInitializer {
     public static final String MOD_ID = "rprenames";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -43,8 +44,7 @@ public class RPRenames implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
         ClientCommandRegistrationCallback.EVENT.register(RPRenames::registerCommand);
-        ModConfig config = ModConfig.INSTANCE;
-        if (config.loadModBuiltinResources) {
+        if (config().loadModBuiltinResources) {
             LOGGER.info("Loading RPRenames built-in resource packs");
             FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
                 for (String pack : new String[]{"vanillish", "default_dark_mode", "high_contrasted"}) {
