@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.util.config.generation;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;
-import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.rename.RenamesManagerImpl;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import net.minecraft.client.MinecraftClient;

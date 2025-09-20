@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.CEMRename;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;

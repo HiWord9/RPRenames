@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mixin;
 
-import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;

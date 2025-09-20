@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames;
 
-import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.config.generation.CEMParser;

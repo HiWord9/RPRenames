@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.modConfig;
+package com.HiWord9.RPRenames.mod_config;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;

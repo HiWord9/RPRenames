@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util.rename.renderer;
 
-import com.HiWord9.RPRenames.modConfig.ModConfig;
+import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.gui.tooltip_component.preview.EntityPreviewTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.tooltip_component.MultiItemTooltipComponent;
