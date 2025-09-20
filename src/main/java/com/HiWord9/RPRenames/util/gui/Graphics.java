@@ -42,7 +42,7 @@ public class Graphics {
     public static final int HIGHLIGHT_COLOR_WRONG = 822018048;
     public static final int HIGHLIGHT_COLOR_SECOND = 822018303;
 
-    static public final int DEFAULT_TEXT_COLOR = 0xffffff;
+    static public final int DEFAULT_TEXT_COLOR = 0xFFFFFFFF;
 
     static public boolean renderTooltipAsFavorite = false;
 
@@ -53,12 +53,8 @@ public class Graphics {
     }
 
     public static void renderText(DrawContext context, Text text, int color, int x, int y, boolean shadow, boolean centered) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        TextRenderer renderer = client.textRenderer;
-        int xOffset = 0;
-        if (centered) {
-            xOffset = renderer.getWidth(text) / 2;
-        }
+        var renderer = MinecraftClient.getInstance().textRenderer;
+        int xOffset = centered ? renderer.getWidth(text) / 2 : 0;
         context.drawText(renderer, text, x - xOffset, y, color, shadow);
     }
 
@@ -85,7 +81,9 @@ public class Graphics {
                 rect.getLeft(), rect.getTop(),
                 rect.getRight(), rect.getBottom()
         );
-        renderEntity(context, rect.getLeft() + rect.width() / 2, (int) ((rect.getTop() + (double) rect.height() / 2) + (size * entity.getHeight()) / 2), z, size, entity, spin);
+        int x = rect.getLeft() + rect.width() / 2;
+        int y = (int) (rect.getTop() + (rect.height() + size * entity.getHeight()) / 2);
+        renderEntity(context, x, y, z, size, entity, spin);
         context.disableScissor();
     }
 
@@ -93,14 +91,12 @@ public class Graphics {
         MinecraftClient client = MinecraftClient.getInstance();
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
-        if (entity instanceof SquidEntity) {
-            size /= 1.5;
-        } else if (entity instanceof ItemEntity) {
-            size *= 2;
-        }
-        if (entity instanceof LivingEntity living && living.isBaby()) {
-            size /= 1.7;
-        }
+
+        if (entity instanceof SquidEntity) size /= 1.5;
+        else if (entity instanceof ItemEntity) size *= 2;
+
+        if (entity instanceof LivingEntity l && l.isBaby()) size /= 1.7;
+
         context.getMatrices().translate(x, y, 1000 + z);
         context.getMatrices().scale(1f, 1f, -1);
         context.getMatrices().translate(0, 0, 1000);
@@ -139,46 +135,54 @@ public class Graphics {
         entity.setYaw(yaw);
         entity.setHeadYaw(yaw);
         entity.setPitch(0.f);
-        if (entity instanceof LivingEntity living) {
-            living.bodyYaw = yaw;
-        }
+        if (entity instanceof LivingEntity living) living.bodyYaw = yaw;
     }
 
-    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
-                                   List<TooltipComponent> components,
-                                   int x, int y,
-                                   TooltipPositioner positioner) {
+    public static void drawTooltip(
+            DrawContext context, TextRenderer textRenderer,
+            List<TooltipComponent> components,
+            int x, int y,
+            TooltipPositioner positioner
+    ) {
         drawTooltip(context, textRenderer, components, x, y, positioner, false);
     }
 
-    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
-                                   TooltipComponent component,
-                                   int x, int y,
-                                   TooltipPositioner positioner,
-                                   boolean favorite) {
+    public static void drawTooltip(
+            DrawContext context, TextRenderer textRenderer,
+            TooltipComponent component,
+            int x, int y,
+            TooltipPositioner positioner,
+            boolean favorite
+    ) {
         drawTooltip(context, textRenderer, List.of(component), x, y, positioner, favorite);
     }
 
-    public static void drawTooltipWithFixedBorders(DrawContext context, TextRenderer textRenderer,
-                                   TooltipComponent component,
-                                   int x, int y,
-                                   TooltipPositioner positioner,
-                                   boolean favorite) {
-        drawTooltip(context, textRenderer,
+    public static void drawTooltipWithFixedBorders(
+            DrawContext context, TextRenderer textRenderer,
+            TooltipComponent component,
+            int x, int y,
+            TooltipPositioner positioner,
+            boolean favorite
+    ) {
+        drawTooltip(
+                context, textRenderer,
                 List.of(component,
                         new TooltipComponent() { //dump tooltip component to increase list size
                             public int getHeight(TextRenderer textRenderer) {return 0;}
                             public int getWidth(TextRenderer textRenderer) {return 0;}
                         }
                 ),
-                x, y, positioner, favorite);
+                x, y, positioner, favorite
+        );
     }
 
-    public static void drawTooltip(DrawContext context, TextRenderer textRenderer,
-                                   List<TooltipComponent> components,
-                                   int x, int y,
-                                   TooltipPositioner positioner,
-                                   boolean favorite) {
+    public static void drawTooltip(
+            DrawContext context, TextRenderer textRenderer,
+            List<TooltipComponent> components,
+            int x, int y,
+            TooltipPositioner positioner,
+            boolean favorite
+    ) {
         renderTooltipAsFavorite = favorite;
         context.drawTooltip(textRenderer, components, x, y, positioner, null);
         renderTooltipAsFavorite = false;
