@@ -3,7 +3,6 @@ package com.HiWord9.RPRenames.modConfig;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.renderer.PreviewTooltipPositioner;
-import com.HiWord9.RPRenames.util.rename.RenamesManager;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -31,111 +30,129 @@ public class ModConfigScreenFactory {
         ConfigCategory debug = builder.getOrCreateCategory(Text.translatable("rprenames.config.debug"));
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
-        AbstractConfigListEntry<Boolean> ignoreCEM = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.ignoreCEM"), currentConfig.ignoreCEM)
+        AbstractConfigListEntry<Boolean> ignoreCEM = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.general.ignoreCEM"), currentConfig.ignoreCEM)
                 .setTooltip(Text.translatable("rprenames.config.general.ignoreCEM.tooltip"))
                 .setSaveConsumer(currentConfig::setIgnoreCEM)
                 .setDefaultValue(defaultConfig.ignoreCEM)
                 .build();
 
-        AbstractConfigListEntry<Boolean> enableAnvilModification = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.enableAnvilModification"), currentConfig.enableAnvilModification)
+        AbstractConfigListEntry<Boolean> enableAnvilModification = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.general.enableAnvilModification"), currentConfig.enableAnvilModification)
                 .setTooltip(Text.translatable("rprenames.config.general.enableAnvilModification.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.enableAnvilModification = newConfig)
                 .setDefaultValue(defaultConfig.enableAnvilModification)
                 .build();
 
-        AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.creativeTabCategory.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
+        AbstractConfigListEntry<Boolean> compareItemGroupRenames = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.general.creativeTabCategory.compareItemGroupRenames"), currentConfig.compareItemGroupRenames)
                 .setTooltip(Text.translatable("rprenames.config.general.creativeTabCategory.compareItemGroupRenames.tooltip"))
                 .setSaveConsumer(currentConfig::setCompareItemGroupRenames)
                 .setDefaultValue(defaultConfig.compareItemGroupRenames)
                 .build();
 
-        AbstractConfigListEntry<Boolean> generateSpawnEggsInItemGroup = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup"), currentConfig.generateSpawnEggsInItemGroup)
+        AbstractConfigListEntry<Boolean> generateSpawnEggsInItemGroup = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup"), currentConfig.generateSpawnEggsInItemGroup)
                 .setTooltip(Text.translatable("rprenames.config.general.creativeTabCategory.generateSpawnEggsInItemGroup.tooltip"))
                 .setSaveConsumer(currentConfig::setGenerateSpawnEggsInItemGroup)
                 .setDefaultValue(defaultConfig.generateSpawnEggsInItemGroup)
                 .build();
 
-        AbstractConfigListEntry<Boolean> loadModBuiltinResources = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.general.loadModBuiltinResources"), currentConfig.loadModBuiltinResources)
+        AbstractConfigListEntry<Boolean> loadModBuiltinResources = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.general.loadModBuiltinResources"), currentConfig.loadModBuiltinResources)
                 .setTooltip(Text.translatable("rprenames.config.general.loadModBuiltinResources.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.loadModBuiltinResources = newConfig)
                 .setDefaultValue(defaultConfig.loadModBuiltinResources)
                 .requireRestart()
                 .build();
 
-        AbstractConfigListEntry<Boolean> openByDefault = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.openByDefault"), currentConfig.openByDefault)
+        AbstractConfigListEntry<Boolean> openByDefault = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.openByDefault"), currentConfig.openByDefault)
                 .setTooltip(Text.translatable("rprenames.config.gui.openByDefault.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.openByDefault = newConfig)
                 .setDefaultValue(defaultConfig.openByDefault)
                 .build();
 
-        AbstractConfigListEntry<Boolean> offsetMenu = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.offsetMenu"), currentConfig.offsetMenu)
+        AbstractConfigListEntry<Boolean> offsetMenu = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.offsetMenu"), currentConfig.offsetMenu)
                 .setTooltip(Text.translatable("rprenames.config.gui.offsetMenu.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.offsetMenu = newConfig)
                 .setDefaultValue(defaultConfig.offsetMenu)
                 .build();
 
-        AbstractConfigListEntry<FavoriteButton.Position> favoriteButtonPosition = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.favoriteButtonPosition"), FavoriteButton.Position.class, currentConfig.favoriteButtonPosition)
+        AbstractConfigListEntry<FavoriteButton.Position> favoriteButtonPosition = entryBuilder
+                .startEnumSelector(Text.translatable("rprenames.config.gui.favoriteButtonPosition"), FavoriteButton.Position.class, currentConfig.favoriteButtonPosition)
                 .setTooltip(Text.translatable("rprenames.config.gui.favoriteButtonPosition.tooltip"))
                 .setEnumNameProvider(value -> Text.translatable("rprenames.config.gui.favoriteButtonPosition." + value.name()))
                 .setSaveConsumer(newConfig -> currentConfig.favoriteButtonPosition = newConfig)
                 .setDefaultValue(defaultConfig.favoriteButtonPosition)
                 .build();
 
-        AbstractConfigListEntry<Boolean> showPackName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.showPackName"), currentConfig.showPackName)
+        AbstractConfigListEntry<Boolean> showPackName = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.showPackName"), currentConfig.showPackName)
                 .setTooltip(Text.translatable("rprenames.config.gui.tooltipCategory.showPackName.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showPackName = newConfig)
                 .setDefaultValue(defaultConfig.showPackName)
                 .build();
 
-        AbstractConfigListEntry<Boolean> showExtraProperties = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.showExtraProperties"), currentConfig.showExtraProperties)
+        AbstractConfigListEntry<Boolean> showExtraProperties = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.showExtraProperties"), currentConfig.showExtraProperties)
                 .setTooltip(Text.translatable("rprenames.config.gui.tooltipCategory.showExtraProperties.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showExtraProperties = newConfig)
                 .setDefaultValue(defaultConfig.showExtraProperties)
                 .build();
 
-        AbstractConfigListEntry<Boolean> highlightTooltipSlotWrong = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotWrong"), currentConfig.highlightTooltipSlotWrong)
+        AbstractConfigListEntry<Boolean> highlightTooltipSlotWrong = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotWrong"), currentConfig.highlightTooltipSlotWrong)
                 .setTooltip(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotWrong.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightTooltipSlotWrong = newConfig)
                 .setDefaultValue(defaultConfig.highlightTooltipSlotWrong)
                 .build();
 
-        AbstractConfigListEntry<Boolean> highlightTooltipSlotSelected = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected"), currentConfig.highlightTooltipSlotSelected)
+        AbstractConfigListEntry<Boolean> highlightTooltipSlotSelected = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected"), currentConfig.highlightTooltipSlotSelected)
                 .setTooltip(Text.translatable("rprenames.config.gui.tooltipCategory.slotCategory.highlightTooltipSlotSelected.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightTooltipSlotSelected = newConfig)
                 .setDefaultValue(defaultConfig.highlightTooltipSlotSelected)
                 .build();
 
-        AbstractConfigListEntry<Boolean> highlightSelected = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSelected"), currentConfig.highlightSelected)
+        AbstractConfigListEntry<Boolean> highlightSelected = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSelected"), currentConfig.highlightSelected)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.highlightSelected.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightSelected = newConfig)
                 .setDefaultValue(defaultConfig.highlightSelected)
                 .build();
 
-        AbstractConfigListEntry<Boolean> recolorFavoriteTooltip = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.recolorFavoriteTooltip"), currentConfig.recolorFavoriteTooltip)
+        AbstractConfigListEntry<Boolean> recolorFavoriteTooltip = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.recolorFavoriteTooltip"), currentConfig.recolorFavoriteTooltip)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.recolorFavoriteTooltip.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.recolorFavoriteTooltip = newConfig)
                 .setDefaultValue(defaultConfig.recolorFavoriteTooltip)
                 .build();
 
-        AbstractConfigListEntry<Boolean> renderStarInFavoriteTooltip = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.renderStarInFavoriteTooltip"), currentConfig.renderStarInFavoriteTooltip)
+        AbstractConfigListEntry<Boolean> renderStarInFavoriteTooltip = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.renderStarInFavoriteTooltip"), currentConfig.renderStarInFavoriteTooltip)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.renderStarInFavoriteTooltip.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.renderStarInFavoriteTooltip = newConfig)
                 .setDefaultValue(defaultConfig.renderStarInFavoriteTooltip)
                 .build();
 
-        AbstractConfigListEntry<Boolean> highlightSlot = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSlot"), currentConfig.highlightSlot)
+        AbstractConfigListEntry<Boolean> highlightSlot = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.renderCategory.highlightSlot"), currentConfig.highlightSlot)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.highlightSlot.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.highlightSlot = newConfig)
                 .setDefaultValue(defaultConfig.highlightSlot)
                 .build();
 
-        AbstractConfigListEntry<Integer> slotHighlightColor = entryBuilder.startColorField(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightColor"), Color.ofTransparent(currentConfig.slotHighlightColorRGB))
+        AbstractConfigListEntry<Integer> slotHighlightColor = entryBuilder
+                .startColorField(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightColor"), Color.ofTransparent(currentConfig.slotHighlightColorRGB))
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightColor.tooltip"))
                 .setDefaultValue(defaultConfig.slotHighlightColorRGB)
                 .setSaveConsumer(newConfig -> currentConfig.slotHighlightColorRGB = newConfig)
                 .build();
 
-        AbstractConfigListEntry<Integer> slotHighlightALPHA = entryBuilder.startIntSlider(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightALPHA"), currentConfig.slotHighlightColorALPHA, 0, 100)
+        AbstractConfigListEntry<Integer> slotHighlightALPHA = entryBuilder
+                .startIntSlider(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightALPHA"), currentConfig.slotHighlightColorALPHA, 0, 100)
                 .setTooltip(Text.translatable("rprenames.config.gui.renderCategory.slotHighlightColorCategory.slotHighlightALPHA.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.slotHighlightColorALPHA = newConfig)
                 .setDefaultValue(defaultConfig.slotHighlightColorALPHA)
@@ -147,74 +164,86 @@ public class ModConfigScreenFactory {
                 })
                 .build();
 
-        AbstractConfigListEntry<Boolean> enablePreview = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.enablePreview"), currentConfig.enablePreview)
+        AbstractConfigListEntry<Boolean> enablePreview = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.enablePreview"), currentConfig.enablePreview)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.enablePreview.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.enablePreview = newConfig)
                 .setDefaultValue(defaultConfig.enablePreview)
                 .build();
 
-        AbstractConfigListEntry<PreviewTooltipPositioner.PreviewPos> previewPos = entryBuilder.startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), PreviewTooltipPositioner.PreviewPos.class, currentConfig.previewPos)
+        AbstractConfigListEntry<PreviewTooltipPositioner.PreviewPos> previewPos = entryBuilder
+                .startEnumSelector(Text.translatable("rprenames.config.gui.previewCategory.previewPos"), PreviewTooltipPositioner.PreviewPos.class, currentConfig.previewPos)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.previewPos.tooltip"))
                 .setEnumNameProvider(value -> Text.translatable("rprenames.config.gui.previewCategory.previewPos." + value.name()))
                 .setSaveConsumer(newConfig -> currentConfig.previewPos = newConfig)
                 .setDefaultValue(defaultConfig.previewPos)
                 .build();
 
-        AbstractConfigListEntry<Double> scaleFactorItem = entryBuilder.startDoubleField(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorItem"), currentConfig.scaleFactorItem)
+        AbstractConfigListEntry<Double> scaleFactorItem = entryBuilder
+                .startDoubleField(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorItem"), currentConfig.scaleFactorItem)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorItem.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.scaleFactorItem = newConfig)
                 .setDefaultValue(defaultConfig.scaleFactorItem)
                 .build();
 
-        AbstractConfigListEntry<Double> scaleFactorEntity = entryBuilder.startDoubleField(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorEntity"), currentConfig.scaleFactorEntity)
+        AbstractConfigListEntry<Double> scaleFactorEntity = entryBuilder
+                .startDoubleField(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorEntity"), currentConfig.scaleFactorEntity)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.scaleCategory.scaleFactorEntity.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.scaleFactorEntity = newConfig)
                 .setDefaultValue(defaultConfig.scaleFactorEntity)
                 .build();
 
-        AbstractConfigListEntry<Boolean> playerPreviewByDefault = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.playerPreviewByDefault"), currentConfig.playerPreviewByDefault)
+        AbstractConfigListEntry<Boolean> playerPreviewByDefault = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.playerPreviewByDefault"), currentConfig.playerPreviewByDefault)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.playerPreviewByDefault.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.playerPreviewByDefault = newConfig)
                 .setDefaultValue(defaultConfig.playerPreviewByDefault)
                 .build();
 
-        AbstractConfigListEntry<Boolean> spinPlayerPreview = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.spinPlayerPreview"), currentConfig.spinPlayerPreview)
+        AbstractConfigListEntry<Boolean> spinPlayerPreview = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.spinPlayerPreview"), currentConfig.spinPlayerPreview)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.spinPlayerPreview.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.spinPlayerPreview = newConfig)
                 .setDefaultValue(defaultConfig.spinPlayerPreview)
                 .build();
 
-        AbstractConfigListEntry<Boolean> alwaysAllowPlayerPreviewHead = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.alwaysAllowPlayerPreviewHead"), currentConfig.alwaysAllowPlayerPreviewHead)
+        AbstractConfigListEntry<Boolean> alwaysAllowPlayerPreviewHead = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.alwaysAllowPlayerPreviewHead"), currentConfig.alwaysAllowPlayerPreviewHead)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.playerCategory.alwaysAllowPlayerPreviewHead.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.alwaysAllowPlayerPreviewHead = newConfig)
                 .setDefaultValue(defaultConfig.alwaysAllowPlayerPreviewHead)
                 .build();
 
-        AbstractConfigListEntry<Boolean> spinMobPreview = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.spinMobPreview"), currentConfig.spinMobPreview)
+        AbstractConfigListEntry<Boolean> spinMobPreview = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.spinMobPreview"), currentConfig.spinMobPreview)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.spinMobPreview.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.spinMobPreview = newConfig)
                 .setDefaultValue(defaultConfig.spinMobPreview)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disableSnowGolemPumpkin = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin"), currentConfig.disableSnowGolemPumpkin)
+        AbstractConfigListEntry<Boolean> disableSnowGolemPumpkin = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin"), currentConfig.disableSnowGolemPumpkin)
                 .setTooltip(Text.translatable("rprenames.config.gui.previewCategory.entityCategory.disableSnowGolemPumpkin.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.disableSnowGolemPumpkin = newConfig)
                 .setDefaultValue(defaultConfig.disableSnowGolemPumpkin)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disableTooltipHints = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disableTooltipHints"), currentConfig.disableTooltipHints)
+        AbstractConfigListEntry<Boolean> disableTooltipHints = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disableTooltipHints"), currentConfig.disableTooltipHints)
                 .setTooltip(Text.translatable("rprenames.config.gui.hintsCategory.disableTooltipHints.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.disableTooltipHints = newConfig)
                 .setDefaultValue(defaultConfig.disableTooltipHints)
                 .build();
 
-        AbstractConfigListEntry<Boolean> disablePageArrowsHints = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disablePageArrowsHints"), currentConfig.disablePageArrowsHints)
+        AbstractConfigListEntry<Boolean> disablePageArrowsHints = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.gui.hintsCategory.disablePageArrowsHints"), currentConfig.disablePageArrowsHints)
                 .setTooltip(Text.translatable("rprenames.config.gui.hintsCategory.disablePageArrowsHints.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.disablePageArrowsHints = newConfig)
                 .setDefaultValue(defaultConfig.disablePageArrowsHints)
                 .build();
 
-        AbstractConfigListEntry<Boolean> updateConfig = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.updateConfig"), currentConfig.updateConfig)
+        AbstractConfigListEntry<Boolean> updateConfig = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.updateConfig"), currentConfig.updateConfig)
                 .setTooltip(Text.translatable("rprenames.config.debug.updateConfig.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.updateConfig = newConfig)
                 .setDefaultValue(defaultConfig.updateConfig)
@@ -222,9 +251,10 @@ public class ModConfigScreenFactory {
 
         class PrevToggle { boolean bl = false; }
         final PrevToggle prevToggleRecreateConfig = new PrevToggle();
-        AbstractConfigListEntry<Boolean> recreateConfig = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.recreateConfig"), false)
+        AbstractConfigListEntry<Boolean> recreateConfig = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.recreateConfig"), false)
                 .setTooltip(Text.translatable("rprenames.config.debug.recreateConfig.tooltip"))
-                .setYesNoTextSupplier((bl) -> {
+                .setYesNoTextSupplier(bl -> {
                     if (bl != prevToggleRecreateConfig.bl) {
                         RPRenames.LOGGER.info("Recreating config manually");
                         RPRenames.renamesManager.updateRenames();
@@ -236,9 +266,10 @@ public class ModConfigScreenFactory {
                 .build();
 
         final PrevToggle prevToggleClearConfig = new PrevToggle();
-        AbstractConfigListEntry<Boolean> clearConfig = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.clearConfig"), false)
+        AbstractConfigListEntry<Boolean> clearConfig = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.clearConfig"), false)
                 .setTooltip(Text.translatable("rprenames.config.debug.clearConfig.tooltip"))
-                .setYesNoTextSupplier((bl) -> {
+                .setYesNoTextSupplier(bl -> {
                     if (bl != prevToggleClearConfig.bl) {
                         RPRenames.LOGGER.info("Deleting config manually");
                         RPRenames.renamesManager.clearRenames();
@@ -249,19 +280,22 @@ public class ModConfigScreenFactory {
                 .setSaveConsumer(newConfig -> currentConfig.shouldUpdateItemGroup = true)
                 .build();
 
-        AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNamePattern)
+        AbstractConfigListEntry<Boolean> showNbtDisplayName = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.showNbtDisplayName"), currentConfig.showNamePattern)
                 .setTooltip(Text.translatable("rprenames.config.debug.showNbtDisplayName.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showNamePattern = newConfig)
                 .setDefaultValue(defaultConfig.showNamePattern)
                 .build();
 
-        AbstractConfigListEntry<Boolean> showOriginalProperties = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.showOriginalProperties"), currentConfig.showOriginalProperties)
+        AbstractConfigListEntry<Boolean> showOriginalProperties = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.showOriginalProperties"), currentConfig.showOriginalProperties)
                 .setTooltip(Text.translatable("rprenames.config.debug.showOriginalProperties.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.showOriginalProperties = newConfig)
                 .setDefaultValue(defaultConfig.showOriginalProperties)
                 .build();
 
-        AbstractConfigListEntry<Boolean> fixDelayedPacketsChangingTab = entryBuilder.startBooleanToggle(Text.translatable("rprenames.config.debug.fixDelayedPacketsChangingTab"), currentConfig.fixDelayedPacketsChangingTab)
+        AbstractConfigListEntry<Boolean> fixDelayedPacketsChangingTab = entryBuilder
+                .startBooleanToggle(Text.translatable("rprenames.config.debug.fixDelayedPacketsChangingTab"), currentConfig.fixDelayedPacketsChangingTab)
                 .setTooltip(Text.translatable("rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip"))
                 .setSaveConsumer(newConfig -> currentConfig.fixDelayedPacketsChangingTab = newConfig)
                 .setDefaultValue(defaultConfig.fixDelayedPacketsChangingTab)
