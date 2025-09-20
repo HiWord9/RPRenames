@@ -250,7 +250,7 @@ public class RPRenamesCommand {
             String components = getComponentsCommandArgument(source, itemStack);
 
             String giveCommand = "/give @s "
-                    + ParserHelper.getIdAndPath(itemStack.getItem())
+                    + ParserHelper.idFromItem(itemStack.getItem())
                     + components
                     + (r instanceof CITRename citRename ?
                     (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");

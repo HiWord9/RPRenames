@@ -107,7 +107,7 @@ public class FavoritesFileManager {
     private static Item itemFromFavoriteFileName(String fileName) {
         if (!fileName.endsWith(".json")) return Items.AIR;
         String itemFromFileName = fileName.substring(0, fileName.length() - 5).replace(".", ":");
-        return ParserHelper.itemFromName(itemFromFileName);
+        return ParserHelper.itemFromId(itemFromFileName);
     }
 
     private String itemToFavoriteFile(Item item) {

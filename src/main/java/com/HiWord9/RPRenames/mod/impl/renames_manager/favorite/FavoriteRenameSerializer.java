@@ -23,7 +23,7 @@ public class FavoriteRenameSerializer implements JsonSerializer<FavoriteRename>,
 
         Item item = null;
         String jsonItem = context.deserialize(jsonObject.get("item"), String.class);
-        if (jsonItem != null) item = ParserHelper.itemFromName(jsonItem);
+        if (jsonItem != null) item = ParserHelper.itemFromId(jsonItem);
 
         return new FavoriteRename(
                 context.deserialize(jsonObject.get("name"), String.class),

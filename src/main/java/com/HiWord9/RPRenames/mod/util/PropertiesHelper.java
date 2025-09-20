@@ -18,12 +18,12 @@ import java.util.regex.PatternSyntaxException;
 
 public class PropertiesHelper {
 
-    public static String getFirstName(String nbtDisplayName) {
-        return getFirstName(nbtDisplayName, null);
+    public static String getFirstName(String namePattern) {
+        return getFirstName(namePattern, null);
     }
 
-    public static String getFirstName(String nbtDisplayName, @Nullable String path) {
-        String name = parseEscapes(nbtDisplayName);
+    public static String getFirstName(String namePattern, @Nullable String path) {
+        String name = parseEscapes(namePattern);
         if (name.startsWith("pattern:") || name.startsWith("ipattern:")) {
             if (name.startsWith("i")) {
                 name = name.substring(1);

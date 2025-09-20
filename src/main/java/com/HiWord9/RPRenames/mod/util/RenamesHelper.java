@@ -86,7 +86,8 @@ public class RenamesHelper {
     }
 
     public static ItemStack createItemOrSpawnEgg(Rename rename, int itemIndex) {
-        if (rename instanceof CEMRename cemRename && config.generateSpawnEggsInItemGroup) return cemRename.toSpawnEgg();
+        if (rename instanceof CEMRename cemRename && config.generateSpawnEggsInItemGroup)
+            return cemRename.toSpawnEgg();
         return rename.toStack(itemIndex);
     }
 }
