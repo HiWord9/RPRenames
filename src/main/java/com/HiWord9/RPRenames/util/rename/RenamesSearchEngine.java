@@ -1,9 +1,9 @@
 package com.HiWord9.RPRenames.util.rename;
 
 import com.HiWord9.RPRenames.RPRenames;
-import com.HiWord9.RPRenames.util.config.PropertiesHelper;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
-import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
+import com.HiWord9.RPRenames.util.renames_manager.PropertiesHelper;
+import com.HiWord9.RPRenames.util.renames_manager.favorite.FavoritesManager;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.ParserHelper;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
 import com.HiWord9.RPRenames.util.rename.type.ResourcePackRename;

@@ -1,12 +1,12 @@
 package com.HiWord9.RPRenames;
 
 import com.HiWord9.RPRenames.mod_config.ModConfig;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesFileManager;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
-import com.HiWord9.RPRenames.util.config.generation.CEMParser;
-import com.HiWord9.RPRenames.util.config.generation.CITParser;
-import com.HiWord9.RPRenames.util.config.generation.item_model.ItemModelParser;
-import com.HiWord9.RPRenames.util.config.generation.UpdatableRenamesManager;
+import com.HiWord9.RPRenames.util.renames_manager.favorite.FavoritesFileManager;
+import com.HiWord9.RPRenames.util.renames_manager.favorite.FavoritesManager;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.CEMParser;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.CITParser;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.item_model.ItemModelParser;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.UpdatableRenamesManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;

@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.config.generation;
+package com.HiWord9.RPRenames.util.renames_manager.updatable;
 
 import net.minecraft.entity.EntityType;
 

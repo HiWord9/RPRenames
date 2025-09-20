@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.config.generation.item_model.condition;
+package com.HiWord9.RPRenames.util.renames_manager.updatable.item_model.condition;
 
 public interface Condition {
     FallbackCondition FALLBACK = new FallbackCondition();

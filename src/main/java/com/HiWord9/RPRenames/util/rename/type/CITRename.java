@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util.rename.type;
 
-import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.renames_manager.PropertiesHelper;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.CITRenameRendererBuilder;
 import com.HiWord9.RPRenames.util.rename.renderer.builder.RenameRendererBuilder;

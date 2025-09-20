@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.config;
+package com.HiWord9.RPRenames.util.renames_manager;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.util.rename.type.CITRename;

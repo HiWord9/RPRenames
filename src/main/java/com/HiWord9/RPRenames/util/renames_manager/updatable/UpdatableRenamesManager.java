@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.util.config.generation;
+package com.HiWord9.RPRenames.util.renames_manager.updatable;
 
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.RPRenamesItemGroup;

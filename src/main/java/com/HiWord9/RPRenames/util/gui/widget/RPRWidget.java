@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.util.gui.widget;
 import com.HiWord9.RPRenames.RPRenames;
 import com.HiWord9.RPRenames.mod_config.ModConfig;
 import com.HiWord9.RPRenames.util.RPRInteractableScreen;
-import com.HiWord9.RPRenames.util.config.favorite.FavoritesManager;
+import com.HiWord9.RPRenames.util.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.util.gui.Graphics;
 import com.HiWord9.RPRenames.util.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.util.rename.RenamesHelper;

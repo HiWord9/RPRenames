@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.util.config.favorite;
+package com.HiWord9.RPRenames.util.renames_manager.favorite;
 
-import com.HiWord9.RPRenames.util.config.generation.ParserHelper;
+import com.HiWord9.RPRenames.util.renames_manager.updatable.ParserHelper;
 import com.google.gson.*;
 import net.minecraft.item.Item;
 

@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.util.rename.renderer;
 
-import com.HiWord9.RPRenames.util.config.PropertiesHelper;
+import com.HiWord9.RPRenames.util.renames_manager.PropertiesHelper;
 import com.HiWord9.RPRenames.util.gui.tooltip_component.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.util.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.util.rename.type.Rename;
