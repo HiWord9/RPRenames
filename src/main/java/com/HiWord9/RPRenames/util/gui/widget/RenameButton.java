@@ -81,7 +81,7 @@ public class RenameButton extends ClickableWidget {
     }
 
     public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
-        if (!rprWidget.getCurrentTab().forCurrentItemOnly
+        if (!rprWidget.getCurrentTab().forCraftItemOnly
                 && config.slotHighlightColorALPHA > 0
                 && config.highlightSlot
         ) {
@@ -103,7 +103,7 @@ public class RenameButton extends ClickableWidget {
         if (button == 1) {
             List<Item> items;
 
-            if (rprWidget.getCurrentTab().forCurrentItemOnly) items = List.of(rprWidget.getItemInFirstSlot());
+            if (rprWidget.getCurrentTab().forCraftItemOnly) items = List.of(rprWidget.getCraftItem());
             else items = List.copyOf(rename.getItems());
 
             rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName());

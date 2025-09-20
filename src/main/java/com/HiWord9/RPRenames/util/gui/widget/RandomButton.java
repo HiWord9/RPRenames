@@ -53,12 +53,12 @@ public class RandomButton extends ClickableWidget {
 
             setSide(randomNumber % SIDES);
 
-            if (rprWidget.currentRenameList.isEmpty()) return true;
+            if (rprWidget.filteredRenames.isEmpty()) return true;
 
-            int renameIndex = randomNumber % rprWidget.currentRenameList.size();
+            int renameIndex = randomNumber % rprWidget.filteredRenames.size();
 
-            rprWidget.setPage(renameIndex / RPRWidget.BUTTONS_ON_PAGE);
-            rprWidget.doRename(rprWidget.currentRenameList.get(renameIndex));
+            rprWidget.openPage(renameIndex / RPRWidget.BUTTONS_ON_PAGE);
+            rprWidget.doRename(rprWidget.filteredRenames.get(renameIndex));
 
             return true;
         }

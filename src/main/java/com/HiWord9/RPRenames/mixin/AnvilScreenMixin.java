@@ -134,10 +134,10 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (opener.mouseClicked(mouseX, mouseY, button)) return true;
         if (favoriteButton.mouseClicked(mouseX, mouseY, button)) return true;
         if (ghostCraft.mouseClicked(mouseX, mouseY, button)) {
-            if (rprWidget.getCurrentItemStack().isEmpty()) {
+            if (rprWidget.getActiveItemStack().isEmpty()) {
                 nameField.setText("");
-                if (rprWidget.getCurrentTab().forCurrentItemOnly) {
-                    rprWidget.screenUpdate();
+                if (rprWidget.getCurrentTab().forCraftItemOnly) {
+                    rprWidget.resetPageContent();
                 }
             }
         }
@@ -185,7 +185,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         }
 
         // Ignoring changes if stack did not change. Works for manual moving stacks too.
-        if (ItemStack.areEqual(stack, rprWidget.getCurrentItemStack())) ci.cancel();
+        if (ItemStack.areEqual(stack, rprWidget.getActiveItemStack())) ci.cancel();
     }
 
     @Inject(at = @At("RETURN"), method = "onSlotUpdate")
@@ -239,7 +239,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         if (
                 config.fixDelayedPacketsChangingTab
                 && !client.isInSingleplayer()
-                && !rprWidget.getCurrentItemStack().isEmpty()
+                && !rprWidget.getActiveItemStack().isEmpty()
         ) afterPutInAnvilFirst = true;
 
         RPRInteractableScreen.super.moveToCraft(inventorySlot, craftSlot);

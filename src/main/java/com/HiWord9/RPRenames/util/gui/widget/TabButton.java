@@ -58,7 +58,7 @@ public class TabButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isMouseOver(mouseX, mouseY)) {
-            rprWidget.openTab(tab);
+            if (rprWidget.getCurrentTab() != tab) rprWidget.openTab(tab);
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);

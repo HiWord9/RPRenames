@@ -105,7 +105,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
             tooltipComponents.addAll(description);
         }
 
-        if (!rprWidget.getCurrentTab().forCurrentItemOnly) {
+        if (!rprWidget.getCurrentTab().forCraftItemOnly) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(component);
         }
@@ -129,7 +129,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         ArrayList<Text> extraProperties = new ArrayList<>();
 
         var stack = rprWidget.pickItemStackForRename(citRename);
-        if (stack == null) stack = rprWidget.getCurrentItemStack();
+        if (stack == null) stack = rprWidget.getActiveItemStack();
 
         var craftMatcher = new CITRename.CraftMatcher(citRename, stack);
 

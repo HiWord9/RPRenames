@@ -56,7 +56,7 @@ public class FavoriteButton extends ClickableWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.isMouseOver(mouseX, mouseY)) {
-            var item = rprWidget.getItemInFirstSlot();
+            var item = rprWidget.getCraftItem();
             if (item == Items.AIR) return true;
 
             rprWidget.addOrRemoveFavorite(!favorite, List.of(item), rprWidget.getNameText());
