@@ -118,39 +118,36 @@ public class RPRWidget implements Drawable, Element, Widget {
         this.ghostCraft = ghostCraft;
 
         this.screen = parentScreen;
-        this.x = x;
-        this.y = y;
 
         pageDown = new PageButton(
                 this,
-                getX() + MENU_START_X + BUTTON_X_OFFSET,
-                getY() + PAGE_BUTTONS_Y,
+                MENU_START_X + BUTTON_X_OFFSET,
+                PAGE_BUTTONS_Y,
                 PageButton.Type.DOWN
         );
         pageUp = new PageButton(
                 this,
-                getX() + WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH,
-                getY() + PAGE_BUTTONS_Y,
+                WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH,
+                PAGE_BUTTONS_Y,
                 PageButton.Type.UP
         );
 
         int tabsOffset = TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y;
-        int tabsY = getY() + START_TAB_OFFSET_Y;
-        searchTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.SEARCH.displayIndex, Tab.SEARCH);
-        favoriteTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.FAVORITE.displayIndex, Tab.FAVORITE);
-        inventoryTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.INVENTORY.displayIndex, Tab.INVENTORY);
-        globalTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.GLOBAL.displayIndex, Tab.GLOBAL);
+        searchTab = new TabButton(this, 0, START_TAB_OFFSET_Y + tabsOffset * Tab.SEARCH.displayIndex, Tab.SEARCH);
+        favoriteTab = new TabButton(this, 0, START_TAB_OFFSET_Y + tabsOffset * Tab.FAVORITE.displayIndex, Tab.FAVORITE);
+        inventoryTab = new TabButton(this, 0, START_TAB_OFFSET_Y + tabsOffset * Tab.INVENTORY.displayIndex, Tab.INVENTORY);
+        globalTab = new TabButton(this, 0, START_TAB_OFFSET_Y + tabsOffset * Tab.GLOBAL.displayIndex, Tab.GLOBAL);
 
         randomButton = new RandomButton(
                 this,
-                getX() + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
-                getY() + 14, randomNumber() % RandomButton.SIDES
+                WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
+                14, randomNumber() % RandomButton.SIDES
         );
 
         searchField = new TextFieldWidget(
                 textRenderer(),
-                getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
-                getY() + 15,
+                MENU_START_X + SEARCH_FIELD_X_OFFSET,
+                15,
                 MENU_TEXTURE_WIDTH - 53, 10,
                 Text.of("")
         );
@@ -164,6 +161,8 @@ public class RPRWidget implements Drawable, Element, Widget {
                 inventoryTab, globalTab,
                 pageDown, pageUp
         ));
+
+        setPosition(x, y);
 
         refreshFavoriteButton();
     }
