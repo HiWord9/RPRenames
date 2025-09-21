@@ -23,13 +23,14 @@ public class RenamesManagerImpl<R extends Rename> implements RenamesManager<R> {
         return l == null ? List.of() : List.copyOf(l);
     }
 
-    public void addRename(Item item, R rename) {
-        renames.computeIfAbsent(item, i -> new ArrayList<>()).add(rename);
+    public boolean addRename(Item item, R rename) {
+        return renames.computeIfAbsent(item, i -> new ArrayList<>()).add(rename);
     }
 
-    public void removeRename(Item item, R rename) {
+    public boolean removeRename(Item item, R rename) {
         var l = renames.get(item);
-        if (l != null) l.remove(rename);
+        if (l != null) return l.remove(rename);
+        else return false;
     }
 
     public void clearRenames() {

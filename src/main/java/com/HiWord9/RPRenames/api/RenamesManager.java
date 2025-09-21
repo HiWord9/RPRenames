@@ -11,17 +11,17 @@ public interface RenamesManager<R extends Rename> {
 
     List<R> getRenames(Item item);
 
-    default void addRename(R rename) {
-        addRename(rename.getItem(), rename);
+    default boolean addRename(R rename) {
+        return addRename(rename.getItem(), rename);
     }
 
-    void addRename(Item item, R rename);
+    boolean addRename(Item item, R rename);
 
-    default void removeRename(R rename) {
-        removeRename(rename.getItem(), rename);
+    default boolean removeRename(R rename) {
+        return removeRename(rename.getItem(), rename);
     }
 
-    void removeRename(Item item, R rename);
+    boolean removeRename(Item item, R rename);
 
     void clearRenames();
 }

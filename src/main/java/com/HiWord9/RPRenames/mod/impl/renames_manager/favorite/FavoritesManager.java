@@ -19,31 +19,37 @@ public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
         renames.putAll(favoritesFileManager.getAllSavedFavorites());
     }
 
-    public void addRenames(Collection<Item> items, String name) {
-        items.forEach(item -> addRename(item, name));
+    public boolean addRenames(Collection<Item> items, String name) {
+        boolean bl = false;
+        for (Item item : items) bl |= addRename(item, name);
+        return bl;
     }
 
-    public void addRename(Item item, String name) {
-        addRename(item, new FavoriteRename(name, item));
+    public boolean addRename(Item item, String name) {
+        return addRename(item, new FavoriteRename(name, item));
     }
 
-    public void addRename(Item item, FavoriteRename rename) {
-        super.addRename(item, rename);
+    public boolean addRename(Item item, FavoriteRename rename) {
+        boolean bl = super.addRename(item, rename);
         updateFile(item);
+        return bl;
     }
 
-    public void removeRenames(Collection<Item> items, String name) {
-        items.forEach(item -> removeRename(item, name));
+    public boolean removeRenames(Collection<Item> items, String name) {
+        boolean bl = false;
+        for (Item item : items) bl |= removeRename(item, name);
+        return bl;
     }
 
-    public void removeRename(Item item, String name) {
-        removeRename(item, new FavoriteRename(name, item));
+    public boolean removeRename(Item item, String name) {
+        return removeRename(item, new FavoriteRename(name, item));
     }
 
-    public void removeRename(Item item, FavoriteRename rename) {
-        if (!isFavorite(item, rename)) return;
-        super.removeRename(item, rename);
+    public boolean removeRename(Item item, FavoriteRename rename) {
+        if (!isFavorite(item, rename)) return false;
+        boolean bl = super.removeRename(item, rename);
         updateFile(item);
+        return bl;
     }
 
     public void clearRenames() {
