@@ -13,6 +13,7 @@ import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
@@ -29,12 +30,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class RPRWidget implements Drawable, Element/*, Widget*/ {
+public class RPRWidget implements Drawable, Element, Widget {
     protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
 
     public static final int MENU_TEXTURE_WIDTH = 147;
@@ -121,34 +123,34 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
 
         pageDown = new PageButton(
                 this,
-                this.x + MENU_START_X + BUTTON_X_OFFSET,
-                this.y + PAGE_BUTTONS_Y,
+                getX() + MENU_START_X + BUTTON_X_OFFSET,
+                getY() + PAGE_BUTTONS_Y,
                 PageButton.Type.DOWN
         );
         pageUp = new PageButton(
                 this,
-                this.x + WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH,
-                this.y + PAGE_BUTTONS_Y,
+                getX() + WIDGET_WIDTH - BUTTON_X_OFFSET - PageButton.BUTTON_WIDTH,
+                getY() + PAGE_BUTTONS_Y,
                 PageButton.Type.UP
         );
 
         int tabsOffset = TabButton.BUTTON_HEIGHT + TAB_OFFSET_Y;
-        int tabsY = this.y + START_TAB_OFFSET_Y;
-        searchTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.SEARCH.displayIndex, Tab.SEARCH);
-        favoriteTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.FAVORITE.displayIndex, Tab.FAVORITE);
-        inventoryTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.INVENTORY.displayIndex, Tab.INVENTORY);
-        globalTab = new TabButton(this, this.x, tabsY + tabsOffset * Tab.GLOBAL.displayIndex, Tab.GLOBAL);
+        int tabsY = getY() + START_TAB_OFFSET_Y;
+        searchTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.SEARCH.displayIndex, Tab.SEARCH);
+        favoriteTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.FAVORITE.displayIndex, Tab.FAVORITE);
+        inventoryTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.INVENTORY.displayIndex, Tab.INVENTORY);
+        globalTab = new TabButton(this, getX(), tabsY + tabsOffset * Tab.GLOBAL.displayIndex, Tab.GLOBAL);
 
         randomButton = new RandomButton(
                 this,
-                this.x + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
-                this.y + 14, randomNumber() % RandomButton.SIDES
+                getX() + WIDGET_WIDTH - 14 - RandomButton.BUTTON_WIDTH,
+                getY() + 14, randomNumber() % RandomButton.SIDES
         );
 
         searchField = new TextFieldWidget(
                 textRenderer(),
-                this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET,
-                this.y + 15,
+                getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
+                getY() + 15,
                 MENU_TEXTURE_WIDTH - 53, 10,
                 Text.of("")
         );
@@ -322,15 +324,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     }
 
     public void offsetX(int x) {
-        this.x += x;
-
-        for (Widget widget : widgets) {
-            widget.setX(widget.getX() + x);
-        }
-        for (RenameButton renameButton : buttons) {
-            if (renameButton == null) continue;
-            renameButton.setX(renameButton.getX() + x);
-        }
+        setX(getX() + x);
     }
 
     protected void onSearch(String s) {
@@ -352,7 +346,7 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         context.drawTexture(
                 RenderLayer::getGuiTextured,
                 MENU_TEXTURE,
-                this.x + MENU_START_X, this.y,
+                getX() + MENU_START_X, getY(),
                 0,0,
                 MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT,
                 MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT
@@ -361,13 +355,13 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
             Graphics.renderText(
                     context, SEARCH_HINT_TEXT,
-                    this.x + MENU_START_X + SEARCH_FIELD_X_OFFSET,
-                    this.y + 15,
+                    getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
+                    getY() + 15,
                     true, false
             );
         }
 
-        int menuCenterX = this.x + MENU_START_X + (MENU_TEXTURE_WIDTH / 2);
+        int menuCenterX = getX() + MENU_START_X + (MENU_TEXTURE_WIDTH / 2);
         if (filteredRenames.isEmpty()) {
             String key = "noRenamesFound";
             if (getCraftItem() == Items.AIR && currentTab.forCraftItemOnly)
@@ -382,13 +376,13 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
                                     .withItalic(true)
                                     .withColor(Formatting.GRAY)
                             ),
-                    menuCenterX, this.y + 37,
+                    menuCenterX, getY() + 37,
                     true, true
             );
         } else {
             Graphics.renderText(
                     context, pageCount,
-                    menuCenterX, this.y + 140,
+                    menuCenterX, getY() + 140,
                     false, true
             );
         }
@@ -475,6 +469,48 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
         refreshPageContent();
     }
 
+    @Override
+    public void setX(int x) {
+        var prevX = getX();
+        var dif = x - prevX;
+        forEachChild(w -> w.setX(w.getX() + dif));
+        this.x += dif;
+    }
+
+    @Override
+    public void setY(int y) {
+        var prevY = getY();
+        var dif = y - prevY;
+        forEachChild(w -> w.setY(w.getY() + dif));
+        this.y += dif;
+    }
+
+    @Override
+    public int getX() { return x; }
+
+    @Override
+    public int getY() { return y; }
+
+    @Override
+    public int getWidth() { return WIDGET_WIDTH; }
+
+    @Override
+    public int getHeight() { return WIDGET_HEIGHT; }
+
+    @Override
+    public void forEachChild(Consumer<ClickableWidget> consumer) {
+        for (ClickableWidget widget : widgets)
+            consumer.accept(widget);
+        for (RenameButton renameButton : buttons)
+            if (renameButton != null)
+                consumer.accept(renameButton);
+    }
+
+    @Override
+    public ScreenRect getNavigationFocus() {
+        return Widget.super.getNavigationFocus();
+    }
+
 // Updating Data
 
     protected void updateRenames() {
@@ -555,8 +591,8 @@ public class RPRWidget implements Drawable, Element/*, Widget*/ {
     protected RenameButton createButton(int orderOnPage, Rename rename) {
         boolean favorite = shouldRenameButtonBeFavorite(rename);
 
-        int buttonsZoneX = this.x + MENU_START_X + BUTTON_X_OFFSET;
-        int buttonsZoneY = this.y + 30;
+        int buttonsZoneX = getX() + MENU_START_X + BUTTON_X_OFFSET;
+        int buttonsZoneY = getY() + 30;
         int x = buttonsZoneX + 1 + (orderOnPage % 5 * RenameButton.BUTTON_WIDTH);
         int y = buttonsZoneY + 1 + (orderOnPage / 5 * RenameButton.BUTTON_HEIGHT);
 
