@@ -23,19 +23,22 @@ public class Util {
         return MinecraftClient.getInstance();
     }
 
-    public static ClientPlayerEntity player() {
+    public static ClientPlayerEntity player() throws AssertionError {
+        assert client() != null;
         return client().player;
     }
 
-    public static TextRenderer textRenderer() {
+    public static TextRenderer textRenderer() throws AssertionError {
+        assert client() != null;
         return client().textRenderer;
     }
 
-    public static Screen currentScreen() {
+    public static Screen currentScreen() throws AssertionError {
+        assert client() != null;
         return client().currentScreen;
     }
 
-    public static List<ItemStack> inventoryCopy() {
+    public static List<ItemStack> inventoryCopy() throws AssertionError {
         assert player() != null;
         return player()
                 .getInventory()
