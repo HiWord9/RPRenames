@@ -8,17 +8,18 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     protected T rename;
     protected ItemStack stack;
-    protected ArrayList<TooltipComponent> tooltipComponents = new ArrayList<>();
+    protected List<TooltipComponent> tooltipComponents = new ArrayList<>();
 
     public SimpleRenameRenderer(T rename) {
         this.rename = rename;
-        stack = rename.toStack();
+        this.stack = rename.toStack();
 
         addNameTooltip();
     }
