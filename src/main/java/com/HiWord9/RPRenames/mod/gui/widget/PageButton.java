@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class PageButton extends ClickableWidget {
+public class PageButton extends ClickableWidget implements OffsetableWidget {
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
 
     RPRWidget rprWidget;

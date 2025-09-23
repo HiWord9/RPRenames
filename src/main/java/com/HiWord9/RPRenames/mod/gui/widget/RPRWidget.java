@@ -16,7 +16,6 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class RPRWidget implements Drawable, Element, Widget {
+public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
 
     public static final int MENU_TEXTURE_WIDTH = 147;
@@ -322,10 +321,6 @@ public class RPRWidget implements Drawable, Element, Widget {
         }
     }
 
-    public void offsetX(int x) {
-        setX(getX() + x);
-    }
-
     protected void onSearch(String s) {
         updateFilteredRenames();
         openPage(0);
@@ -507,7 +502,7 @@ public class RPRWidget implements Drawable, Element, Widget {
 
     @Override
     public ScreenRect getNavigationFocus() {
-        return Widget.super.getNavigationFocus();
+        return OffsetableWidget.super.getNavigationFocus();
     }
 
 // Updating Data

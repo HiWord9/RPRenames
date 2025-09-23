@@ -20,7 +20,7 @@ import java.util.List;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class RenameButton extends ClickableWidget {
+public class RenameButton extends ClickableWidget implements OffsetableWidget {
     final int highlightColor = config().getSlotHighlightRGBA();
 
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/button.png");

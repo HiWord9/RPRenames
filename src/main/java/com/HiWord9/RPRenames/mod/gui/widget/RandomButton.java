@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class RandomButton extends ClickableWidget {
+public class RandomButton extends ClickableWidget implements OffsetableWidget {
     public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/dice.png");
     static final String TOOLTIP_KEY = "rprenames.gui.randomButton.tooltip";
 

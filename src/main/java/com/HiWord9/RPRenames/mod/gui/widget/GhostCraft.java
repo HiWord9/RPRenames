@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import static com.HiWord9.RPRenames.mod.gui.Graphics.*;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class GhostCraft implements Drawable, Element {
+public class GhostCraft implements Drawable, Element, Offsetable {
     public final GhostSlot[] slots;
     public final int length;
 
@@ -89,11 +89,12 @@ public class GhostCraft implements Drawable, Element {
         resetSpecialHighlight();
     }
 
-    public void offsetX(int x) {
-        for (GhostSlot slot : slots) slot.setX(slot.getX() + x);
+    @Override
+    public void offset(int x, int y) {
+        for (GhostSlot slot : slots) slot.offset(x, y);
     }
 
-    public static class GhostSlot extends ClickableWidget {
+    public static class GhostSlot extends ClickableWidget implements OffsetableWidget {
         protected ItemStack content;
         protected boolean forceHighlight = false;
 

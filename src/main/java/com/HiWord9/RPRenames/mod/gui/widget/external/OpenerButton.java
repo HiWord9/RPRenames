@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.mod.gui.widget.external;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
+import com.HiWord9.RPRenames.mod.gui.widget.OffsetableWidget;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -8,7 +9,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
-public class OpenerButton extends ClickableWidget {
+public class OpenerButton extends ClickableWidget implements OffsetableWidget {
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/opener.png");
 
     RPRWidget rprWidget;
