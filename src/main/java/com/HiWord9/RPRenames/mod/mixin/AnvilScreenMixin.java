@@ -3,6 +3,8 @@ package com.HiWord9.RPRenames.mod.mixin;
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.gui.widget.GhostCraft;
+import com.HiWord9.RPRenames.mod.gui.widget.Offsetable;
+import com.HiWord9.RPRenames.mod.gui.widget.OffsetableWidget;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.mod.gui.widget.external.OpenerButton;
@@ -26,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 @Mixin(value = AnvilScreen.class, priority = 1200)
-public abstract class AnvilScreenMixin extends Screen implements RPRInteractableScreen {
+public abstract class AnvilScreenMixin extends Screen implements RPRInteractableScreen, Offsetable {
     protected AnvilScreenMixin(Text title) {
         super(title);
     }
@@ -49,7 +51,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
 
     @Inject(at = @At("TAIL"), method = "setup")
     private void init(CallbackInfo ci) {
-        if (shouldNotModify()) return;
+        if (shouldNotModify() || init) return;
         init = true;
 
         assert client != null && client.currentScreen != null;
@@ -86,8 +88,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
 
     @Inject(at = @At("RETURN"), method = "onRenamed")
     private void newNameEntered(CallbackInfo ci) {
-        if (shouldNotModify()) return;
-        if (!init) return;
+        if (shouldNotModify() || !init) return;
         rprWidget.updatedName();
     }
 
@@ -97,16 +98,15 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
             instance.init(client, width, height);
             return;
         }
-        String tempSearchFieldText = rprWidget.searchField.getText();
-        boolean prevOpen = rprWidget.isOpen();
-        if (prevOpen) {
-            opener.execute();
-        }
+
+        int prevX = instance.x;
+        int prevY = instance.y;
+
         instance.init(client, width, height);
-        if (prevOpen && !rprWidget.isOpen()) {
-            opener.execute();
-        }
-        rprWidget.searchField.setText(tempSearchFieldText);
+
+        offsetWidgets(instance.x - prevX, instance.y - prevY);
+        
+        if (rprWidget.isOpen()) updateMenuShift();
     }
 
     @Inject(at = @At(value = "HEAD"), method = "keyPressed")
@@ -199,16 +199,21 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         offsetX(MENU_SHIFT * (rprWidget.isOpen() ? 1 : -1));
     }
 
-    private void offsetX(int x) {
-        if (client == null || client.currentScreen == null) return;
+    @Override
+    public void offset(int x, int y) {
+        var screen = (AnvilScreen) (Object) this;
+        screen.x += x;
+        screen.y += y;
 
-        ((AnvilScreen) client.currentScreen).x += x;
+        OffsetableWidget.offset(nameField, x, y);
+        offsetWidgets(x, y);
+    }
 
-        nameField.setX(nameField.getX() + x);
-        opener.setX(opener.getX() + x);
-        favoriteButton.setX(favoriteButton.getX() + x);
-        rprWidget.offsetX(x);
-        ghostCraft.offsetX(x);
+    private void offsetWidgets(int x, int y) {
+        opener.offset(x, y);
+        favoriteButton.offset(x, y);
+        rprWidget.offset(x, y);
+        ghostCraft.offset(x, y);
     }
 
     @Inject(at = @At("HEAD"), method = "drawForeground")
