@@ -13,11 +13,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import java.io.*;
 import java.util.*;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
@@ -62,7 +58,7 @@ public class CEMParser implements Parser {
                 }
         ).entrySet()) {
             try {
-                for (String jpmFileName : objToParamList(objFromInputStream(entry.getValue().getInputStream()), "model")) {
+                for (String jpmFileName : pullFieldListFromJsonInputStream(entry.getValue().getInputStream(), "model")) {
                     if (jpmFileName == null || !jpmFileName.endsWith(".jpm")) continue;
                     String path = entry.getKey().getPath();
                     parseTextureSourceFile(resourceManager, jpmFileName, path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".")), RANDOM_ENTITY_PATH);
@@ -142,7 +138,7 @@ public class CEMParser implements Parser {
         if (optionalResourceJpm.isEmpty()) return;
 
         Resource resourceJpm = optionalResourceJpm.get();
-        var textures = objToParamList(objFromInputStream(resourceJpm.getInputStream()), "texture");
+        var textures = pullFieldListFromJsonInputStream(resourceJpm.getInputStream(), "texture");
         if (textures.isEmpty()) return;
 
         String textureName = prepareTexturePath(textures.getFirst());
@@ -248,31 +244,40 @@ public class CEMParser implements Parser {
         return numbers;
     }
 
+    private static List<String> pullFieldListFromJsonInputStream(InputStream inputStream, String field) {
+        var obj = objFromInputStream(inputStream);
+        if (obj == null) return List.of();
+
+        var resultList = new ArrayList<String>();
+        pullFieldListFromObj(obj, field, resultList);
+        return resultList;
+    }
+
+    private static void pullFieldListFromObj(Object node, String field, List<String> resultList) {
+        if (node instanceof Map<?,?> map) {
+            var v = map.get(field);
+            if (v != null) {
+                resultList.add(v.toString());
+                return;
+            }
+
+            for (Object value : map.values()) {
+                pullFieldListFromObj(value, field, resultList);
+            }
+        } else if (node instanceof List<?> list) {
+            for (Object value : list) {
+                pullFieldListFromObj(value, field, resultList);
+            }
+        }
+    }
+
     private static Object objFromInputStream(InputStream inputStream) {
-        Object obj = null;
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-        try {
-            Type type = new com.google.gson.reflect.TypeToken<>() {
-            }.getType();
-            obj = GSON.fromJson(bufferedReader, type);
-            bufferedReader.close();
+        try (var reader = new InputStreamReader(inputStream)) {
+            return GSON.fromJson(reader, Object.class);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);
         }
-        return obj;
-    }
-
-    private static List<String> objToParamList(Object obj, String param) {
-        String string = obj.toString();
-        ArrayList<String> list = new ArrayList<>();
-        int j = string.length() - param.length();
-        for (int i = 0; i < j; i++) {
-            if (!string.startsWith(param + "=", i) || (i != 0 && String.valueOf(string.charAt(i - 1)).matches("[a-zA-Z]"))) continue;
-            int start = i + param.length() + 1;
-            if (!string.contains(",")) continue;
-            list.add(string.substring(start, string.indexOf(',', start)));
-        }
-        return list;
+        return null;
     }
 
     private static String getLastPathPart(String path) {
