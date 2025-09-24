@@ -4,13 +4,9 @@ import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.PreviewTooltipPositioner;
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonWriter;
-import org.apache.commons.io.IOUtils;
 
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.Reader;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
@@ -99,14 +95,11 @@ public class ModConfig {
         if (!RPRenames.MOD_CONFIG_FILE.exists())
             return new ModConfig().write();
 
-        Reader reader = null;
-        try {
-            return GSON.fromJson(reader = new FileReader(RPRenames.MOD_CONFIG_FILE), ModConfig.class);
+        try (var reader = new FileReader(RPRenames.MOD_CONFIG_FILE)) {
+            return GSON.fromJson(reader, ModConfig.class);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Could not read Config file", e);
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -122,16 +115,12 @@ public class ModConfig {
         }
         shouldUpdateItemGroup = null;
 
-        JsonWriter writer = null;
-        try {
-            writer = GSON.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE));
+        try (var writer = GSON.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE))) {
             writer.setIndent("    ");
             GSON.toJson(GSON.toJsonTree(this, ModConfig.class), writer);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Could not write Config file", e);
             throw new RuntimeException(e);
-        } finally {
-            IOUtils.closeQuietly(writer);
         }
         return this;
     }
