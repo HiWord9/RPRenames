@@ -7,7 +7,6 @@ import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
 import com.HiWord9.RPRenames.api.RenamesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
 import com.HiWord9.RPRenames.mod.util.ParserHelper;
-import com.google.gson.Gson;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -255,8 +254,7 @@ public class CEMParser implements Parser {
         try {
             Type type = new com.google.gson.reflect.TypeToken<>() {
             }.getType();
-            Gson gson = new Gson();
-            obj = gson.fromJson(bufferedReader, type);
+            obj = GSON.fromJson(bufferedReader, type);
             bufferedReader.close();
         } catch (Exception e) {
             RPRenames.LOGGER.error("Something went wrong while parsing CEM Renames", e);

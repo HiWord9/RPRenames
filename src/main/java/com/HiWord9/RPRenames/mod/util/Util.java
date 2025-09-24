@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.mod.util;
 
 import com.HiWord9.RPRenames.mod.config.ModConfig;
+import com.google.gson.Gson;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -14,6 +15,8 @@ import java.util.List;
 
 public class Util {
     private static final String MINECRAFT_COLON = Identifier.DEFAULT_NAMESPACE + Identifier.NAMESPACE_SEPARATOR;
+
+    public static final Gson GSON = new Gson();
 
     public static ModConfig config() {
         return ModConfig.INSTANCE;

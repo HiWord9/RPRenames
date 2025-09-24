@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 public class ModConfig {
     public boolean ignoreCEM = false;
     public void setIgnoreCEM(boolean ignoreCEM) {
@@ -99,7 +101,7 @@ public class ModConfig {
 
         Reader reader = null;
         try {
-            return new Gson().fromJson(reader = new FileReader(RPRenames.MOD_CONFIG_FILE), ModConfig.class);
+            return GSON.fromJson(reader = new FileReader(RPRenames.MOD_CONFIG_FILE), ModConfig.class);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Could not read Config file", e);
             throw new RuntimeException(e);
@@ -120,12 +122,11 @@ public class ModConfig {
         }
         shouldUpdateItemGroup = null;
 
-        Gson gson = new Gson();
         JsonWriter writer = null;
         try {
-            writer = gson.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE));
+            writer = GSON.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE));
             writer.setIndent("    ");
-            gson.toJson(gson.toJsonTree(this, ModConfig.class), writer);
+            GSON.toJson(GSON.toJsonTree(this, ModConfig.class), writer);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Could not write Config file", e);
             throw new RuntimeException(e);
