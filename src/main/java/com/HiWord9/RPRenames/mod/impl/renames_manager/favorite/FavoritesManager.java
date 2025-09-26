@@ -1,6 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.favorite;
 
 import com.HiWord9.RPRenames.mod.impl.renames_manager.RenamesManagerImpl;
+import com.HiWord9.RPRenames.mod.util.TaskQueueThread;
 import net.minecraft.item.Item;
 
 import java.util.Collection;
