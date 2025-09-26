@@ -1,15 +1,18 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model;
 
+import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.presentation.ItemModelPresentation;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.Condition;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.mod.util.Util;
 import net.minecraft.client.item.ItemAsset;
 import net.minecraft.client.render.item.model.ItemModel;
 import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -24,9 +27,9 @@ import java.util.Map;
 public class ItemModelParser implements Parser {
     private final Map<Identifier, ItemAsset> itemAssets = new HashMap<>();
 
-    public RenamesManager renamesManager;
+    public RenamesManager<? super ItemModelRename> renamesManager;
 
-    public ItemModelParser(RenamesManager renamesManager) {
+    public ItemModelParser(RenamesManager<? super ItemModelRename> renamesManager) {
         this.renamesManager = renamesManager;
     }
 
@@ -38,7 +41,21 @@ public class ItemModelParser implements Parser {
     @Override
     public void parse(ResourceManager resourceManager, Profiler profiler) {
         var renamesMap = getIdToRenameInfoMap(itemAssets);
-        // todo: implement renamesMap to renames parsing
+        renamesMap.forEach((id, renameInfos) -> {
+            renameInfos.forEach(renameInfo -> {
+                var rename = bakeRename(renameInfo, Util.itemFromId(id));
+                renamesManager.addRename(rename);
+            });
+        });
+        // todo: merge similar renames for different items
+    }
+
+    private static ItemModelRename bakeRename(RenameInfo renameInfo, Item... items) {
+        return new ItemModelRename(
+                renameInfo.conditions,
+                renameInfo.renameCondition.values().getFirst().getString(),
+                items
+        );
     }
 
     private static Map<Identifier, List<RenameInfo>> getIdToRenameInfoMap(Map<Identifier, ItemAsset> itemAssets) {
