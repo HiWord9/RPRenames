@@ -60,7 +60,7 @@ public class FavoritesFileManager {
             FileReader fileReader = new FileReader(file);
             Type type = new TypeToken<ArrayList<FavoriteRename>>(){}.getType();
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(FavoriteRename.class, new FavoriteRenameSerializer())
+                    .registerTypeAdapter(FavoriteRename.class, new FavoriteRename.Serializer())
                     .create();
             renames = gson.fromJson(fileReader, type);
             fileReader.close();
@@ -82,7 +82,7 @@ public class FavoritesFileManager {
             FileWriter fileWriter = new FileWriter(file);
             Gson gson = new GsonBuilder()
                     .setPrettyPrinting()
-                    .registerTypeAdapter(FavoriteRename.class, new FavoriteRenameSerializer())
+                    .registerTypeAdapter(FavoriteRename.class, new FavoriteRename.Serializer())
                     .create();
             gson.toJson(renames, fileWriter);
             fileWriter.close();

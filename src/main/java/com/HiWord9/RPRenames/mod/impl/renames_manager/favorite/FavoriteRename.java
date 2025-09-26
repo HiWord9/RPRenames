@@ -1,7 +1,11 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.favorite;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.mod.util.Util;
+import com.google.gson.*;
 import net.minecraft.item.Item;
+
+import java.lang.reflect.Type;
 
 public class FavoriteRename extends Rename {
     public FavoriteRename(String name, Item item) {
@@ -11,5 +15,30 @@ public class FavoriteRename extends Rename {
     public void setItem(Item item) {
         if (!items.isEmpty()) items.removeFirst();
         items.addFirst(item);
+    }
+
+    public static class Serializer implements JsonSerializer<FavoriteRename>, JsonDeserializer<FavoriteRename> {
+        @Override
+        public JsonElement serialize(FavoriteRename rename, Type type, JsonSerializationContext context) {
+            JsonObject result = new JsonObject();
+
+            result.addProperty("name", rename.getName());
+
+            return result;
+        }
+
+        @Override
+        public FavoriteRename deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            Item item = null;
+            String jsonItem = context.deserialize(jsonObject.get("item"), String.class);
+            if (jsonItem != null) item = Util.itemFromId(jsonItem);
+
+            return new FavoriteRename(
+                    context.deserialize(jsonObject.get("name"), String.class),
+                    item
+            );
+        }
     }
 }
