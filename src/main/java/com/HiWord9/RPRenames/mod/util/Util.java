@@ -51,7 +51,11 @@ public class Util {
     }
 
     public static Item itemFromId(String id) {
-        return Registries.ITEM.get(Identifier.of(id));
+        return itemFromId(Identifier.of(id));
+    }
+
+    public static Item itemFromId(Identifier id) {
+        return Registries.ITEM.get(id);
     }
 
     public static String idFromItem(Item item) {
