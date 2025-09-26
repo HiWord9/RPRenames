@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.mod.impl.renames_manager.favorite;
+package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.util.Util;
