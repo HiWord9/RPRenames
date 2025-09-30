@@ -2,17 +2,17 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 
 import net.minecraft.item.ItemStack;
 
-public interface Condition {
+public interface ItemModelCondition {
     FallbackCondition FALLBACK = new FallbackCondition();
     CompositeCondition COMPOSITE = new CompositeCondition();
 
     default void apply(ItemStack stack) {}
 
-    class FallbackCondition implements Condition {
+    class FallbackCondition implements ItemModelCondition {
         private FallbackCondition() {}
     }
 
-    class CompositeCondition implements Condition {
+    class CompositeCondition implements ItemModelCondition {
         private CompositeCondition() {}
     }
 }

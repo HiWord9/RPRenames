@@ -5,4 +5,4 @@ import net.minecraft.client.render.item.property.numeric.NumericProperty;
 public record NumericCondition<P extends NumericProperty>(
         P property,
         float threshold
-) implements Condition {}
+) implements ItemModelCondition {}

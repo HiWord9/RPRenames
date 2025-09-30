@@ -2,7 +2,7 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 
 import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.Condition;
+import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.HiWord9.RPRenames.api.RenamesManager;
 import com.HiWord9.RPRenames.mod.util.Util;
 import net.minecraft.client.item.ItemAsset;
@@ -64,7 +64,7 @@ public class ItemModelParser implements Parser {
 
     private static void fillRenamesConditionsMap(
             List<RenameData> renameDataList,
-            List<Condition> conditions,
+            List<ItemModelCondition> conditions,
             ItemModel.Unbaked unbakedModel
     ) {
         var cases = Case.getCases(unbakedModel);

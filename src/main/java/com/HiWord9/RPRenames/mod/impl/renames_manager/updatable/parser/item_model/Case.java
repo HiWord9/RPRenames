@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model;
 
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.BooleanCondition;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.Condition;
+import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.NumericCondition;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import net.minecraft.client.render.item.model.*;
@@ -10,7 +10,7 @@ import net.minecraft.client.render.item.property.select.SelectProperty;
 import java.util.ArrayList;
 import java.util.List;
 
-public record Case(Condition condition, ItemModel.Unbaked result) {
+public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
 
     public static List<Case> getCases(ItemModel.Unbaked unbakedModel) {
         var cases = new ArrayList<Case>();
@@ -26,7 +26,7 @@ public record Case(Condition condition, ItemModel.Unbaked result) {
 
     private static void fillCases(List<Case> cases, CompositeItemModel.Unbaked unbakedCompositeModel) {
         for (ItemModel.Unbaked model : unbakedCompositeModel.models()) {
-            cases.add(new Case(Condition.COMPOSITE, model));
+            cases.add(new Case(ItemModelCondition.COMPOSITE, model));
         }
     }
 
@@ -55,7 +55,7 @@ public record Case(Condition condition, ItemModel.Unbaked result) {
         }
 
         unbakedSelectModel.fallback().ifPresent(fallback ->
-                cases.add(new Case(Condition.FALLBACK, fallback))
+                cases.add(new Case(ItemModelCondition.FALLBACK, fallback))
         );
     }
 
@@ -68,7 +68,7 @@ public record Case(Condition condition, ItemModel.Unbaked result) {
         }
 
         unbakedRangeDispatchModel.fallback().ifPresent(fallback ->
-                cases.add(new Case(Condition.FALLBACK, fallback))
+                cases.add(new Case(ItemModelCondition.FALLBACK, fallback))
         );
     }
 }

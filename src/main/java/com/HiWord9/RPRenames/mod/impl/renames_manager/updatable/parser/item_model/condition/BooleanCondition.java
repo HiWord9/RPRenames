@@ -5,4 +5,4 @@ import net.minecraft.client.render.item.property.bool.BooleanProperty;
 public record BooleanCondition<P extends BooleanProperty>(
         P property,
         boolean value
-) implements Condition {}
+) implements ItemModelCondition {}

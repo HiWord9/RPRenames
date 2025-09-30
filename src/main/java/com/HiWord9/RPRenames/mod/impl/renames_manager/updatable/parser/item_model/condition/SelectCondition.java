@@ -9,7 +9,7 @@ import java.util.List;
 public record SelectCondition<P extends SelectProperty<V>, V>(
         P property,
         List<V> values
-) implements Condition {
+) implements ItemModelCondition {
     @Override
     @SuppressWarnings("unchecked") // todo wrap with try
     public void apply(ItemStack stack) {
