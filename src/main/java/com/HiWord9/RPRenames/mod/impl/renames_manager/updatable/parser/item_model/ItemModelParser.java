@@ -2,7 +2,6 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 
 import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.presentation.ItemModelPresentation;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.Condition;
 import com.HiWord9.RPRenames.api.RenamesManager;
 import com.HiWord9.RPRenames.mod.util.Util;
@@ -68,9 +67,9 @@ public class ItemModelParser implements Parser {
             List<Condition> conditions,
             ItemModel.Unbaked unbakedModel
     ) {
-        var model = ItemModelPresentation.of(unbakedModel);
-        if (!model.getCases().isEmpty()) {
-            for (var modelCase : model.getCases()) {
+        var cases = Case.getCases(unbakedModel);
+        if (!cases.isEmpty()) {
+            for (var modelCase : cases) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
                 fillRenamesConditionsMap(renameDataList, newConditions, modelCase.result());
