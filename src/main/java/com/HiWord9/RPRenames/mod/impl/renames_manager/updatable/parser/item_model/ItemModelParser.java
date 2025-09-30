@@ -40,42 +40,42 @@ public class ItemModelParser implements Parser {
 
     @Override
     public void parse(ResourceManager resourceManager, Profiler profiler) {
-        var renamesMap = getIdToRenameInfoMap(itemAssets);
-        renamesMap.forEach((id, renameInfos) -> {
-            renameInfos.forEach(renameInfo -> {
-                var rename = bakeRename(renameInfo, Util.itemFromId(id));
+        var renameDataMap = getIdToRenameInfoMap(itemAssets);
+        renameDataMap.forEach((id, renameDataList) -> {
+            renameDataList.forEach(renameData -> {
+                var rename = bakeRename(renameData, Util.itemFromId(id));
                 renamesManager.addRename(rename);
             });
         });
         // todo: merge similar renames for different items
     }
 
-    private static ItemModelRename bakeRename(RenameInfo renameInfo, Item... items) {
+    private static ItemModelRename bakeRename(RenameData renameData, Item... items) {
         return new ItemModelRename(
-                renameInfo.conditions,
-                renameInfo.renameCondition.values().getFirst().getString(),
+                renameData.conditions,
+                renameData.renameCondition.values().getFirst().getString(),
                 items
         );
     }
 
-    private static Map<Identifier, List<RenameInfo>> getIdToRenameInfoMap(Map<Identifier, ItemAsset> itemAssets) {
-        var renamesMap = new HashMap<Identifier, List<RenameInfo>>();
+    private static Map<Identifier, List<RenameData>> getIdToRenameInfoMap(Map<Identifier, ItemAsset> itemAssets) {
+        var renameDataMap = new HashMap<Identifier, List<RenameData>>();
         itemAssets.forEach((id, asset) -> {
             var renameConditionsMap = new HashMap<List<Condition>, SelectCondition<ComponentSelectProperty<Text>, Text>>();
             fillRenamesConditionsMap(renameConditionsMap, List.of(), asset.model());
             if (renameConditionsMap.isEmpty()) return;
-            var renameInfoList = new ArrayList<RenameInfo>();
+            var renameDataList = new ArrayList<RenameData>();
             renameConditionsMap.forEach(
                     (conditions, renameCondition) ->
-                            renameInfoList.add(new RenameInfo(conditions, renameCondition))
+                            renameDataList.add(new RenameData(conditions, renameCondition))
             );
-            renamesMap.put(id, renameInfoList);
+            renameDataMap.put(id, renameDataList);
         });
-        return renamesMap;
+        return renameDataMap;
     }
 
     private static void fillRenamesConditionsMap(
-            Map<List<Condition>, SelectCondition<ComponentSelectProperty<Text>, Text>> renamesMap,
+            Map<List<Condition>, SelectCondition<ComponentSelectProperty<Text>, Text>> renameConditionsMap,
             List<Condition> conditions,
             ItemModel.Unbaked unbakedModel
     ) {
@@ -84,12 +84,12 @@ public class ItemModelParser implements Parser {
             for (var modelCase : model.getCases()) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
-                fillRenamesConditionsMap(renamesMap, newConditions, modelCase.result());
+                fillRenamesConditionsMap(renameConditionsMap, newConditions, modelCase.result());
             }
         } else {
             var renameCondition = getRenameCondition(conditions);
             if (renameCondition != null) {
-                renamesMap.put(conditions, renameCondition);
+                renameConditionsMap.put(conditions, renameCondition);
             }
         }
     }
@@ -125,7 +125,7 @@ public class ItemModelParser implements Parser {
         return null;
     }
 
-    private record RenameInfo(
+    private record RenameData(
             List<Condition> conditions,
             SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition
     ) {}
