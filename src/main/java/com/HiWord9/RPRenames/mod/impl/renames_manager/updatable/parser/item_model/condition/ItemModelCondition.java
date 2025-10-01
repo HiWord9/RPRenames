@@ -6,13 +6,15 @@ public interface ItemModelCondition {
     FallbackCondition FALLBACK = new FallbackCondition();
     CompositeCondition COMPOSITE = new CompositeCondition();
 
-    default void apply(ItemStack stack) {}
-
     class FallbackCondition implements ItemModelCondition {
         private FallbackCondition() {}
     }
 
     class CompositeCondition implements ItemModelCondition {
         private CompositeCondition() {}
+    }
+    
+    interface Applicable extends ItemModelCondition {
+        default void apply(ItemStack stack) {}
     }
 }

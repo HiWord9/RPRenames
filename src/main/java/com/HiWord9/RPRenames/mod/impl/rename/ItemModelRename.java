@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class ItemModelRename extends Rename {
-    protected final List<ItemModelCondition> conditions;
+    protected final List<ItemModelCondition.Applicable> conditions;
 
-    public ItemModelRename(List<ItemModelCondition> conditions, String name, Item... items) {
+    public ItemModelRename(List<ItemModelCondition.Applicable> conditions, String name, Item... items) {
         super(name, items);
         this.conditions = conditions;
     }
@@ -19,7 +19,7 @@ public class ItemModelRename extends Rename {
     @Override
     public ItemStack toStack(int index) {
         ItemStack stack = new ItemStack(items.get(index));
-        for (ItemModelCondition condition : conditions) {
+        for (ItemModelCondition.Applicable condition : conditions) {
             condition.apply(stack);
         }
         return stack;

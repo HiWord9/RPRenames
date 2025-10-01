@@ -8,18 +8,31 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class RenameData {
-    protected final List<ItemModelCondition> conditions;
+    protected final List<ItemModelCondition> allConditions;
+    protected final List<ItemModelCondition.Applicable> applicableConditions;
     protected final SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition;
 
     private RenameData(
             List<ItemModelCondition> conditions,
             SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition
     ) {
-        this.conditions = conditions;
+        this.allConditions = conditions;
+        this.applicableConditions = pullApplicableConditions(this.allConditions);
         this.renameCondition = renameCondition;
+    }
+
+    private static List<ItemModelCondition.Applicable> pullApplicableConditions(List<ItemModelCondition> conditions) {
+        var applicableConditions = new ArrayList<ItemModelCondition.Applicable>();
+        for (var condition : conditions) {
+            if (condition instanceof ItemModelCondition.Applicable applicable) {
+                applicableConditions.add(applicable);
+            }
+        }
+        return applicableConditions;
     }
 
     protected static RenameData of(List<ItemModelCondition> conditions) {

@@ -45,7 +45,7 @@ public class ItemModelParser implements Parser {
 
     private static ItemModelRename bakeRename(RenameData renameData, Item... items) {
         return new ItemModelRename(
-                renameData.conditions,
+                renameData.applicableConditions,
                 renameData.renameCondition.values().getFirst().getString(),
                 items
         );
