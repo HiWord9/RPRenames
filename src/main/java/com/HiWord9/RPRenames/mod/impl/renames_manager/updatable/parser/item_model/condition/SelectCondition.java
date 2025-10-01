@@ -6,10 +6,21 @@ import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-public record SelectCondition<P extends SelectProperty<V>, V>(
-        P property,
-        List<V> values
-) implements ItemModelCondition.Applicable {
+public class SelectCondition<P extends SelectProperty<V>, V> implements ItemModelCondition.Applicable {
+    public final P property;
+    public final List<V> values;
+
+    private SelectCondition(P property, List<V> values) {
+        this.property = property;
+        this.values = values;
+    }
+
+    public static <P extends SelectProperty<V>, V> SelectCondition<P, V> of(
+            P property, List<V> values
+    ) {
+        return new SelectCondition<>(property, values);
+    }
+
     @Override
     @SuppressWarnings("unchecked") // todo wrap with try
     public void apply(ItemStack stack) {

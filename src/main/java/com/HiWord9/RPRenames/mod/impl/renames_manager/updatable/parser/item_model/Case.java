@@ -32,11 +32,11 @@ public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
 
     private static void fillCases(List<Case> cases, ConditionItemModel.Unbaked unbakedConditionModel) {
         cases.add(new Case(
-                new BooleanCondition<>(unbakedConditionModel.property(), true),
+                BooleanCondition.of(unbakedConditionModel.property(), true),
                 unbakedConditionModel.onTrue()
         ));
         cases.add(new Case(
-                new BooleanCondition<>(unbakedConditionModel.property(), false),
+                BooleanCondition.of(unbakedConditionModel.property(), false),
                 unbakedConditionModel.onFalse()
         ));
     }
@@ -49,7 +49,7 @@ public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
 
         for (var switchCase : unbakedSwitch.cases()) {
             cases.add(new Case(
-                    new SelectCondition<>(unbakedSwitch.property(), switchCase.values()),
+                    SelectCondition.of(unbakedSwitch.property(), switchCase.values()),
                     switchCase.model()
             ));
         }
@@ -62,7 +62,7 @@ public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
     private static void fillCases(List<Case> cases, RangeDispatchItemModel.Unbaked unbakedRangeDispatchModel) {
         for (RangeDispatchItemModel.Entry entry : unbakedRangeDispatchModel.entries()) {
             cases.add(new Case(
-                    new NumericCondition<>(unbakedRangeDispatchModel.property(), entry.threshold()),
+                    NumericCondition.of(unbakedRangeDispatchModel.property(), entry.threshold()),
                     entry.model()
             ));
         }

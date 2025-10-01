@@ -63,7 +63,7 @@ class RenameData {
             ItemModelCondition condition
     ) {
         if (condition instanceof SelectCondition<?, ?> select
-                && select.property() instanceof ComponentSelectProperty<?>(ComponentType<?> componentType)
+                && select.property instanceof ComponentSelectProperty<?>(ComponentType<?> componentType)
                 && componentType.equals(DataComponentTypes.CUSTOM_NAME)
         ) return (SelectCondition<ComponentSelectProperty<Text>, Text>) select;
 
