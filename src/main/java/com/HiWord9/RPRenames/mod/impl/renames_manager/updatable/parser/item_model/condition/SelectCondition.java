@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-public class SelectCondition<P extends SelectProperty<V>, V> implements ItemModelCondition.Applicable {
+public class SelectCondition<P extends SelectProperty<V>, V> implements ItemModelCondition {
     public final P property;
     public final List<V> values;
 
@@ -18,15 +18,31 @@ public class SelectCondition<P extends SelectProperty<V>, V> implements ItemMode
     public static <P extends SelectProperty<V>, V> SelectCondition<P, V> of(
             P property, List<V> values
     ) {
-        return new SelectCondition<>(property, values);
+        return isPropertyApplicable(property)
+                ? new ApplicableSelectCondition<>(property, values)
+                : new SelectCondition<>(property, values);
     }
 
-    @Override
-    @SuppressWarnings("unchecked") // todo wrap with try
-    public void apply(ItemStack stack) {
-        if (property instanceof ComponentSelectProperty<?>) {
-            var componentSelectProperty = (ComponentSelectProperty<V>) property;
-            stack.set(componentSelectProperty.componentType(), values.getFirst());
-        } // todo fill for other cases
+    private static <V> boolean isPropertyApplicable(SelectProperty<V> property) {
+        return property instanceof ComponentSelectProperty<?>;
+        // todo add cases
+    }
+
+    public static class ApplicableSelectCondition<P extends SelectProperty<V>, V>
+            extends SelectCondition<P, V>
+            implements ItemModelCondition.Applicable
+    {
+        private ApplicableSelectCondition(P property, List<V> values) {
+            super(property, values);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked") // todo wrap with try
+        public void apply(ItemStack stack) {
+            if (property instanceof ComponentSelectProperty<?>) {
+                var componentSelectProperty = (ComponentSelectProperty<V>) property;
+                stack.set(componentSelectProperty.componentType(), values.getFirst());
+            } // todo fill for all apply cases
+        }
     }
 }
