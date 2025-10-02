@@ -48,6 +48,24 @@ class RenameData {
         return null;
     }
 
+    protected static List<RenameData> mergeAllPossible(List<RenameData> renameDataList) {
+        var list = new ArrayList<>(renameDataList);
+        for (int i = 0; i < list.size(); i++) {
+            var currentData = list.get(i);
+            for (int j = i+1; j < list.size();) {
+                var merged = currentData.tryMerge(list.get(j));
+                if (merged != null) {
+                    currentData = merged;
+                    list.set(i, currentData);
+                    list.remove(j);
+                } else {
+                    j++;
+                }
+            }
+        }
+        return list;
+    }
+
     protected static RenameData of(List<ItemModelCondition> conditions) {
         var renameCondition = getRenameCondition(conditions);
         if (renameCondition == null) return null;

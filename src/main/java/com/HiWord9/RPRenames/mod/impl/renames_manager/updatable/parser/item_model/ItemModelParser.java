@@ -34,6 +34,8 @@ public class ItemModelParser implements Parser {
     @Override
     public void parse(ResourceManager resourceManager, Profiler profiler) {
         var renameDataMap = getIdToRenameInfoMap(itemAssets);
+        renameDataMap.replaceAll((id, list) -> RenameData.mergeAllPossible(list));
+
         renameDataMap.forEach((id, renameDataList) -> {
             renameDataList.forEach(renameData -> {
                 var rename = bakeRename(renameData, Util.itemFromId(id));
