@@ -5,6 +5,7 @@ import net.minecraft.client.render.item.property.select.SelectProperty;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SelectCondition<P extends SelectProperty<V>, V> implements ItemModelCondition {
     public final P property;
@@ -13,6 +14,18 @@ public class SelectCondition<P extends SelectProperty<V>, V> implements ItemMode
     private SelectCondition(P property, List<V> values) {
         this.property = property;
         this.values = values;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof SelectCondition<?, ?> that
+                && Objects.equals(property, that.property)
+                && Objects.equals(values, that.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(property, values);
     }
 
     public static <P extends SelectProperty<V>, V> SelectCondition<P, V> of(

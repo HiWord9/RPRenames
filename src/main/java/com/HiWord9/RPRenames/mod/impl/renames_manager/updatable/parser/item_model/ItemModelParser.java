@@ -33,16 +33,12 @@ public class ItemModelParser implements Parser {
 
     @Override
     public void parse(ResourceManager resourceManager, Profiler profiler) {
-        var renameDataMap = getIdToRenameInfoMap(itemAssets);
-        renameDataMap.replaceAll((id, list) -> RenameData.mergeAllPossible(list));
+        var renameDataList = getRenameDataList(itemAssets);
 
-        renameDataMap.forEach((id, renameDataList) -> {
-            renameDataList.forEach(renameData -> {
-                var rename = bakeRename(renameData);
-                renamesManager.addRename(rename);
-            });
+        renameDataList.forEach(data -> {
+            var rename = bakeRename(data);
+            renamesManager.addRename(rename);
         });
-        // todo: merge similar renames for different items
     }
 
     private static ItemModelRename bakeRename(RenameData renameData) {
@@ -53,18 +49,17 @@ public class ItemModelParser implements Parser {
         );
     }
 
-    private static Map<Identifier, List<RenameData>> getIdToRenameInfoMap(Map<Identifier, ItemAsset> itemAssets) {
-        var renameDataMap = new HashMap<Identifier, List<RenameData>>();
+    private static List<RenameData> getRenameDataList(Map<Identifier, ItemAsset> itemAssets) {
+        var resultList = new ArrayList<RenameData>();
         itemAssets.forEach((id, asset) -> {
-            var renameDataList = new ArrayList<RenameData>();
-            fillRenamesConditionsMap(renameDataList, List.of(), asset.model(), Util.itemFromId(id));
-            if (renameDataList.isEmpty()) return;
-            renameDataMap.put(id, renameDataList);
+            var list = new ArrayList<RenameData>();
+            fillRenameDataList(list, List.of(), asset.model(), Util.itemFromId(id));
+            resultList.addAll(list);
         });
-        return renameDataMap;
+        return RenameData.mergeAllPossible(resultList);
     }
 
-    private static void fillRenamesConditionsMap(
+    private static void fillRenameDataList(
             List<RenameData> renameDataList,
             List<ItemModelCondition> conditions,
             ItemModel.Unbaked unbakedModel,
@@ -75,7 +70,7 @@ public class ItemModelParser implements Parser {
             for (var modelCase : cases) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
-                fillRenamesConditionsMap(renameDataList, newConditions, modelCase.result(), item);
+                fillRenameDataList(renameDataList, newConditions, modelCase.result(), item);
             }
         } else {
             var renameData = RenameData.of(conditions, List.of(item));
