@@ -3,13 +3,9 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.item.ItemStack;
 
-public class BooleanCondition<P extends BooleanProperty> implements ItemModelCondition {
-    public final P property;
-    public final boolean value;
-
+public non-sealed class BooleanCondition<P extends BooleanProperty> extends AbstractPropertyValueCondition<P, Boolean> {
     private BooleanCondition(P property, boolean value) {
-        this.property = property;
-        this.value = value;
+        super(property, value);
     }
 
     public static <P extends BooleanProperty> BooleanCondition<P> of(

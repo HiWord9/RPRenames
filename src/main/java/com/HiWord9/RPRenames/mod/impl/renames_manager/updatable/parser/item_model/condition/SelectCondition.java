@@ -5,27 +5,10 @@ import net.minecraft.client.render.item.property.select.SelectProperty;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
-import java.util.Objects;
 
-public class SelectCondition<P extends SelectProperty<V>, V> implements ItemModelCondition {
-    public final P property;
-    public final List<V> values;
-
+public non-sealed class SelectCondition<P extends SelectProperty<V>, V> extends AbstractPropertyValueCondition<P, List<V>> {
     private SelectCondition(P property, List<V> values) {
-        this.property = property;
-        this.values = values;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof SelectCondition<?, ?> that
-                && Objects.equals(property, that.property)
-                && Objects.equals(values, that.values);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(property, values);
+        super(property, values);
     }
 
     public static <P extends SelectProperty<V>, V> SelectCondition<P, V> of(
@@ -54,7 +37,7 @@ public class SelectCondition<P extends SelectProperty<V>, V> implements ItemMode
         public void apply(ItemStack stack) {
             if (property instanceof ComponentSelectProperty<?>) {
                 var componentSelectProperty = (ComponentSelectProperty<V>) property;
-                stack.set(componentSelectProperty.componentType(), values.getFirst());
+                stack.set(componentSelectProperty.componentType(), value.getFirst());
             } // todo fill for all apply cases
         }
     }
