@@ -38,18 +38,18 @@ public class ItemModelParser implements Parser {
 
         renameDataMap.forEach((id, renameDataList) -> {
             renameDataList.forEach(renameData -> {
-                var rename = bakeRename(renameData, Util.itemFromId(id));
+                var rename = bakeRename(renameData);
                 renamesManager.addRename(rename);
             });
         });
         // todo: merge similar renames for different items
     }
 
-    private static ItemModelRename bakeRename(RenameData renameData, Item... items) {
+    private static ItemModelRename bakeRename(RenameData renameData) {
         return new ItemModelRename(
                 renameData.applicableConditions,
                 renameData.renameCondition.values.getFirst().getString(),
-                items
+                renameData.items.toArray(new Item[]{})
         );
     }
 
@@ -57,7 +57,7 @@ public class ItemModelParser implements Parser {
         var renameDataMap = new HashMap<Identifier, List<RenameData>>();
         itemAssets.forEach((id, asset) -> {
             var renameDataList = new ArrayList<RenameData>();
-            fillRenamesConditionsMap(renameDataList, List.of(), asset.model());
+            fillRenamesConditionsMap(renameDataList, List.of(), asset.model(), Util.itemFromId(id));
             if (renameDataList.isEmpty()) return;
             renameDataMap.put(id, renameDataList);
         });
@@ -67,17 +67,18 @@ public class ItemModelParser implements Parser {
     private static void fillRenamesConditionsMap(
             List<RenameData> renameDataList,
             List<ItemModelCondition> conditions,
-            ItemModel.Unbaked unbakedModel
+            ItemModel.Unbaked unbakedModel,
+            Item item
     ) {
         var cases = Case.getCases(unbakedModel);
         if (!cases.isEmpty()) {
             for (var modelCase : cases) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
-                fillRenamesConditionsMap(renameDataList, newConditions, modelCase.result());
+                fillRenamesConditionsMap(renameDataList, newConditions, modelCase.result(), item);
             }
         } else {
-            var renameData = RenameData.of(conditions);
+            var renameData = RenameData.of(conditions, List.of(item));
             if (renameData != null) renameDataList.add(renameData);
         }
     }

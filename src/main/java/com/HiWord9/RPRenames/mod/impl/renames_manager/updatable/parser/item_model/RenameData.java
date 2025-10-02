@@ -5,6 +5,7 @@ import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mode
 import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,15 +14,18 @@ import java.util.HashSet;
 import java.util.List;
 
 class RenameData {
+    protected final List<Item> items;
     protected final List<ItemModelCondition.Applicable> applicableConditions;
     protected final List<List<ItemModelCondition>> contexts;
     protected final SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition;
 
     private RenameData(
+            List<Item> items,
             List<ItemModelCondition.Applicable> conditions,
             List<List<ItemModelCondition>> contexts,
             SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition
     ) {
+        this.items = items;
         this.applicableConditions = conditions;
         this.contexts = contexts;
         this.renameCondition = renameCondition;
@@ -34,7 +38,12 @@ class RenameData {
         var contexts = new ArrayList<>(this.contexts);
         contexts.addAll(other.contexts);
 
-        return new RenameData(mergedConditions, contexts, renameCondition);
+        var items = new ArrayList<>(this.items);
+        for (Item item : other.items)
+            if (!items.contains(item))
+                items.add(item);
+
+        return new RenameData(items, mergedConditions, contexts, renameCondition);
     }
 
     // todo this should be improved for edge cases
@@ -66,7 +75,7 @@ class RenameData {
         return list;
     }
 
-    protected static RenameData of(List<ItemModelCondition> conditions) {
+    protected static RenameData of(List<ItemModelCondition> conditions, List<Item> items) {
         var renameCondition = getRenameCondition(conditions);
         if (renameCondition == null) return null;
 
@@ -76,7 +85,7 @@ class RenameData {
         var contexts = new ArrayList<List<ItemModelCondition>>();
         contexts.add(context);
 
-        return new RenameData(applicableConditions, contexts, renameCondition);
+        return new RenameData(items, applicableConditions, contexts, renameCondition);
     }
 
     private static List<ItemModelCondition.Applicable> pullApplicableConditions(List<ItemModelCondition> conditions) {
