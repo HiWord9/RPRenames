@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 class RenameData {
@@ -24,6 +25,27 @@ class RenameData {
         this.applicableConditions = conditions;
         this.contexts = contexts;
         this.renameCondition = renameCondition;
+    }
+
+    protected RenameData tryMerge(RenameData other) {
+        var mergedConditions = tryMergeConditions(applicableConditions, other.applicableConditions);
+        if (mergedConditions == null) return null;
+
+        var contexts = new ArrayList<>(this.contexts);
+        contexts.addAll(other.contexts);
+
+        return new RenameData(mergedConditions, contexts, renameCondition);
+    }
+
+    // todo this should be improved for edge cases
+    private static List<ItemModelCondition.Applicable> tryMergeConditions(
+            List<ItemModelCondition.Applicable> first,
+            List<ItemModelCondition.Applicable> second
+    ) {
+        if (new HashSet<>(first).equals(new HashSet<>(second))) {
+            return new ArrayList<>(first);
+        }
+        return null;
     }
 
     protected static RenameData of(List<ItemModelCondition> conditions) {
