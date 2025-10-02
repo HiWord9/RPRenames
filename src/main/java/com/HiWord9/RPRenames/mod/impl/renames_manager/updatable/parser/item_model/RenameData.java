@@ -12,17 +12,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 class RenameData {
-    protected final List<ItemModelCondition> allConditions;
     protected final List<ItemModelCondition.Applicable> applicableConditions;
+    protected final List<List<ItemModelCondition>> contexts;
     protected final SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition;
 
     private RenameData(
-            List<ItemModelCondition> conditions,
+            List<ItemModelCondition.Applicable> conditions,
+            List<List<ItemModelCondition>> contexts,
             SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition
     ) {
-        this.allConditions = conditions;
-        this.applicableConditions = pullApplicableConditions(this.allConditions);
+        this.applicableConditions = conditions;
+        this.contexts = contexts;
         this.renameCondition = renameCondition;
+    }
+
+    protected static RenameData of(List<ItemModelCondition> conditions) {
+        var renameCondition = getRenameCondition(conditions);
+        if (renameCondition == null) return null;
+
+        var applicableConditions = pullApplicableConditions(conditions);
+        var context = new ArrayList<>(conditions);
+        context.removeAll(applicableConditions);
+        var contexts = new ArrayList<List<ItemModelCondition>>();
+        contexts.add(context);
+
+        return new RenameData(applicableConditions, contexts, renameCondition);
     }
 
     private static List<ItemModelCondition.Applicable> pullApplicableConditions(List<ItemModelCondition> conditions) {
@@ -33,12 +47,6 @@ class RenameData {
             }
         }
         return applicableConditions;
-    }
-
-    protected static RenameData of(List<ItemModelCondition> conditions) {
-        var renameCondition = getRenameCondition(conditions);
-        if (renameCondition == null) return null;
-        return new RenameData(conditions, renameCondition);
     }
 
     private static @Nullable SelectCondition<ComponentSelectProperty<Text>, Text> getRenameCondition(
