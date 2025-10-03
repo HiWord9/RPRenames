@@ -18,6 +18,27 @@ import java.util.regex.PatternSyntaxException;
 
 public class PropertiesHelper {
 
+    public static Pattern getPropPattern(String fullPattern) {
+        boolean caseInsensitive = false;
+        if (fullPattern.startsWith("iregex:") || fullPattern.startsWith("ipattern:")) {
+            fullPattern = fullPattern.substring(1);
+            caseInsensitive = true;
+        }
+        if (fullPattern.startsWith("regex:") || fullPattern.startsWith("pattern:")) {
+            if (fullPattern.startsWith("regex:")) {
+                fullPattern = fullPattern.substring(6);
+            } else if (fullPattern.startsWith("pattern:")) {
+                fullPattern = fullPattern.substring(8);
+                fullPattern = fullPattern.replace("*", ".*").replace("?", ".+");
+            }
+            fullPattern = PropertiesHelper.parseEscapes(fullPattern);
+            return caseInsensitive
+                    ? Pattern.compile(fullPattern, Pattern.CASE_INSENSITIVE)
+                    : Pattern.compile(fullPattern);
+        }
+        return null;
+    }
+
     public static String getFirstName(String namePattern) {
         return getFirstName(namePattern, null);
     }

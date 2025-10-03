@@ -212,22 +212,9 @@ public class RPRenamesCommand {
         for (Rename r : renames) {
             Boolean nameValid = null;
             if (r instanceof HasNamePattern hasNamePattern) {
-                String nbtName = hasNamePattern.getNamePattern();
-                boolean caseInsensitive = false;
-                if (nbtName.startsWith("iregex:") || nbtName.startsWith("ipattern:")) {
-                    nbtName = nbtName.substring(1);
-                    caseInsensitive = true;
-                }
-                if (nbtName.startsWith("regex:") || nbtName.startsWith("pattern:")) {
-                    if (nbtName.startsWith("regex:")) {
-                        nbtName = nbtName.substring(6);
-                    } else if (nbtName.startsWith("pattern:")) {
-                        nbtName = nbtName.substring(8);
-                        nbtName = nbtName.replace("*", ".*").replace("?", ".+");
-                    }
-                    nbtName = PropertiesHelper.parseEscapes(nbtName);
-                    Pattern pattern = Pattern.compile(caseInsensitive ? nbtName.toUpperCase(Locale.ROOT) : nbtName);
-                    nameValid = pattern.matcher(caseInsensitive ? name.toUpperCase(Locale.ROOT) : name).matches();
+                var pattern = PropertiesHelper.getPropPattern(hasNamePattern.getNamePattern());
+                if (pattern != null) {
+                    nameValid = pattern.matcher(name).matches();
                 }
             }
             if (nameValid == null) nameValid = name.equals(r.getName());
