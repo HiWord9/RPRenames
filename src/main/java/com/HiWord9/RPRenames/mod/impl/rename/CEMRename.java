@@ -75,16 +75,17 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
     }
 
     public ItemStack toSpawnEgg() {
-        Item item = SpawnEggItem.forEntity(this.getEntity());
-        ItemStack spawnEgg = new ItemStack(item == null ? Items.ALLAY_SPAWN_EGG : item);
-        spawnEgg.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.getName()));
-        NbtCompound nbtName = new NbtCompound();
-        nbtName.putString("CustomName", this.getName());
-        if (item == null) {
+        Item spawnEggItem = SpawnEggItem.forEntity(this.getEntity());
+        ItemStack stack = new ItemStack(spawnEggItem == null ? Items.ALLAY_SPAWN_EGG : spawnEggItem);
+
+        stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.getName()));
+
+        if (spawnEggItem == null) {
+            NbtCompound nbtName = new NbtCompound();
             nbtName.putString("id", Registries.ENTITY_TYPE.getId(this.getEntity()).toString());
-            NbtComponent.set(DataComponentTypes.ENTITY_DATA, spawnEgg, nbtName);
+            NbtComponent.set(DataComponentTypes.ENTITY_DATA, stack, nbtName);
         }
-        return spawnEgg;
+        return stack;
     }
 
     public RenameRendererBuilder<CEMRename> getNewRendererBuilder() {
