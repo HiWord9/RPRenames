@@ -84,7 +84,7 @@ public class RPRenamesCommand {
 
         Rename matchRename = null;
 
-        var renames = RPRenames.renamesManager.getRenames(itemStack.getItem());
+        var renames = RPRenames.renamesManager.getAllRenames();
         if (!renames.isEmpty()) {
             matchRename = getMatch(renames, itemStack);
         }
@@ -208,22 +208,7 @@ public class RPRenamesCommand {
     }
 
     private static Rename getMatch(List<Rename> renames, ItemStack stack) {
-        String name = stack.getName().getString();
-        for (Rename r : renames) {
-            Boolean nameValid = null;
-            if (r instanceof HasNamePattern hasNamePattern) {
-                var pattern = hasNamePattern.getNamePattern();
-                if (pattern != null) {
-                    nameValid = pattern.matcher(name).matches();
-                }
-            }
-            if (nameValid == null) nameValid = name.equals(r.getName());
-            if (!nameValid) continue;
-            if (r instanceof CITRename citRename) {
-                if (!new CITRename.CraftMatcher(citRename, stack).matches()) continue;
-            }
-            return r;
-        }
+        for (Rename r : renames) if (r.matchesStack(stack)) return r;
         return null;
     }
 

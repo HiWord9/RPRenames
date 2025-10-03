@@ -42,6 +42,12 @@ public class Rename {
         return stack;
     }
 
+    public boolean matchesStack(ItemStack stack) {
+        if (!getItems().contains(stack.getItem())) return false;
+        var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+        return customName != null && customName.getString().equals(getName());
+    }
+
     public RenameRendererBuilder<?> getNewRendererBuilder() {
         return new SimpleRenameRendererBuilder<>(this);
     }

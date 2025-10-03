@@ -13,7 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
@@ -143,8 +142,7 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
 
     @Override
     public ItemStack toStack(int index) {
-        ItemStack item = new ItemStack(this.getItems().get(index >= this.getItems().size() ? 0 : index));
-        item.set(DataComponentTypes.CUSTOM_NAME, Text.of(getName()));
+        var item = super.toStack(index);
         item.setCount(getStackSize());
         if (getDamage() != null) {
             item.setDamage(getDamage().getParsedDamage(item.getItem()));
@@ -155,12 +153,28 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
         return item;
     }
 
+    @Override
+    public boolean matchesStack(ItemStack stack) {
+        boolean bl = false;
+        var namePattern = getNamePattern();
+        if (namePattern == null) {
+            bl = super.matchesStack(stack);
+        } else {
+            if (getItems().contains(stack.getItem())) {
+                var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+                if (customName != null) {
+                    bl = namePattern.matcher(customName.getString()).matches();
+                }
+            }
+        }
+        return bl && new CraftMatcher(this, stack).matches();
+    }
+
     /**
      * This class tells is given {@link ItemStack} passes given {@link CITRename} required conditions.
      * Calculations are executed only on initialization, so any further stack's changes won't affect result.
      * It does not take in count stack's name and item.
      */
-
     public static class CraftMatcher {
         boolean enoughStackSize = true;
         boolean enoughDamage = true;

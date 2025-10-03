@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CEMRenameRendererBuilder;
 import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -18,6 +19,8 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Pattern;
+
+import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class CEMRename extends ResourcePackRename implements HasProperties, HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
@@ -86,6 +89,37 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
             NbtComponent.set(DataComponentTypes.ENTITY_DATA, stack, nbtName);
         }
         return stack;
+    }
+
+    @Override
+    public boolean matchesStack(ItemStack stack) {
+        if (itemRename != null && itemRename.matchesStack(stack)) return true;
+        if (stack.getItem() instanceof SpawnEggItem spawnEggItem && client().world != null) {
+            var registries = client().world.getRegistryManager();
+
+            var entityType = spawnEggItem.getEntityType(registries, stack);
+            var name = stack.getCustomName();
+
+            var entityData = stack.get(DataComponentTypes.ENTITY_DATA);
+            if (entityData != null) {
+                var nbt = entityData.copyNbt();
+
+                var entityCustomName = nbt.get("CustomName");
+                if (entityCustomName != null) {
+                    name = BlockEntity.tryParseCustomName(entityCustomName, registries);
+                }
+            }
+
+            if (entityType == getEntity() && name != null) {
+                var namePattern = getNamePattern();
+
+                if (namePattern == null
+                        ? name.getString().equals(this.getName())
+                        : namePattern.matcher(name.getString()).matches()
+                ) return true;
+            }
+        }
+        return super.matchesStack(stack);
     }
 
     public RenameRendererBuilder<CEMRename> getNewRendererBuilder() {
