@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, HasDescription {
     protected final Integer stackSize;
@@ -55,8 +56,13 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
     }
 
     @Override
-    public String getNamePattern() {
+    public String getOriginalNamePattern() {
         return properties == null ? null : PropertiesHelper.getCustomName(properties);
+    }
+
+    @Override
+    public Pattern getNamePattern() {
+        return PropertiesHelper.getPropPattern(getOriginalNamePattern());
     }
 
     @Override

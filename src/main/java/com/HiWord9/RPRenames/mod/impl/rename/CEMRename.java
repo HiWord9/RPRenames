@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CEMRenameRendererBuilder;
 import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
+import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
@@ -16,6 +17,7 @@ import net.minecraft.text.Text;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 public class CEMRename extends ResourcePackRename implements HasProperties, HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
@@ -54,8 +56,13 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
     }
 
     @Override
-    public String getNamePattern() {
+    public String getOriginalNamePattern() {
         return namePattern;
+    }
+
+    @Override
+    public Pattern getNamePattern() {
+        return PropertiesHelper.getPropPattern(getOriginalNamePattern());
     }
 
     @Override

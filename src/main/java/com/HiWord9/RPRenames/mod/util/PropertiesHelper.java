@@ -19,6 +19,8 @@ import java.util.regex.PatternSyntaxException;
 public class PropertiesHelper {
 
     public static Pattern getPropPattern(String fullPattern) {
+        if (fullPattern == null) return null;
+
         boolean caseInsensitive = false;
         if (fullPattern.startsWith("iregex:") || fullPattern.startsWith("ipattern:")) {
             fullPattern = fullPattern.substring(1);

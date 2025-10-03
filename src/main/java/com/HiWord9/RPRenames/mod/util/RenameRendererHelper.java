@@ -52,7 +52,7 @@ public class RenameRendererHelper {
     }
 
     public static TooltipComponent namePatternTooltipComponent(HasNamePattern hasNamePattern) {
-        String pattern = hasNamePattern.getNamePattern();
+        String pattern = hasNamePattern.getOriginalNamePattern();
         if (pattern != null) {
             return tooltipOf(
                     Text.literal("Name Pattern: " + pattern)

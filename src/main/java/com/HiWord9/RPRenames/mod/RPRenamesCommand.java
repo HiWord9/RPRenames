@@ -212,7 +212,7 @@ public class RPRenamesCommand {
         for (Rename r : renames) {
             Boolean nameValid = null;
             if (r instanceof HasNamePattern hasNamePattern) {
-                var pattern = PropertiesHelper.getPropPattern(hasNamePattern.getNamePattern());
+                var pattern = hasNamePattern.getNamePattern();
                 if (pattern != null) {
                     nameValid = pattern.matcher(name).matches();
                 }
