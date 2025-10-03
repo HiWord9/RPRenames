@@ -4,18 +4,21 @@ import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import com.HiWord9.RPRenames.mod.util.Util;
 import net.minecraft.client.item.ItemAsset;
 import net.minecraft.client.render.item.model.ItemModel;
+import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemModelParser implements Parser {
     private final Map<Identifier, ItemAsset> itemAssets = new HashMap<>();
@@ -33,34 +36,36 @@ public class ItemModelParser implements Parser {
 
     @Override
     public void parse(ResourceManager resourceManager, Profiler profiler) {
-        var renameDataList = getRenameDataList(itemAssets);
+        var renameDataList = getItemModelDataList(itemAssets);
 
         renameDataList.forEach(data -> {
-            var rename = bakeRename(data);
-            renamesManager.addRename(rename);
+            var name = getName(data.applicableConditions);
+            if (name == null) return;
+
+            renamesManager.addRename(bakeRename(data, name));
         });
     }
 
-    private static ItemModelRename bakeRename(RenameData renameData) {
+    private static ItemModelRename bakeRename(ItemModelData itemModelData, String name) {
         return new ItemModelRename(
-                renameData.applicableConditions,
-                renameData.renameCondition.value.getFirst().getString(),
-                renameData.items.toArray(new Item[]{})
+                itemModelData.applicableConditions,
+                name,
+                itemModelData.items.toArray(new Item[]{})
         );
     }
 
-    private static List<RenameData> getRenameDataList(Map<Identifier, ItemAsset> itemAssets) {
-        var resultList = new ArrayList<RenameData>();
+    private static List<ItemModelData> getItemModelDataList(Map<Identifier, ItemAsset> itemAssets) {
+        var resultList = new ArrayList<ItemModelData>();
         itemAssets.forEach((id, asset) -> {
-            var list = new ArrayList<RenameData>();
-            fillRenameDataList(list, List.of(), asset.model(), Util.itemFromId(id));
+            var list = new ArrayList<ItemModelData>();
+            fillItemModelDataList(list, List.of(), asset.model(), Util.itemFromId(id));
             resultList.addAll(list);
         });
-        return RenameData.mergeAllPossible(resultList);
+        return ItemModelData.mergeAllPossible(resultList);
     }
 
-    private static void fillRenameDataList(
-            List<RenameData> renameDataList,
+    private static void fillItemModelDataList(
+            List<ItemModelData> itemModelDataList,
             List<ItemModelCondition> conditions,
             ItemModel.Unbaked unbakedModel,
             Item item
@@ -70,11 +75,45 @@ public class ItemModelParser implements Parser {
             for (var modelCase : cases) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
-                fillRenameDataList(renameDataList, newConditions, modelCase.result(), item);
+                fillItemModelDataList(itemModelDataList, newConditions, modelCase.result(), item);
             }
         } else {
-            var renameData = RenameData.of(conditions, List.of(item));
-            if (renameData != null) renameDataList.add(renameData);
+            itemModelDataList.add(ItemModelData.of(conditions, List.of(item)));
         }
+    }
+
+    private static String getName(Collection<ItemModelCondition.Applicable> conditions) {
+        var renameCondition = getRenameCondition(conditions);
+        if (renameCondition == null) return null;
+        return renameCondition.value.getFirst().getString();
+    }
+
+    private static @Nullable SelectCondition<ComponentSelectProperty<Text>, Text> getRenameCondition(
+            Collection<ItemModelCondition.Applicable> conditions
+    ) {
+        SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition = null;
+        for (ItemModelCondition condition : conditions) {
+            var candidate = asCustomNameConditionOrNull(condition);
+            if (candidate != null) {
+                if (renameCondition == null) {
+                    renameCondition = candidate;
+                } else {
+                    // todo handle multiple rename conditions; probably an error
+                }
+            }
+        }
+        return renameCondition;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static SelectCondition<ComponentSelectProperty<Text>, Text> asCustomNameConditionOrNull(
+            ItemModelCondition condition
+    ) {
+        if (condition instanceof SelectCondition<?, ?> select
+                && select.property instanceof ComponentSelectProperty<?>(ComponentType<?> componentType)
+                && componentType.equals(DataComponentTypes.CUSTOM_NAME)
+        ) return (SelectCondition<ComponentSelectProperty<Text>, Text>) select;
+
+        return null;
     }
 }
