@@ -3,9 +3,7 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import net.minecraft.item.Item;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class ItemModelData {
     protected final List<Item> items;
@@ -52,17 +50,21 @@ public class ItemModelData {
         var list = new ArrayList<>(itemModelDataList);
         for (int i = 0; i < list.size(); i++) {
             var currentData = list.get(i);
-            for (int j = i+1; j < list.size();) {
-                var merged = currentData.tryMerge(list.get(j));
-                if (merged != null) {
-                    currentData = merged;
-                    list.set(i, currentData);
-                    list.remove(j);
-                } else {
-                    j++;
-                }
+            if (currentData == null) continue;
+
+            for (int j = i+1; j < list.size(); j++) {
+                var other = list.get(j);
+                if (other == null) continue;
+
+                var merged = currentData.tryMerge(other);
+                if (merged == null) continue;
+
+                currentData = merged;
+                list.set(i, currentData);
+                list.set(j, null);
             }
         }
+        list.removeIf(Objects::isNull);
         return list;
     }
 

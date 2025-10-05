@@ -23,12 +23,14 @@ public class ItemModelDataExplorer {
     }
 
     public static List<ItemModelData> getListMerged(Map<Identifier, ItemAsset> itemAssets) {
-        return ItemModelData.mergeAllPossible(
-                getMapUnmerged(itemAssets)
-                        .values().stream()
-                        .flatMap(Collection::stream)
-                        .toList()
-        );
+        return ItemModelData.mergeAllPossible(getListUnmerged(itemAssets));
+    }
+
+    public static List<ItemModelData> getListUnmerged(Map<Identifier, ItemAsset> itemAssets) {
+        return getMapUnmerged(itemAssets)
+                .values().stream()
+                .flatMap(Collection::stream)
+                .toList();
     }
 
     private static void fillItemModelDataList(
