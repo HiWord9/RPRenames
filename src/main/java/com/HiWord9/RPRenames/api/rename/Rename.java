@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class Rename {
-    protected final String name;
+    protected final Text name;
     protected final List<Item> items = new ArrayList<>();
 
-    public Rename(String name, Item... items) {
+    public Rename(Text name, Item... items) {
         this.name = name;
         for (Item item : items) if (item != null) this.items.add(item);
     }
 
-    public String getName() {
+    public Text getName() {
         return name;
     }
 
@@ -45,7 +45,7 @@ public class Rename {
     public boolean matchesStack(ItemStack stack) {
         if (!getItems().contains(stack.getItem())) return false;
         var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
-        return customName != null && customName.getString().equals(getName());
+        return customName != null && customName.equals(getName());
     }
 
     public RenameRendererBuilder<?> getNewRendererBuilder() {

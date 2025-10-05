@@ -4,12 +4,13 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.util.Util;
 import com.google.gson.*;
 import net.minecraft.item.Item;
+import net.minecraft.text.Text;
 
 import java.lang.reflect.Type;
 
 public class FavoriteRename extends Rename {
     public FavoriteRename(String name, Item item) {
-        super(name, item);
+        super(Text.of(name), item);
     }
 
     public void setItem(Item item) {
@@ -22,7 +23,7 @@ public class FavoriteRename extends Rename {
         public JsonElement serialize(FavoriteRename rename, Type type, JsonSerializationContext context) {
             JsonObject result = new JsonObject();
 
-            result.addProperty("name", rename.getName());
+            result.addProperty("name", rename.getName().getString());
 
             return result;
         }

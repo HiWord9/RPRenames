@@ -47,7 +47,7 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
             Properties properties,
             Rename itemRename
     ) {
-        super(name, packName, path, DEFAULT_MOB_ITEM);
+        super(Text.of(name), packName, path, DEFAULT_MOB_ITEM);
         this.entity = entity;
         this.properties = properties;
         this.namePattern = namePattern;
@@ -81,7 +81,7 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
         Item spawnEggItem = SpawnEggItem.forEntity(this.getEntity());
         ItemStack stack = new ItemStack(spawnEggItem == null ? Items.ALLAY_SPAWN_EGG : spawnEggItem);
 
-        stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(this.getName()));
+        stack.set(DataComponentTypes.CUSTOM_NAME, this.getName());
 
         if (spawnEggItem == null) {
             NbtCompound nbtName = new NbtCompound();
@@ -114,7 +114,7 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
                 var namePattern = getNamePattern();
 
                 if (namePattern == null
-                        ? name.getString().equals(this.getName())
+                        ? name.equals(this.getName())
                         : namePattern.matcher(name.getString()).matches()
                 ) return true;
             }

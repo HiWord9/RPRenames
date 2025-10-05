@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
@@ -45,7 +46,7 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
             String description,
             Item... items
     ) {
-        super(name, packName, path, items);
+        super(Text.of(name), packName, path, items);
         this.stackSize = stackSize;
         this.damage = damage;
         this.enchantment = enchantment;

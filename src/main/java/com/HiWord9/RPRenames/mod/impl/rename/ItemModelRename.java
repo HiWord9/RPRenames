@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +12,7 @@ import java.util.Objects;
 public class ItemModelRename extends Rename {
     protected final List<ItemModelCondition.Applicable> conditions;
 
-    public ItemModelRename(List<ItemModelCondition.Applicable> conditions, String name, Item... items) {
+    public ItemModelRename(List<ItemModelCondition.Applicable> conditions, Text name, Item... items) {
         super(name, items);
         this.conditions = conditions;
     }

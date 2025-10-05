@@ -52,7 +52,7 @@ public class RenamesSearchEngine {
                 match = match.substring(1);
             }
             for (Rename r : list) {
-                if (up(r.getName()).contains(up(match))) {
+                if (up(r.getName().getString()).contains(up(match))) {
                     resultList.add(r);
                 }
             }
@@ -70,7 +70,7 @@ public class RenamesSearchEngine {
                     Pattern.compile(regexText);
 
             for (Rename r : renames) {
-                if (pattern.matcher(r.getName()).matches()) {
+                if (pattern.matcher(r.getName().getString()).matches()) {
                     resultList.add(r);
                 }
             }
@@ -157,7 +157,7 @@ public class RenamesSearchEngine {
 
     private static void handleFavorite(List<Rename> renames, FavoritesManager favoritesManager, List<Rename> resultList) {
         for (Rename r : renames) {
-            if (favoritesManager.isFavoriteAny(r.getItems(), r.getName())) {
+            if (favoritesManager.isFavoriteAny(r.getItems(), r.getName().getString())) {
                 resultList.add(r);
             }
         }

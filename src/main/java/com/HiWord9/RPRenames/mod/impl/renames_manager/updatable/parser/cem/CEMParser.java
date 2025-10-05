@@ -10,6 +10,7 @@ import com.HiWord9.RPRenames.mod.util.ParserHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
@@ -184,7 +185,7 @@ public class CEMParser implements Parser {
             Rename itemRename = null;
             var alreadyExist = renamesManager.getRenames(CEMRename.DEFAULT_MOB_ITEM);
 
-            var renameNameOnly = new Rename(name, CEMRename.DEFAULT_MOB_ITEM);
+            var renameNameOnly = new Rename(Text.of(name), CEMRename.DEFAULT_MOB_ITEM);
             for (var r : alreadyExist) {
                 if (r.baseEquals(renameNameOnly)) {
                     itemRename = r;
@@ -205,7 +206,7 @@ public class CEMParser implements Parser {
             boolean contained = false;
             for (Rename r : alreadyExist) {
                 if (r instanceof CEMRename cemRename
-                        && Objects.equals(name, cemRename.getName())
+                        && Objects.equals(name, cemRename.getName().getString())
                         && Objects.equals(entityType, cemRename.getEntity())
                 ) contained = true;
             }

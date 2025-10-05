@@ -113,6 +113,6 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         if (entity instanceof SnowGolemEntity snowGolem) {
             snowGolem.setHasPumpkin(!config().disableSnowGolemPumpkin);
         }
-        entity.setCustomName(Text.of(rename.getName()));
+        entity.setCustomName(rename.getName());
     }
 }

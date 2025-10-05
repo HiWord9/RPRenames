@@ -44,7 +44,7 @@ public class ItemModelParser implements Parser {
         });
     }
 
-    private static ItemModelRename bakeRename(ItemModelData itemModelData, String name) {
+    private static ItemModelRename bakeRename(ItemModelData itemModelData, Text name) {
         return new ItemModelRename(
                 itemModelData.applicableConditions,
                 name,
@@ -52,10 +52,10 @@ public class ItemModelParser implements Parser {
         );
     }
 
-    private static String getName(Collection<ItemModelCondition.Applicable> conditions) {
+    private static Text getName(Collection<ItemModelCondition.Applicable> conditions) {
         var renameCondition = getRenameCondition(conditions);
         if (renameCondition == null) return null;
-        return renameCondition.value.getFirst().getString();
+        return renameCondition.value.getFirst();
     }
 
     private static @Nullable SelectCondition<ComponentSelectProperty<Text>, Text> getRenameCondition(

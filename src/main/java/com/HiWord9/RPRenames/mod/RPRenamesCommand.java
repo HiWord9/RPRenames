@@ -239,7 +239,7 @@ public class RPRenamesCommand {
                     )
                     .append(itemStack.toHoverableText().copy()
                             .styled(style -> style.withClickEvent(
-                                    new ClickEvent.CopyToClipboard(r.getName())
+                                    new ClickEvent.CopyToClipboard(r.getName().getString())
                             ))
                     )
             );

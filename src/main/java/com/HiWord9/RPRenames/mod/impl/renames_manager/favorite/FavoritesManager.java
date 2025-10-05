@@ -61,7 +61,7 @@ public class FavoritesManager extends RenamesManagerImpl<FavoriteRename> {
     }
 
     public boolean isFavorite(Item item, String name) {
-        return getRenames(item).stream().anyMatch(r -> r.getName().equals(name));
+        return getRenames(item).stream().anyMatch(r -> r.getName().getString().equals(name));
     }
 
     public boolean isFavorite(Item item, FavoriteRename rename) {

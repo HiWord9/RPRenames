@@ -275,7 +275,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
             ghostCraft.setRender(true);
         }
 
-        setNameText(rename.getName());
+        setNameText(rename.getName().getString());
     }
 
     public void addOrRemoveFavorite(boolean add, List<Item> items, String name) {
@@ -573,7 +573,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
         for (RenameButton button : buttons)
             button.selected = button.rename.getItems().contains(craftItem)
-                            && button.rename.getName().equals(nameText);
+                            && button.rename.getName().getString().equals(nameText);
     }
 
     protected void refreshPageWidgets() {
@@ -610,8 +610,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
     protected boolean shouldRenameButtonBeFavorite(Rename rename) {
         return currentTab == Tab.SEARCH
-                ? favoritesManager.isFavorite(getCraftItem(), rename.getName())
-                : favoritesManager.isFavoriteAny(rename.getItems(), rename.getName());
+                ? favoritesManager.isFavorite(getCraftItem(), rename.getName().getString())
+                : favoritesManager.isFavoriteAny(rename.getItems(), rename.getName().getString());
     }
 
 // Other / Util

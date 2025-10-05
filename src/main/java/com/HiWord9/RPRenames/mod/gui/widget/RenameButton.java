@@ -106,7 +106,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
             if (rprWidget.getCurrentTab().forCraftItemOnly) items = List.of(rprWidget.getCraftItem());
             else items = List.copyOf(rename.getItems());
 
-            rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName());
+            rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName().getString());
         } else {
             rprWidget.doRename(rename);
         }
