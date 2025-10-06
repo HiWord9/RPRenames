@@ -40,16 +40,14 @@ public class ItemModelParser implements Parser {
             var name = getName(data.applicableConditions);
             if (name == null) return;
 
-            renamesManager.addRename(bakeRename(data, name));
-        });
-    }
+            var rename = new ItemModelRename(
+                    data.applicableConditions,
+                    name,
+                    data.items.toArray(new Item[]{})
+            );
 
-    private static ItemModelRename bakeRename(ItemModelData itemModelData, Text name) {
-        return new ItemModelRename(
-                itemModelData.applicableConditions,
-                name,
-                itemModelData.items.toArray(new Item[]{})
-        );
+            for (var item : data.items) renamesManager.addRename(item, rename);
+        });
     }
 
     private static Text getName(Collection<ItemModelCondition.Applicable> conditions) {
