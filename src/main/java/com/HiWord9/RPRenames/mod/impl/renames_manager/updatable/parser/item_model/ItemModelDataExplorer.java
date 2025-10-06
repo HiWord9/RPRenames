@@ -16,7 +16,7 @@ public class ItemModelDataExplorer {
         itemAssets.forEach((id, asset) -> {
             var list = new ArrayList<ItemModelData>();
             var item = Util.itemFromId(id);
-            fillItemModelDataList(list, List.of(), asset.model(), item);
+            fillItemModelDataList(list, List.of(), asset.model(), asset, item);
             map.put(item, list);
         });
         return map;
@@ -37,14 +37,15 @@ public class ItemModelDataExplorer {
             List<ItemModelData> itemModelDataList,
             List<ItemModelCondition> conditions,
             ItemModel.Unbaked unbakedModel,
+            ItemAsset asset,
             Item item
     ) {
-        var cases = Case.getCases(unbakedModel);
+        var cases = Case.getCases(unbakedModel, asset);
         if (!cases.isEmpty()) {
             for (var modelCase : cases) {
                 var newConditions = new ArrayList<>(conditions);
                 newConditions.add(modelCase.condition());
-                fillItemModelDataList(itemModelDataList, newConditions, modelCase.result(), item);
+                fillItemModelDataList(itemModelDataList, newConditions, modelCase.result(), asset, item);
             }
         } else {
             itemModelDataList.add(ItemModelData.of(conditions, List.of(item)));

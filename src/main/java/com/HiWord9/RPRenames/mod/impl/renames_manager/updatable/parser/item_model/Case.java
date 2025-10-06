@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.NumericCondition;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
+import net.minecraft.client.item.ItemAsset;
 import net.minecraft.client.render.item.model.*;
 import net.minecraft.client.render.item.property.select.SelectProperty;
 
@@ -12,12 +13,12 @@ import java.util.List;
 
 public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
 
-    public static List<Case> getCases(ItemModel.Unbaked unbakedModel) {
+    public static List<Case> getCases(ItemModel.Unbaked unbakedModel, ItemAsset asset) {
         var cases = new ArrayList<Case>();
         switch (unbakedModel) {
             case CompositeItemModel.Unbaked composite -> fillCases(cases, composite);
             case ConditionItemModel.Unbaked condition -> fillCases(cases, condition);
-            case SelectItemModel.Unbaked select -> fillCases(cases, select);
+            case SelectItemModel.Unbaked select -> fillCases(cases, select, asset);
             case RangeDispatchItemModel.Unbaked rangeDispatch -> fillCases(cases, rangeDispatch);
             default -> {} // basic, empty, bundle/selected_item, special and unknown
         }
@@ -43,13 +44,13 @@ public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
 
     @SuppressWarnings("unchecked")
     private static <P extends SelectProperty<T>, T> void fillCases(
-            List<Case> cases, SelectItemModel.Unbaked unbakedSelectModel
+            List<Case> cases, SelectItemModel.Unbaked unbakedSelectModel, ItemAsset asset
     ) {
         var unbakedSwitch = (SelectItemModel.UnbakedSwitch<P, T>) unbakedSelectModel.unbakedSwitch();
 
         for (var switchCase : unbakedSwitch.cases()) {
             cases.add(new Case(
-                    SelectCondition.of(unbakedSwitch.property(), switchCase.values()),
+                    SelectCondition.of(unbakedSwitch.property(), switchCase.values(), asset),
                     switchCase.model()
             ));
         }
