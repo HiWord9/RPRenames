@@ -4,8 +4,11 @@ import net.minecraft.client.render.item.property.numeric.CountProperty;
 import net.minecraft.client.render.item.property.numeric.CustomModelDataFloatProperty;
 import net.minecraft.client.render.item.property.numeric.DamageProperty;
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public non-sealed class NumericCondition<P extends NumericProperty> extends AbstractPropertyValueCondition<P, Float> {
@@ -44,8 +47,34 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
 
         @Override
         public void apply(ItemStack stack) {
-            // todo fill for all apply cases
-            Applicable.super.apply(stack);
+            switch (property) {
+                case CountProperty prop -> applyCount(stack, prop, value);
+                case CustomModelDataFloatProperty prop -> applyCustomModelData(stack, prop, value);
+                case DamageProperty prop -> applyDamage(stack, prop, value);
+                case null, default -> {}
+            }
+        }
+
+        private static void applyCount(ItemStack stack, CountProperty property, float value) {
+            stack.setCount(Math.round(value * (property.normalize() ? stack.getMaxCount() : 1)));
+        }
+
+        private static void applyCustomModelData(ItemStack stack, CustomModelDataFloatProperty property, float value) {
+            var exists = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+            if (exists == null) {
+                stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
+                        new ArrayList<>(List.of(value)),
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        new ArrayList<>()
+                ));
+            } else {
+                exists.floats().set(property.index(), value);
+            }
+        }
+
+        private static void applyDamage(ItemStack stack, DamageProperty property, float value) {
+            stack.setDamage(Math.round(value * (property.normalize() ? stack.getMaxDamage() : 1)));
         }
     }
 }
