@@ -1,8 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
 import net.minecraft.client.item.ItemAsset;
-import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
-import net.minecraft.client.render.item.property.select.SelectProperty;
+import net.minecraft.client.render.item.property.select.*;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -23,14 +22,24 @@ public non-sealed class SelectCondition<P extends SelectProperty<V>, V> extends 
     }
 
     private static <V> boolean isPropertyApplicable(SelectProperty<V> property) {
-        return property instanceof ComponentSelectProperty<?>;
-        // todo add cases
+        for (var clazz : ApplicableSelectCondition.APPLICABLE_PROPERTIES) {
+            if (clazz.isInstance(property)) return true;
+        }
+        return false;
     }
 
     public static class ApplicableSelectCondition<P extends SelectProperty<V>, V>
             extends SelectCondition<P, V>
             implements ItemModelCondition.Applicable
     {
+        private static final List<Class<?>> APPLICABLE_PROPERTIES = List.of(
+                ChargeTypeProperty.class,
+                ComponentSelectProperty.class,
+                CustomModelDataStringProperty.class,
+                ItemBlockStateProperty.class,
+                TrimMaterialProperty.class
+        );
+
         private final ItemAsset asset;
 
         private ApplicableSelectCondition(P property, List<V> values, ItemAsset asset) {
