@@ -1,7 +1,12 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
+import net.minecraft.client.render.item.property.numeric.CountProperty;
+import net.minecraft.client.render.item.property.numeric.CustomModelDataFloatProperty;
+import net.minecraft.client.render.item.property.numeric.DamageProperty;
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
 import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 public non-sealed class NumericCondition<P extends NumericProperty> extends AbstractPropertyValueCondition<P, Float> {
     private NumericCondition(P property, float threshold) {
@@ -17,7 +22,9 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
     }
 
     private static boolean isPropertyApplicable(NumericProperty property) {
-        // todo add cases
+        for (var clazz : ApplicableNumericCondition.APPLICABLE_PROPERTIES) {
+            if (clazz.isInstance(property)) return true;
+        }
         return false;
     }
 
@@ -25,6 +32,12 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
             extends NumericCondition<P>
             implements ItemModelCondition.Applicable
     {
+        private static final List<Class<?>> APPLICABLE_PROPERTIES = List.of(
+                CountProperty.class,
+                CustomModelDataFloatProperty.class,
+                DamageProperty.class
+        );
+
         private ApplicableNumericCondition(P property, float threshold) {
             super(property, threshold);
         }
