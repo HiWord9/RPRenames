@@ -248,6 +248,8 @@ public class RPRenamesCommand {
 
     @SuppressWarnings("unchecked") // I am not quiet sure that this will not crash, but let's try as beta
     private static <T> String getComponentsCommandArgument(FabricClientCommandSource source, ItemStack stack) {
+        if (!(stack.getComponents() instanceof MergedComponentMap)) return "";
+
         ComponentChanges changes = ((MergedComponentMap) stack.getComponents()).getChanges();
         if (changes.isEmpty()) return "";
 
