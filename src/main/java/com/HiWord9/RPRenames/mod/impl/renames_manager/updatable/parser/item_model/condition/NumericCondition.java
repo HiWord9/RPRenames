@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.HiWord9.RPRenames.mod.util.Util.*;
+
 public non-sealed class NumericCondition<P extends NumericProperty> extends AbstractPropertyValueCondition<P, Float> {
     private NumericCondition(P property, float threshold) {
         super(property, threshold);
@@ -63,13 +65,13 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
             var exists = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
             if (exists == null) {
                 stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
-                        new ArrayList<>(List.of(value)),
+                        setAndNullMissing(new ArrayList<>(), property.index(), value, 0f),
                         new ArrayList<>(),
                         new ArrayList<>(),
                         new ArrayList<>()
                 ));
             } else {
-                exists.floats().set(property.index(), value);
+                setAndNullMissing(exists.floats(), property.index(), value, 0f);
             }
         }
 

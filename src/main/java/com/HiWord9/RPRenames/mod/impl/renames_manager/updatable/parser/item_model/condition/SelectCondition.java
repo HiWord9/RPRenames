@@ -122,11 +122,11 @@ public non-sealed class SelectCondition<P extends SelectProperty<V>, V> extends 
                 stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
                         new ArrayList<>(),
                         new ArrayList<>(),
-                        new ArrayList<>(List.of(value)),
+                        setAndNullMissing(new ArrayList<>(), prop.index(), value, ""),
                         new ArrayList<>()
                 ));
             } else {
-                exists.strings().set(prop.index(), value);
+                setAndNullMissing(exists.strings(), prop.index(), value, "");
             }
         }
 
