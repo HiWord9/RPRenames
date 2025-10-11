@@ -70,7 +70,7 @@ public class Util {
         return player().getRandom().nextBetween(0, Integer.MAX_VALUE - 1);
     }
 
-    public static <T> List<T> setAndNullMissing(List<T> values, int index, T value, T filler) {
+    public static <T> List<T> setAndFillMissing(List<T> values, int index, T value, T filler) {
         if (values.size() <= index)
             for (int i = values.size(); i <= index; i++)
                 values.add(filler);

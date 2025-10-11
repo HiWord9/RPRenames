@@ -65,13 +65,13 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
             var exists = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
             if (exists == null) {
                 stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
-                        setAndNullMissing(new ArrayList<>(), property.index(), value, 0f),
+                        setAndFillMissing(new ArrayList<>(), property.index(), value, 0f),
                         new ArrayList<>(),
                         new ArrayList<>(),
                         new ArrayList<>()
                 ));
             } else {
-                setAndNullMissing(exists.floats(), property.index(), value, 0f);
+                setAndFillMissing(exists.floats(), property.index(), value, 0f);
             }
         }
 
