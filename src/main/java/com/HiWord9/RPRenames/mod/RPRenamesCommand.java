@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.mod;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.*;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
+import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import com.HiWord9.RPRenames.mod.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -102,55 +103,27 @@ public class RPRenamesCommand {
             );
         }
 
+        var lines = new ArrayList<Text>();
+
         if (matchRename instanceof CEMRename cemRename) {
             if (cemRename.getItemRename() != null) {
-                printRenameInfo(cemRename.getItemRename(), source);
+                lines.addAll(RenameInfoHelper.getRenameInfo(cemRename.getItemRename()));
             }
-            source.sendFeedback(
+            lines.add(
                     Text.translatable("rprenames.command.info.cemProperties")
                     .formatted(Formatting.LIGHT_PURPLE)
             );
         }
-        printRenameInfo(matchRename, source);
+        lines.addAll(RenameInfoHelper.getRenameInfo(matchRename));
+
+        print(lines, source);
 
         return Command.SINGLE_SUCCESS;
     }
 
-    public static void printRenameInfo(Rename rename, FabricClientCommandSource source) {
-        Properties props = null;
-        if (rename instanceof HasProperties hasProperties) props = hasProperties.getProperties();
-
-        if (props != null) printProperties(props, source);
-
-        if (rename instanceof ResourcePackRename rpRename) {
-            printRPPath(rpRename.getPackName(), rpRename.getPath(), source);
-        }
-    }
-
-    public static void printRPPath(String packName, String path, FabricClientCommandSource source) {
-        if (packName != null && path != null) {
-            printPath(path, packName, source);
-        }
-
-        if (path == null) {
-            source.sendFeedback(
-                    Text.translatable("rprenames.command.info.noPath")
-                            .formatted(Formatting.RED)
-            );
-        }
-
-        if (packName == null) {
-            source.sendFeedback(
-                    Text.translatable("rprenames.command.info.noRpName")
-                            .formatted(Formatting.RED)
-            );
-        } else {
-            source.sendFeedback(
-                    Text.translatable("rprenames.command.info.rpName")
-                            .formatted(Formatting.GOLD)
-                            .append(Text.of(" = ").copy().formatted(Formatting.GRAY))
-                            .append(Text.of(packName).copy().formatted(Formatting.BLUE))
-            );
+    private static void print(List<Text> lines, FabricClientCommandSource source) {
+        for (Text text : lines) {
+            source.sendFeedback(text);
         }
     }
 
@@ -281,33 +254,5 @@ public class RPRenamesCommand {
         resultBuilder.append("]");
 
         return resultBuilder.toString();
-    }
-
-    private static void printProperties(Properties properties, FabricClientCommandSource source) {
-        for (String s : properties.stringPropertyNames()) {
-            source.sendFeedback(
-                    Text.of(s).copy().formatted(Formatting.GOLD)
-                    .append(Text.of("=").copy().formatted(Formatting.GRAY))
-                    .append(Text.of(properties.getProperty(s)).copy().formatted(Formatting.GREEN))
-            );
-        }
-    }
-
-    private static void printPath(String path, String packName, FabricClientCommandSource source) {
-        String dirPath = path.substring(0, path.lastIndexOf("/"));
-        source.sendFeedback(
-                Text.translatable(
-                        "rprenames.command.info.located",
-                        Text.of(path).copy()
-                                .fillStyle(Style.EMPTY
-                                        .withColor(Formatting.YELLOW)
-                                        .withUnderline(true)
-                                        .withClickEvent(new ClickEvent.OpenFile(
-                                                packName.equals("server") ? "server-resource-packs/" : "resourcepacks/"
-                                                        + (packName.endsWith(".zip") ? packName : dirPath)
-                                        ))
-                                )
-                )
-        );
     }
 }
