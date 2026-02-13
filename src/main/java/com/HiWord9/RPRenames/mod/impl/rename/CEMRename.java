@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class CEMRename extends ResourcePackRename implements HasProperties, HasNamePattern {
+public class CEMRename extends ResourcePackRename implements HasNamePattern {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
@@ -70,11 +70,6 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
     @Override
     public Pattern getNamePattern() {
         return PropertiesHelper.getPropPattern(getOriginalNamePattern());
-    }
-
-    @Override
-    public Properties getProperties() {
-        return properties;
     }
 
     public EntityType<?> getEntity() {
@@ -147,7 +142,7 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
                 Text.translatable("rprenames.command.info.cemProperties")
                         .formatted(Formatting.LIGHT_PURPLE)
         );
-        info.addAll(RenameInfoHelper.getProperties(getProperties()));
+        info.addAll(RenameInfoHelper.getProperties(properties));
         info.addAll(super.getInfo());
         return info;
     }
