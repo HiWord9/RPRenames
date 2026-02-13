@@ -7,18 +7,20 @@ import org.joml.Vector2ic;
 
 import java.util.List;
 
-import static com.HiWord9.RPRenames.mod.util.Util.*;
+import static com.HiWord9.RPRenames.mod.util.Util.textRenderer;
 
 public class PreviewTooltipPositioner implements TooltipPositioner {
+    public final PreviewPos previewPos;
     List<TooltipComponent> tooltipComponents;
 
-    PreviewTooltipPositioner(List<TooltipComponent> mainTooltipsComponents) {
+    public PreviewTooltipPositioner(PreviewPos previewPos, List<TooltipComponent> mainTooltipsComponents) {
+        this.previewPos = previewPos;
         this.tooltipComponents = mainTooltipsComponents;
     }
 
     @Override
     public Vector2ic getPosition(int screenWidth, int screenHeight, int x, int y, int width, int height) {
-        if (config().previewPos == PreviewPos.LEFT) {
+        if (previewPos == PreviewPos.LEFT) {
             x -= (12 + width);
             y -= 12;
 
@@ -37,7 +39,7 @@ public class PreviewTooltipPositioner implements TooltipPositioner {
             int firstTopPoint = y - (height + 22);
             int lastBottomPoint = y + yOffset + height + 4;
             int breakPoint = height / 2;
-            if (config().previewPos == PreviewPos.BOTTOM ?
+            if (previewPos == PreviewPos.BOTTOM ?
                     ((firstTopPoint) > -breakPoint) && lastBottomPoint > screenHeight :
                     !(firstTopPoint < 0 && (lastBottomPoint - screenHeight < breakPoint))) {
                 y = firstTopPoint;

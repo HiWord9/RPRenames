@@ -248,7 +248,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     @Override
     public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
         boolean shouldPreviewPlayer = hasShiftDown() != config().playerPreviewByDefault;
-        TooltipPositioner positioner = new PreviewTooltipPositioner(mainTooltip);
+        TooltipPositioner positioner = new PreviewTooltipPositioner(config().previewPos, mainTooltip);
 
         if (shouldPreviewPlayer) {
             playerPreview(context, mouseX, mouseY, positioner);

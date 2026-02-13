@@ -103,7 +103,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
                 textRenderer(),
                 entityPreviewTooltipComponent,
                 mouseX, mouseY,
-                new PreviewTooltipPositioner(mainTooltip),
+                new PreviewTooltipPositioner(config().previewPos, mainTooltip),
                 favoriteSupplier.get()
         );
     }
