@@ -1,8 +1,5 @@
 package com.HiWord9.RPRenames.mod.util;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.rename.HasProperties;
-import com.HiWord9.RPRenames.mod.impl.rename.ResourcePackRename;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -13,19 +10,6 @@ import java.util.List;
 import java.util.Properties;
 
 public class RenameInfoHelper {
-    public static List<Text> getRenameInfo(Rename rename) {
-        var lines = new ArrayList<Text>();
-        Properties props = null;
-        if (rename instanceof HasProperties hasProperties) props = hasProperties.getProperties();
-
-        if (props != null) lines.addAll(getProperties(props));
-
-        if (rename instanceof ResourcePackRename rpRename) {
-            lines.addAll(getRPPath(rpRename.getPackName(), rpRename.getPath()));
-        }
-        return lines;
-    }
-
     public static List<Text> getProperties(Properties properties) {
         var lines = new ArrayList<Text>();
         for (String s : properties.stringPropertyNames()) {

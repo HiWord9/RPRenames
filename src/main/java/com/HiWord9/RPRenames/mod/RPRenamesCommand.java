@@ -3,7 +3,6 @@ package com.HiWord9.RPRenames.mod;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.*;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
-import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import com.HiWord9.RPRenames.mod.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -90,33 +89,19 @@ public class RPRenamesCommand {
             matchRename = getMatch(renames, itemStack);
         }
 
-        if (matchRename == null) {
+        if (!(matchRename instanceof Informative informative)) {
             source.sendFeedback(
                     Text.translatable("rprenames.command.info.noRenamesFound")
                     .formatted(Formatting.RED)
             );
             return Command.SINGLE_SUCCESS;
-        } else {
-            source.sendFeedback(
-                    Text.translatable("rprenames.command.info.foundProperties")
-                    .formatted(Formatting.YELLOW)
-            );
         }
 
-        var lines = new ArrayList<Text>();
-
-        if (matchRename instanceof CEMRename cemRename) {
-            if (cemRename.getItemRename() != null) {
-                lines.addAll(RenameInfoHelper.getRenameInfo(cemRename.getItemRename()));
-            }
-            lines.add(
-                    Text.translatable("rprenames.command.info.cemProperties")
-                    .formatted(Formatting.LIGHT_PURPLE)
-            );
-        }
-        lines.addAll(RenameInfoHelper.getRenameInfo(matchRename));
-
-        print(lines, source);
+        source.sendFeedback(
+                Text.translatable("rprenames.command.info.foundProperties")
+                .formatted(Formatting.YELLOW)
+        );
+        print(informative.getInfo(), source);
 
         return Command.SINGLE_SUCCESS;
     }
