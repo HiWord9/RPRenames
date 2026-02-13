@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class CITRename extends ResourcePackRename implements HasNamePattern, HasDescription {
+public class CITRename extends ResourcePackRename implements HasDescription {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -54,12 +54,10 @@ public class CITRename extends ResourcePackRename implements HasNamePattern, Has
         this.properties = properties;
     }
 
-    @Override
     public String getOriginalNamePattern() {
         return properties == null ? null : PropertiesHelper.getCustomName(properties);
     }
 
-    @Override
     public Pattern getNamePattern() {
         return PropertiesHelper.getPropPattern(getOriginalNamePattern());
     }

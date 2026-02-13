@@ -4,7 +4,6 @@ import com.HiWord9.RPRenames.mod.gui.tooltip_component.MultiItemTooltipComponent
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.HasDescription;
-import com.HiWord9.RPRenames.mod.impl.rename.HasNamePattern;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemStack;
@@ -51,11 +50,10 @@ public class RenameRendererHelper {
         return linesComponents;
     }
 
-    public static TooltipComponent namePatternTooltipComponent(HasNamePattern hasNamePattern) {
-        String pattern = hasNamePattern.getOriginalNamePattern();
-        if (pattern != null) {
+    public static TooltipComponent namePatternTooltipComponent(String namePattern) {
+        if (namePattern != null) {
             return tooltipOf(
-                    Text.literal("Name Pattern: " + pattern)
+                    Text.literal("Name Pattern: " + namePattern)
                             .fillStyle(Style.EMPTY.withColor(Formatting.BLUE))
             );
         }

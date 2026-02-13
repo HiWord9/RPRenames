@@ -118,7 +118,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
 
         if (config().showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename);
+            TooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
             if (pattern != null) tooltipComponents.add(pattern);
         }
     }

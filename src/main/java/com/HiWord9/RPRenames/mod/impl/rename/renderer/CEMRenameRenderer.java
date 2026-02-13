@@ -66,7 +66,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         }
 
         if (config().showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename);
+            TooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
             if (pattern != null) tooltipComponents.add(pattern);
         }
     }

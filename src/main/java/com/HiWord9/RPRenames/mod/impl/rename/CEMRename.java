@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class CEMRename extends ResourcePackRename implements HasNamePattern {
+public class CEMRename extends ResourcePackRename {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
@@ -62,14 +62,12 @@ public class CEMRename extends ResourcePackRename implements HasNamePattern {
         return itemRename;
     }
 
-    @Override
     public String getOriginalNamePattern() {
         return namePattern;
     }
 
-    @Override
     public Pattern getNamePattern() {
-        return PropertiesHelper.getPropPattern(getOriginalNamePattern());
+        return PropertiesHelper.getPropPattern(namePattern);
     }
 
     public EntityType<?> getEntity() {
