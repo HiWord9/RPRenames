@@ -2,6 +2,7 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
+import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import com.HiWord9.RPRenames.mod.util.RenamesHelper;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CITRenameRendererBuilder;
 import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
@@ -16,9 +17,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class CITRename extends ResourcePackRename implements HasProperties, HasNamePattern, HasDescription {
@@ -124,6 +123,14 @@ public class CITRename extends ResourcePackRename implements HasProperties, HasN
                 && Objects.equals(damage, citRename.damage)
                 && Objects.equals(enchantment, citRename.enchantment)
                 && Objects.equals(enchantmentLevel, citRename.enchantmentLevel);
+    }
+
+    @Override
+    public List<Text> getInfo() {
+        var info = new ArrayList<Text>();
+        info.addAll(RenameInfoHelper.getProperties(getProperties()));
+        info.addAll(super.getInfo());
+        return info;
     }
 
     public static class Damage {

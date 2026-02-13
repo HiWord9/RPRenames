@@ -4,6 +4,7 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CEMRenameRendererBuilder;
 import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
+import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -15,7 +16,10 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Pattern;
@@ -131,5 +135,20 @@ public class CEMRename extends ResourcePackRename implements HasProperties, HasN
         return super.equals(obj)
                 && obj instanceof CEMRename cemRename
                 && Objects.equals(entity, cemRename.entity);
+    }
+
+    @Override
+    public List<Text> getInfo() {
+        var info = new ArrayList<Text>();
+        if (itemRename != null && itemRename instanceof Informative informative) {
+            info.addAll(informative.getInfo());
+        }
+        info.add(
+                Text.translatable("rprenames.command.info.cemProperties")
+                        .formatted(Formatting.LIGHT_PURPLE)
+        );
+        info.addAll(RenameInfoHelper.getProperties(getProperties()));
+        info.addAll(super.getInfo());
+        return info;
     }
 }

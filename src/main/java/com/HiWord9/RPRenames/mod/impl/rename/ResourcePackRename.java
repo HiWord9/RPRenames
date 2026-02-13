@@ -1,10 +1,13 @@
 package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 
-public class ResourcePackRename extends Rename {
+import java.util.List;
+
+public class ResourcePackRename extends Rename implements Informative {
     protected final String packName;
     protected final String path;
 
@@ -24,5 +27,10 @@ public class ResourcePackRename extends Rename {
 
     public String getPath() {
         return path;
+    }
+
+    @Override
+    public List<Text> getInfo() {
+        return RenameInfoHelper.getRPPath(packName, path);
     }
 }
