@@ -115,6 +115,36 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        renameRenderer.mouseMoved(mouseX, mouseY);
+        super.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (renameRenderer.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) return true;
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (renameRenderer.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)) return true;
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (renameRenderer.keyPressed(keyCode, scanCode, modifiers)) return true;
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (renameRenderer.keyReleased(keyCode, scanCode, modifiers)) return true;
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     private <H extends ScreenHandler> void highlightSlots(

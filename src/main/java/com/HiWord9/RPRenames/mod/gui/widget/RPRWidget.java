@@ -420,9 +420,44 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+            element.mouseMoved(mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+            if (element.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+            if (element.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        for (Element widget : widgets) {
-            if (widget.keyPressed(keyCode, scanCode, modifiers)) return true;
+        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+            if (element.keyPressed(keyCode, scanCode, modifiers))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+            if (element.keyReleased(keyCode, scanCode, modifiers))
+                return true;
         }
         return false;
     }
