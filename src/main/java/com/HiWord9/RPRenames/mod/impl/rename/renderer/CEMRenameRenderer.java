@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 import static com.HiWord9.RPRenames.mod.util.RenameRendererHelper.*;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implements RenameRenderer.Preview {
+public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implements Previewable {
     protected RPRWidget rprWidget;
     protected Supplier<Boolean> favoriteSupplier;
 

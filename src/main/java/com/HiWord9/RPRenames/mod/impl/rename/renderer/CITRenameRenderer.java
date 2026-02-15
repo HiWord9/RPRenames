@@ -31,7 +31,7 @@ import static com.HiWord9.RPRenames.mod.util.RenameRendererHelper.*;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
-public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implements RenameRenderer.Preview {
+public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implements Previewable {
     protected static final MutableText playerPreviewHintShift = Text.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
             Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
