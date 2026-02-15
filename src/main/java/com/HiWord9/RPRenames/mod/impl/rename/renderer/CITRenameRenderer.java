@@ -32,36 +32,36 @@ import static com.HiWord9.RPRenames.mod.util.Util.*;
 import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implements RenameRenderer.Preview {
-    private static final MutableText playerPreviewHintShift = Text.translatable(
+    protected static final MutableText playerPreviewHintShift = Text.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
             Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
     ).formatted(Formatting.DARK_GRAY);
 
-    private static final MutableText playerPreviewHintF = Text.translatable(
+    protected static final MutableText playerPreviewHintF = Text.translatable(
             "rprenames.gui.tooltipHint.playerPreview.pressF",
             Text.translatable("rprenames.key.f").formatted(Formatting.GRAY)
     ).formatted(Formatting.DARK_GRAY);
 
-    private static final MutableText favoriteHintAdd = Text.translatable(
+    protected static final MutableText favoriteHintAdd = Text.translatable(
             "rprenames.gui.tooltipHint.favorite.add",
             Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
     ).formatted(Formatting.DARK_GRAY);
 
-    private static final MutableText favoriteHintRemove = Text.translatable(
+    protected static final MutableText favoriteHintRemove = Text.translatable(
             "rprenames.gui.tooltipHint.favorite.remove",
             Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
     ).formatted(Formatting.DARK_GRAY);
 
-    private static final MutableText disableHint = Text.translatable(
+    protected static final MutableText disableHint = Text.translatable(
             "rprenames.gui.tooltipHint.disable",
             Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.RED)
     ).formatted(Formatting.DARK_RED);
 
-    RPRWidget rprWidget;
-    Supplier<Boolean> favoriteSupplier;
+    protected RPRWidget rprWidget;
+    protected Supplier<Boolean> favoriteSupplier;
 
-    ItemPreviewTooltipComponent itemPreviewTooltipComponent;
-    PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
+    protected ItemPreviewTooltipComponent itemPreviewTooltipComponent;
+    protected PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
     protected CITRenameRenderer(CITRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
@@ -125,7 +125,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
     }
 
-    private static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
+    protected static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
         ArrayList<Text> extraProperties = new ArrayList<>();
 
         var stack = rprWidget.pickItemStackForRename(citRename);
@@ -203,14 +203,14 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         return propertiesComponents;
     }
 
-    private static MutableText rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
+    protected static MutableText rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
         return Text
                 .literal(propertyName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
                 .append(Text.literal("=").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
                 .append(styledCondition(Text.literal(propertyValue), isGood, Formatting.GREEN));
     }
 
-    private static MutableText styledCondition(MutableText text, boolean isGood, Formatting goodColor) {
+    protected static MutableText styledCondition(MutableText text, boolean isGood, Formatting goodColor) {
         return text.fillStyle(
                 Style.EMPTY.withColor(isGood ? goodColor : Formatting.DARK_RED)
         );
@@ -259,7 +259,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         }
     }
 
-    private void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
+    protected void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         if (isFKeyJustPressed()) {
             playerPreviewTooltipComponent.cycleSlots(config().alwaysAllowPlayerPreviewHead);
         }
@@ -274,7 +274,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         );
     }
 
-    private void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
+    protected void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),
@@ -285,9 +285,9 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         );
     }
 
-    private boolean fPressFuse = false;
+    protected boolean fPressFuse = false;
 
-    private boolean isFKeyJustPressed() {
+    protected boolean isFKeyJustPressed() {
         if (InputUtil.isKeyPressed(client().getWindow().getHandle(), GLFW.GLFW_KEY_F)) {
             if (!fPressFuse) {
                 fPressFuse = true;
@@ -300,8 +300,8 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     }
 
     public static class Builder extends RenameRenderer.Builder<CITRename> implements AcceptsRPRWidget, AcceptsFavoriteSupplier {
-        private Supplier<Boolean> favoriteSupplier = () -> false;
-        private RPRWidget rprWidget = null;
+        protected Supplier<Boolean> favoriteSupplier = () -> false;
+        protected RPRWidget rprWidget = null;
 
         public Builder(CITRename rename) {
             super(rename);

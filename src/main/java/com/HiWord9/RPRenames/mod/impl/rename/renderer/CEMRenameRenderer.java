@@ -27,11 +27,11 @@ import static com.HiWord9.RPRenames.mod.util.RenameRendererHelper.*;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implements RenameRenderer.Preview {
-    RPRWidget rprWidget;
-    Supplier<Boolean> favoriteSupplier;
+    protected RPRWidget rprWidget;
+    protected Supplier<Boolean> favoriteSupplier;
 
-    LivingEntity entity;
-    EntityPreviewTooltipComponent entityPreviewTooltipComponent;
+    protected LivingEntity entity;
+    protected EntityPreviewTooltipComponent entityPreviewTooltipComponent;
 
     protected CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
@@ -111,7 +111,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         );
     }
 
-    private void prepareEntity(Entity entity, CEMRename rename) {
+    protected void prepareEntity(Entity entity, CEMRename rename) {
         if (entity == null) return;
         if (entity instanceof SnowGolemEntity snowGolem) {
             snowGolem.setHasPumpkin(!config().disableSnowGolemPumpkin);
@@ -120,8 +120,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     public static class Builder extends RenameRenderer.Builder<CEMRename> implements AcceptsRPRWidget, AcceptsFavoriteSupplier {
-        private Supplier<Boolean> favoriteSupplier = () -> false;
-        private RPRWidget rprWidget = null;
+        protected Supplier<Boolean> favoriteSupplier = () -> false;
+        protected RPRWidget rprWidget = null;
 
         public Builder(CEMRename rename) {
             super(rename);
