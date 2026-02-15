@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CEMRenameRendererBuilder;
-import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
+import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.CEMRenameRenderer;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import net.minecraft.block.entity.BlockEntity;
@@ -119,8 +119,8 @@ public class CEMRename extends ResourcePackRename {
         return super.matchesStack(stack);
     }
 
-    public RenameRendererBuilder<CEMRename> getNewRendererBuilder() {
-        return new CEMRenameRendererBuilder(this);
+    public RenameRenderer.Builder<CEMRename> getNewRendererBuilder() {
+        return new CEMRenameRenderer.Builder(this);
     }
 
     @Override

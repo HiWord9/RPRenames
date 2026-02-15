@@ -9,8 +9,9 @@ import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.PlayerPreviewTool
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget.Tab;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.InputUtil;
@@ -62,7 +63,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
-    public CITRenameRenderer(CITRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
+    protected CITRenameRenderer(CITRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
         this.rprWidget = rprWidget;
         this.favoriteSupplier = favoriteSupplier;
@@ -93,11 +94,12 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
                 itemWidth, itemHeight,
                 itemSize
         );
-
-        addTooltips();
     }
 
+    @Override
     protected void addTooltips() {
+        super.addTooltips();
+
         if (config().showDescription) {
             var description = descriptionTooltipsComponentsList(rename);
             tooltipComponents.addAll(description);
@@ -295,5 +297,31 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
             fPressFuse = false;
         }
         return false;
+    }
+
+    public static class Builder extends RenameRenderer.Builder<CITRename> implements AcceptsRPRWidget, AcceptsFavoriteSupplier {
+        private Supplier<Boolean> favoriteSupplier = () -> false;
+        private RPRWidget rprWidget = null;
+
+        public Builder(CITRename rename) {
+            super(rename);
+        }
+
+        @Override
+        public void setFavoriteSupplier(Supplier<Boolean> favoriteSupplier) {
+            this.favoriteSupplier = favoriteSupplier;
+        }
+
+        @Override
+        public void setRPRWidget(RPRWidget rprWidget) {
+            this.rprWidget = rprWidget;
+        }
+
+        @Override
+        public CITRenameRenderer build() {
+            var renderer = new CITRenameRenderer(rename, rprWidget, favoriteSupplier);
+            renderer.addTooltips();
+            return renderer;
+        }
     }
 }

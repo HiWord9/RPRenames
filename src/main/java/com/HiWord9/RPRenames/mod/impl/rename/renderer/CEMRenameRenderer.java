@@ -7,6 +7,8 @@ import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -31,7 +33,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     LivingEntity entity;
     EntityPreviewTooltipComponent entityPreviewTooltipComponent;
 
-    public CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
+    protected CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename);
         this.rprWidget = rprWidget;
         this.favoriteSupplier = favoriteSupplier;
@@ -49,11 +51,12 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
                 width, height, size,
                 config().spinMobPreview
         );
-
-        addTooltips();
     }
 
+    @Override
     protected void addTooltips() {
+        super.addTooltips();
+
         if (!rprWidget.getCurrentTab().forCraftItemOnly) {
             MultiItemTooltipComponent component = multiItemTooltipComponent(rprWidget, rename);
             tooltipComponents.add(component);
@@ -114,5 +117,31 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
             snowGolem.setHasPumpkin(!config().disableSnowGolemPumpkin);
         }
         entity.setCustomName(rename.getName());
+    }
+
+    public static class Builder extends RenameRenderer.Builder<CEMRename> implements AcceptsRPRWidget, AcceptsFavoriteSupplier {
+        private Supplier<Boolean> favoriteSupplier = () -> false;
+        private RPRWidget rprWidget = null;
+
+        public Builder(CEMRename rename) {
+            super(rename);
+        }
+
+        @Override
+        public void setFavoriteSupplier(Supplier<Boolean> favoriteSupplier) {
+            this.favoriteSupplier = favoriteSupplier;
+        }
+
+        @Override
+        public void setRPRWidget(RPRWidget rprWidget) {
+            this.rprWidget = rprWidget;
+        }
+
+        @Override
+        public CEMRenameRenderer build() {
+            var renderer = new CEMRenameRenderer(rename, rprWidget, favoriteSupplier);
+            renderer.addTooltips();
+            return renderer;
+        }
     }
 }

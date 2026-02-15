@@ -1,11 +1,11 @@
 package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.mod.impl.rename.renderer.CITRenameRenderer;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import com.HiWord9.RPRenames.mod.util.RenamesHelper;
-import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.CITRenameRendererBuilder;
-import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -255,7 +255,7 @@ public class CITRename extends ResourcePackRename implements HasDescription {
         }
     }
 
-    public RenameRendererBuilder<CITRename> getNewRendererBuilder() {
-        return new CITRenameRendererBuilder(this);
+    public RenameRenderer.Builder<CITRename> getNewRendererBuilder() {
+        return new CITRenameRenderer.Builder(this);
     }
 }

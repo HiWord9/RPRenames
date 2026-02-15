@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.api.rename;
 
-import com.HiWord9.RPRenames.api.rename.renderer.builder.RenameRendererBuilder;
-import com.HiWord9.RPRenames.api.rename.renderer.builder.SimpleRenameRendererBuilder;
+import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.api.rename.renderer.SimpleRenameRenderer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -48,8 +48,8 @@ public class Rename {
         return customName != null && customName.equals(getName());
     }
 
-    public RenameRendererBuilder<?> getNewRendererBuilder() {
-        return new SimpleRenameRendererBuilder<>(this);
+    public RenameRenderer.Builder<?> getNewRendererBuilder() {
+        return new SimpleRenameRenderer.Builder<>(this);
     }
 
     @Override

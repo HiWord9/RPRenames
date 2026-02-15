@@ -17,10 +17,12 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     protected ItemStack stack;
     protected List<TooltipComponent> tooltipComponents = new ArrayList<>();
 
-    public SimpleRenameRenderer(T rename) {
+    protected SimpleRenameRenderer(T rename) {
         this.rename = rename;
         this.stack = rename.toStack();
+    }
 
+    protected void addTooltips() {
         addNameTooltip();
     }
 
@@ -47,5 +49,18 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
                 mouseX, mouseY,
                 HoveredTooltipPositioner.INSTANCE
         );
+    }
+
+    public static class Builder<R extends Rename> extends RenameRenderer.Builder<R> {
+        public Builder(R rename) {
+            super(rename);
+        }
+
+        @Override
+        public SimpleRenameRenderer<R> build() {
+            var renderer = new SimpleRenameRenderer<>(rename);
+            renderer.addTooltips();
+            return renderer;
+        }
     }
 }
