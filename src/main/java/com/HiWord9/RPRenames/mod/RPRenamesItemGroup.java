@@ -5,11 +5,9 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -24,13 +22,14 @@ import java.util.Locale;
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
 public class RPRenamesItemGroup {
-    public static final ArrayList<ItemStack> renamedItemStacks = new ArrayList<>();
+    public static final List<ItemStack> renamedItemStacks = new ArrayList<>();
+    protected static ItemGroup itemGroup;
 
     public static void register() {
         Registry.register(
                 Registries.ITEM_GROUP,
                 Identifier.of(RPRenames.MOD_ID, "item_group"),
-                FabricItemGroup.builder()
+                itemGroup = FabricItemGroup.builder()
                         .displayName(Text.translatable("rprenames.item_group"))
                         .icon(RPRenamesItemGroup::getItemGroupIcon)
                         .type(ItemGroup.Type.SEARCH)
@@ -48,21 +47,12 @@ public class RPRenamesItemGroup {
 
     static ItemStack getItemGroupIcon() {
         ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
-
         stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
-
-        NbtCompound nbt = new NbtCompound();
-        nbt.putString(RPRenames.MOD_ID, "");
-        stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
-
         return stack;
     }
 
     public static boolean verifyItemGroup(ItemGroup itemGroup) {
-        ItemStack icon = itemGroup.getIcon();
-        NbtComponent nbtComponent = icon.get(DataComponentTypes.CUSTOM_DATA);
-        if (nbtComponent == null) return false;
-        return nbtComponent.contains(RPRenames.MOD_ID);
+        return RPRenamesItemGroup.itemGroup == itemGroup;
     }
 
     public static List<ItemStack> searchStacks(List<ItemStack> renamedItemStacks, String search) {
