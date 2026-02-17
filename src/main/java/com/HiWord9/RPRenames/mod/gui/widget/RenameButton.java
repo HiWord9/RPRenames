@@ -53,7 +53,12 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
         this.favorite = favorite;
         this.rename = rename;
 
-        var builder = rename.getNewRendererBuilder();
+        var builder = rename.getNewRendererBuilder(new RenameRenderer.RenderArea() {
+            public int getX() { return RenameButton.this.getX(); }
+            public int getY() { return RenameButton.this.getY(); }
+            public int getWidth() { return RenameButton.this.getWidth() - 1; }
+            public int getHeight() { return RenameButton.this.getHeight() - 1; }
+        });
         if (builder instanceof AcceptsRPRWidget b) b.setRPRWidget(rprWidget);
         if (builder instanceof AcceptsFavoriteSupplier b) b.setFavoriteSupplier(() -> this.favorite);
         renameRenderer = builder.build();
@@ -71,13 +76,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
                 getWidth(), getHeight(),
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );
-        renameRenderer.onRender(
-                context,
-                mouseX, mouseY,
-                getX(), getY(),
-                getWidth() - 1,
-                getHeight() - 1 // -1 cause of shadow
-        );
+        renameRenderer.onRender(context, mouseX, mouseY);
     }
 
     public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
@@ -87,13 +86,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
         ) {
             highlightSlots(context, rprWidget.screen, highlightColor);
         }
-        renameRenderer.onRenderTooltip(
-                context,
-                mouseX, mouseY,
-                getX(), getY(),
-                getWidth() - 1,
-                getHeight() - 1
-        );
+        renameRenderer.onRenderTooltip(context, mouseX, mouseY);
     }
 
     @Override

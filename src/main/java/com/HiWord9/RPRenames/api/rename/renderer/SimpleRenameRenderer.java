@@ -15,11 +15,15 @@ import static com.HiWord9.RPRenames.mod.util.Util.*;
 public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     protected T rename;
     protected ItemStack stack;
+    protected RenderArea renderArea;
     protected List<TooltipComponent> tooltipComponents = new ArrayList<>();
 
-    protected SimpleRenameRenderer(T rename) {
+    protected boolean focused = false;
+
+    protected SimpleRenameRenderer(T rename, RenderArea renderArea) {
         this.rename = rename;
         this.stack = rename.toStack();
+        this.renderArea = renderArea;
     }
 
     protected void addTooltips() {
@@ -31,17 +35,17 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
+    public void onRender(DrawContext context, int mouseX, int mouseY) {
         Graphics.renderStack(
                 context,
                 stack,
-                buttonX + (buttonWidth - Graphics.STACK_IN_SLOT_SIZE) / 2,
-                buttonY + (buttonHeight - Graphics.STACK_IN_SLOT_SIZE) / 2
+                renderArea.getX() + (renderArea.getWidth() - Graphics.STACK_IN_SLOT_SIZE) / 2,
+                renderArea.getY() + (renderArea.getHeight() - Graphics.STACK_IN_SLOT_SIZE) / 2
         );
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
+    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
         Graphics.drawTooltip(
                 context,
                 textRenderer(),
@@ -52,13 +56,13 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     public static class Builder<R extends Rename> extends RenameRenderer.Builder<R> {
-        public Builder(R rename) {
-            super(rename);
+        public Builder(R rename, RenderArea renderArea) {
+            super(rename, renderArea);
         }
 
         @Override
         public SimpleRenameRenderer<R> build() {
-            var renderer = new SimpleRenameRenderer<>(rename);
+            var renderer = new SimpleRenameRenderer<>(rename, renderArea);
             renderer.addTooltips();
             return renderer;
         }

@@ -119,8 +119,8 @@ public class CEMRename extends ResourcePackRename {
         return super.matchesStack(stack);
     }
 
-    public RenameRenderer.Builder<CEMRename> getNewRendererBuilder() {
-        return new CEMRenameRenderer.Builder(this);
+    public RenameRenderer.Builder<CEMRename> getNewRendererBuilder(RenameRenderer.RenderArea renderArea) {
+        return new CEMRenameRenderer.Builder(this, renderArea);
     }
 
     @Override

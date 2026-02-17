@@ -63,8 +63,8 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     protected ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     protected PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
-    protected CITRenameRenderer(CITRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
-        super(rename);
+    protected CITRenameRenderer(CITRename rename, RenderArea renderArea, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
+        super(rename, renderArea);
         this.rprWidget = rprWidget;
         this.favoriteSupplier = favoriteSupplier;
 
@@ -217,7 +217,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
+    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
         ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
 
         if (config().enablePreview) {
@@ -239,7 +239,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
 
         tooltipComponents.addAll(tooltipAddition);
 
-        super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
+        super.onRenderTooltip(context, mouseX, mouseY);
         if (config().enablePreview) {
             drawPreview(context, mouseX, mouseY, tooltipComponents);
         }
@@ -303,8 +303,8 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
         protected Supplier<Boolean> favoriteSupplier = () -> false;
         protected RPRWidget rprWidget = null;
 
-        public Builder(CITRename rename) {
-            super(rename);
+        public Builder(CITRename rename, RenderArea renderArea) {
+            super(rename, renderArea);
         }
 
         @Override
@@ -319,7 +319,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
 
         @Override
         public CITRenameRenderer build() {
-            var renderer = new CITRenameRenderer(rename, rprWidget, favoriteSupplier);
+            var renderer = new CITRenameRenderer(rename, renderArea, rprWidget, favoriteSupplier);
             renderer.addTooltips();
             return renderer;
         }

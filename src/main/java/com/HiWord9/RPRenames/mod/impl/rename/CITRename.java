@@ -255,7 +255,7 @@ public class CITRename extends ResourcePackRename implements HasDescription {
         }
     }
 
-    public RenameRenderer.Builder<CITRename> getNewRendererBuilder() {
-        return new CITRenameRenderer.Builder(this);
+    public RenameRenderer.Builder<CITRename> getNewRendererBuilder(RenameRenderer.RenderArea renderArea) {
+        return new CITRenameRenderer.Builder(this, renderArea);
     }
 }

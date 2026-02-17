@@ -33,8 +33,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     protected LivingEntity entity;
     protected EntityPreviewTooltipComponent entityPreviewTooltipComponent;
 
-    protected CEMRenameRenderer(CEMRename rename, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
-        super(rename);
+    protected CEMRenameRenderer(CEMRename rename, RenderArea renderArea, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
+        super(rename, renderArea);
         this.rprWidget = rprWidget;
         this.favoriteSupplier = favoriteSupplier;
 
@@ -82,15 +82,24 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
+    public void onRender(DrawContext context, int mouseX, int mouseY) {
         Graphics.renderEntityInBox(context,
-                new ScreenRect(buttonX + 1, buttonY + 1, buttonWidth - 2, buttonHeight - 2),
-                14 / (Math.max(entity.getHeight(), entity.getWidth())), entity, false, 200);
+                new ScreenRect(
+                        renderArea.getX() + 1,
+                        renderArea.getY() + 1,
+                        renderArea.getWidth() - 2,
+                        renderArea.getHeight() - 2
+                ),
+                14 / (Math.max(entity.getHeight(), entity.getWidth())),
+                entity,
+                false,
+                200
+        );
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY, int buttonX, int buttonY, int buttonWidth, int buttonHeight) {
-        super.onRenderTooltip(context, mouseX, mouseY, buttonX, buttonY, buttonWidth, buttonHeight);
+    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
+        super.onRenderTooltip(context, mouseX, mouseY);
         if (!config().enablePreview) return;
         drawPreview(
                 context,
@@ -123,8 +132,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         protected Supplier<Boolean> favoriteSupplier = () -> false;
         protected RPRWidget rprWidget = null;
 
-        public Builder(CEMRename rename) {
-            super(rename);
+        public Builder(CEMRename rename, RenderArea renderArea) {
+            super(rename, renderArea);
         }
 
         @Override
@@ -139,7 +148,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
         @Override
         public CEMRenameRenderer build() {
-            var renderer = new CEMRenameRenderer(rename, rprWidget, favoriteSupplier);
+            var renderer = new CEMRenameRenderer(rename, renderArea, rprWidget, favoriteSupplier);
             renderer.addTooltips();
             return renderer;
         }

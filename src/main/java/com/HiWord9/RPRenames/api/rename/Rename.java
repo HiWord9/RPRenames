@@ -48,8 +48,8 @@ public class Rename {
         return customName != null && customName.equals(getName());
     }
 
-    public RenameRenderer.Builder<?> getNewRendererBuilder() {
-        return new SimpleRenameRenderer.Builder<>(this);
+    public RenameRenderer.Builder<?> getNewRendererBuilder(RenameRenderer.RenderArea renderArea) {
+        return new SimpleRenameRenderer.Builder<>(this, renderArea);
     }
 
     @Override
