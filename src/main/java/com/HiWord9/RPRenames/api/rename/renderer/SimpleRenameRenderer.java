@@ -55,6 +55,26 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
         );
     }
 
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return renderArea.contains(mouseX, mouseY);
+    }
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        setFocused(isMouseOver(mouseX, mouseY));
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        this.focused = focused;
+    }
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
     public static class Builder<R extends Rename> extends RenameRenderer.Builder<R> {
         public Builder(R rename, RenderArea renderArea) {
             super(rename, renderArea);
