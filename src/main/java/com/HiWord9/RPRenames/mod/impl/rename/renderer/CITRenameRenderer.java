@@ -81,7 +81,8 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
                 player(), stack,
                 playerWidth, playerHeight,
                 playerSize,
-                config().spinPlayerPreview
+                config().spinPlayerPreview,
+                config().alwaysAllowPlayerPreviewHead
         );
 
         double scaleFactorItem = config().scaleFactorItem;
@@ -261,7 +262,7 @@ public class CITRenameRenderer extends SimpleRenameRenderer<CITRename> implement
 
     protected void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
         if (isFKeyJustPressed()) {
-            playerPreviewTooltipComponent.cycleSlots(config().alwaysAllowPlayerPreviewHead);
+            playerPreviewTooltipComponent.cycleSlots();
         }
 
         Graphics.drawTooltipWithFixedBorders(

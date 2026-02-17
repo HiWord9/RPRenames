@@ -18,9 +18,18 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     EquipmentSlot extraEquipmentSlot = null;
     EquipmentSlot equipmentSlot;
 
-    public PlayerPreviewTooltipComponent(ClientPlayerEntity entity, ItemStack stack, int width, int height, int size, boolean spin) {
+    boolean alwaysAllowPlayerPreviewHead;
+
+    public PlayerPreviewTooltipComponent(
+            ClientPlayerEntity entity, ItemStack stack,
+            int width, int height,
+            int size,
+            boolean spin,
+            boolean alwaysAllowPlayerPreviewHead
+    ) {
         super(entity, width, height, size, spin);
         this.stack = stack;
+        this.alwaysAllowPlayerPreviewHead = alwaysAllowPlayerPreviewHead;
 
         ComponentMap components = this.stack.getComponents();
         if (components.contains(DataComponentTypes.EQUIPPABLE)) {
@@ -74,10 +83,6 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     }
 
     public void cycleSlots() {
-        cycleSlots(false);
-    }
-
-    public void cycleSlots(boolean alwaysAllowPlayerPreviewHead) {
         if (equipmentSlot == EquipmentSlot.HEAD) {
             if (extraSlotAvailable && extraEquipmentSlot != EquipmentSlot.HEAD && alwaysAllowPlayerPreviewHead) {
                 equipmentSlot = extraEquipmentSlot;
