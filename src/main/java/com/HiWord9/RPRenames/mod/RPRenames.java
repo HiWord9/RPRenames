@@ -6,6 +6,7 @@ import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem.CEMPa
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.CITParser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.ItemModelParser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.UpdatableRenamesManager;
+import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;

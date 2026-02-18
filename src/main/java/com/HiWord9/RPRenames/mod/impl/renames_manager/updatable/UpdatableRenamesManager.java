@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.RPRenamesItemGroup;
+import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.RenamesManagerImpl;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;

@@ -1,7 +1,7 @@
-package com.HiWord9.RPRenames.mod;
+package com.HiWord9.RPRenames.mod.item_group;
 
 import com.HiWord9.RPRenames.api.RenamesManager;
-import com.HiWord9.RPRenames.mod.impl.rename.ItemGroupComponent;
+import com.HiWord9.RPRenames.mod.RPRenames;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemGroup;

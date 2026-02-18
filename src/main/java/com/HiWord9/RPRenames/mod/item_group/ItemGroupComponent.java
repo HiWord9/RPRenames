@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.mod.impl.rename;
+package com.HiWord9.RPRenames.mod.item_group;
 
 import net.minecraft.item.ItemStack;
 

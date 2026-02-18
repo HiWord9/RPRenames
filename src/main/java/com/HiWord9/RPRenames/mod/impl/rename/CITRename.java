@@ -3,6 +3,7 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.CITRenameRenderer;
+import com.HiWord9.RPRenames.mod.item_group.ItemGroupComponent;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import com.HiWord9.RPRenames.mod.util.RenamesHelper;

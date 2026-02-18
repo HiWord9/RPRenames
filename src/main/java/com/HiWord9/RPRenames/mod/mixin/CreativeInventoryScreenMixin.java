@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod.mixin;
 
-import com.HiWord9.RPRenames.mod.RPRenamesItemGroup;
+import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;

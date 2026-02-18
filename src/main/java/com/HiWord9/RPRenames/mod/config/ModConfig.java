@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod.config;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
-import com.HiWord9.RPRenames.mod.RPRenamesItemGroup;
+import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.PreviewTooltipPositioner;
 
