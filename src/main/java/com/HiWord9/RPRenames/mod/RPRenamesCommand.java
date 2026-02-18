@@ -181,8 +181,7 @@ public class RPRenamesCommand {
             String giveCommand = "/give @s "
                     + Util.idFromItem(itemStack.getItem())
                     + components
-                    + (r instanceof CITRename citRename ?
-                    (citRename.getStackSize() == 1 ? "" : " " + citRename.getStackSize()) : "");
+                    + (itemStack.getCount() > 1 ? " " + itemStack.getCount() : "");
 
             ClickEvent runGive = new ClickEvent.RunCommand(giveCommand);
             source.sendFeedback(
