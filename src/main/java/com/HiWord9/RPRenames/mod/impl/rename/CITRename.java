@@ -20,7 +20,9 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class CITRename extends ResourcePackRename implements HasDescription {
+import static com.HiWord9.RPRenames.mod.util.Util.config;
+
+public class CITRename extends ResourcePackRename implements HasDescription, ItemGroupComponent {
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -124,6 +126,12 @@ public class CITRename extends ResourcePackRename implements HasDescription {
         info.addAll(RenameInfoHelper.getProperties(properties));
         info.addAll(super.getInfo());
         return info;
+    }
+
+    @Override
+    public List<ItemStack> getItemGroupStacks() {
+        if (config().compareItemGroupRenames) return List.of(toStack());
+        return super.getItemGroupStacks();
     }
 
     public static class Damage {

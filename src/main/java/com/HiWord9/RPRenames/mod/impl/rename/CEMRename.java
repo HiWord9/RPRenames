@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class CEMRename extends ResourcePackRename {
+public class CEMRename extends ResourcePackRename implements ItemGroupComponent {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
     private final EntityType<?> entity;
@@ -143,5 +143,11 @@ public class CEMRename extends ResourcePackRename {
         info.addAll(RenameInfoHelper.getProperties(properties));
         info.addAll(super.getInfo());
         return info;
+    }
+
+    @Override
+    public List<ItemStack> getItemGroupStacks() {
+        if (config().generateSpawnEggsInItemGroup) return List.of(toSpawnEgg());
+        return super.getItemGroupStacks();
     }
 }

@@ -4,11 +4,13 @@ import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.util.Util;
 import com.google.gson.*;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-public class FavoriteRename extends Rename {
+public class FavoriteRename extends Rename implements ItemGroupComponent {
     public FavoriteRename(String name, Item item) {
         super(Text.of(name), item);
     }
@@ -16,6 +18,11 @@ public class FavoriteRename extends Rename {
     public void setItem(Item item) {
         if (!items.isEmpty()) items.removeFirst();
         items.addFirst(item);
+    }
+
+    @Override
+    public List<ItemStack> getItemGroupStacks() {
+        return toStackAll();
     }
 
     public static class Serializer implements JsonSerializer<FavoriteRename>, JsonDeserializer<FavoriteRename> {

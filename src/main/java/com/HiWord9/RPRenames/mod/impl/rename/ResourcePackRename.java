@@ -3,11 +3,12 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 import java.util.List;
 
-public class ResourcePackRename extends Rename implements Informative {
+public class ResourcePackRename extends Rename implements Informative, ItemGroupComponent {
     protected final String packName;
     protected final String path;
 
@@ -32,5 +33,10 @@ public class ResourcePackRename extends Rename implements Informative {
     @Override
     public List<Text> getInfo() {
         return RenameInfoHelper.getRPPath(packName, path);
+    }
+
+    @Override
+    public List<ItemStack> getItemGroupStacks() {
+        return toStackAll();
     }
 }

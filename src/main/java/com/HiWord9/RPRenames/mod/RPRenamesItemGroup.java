@@ -1,8 +1,7 @@
 package com.HiWord9.RPRenames.mod;
 
-import com.HiWord9.RPRenames.mod.util.RenamesHelper;
-import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
+import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.mod.impl.rename.ItemGroupComponent;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.ItemGroup;
@@ -42,7 +41,7 @@ public class RPRenamesItemGroup {
     public static void update() {
         renamedItemStacks.clear();
         if (client().world == null) return;
-        renamedItemStacks.addAll(getAllRenamedStacks());
+        renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.renamesManager));
     }
 
     static ItemStack getItemGroupIcon() {
@@ -124,30 +123,14 @@ public class RPRenamesItemGroup {
             itemList.add(ItemStack.EMPTY);
         }
 
-        itemList.addAll(getFavoriteStacks());
+        itemList.addAll(getAllRenamedStacks(RPRenames.favoritesManager));
     }
 
-    public static List<ItemStack> getFavoriteStacks() {
-        ArrayList<ItemStack> list = new ArrayList<>();
-        for (Rename r : RPRenames.favoritesManager.getAllRenames()) {
-            for (int i = 0; i < r.getItems().size(); i++) {
-                ItemStack stack = RenamesHelper.createItemOrSpawnEgg(r, i);
-                list.add(stack);
-            }
-        }
-        return list;
-    }
-
-    public static List<ItemStack> getAllRenamedStacks() {
-        ArrayList<ItemStack> list = new ArrayList<>();
-        for (Rename r : RPRenames.renamesManager.getAllRenames()) {
-            if (r instanceof CITRename citRename && citRename.getItems().size() > 1 && !config().compareItemGroupRenames) {
-                for (int i = 0; i < citRename.getItems().size(); i++) {
-                    ItemStack stack = RenamesHelper.createItemOrSpawnEgg(citRename, i);
-                    list.add(stack);
-                }
-            } else {
-                list.add(RenamesHelper.createItemOrSpawnEgg(r));
+    public static List<ItemStack> getAllRenamedStacks(RenamesManager<?> renamesManager) {
+        var list = new ArrayList<ItemStack>();
+        for (var r : renamesManager.getAllRenames()) {
+            if (r instanceof ItemGroupComponent itemGroupComponent) {
+                list.addAll(itemGroupComponent.getItemGroupStacks());
             }
         }
         return list;
