@@ -147,4 +147,8 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         @Override
         protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
     }
+
+    public interface Loader {
+        void loadGhostCraft(GhostCraft ghostCraft, ItemStack itemStack);
+    }
 }

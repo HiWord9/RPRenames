@@ -5,11 +5,9 @@ import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
-import com.HiWord9.RPRenames.mod.util.RenamesHelper;
 import com.HiWord9.RPRenames.api.RenamesManager;
 import com.HiWord9.RPRenames.mod.util.RenamesSearchEngine;
 import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -255,24 +253,13 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
                     openPage(page);
                 }
             }
-
-            if (rename instanceof CITRename citRename) {
-                var craftMatcher = new CITRename.CraftMatcher(citRename, getActiveItemStack());
-                if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
-                    ghostCraft.setSpecialHighlight(true, null, true);
-                    ghostCraft.setRender(true);
-                }
-                if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
-                    ghostCraft.setStacks(null, RenamesHelper.getGhostCraftEnchant(citRename), null);
-                    ghostCraft.setSpecialHighlight(null, null, true);
-                    ghostCraft.setRender(true);
-                }
-            }
         } else { //not in inventory
-            for (int s = 0; s < screen.getCraftSlotsAmount() - 1; s++) screen.moveToInventory(s);
+            for (int s = 0; s < screen.getCraftSlotsAmount() - 1; s++)
+                screen.moveToInventory(s);
+        }
 
-            ghostCraft.setStacks(RenamesHelper.getGhostCraftItems(rename));
-            ghostCraft.setRender(true);
+        if (rename instanceof GhostCraft.Loader ghostCraftLoader) {
+            ghostCraftLoader.loadGhostCraft(ghostCraft, getActiveItemStack());
         }
 
         setNameText(rename.getName().getString());

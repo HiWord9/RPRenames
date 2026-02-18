@@ -2,18 +2,22 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.mod.RPRenames;
+import com.HiWord9.RPRenames.mod.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.CITRenameRenderer;
 import com.HiWord9.RPRenames.mod.item_group.ItemGroupComponent;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.mod.util.RenameInfoHelper;
-import com.HiWord9.RPRenames.mod.util.RenamesHelper;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -21,6 +25,7 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static com.HiWord9.RPRenames.mod.util.Util.client;
 import static com.HiWord9.RPRenames.mod.util.Util.config;
 
 public class CITRename extends ResourcePackRename implements HasDescription, ItemGroupComponent {
@@ -158,7 +163,7 @@ public class CITRename extends ResourcePackRename implements HasDescription, Ite
             item.setDamage(getDamage().getParsedDamage(item.getItem()));
         }
         if (getEnchantment() != null) {
-            RenamesHelper.enchantItemStackWithRename(this, item);
+            enchantItemStack(item);
         }
         return item;
     }
@@ -261,6 +266,94 @@ public class CITRename extends ResourcePackRename implements HasDescription, Ite
                     && enoughDamage()
                     && hasEnchant()
                     && hasEnoughLevels();
+        }
+    }
+
+    @Override
+    public void loadGhostCraft(GhostCraft craft, ItemStack itemStack) {
+        if (itemStack.isEmpty()) {
+            super.loadGhostCraft(craft, itemStack);
+
+            var source = craft.getStackInFirstSlot();
+            source.setCount(getStackSize());
+            if (getDamage() != null) {
+                source.setDamage(getDamage().getParsedDamage(source.getItem()));
+            }
+
+            var enchant = getEnchantingStack();
+            if (craft.length >= 2)
+                craft.slots[1].setContent(enchant);
+            return;
+        }
+
+        var craftMatcher = new CraftMatcher(this, itemStack);
+        if (!craftMatcher.enoughStackSize() || !craftMatcher.enoughDamage()) {
+            var highlights = new Boolean[craft.length];
+            if (craft.length >= 1) {
+                highlights[0] = true;
+                highlights[craft.length - 1] = true;
+            }
+            craft.setSpecialHighlight(highlights);
+
+            craft.setRender(true);
+        }
+        if (!craftMatcher.hasEnchant() || !craftMatcher.hasEnoughLevels()) {
+            var stacks = new ItemStack[craft.length];
+            if (craft.length >= 2)
+                stacks[1] = getEnchantingStack();
+            craft.setStacks(stacks);
+
+            var highlights = new Boolean[craft.length];
+            if (craft.length >= 1)
+                highlights[craft.length - 1] = true;
+            craft.setSpecialHighlight(highlights);
+
+            craft.setRender(true);
+        }
+    }
+
+    protected ItemStack getEnchantingStack() {
+        ItemStack ghostEnchant = null;
+        if (getEnchantment() != null) {
+            ghostEnchant = new ItemStack(Items.ENCHANTED_BOOK);
+            enchantItemStack(ghostEnchant);
+        }
+        return ghostEnchant;
+    }
+
+    public void enchantItemStack(ItemStack itemStack) {
+        if (client().world == null) {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename\n{}\ncause client world is null",
+                    itemStack, this
+            );
+            return;
+        }
+
+        Optional<Registry<Enchantment>> optionalRegistry = client()
+                .world
+                .getRegistryManager()
+                .getOptional(RegistryKeys.ENCHANTMENT);
+
+        if (optionalRegistry.isEmpty()) {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename\n{}\ncause {} registry was not found",
+                    itemStack, this, RegistryKeys.ENCHANTMENT.getRegistry()
+            );
+            return;
+        }
+
+        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = optionalRegistry
+                .get()
+                .getEntry(this.getEnchantment());
+
+        if (optionalEnchantment.isPresent()) {
+            itemStack.addEnchantment(optionalEnchantment.get(), this.getEnchantmentLevel());
+        } else {
+            RPRenames.LOGGER.warn(
+                    "Could not enchant item stack {} with rename\n{}\ncause enchantment {} is not loaded",
+                    itemStack, this, this.getEnchantment()
+            );
         }
     }
 
