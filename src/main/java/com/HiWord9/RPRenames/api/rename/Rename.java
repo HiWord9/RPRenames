@@ -42,6 +42,14 @@ public class Rename {
         return stack;
     }
 
+    public List<ItemStack> toStackAll() {
+        var list = new ArrayList<ItemStack>();
+        for (int i = 0; i < items.size(); i++) {
+            list.add(toStack(i));
+        }
+        return list;
+    }
+
     public boolean matchesStack(ItemStack stack) {
         if (!getItems().contains(stack.getItem())) return false;
         var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
