@@ -28,7 +28,12 @@ import java.util.regex.Pattern;
 import static com.HiWord9.RPRenames.mod.util.Util.client;
 import static com.HiWord9.RPRenames.mod.util.Util.config;
 
-public class CITRename extends ResourcePackRename implements HasDescription, ItemGroupComponent {
+public class CITRename
+        extends Rename
+        implements HasResourcePack, HasDescription, ItemGroupComponent, GhostCraft.Loader, Informative
+{
+    protected final String packName;
+    protected final String path;
     protected final Integer stackSize;
     protected final Damage damage;
     protected final Identifier enchantment;
@@ -53,7 +58,9 @@ public class CITRename extends ResourcePackRename implements HasDescription, Ite
             String description,
             Item... items
     ) {
-        super(Text.of(name), packName, path, items);
+        super(Text.of(name), items);
+        this.packName = packName;
+        this.path = path;
         this.stackSize = stackSize;
         this.damage = damage;
         this.enchantment = enchantment;
@@ -127,17 +134,27 @@ public class CITRename extends ResourcePackRename implements HasDescription, Ite
     }
 
     @Override
+    public String getPackName() {
+        return packName;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
     public List<Text> getInfo() {
         var info = new ArrayList<Text>();
         info.addAll(RenameInfoHelper.getProperties(properties));
-        info.addAll(super.getInfo());
+        info.addAll(RenameInfoHelper.getRPPath(packName, path));
         return info;
     }
 
     @Override
     public List<ItemStack> getItemGroupStacks() {
         if (config().compareItemGroupRenames) return List.of(toStack());
-        return super.getItemGroupStacks();
+        return toStackAll();
     }
 
     public static class Damage {
@@ -272,17 +289,25 @@ public class CITRename extends ResourcePackRename implements HasDescription, Ite
     @Override
     public void loadGhostCraft(GhostCraft craft, ItemStack itemStack) {
         if (itemStack.isEmpty()) {
-            super.loadGhostCraft(craft, itemStack);
+            var stacks = new ItemStack[craft.length];
 
-            var source = craft.getStackInFirstSlot();
+            var source = new ItemStack(getItem());
             source.setCount(getStackSize());
             if (getDamage() != null) {
                 source.setDamage(getDamage().getParsedDamage(source.getItem()));
             }
 
             var enchant = getEnchantingStack();
-            if (craft.length >= 2)
-                craft.slots[1].setContent(enchant);
+            var result = toStack();
+
+            if (craft.length >= 2) {
+                stacks[0] = source;
+                stacks[1] = enchant;
+                stacks[craft.length - 1] = result;
+            }
+
+            craft.setStacks(stacks);
+            craft.setRender(true);
             return;
         }
 

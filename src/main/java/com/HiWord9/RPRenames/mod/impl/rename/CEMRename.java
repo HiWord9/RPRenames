@@ -2,6 +2,7 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.rename.Rename;
 import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.mod.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.CEMRenameRenderer;
 import com.HiWord9.RPRenames.mod.item_group.ItemGroupComponent;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
@@ -27,9 +28,14 @@ import java.util.regex.Pattern;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class CEMRename extends ResourcePackRename implements ItemGroupComponent {
+public class CEMRename
+        extends Rename
+        implements HasResourcePack, ItemGroupComponent, GhostCraft.Loader, Informative
+{
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
+    private final String packName;
+    private final String path;
     private final EntityType<?> entity;
     private final Properties properties;
     private final String namePattern;
@@ -52,7 +58,9 @@ public class CEMRename extends ResourcePackRename implements ItemGroupComponent 
             Properties properties,
             Rename itemRename
     ) {
-        super(Text.of(name), packName, path, DEFAULT_MOB_ITEM);
+        super(Text.of(name), DEFAULT_MOB_ITEM);
+        this.packName = packName;
+        this.path = path;
         this.entity = entity;
         this.properties = properties;
         this.namePattern = namePattern;
@@ -132,6 +140,33 @@ public class CEMRename extends ResourcePackRename implements ItemGroupComponent 
     }
 
     @Override
+    public String getPackName() {
+        return packName;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
+    public void loadGhostCraft(GhostCraft ghostCraft, ItemStack itemStack) {
+        if (!itemStack.isEmpty()) return;
+
+        var source = new ItemStack(getItem());
+        var result = toStack();
+
+        var stacks = new ItemStack[ghostCraft.length];
+        if (ghostCraft.length >= 1) {
+            stacks[0] = source;
+            stacks[ghostCraft.length - 1] = result;
+        }
+
+        ghostCraft.setStacks(stacks);
+        ghostCraft.setRender(true);
+    }
+
+    @Override
     public List<Text> getInfo() {
         var info = new ArrayList<Text>();
         if (itemRename != null && itemRename instanceof Informative informative) {
@@ -142,13 +177,13 @@ public class CEMRename extends ResourcePackRename implements ItemGroupComponent 
                         .formatted(Formatting.LIGHT_PURPLE)
         );
         info.addAll(RenameInfoHelper.getProperties(properties));
-        info.addAll(super.getInfo());
+        info.addAll(RenameInfoHelper.getRPPath(packName, path));
         return info;
     }
 
     @Override
     public List<ItemStack> getItemGroupStacks() {
         if (config().generateSpawnEggsInItemGroup) return List.of(toSpawnEgg());
-        return super.getItemGroupStacks();
+        return toStackAll();
     }
 }
