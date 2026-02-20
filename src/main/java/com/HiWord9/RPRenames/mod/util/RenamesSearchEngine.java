@@ -1,10 +1,10 @@
 package com.HiWord9.RPRenames.mod.util;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
+import com.HiWord9.RPRenames.mod.impl.rename.HasResourcePack;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
 import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.rename.ResourcePackRename;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.NotNull;
 
@@ -81,13 +81,13 @@ public class RenamesSearchEngine {
         String packNameUp = up(afterColon(packNameTag));
 
         for (Rename r : renames) {
-            if (!(r instanceof ResourcePackRename rpRename)) continue;
+            if (!(r instanceof HasResourcePack rpRename)) continue;
             if (rpRename.getPackName() == null) continue;
 
             if (up(rpRename.getPackName())
                     .replace(" ", "_")
                     .contains(packNameUp)
-            ) resultList.add(rpRename);
+            ) resultList.add(r);
         }
     }
 

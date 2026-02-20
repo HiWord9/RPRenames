@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-public class ResourcePackRename extends Rename implements Informative, ItemGroupComponent, GhostCraft.Loader {
+public class ResourcePackRename extends Rename implements HasResourcePack, Informative, ItemGroupComponent, GhostCraft.Loader {
     protected final String packName;
     protected final String path;
 
@@ -24,10 +24,12 @@ public class ResourcePackRename extends Rename implements Informative, ItemGroup
         this.path = path == null ? null : path.replace("\\", "/");
     }
 
+    @Override
     public String getPackName() {
         return packName;
     }
 
+    @Override
     public String getPath() {
         return path;
     }
