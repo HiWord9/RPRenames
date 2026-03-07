@@ -82,7 +82,7 @@ public class ItemModelData {
         var context = new ArrayList<>(allConditions);
         context.removeAll(applicableConditions);
         var contexts = new ArrayList<List<ItemModelCondition>>();
-        contexts.add(context);
+        if (!context.isEmpty()) contexts.add(context);
         return contexts;
     }
 
