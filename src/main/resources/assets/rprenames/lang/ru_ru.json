@@ -32,6 +32,8 @@
   "rprenames.command.info.cemProperties": "Опции CEM:",
   "rprenames.command.info.noPath": "Не удалось получить путь к файлу опций для этого переименования",
   "rprenames.command.info.noRpName": "Не удалось получить название набора для этого переименования",
+  "rprenames.command.info.requiredConditions": "Необходимо условий: %1$s",
+  "rprenames.command.info.availableContexts": "Доступно контекстов: %1$s",
   "rprenames.command.info.rpName": "Название набора",
   "rprenames.command.info.located": "Расположен в: %1$s",
   "rprenames.command.list.foundRenames": "Найдены следующие переименования для %1$s:",

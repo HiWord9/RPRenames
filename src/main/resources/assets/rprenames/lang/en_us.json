@@ -32,6 +32,8 @@
   "rprenames.command.info.cemProperties": "CEM Properties:",
   "rprenames.command.info.noPath": "Couldn't get Path to Properties File for this Rename",
   "rprenames.command.info.noRpName": "Couldn't get Pack Name for this Rename",
+  "rprenames.command.info.requiredConditions": "Required conditions: %1$s",
+  "rprenames.command.info.availableContexts": "Available contexts: %1$s",
   "rprenames.command.info.rpName": "Pack Name",
   "rprenames.command.info.located": "Located in: %1$s",
   "rprenames.command.list.foundRenames": "Found following Renames for %1$s:",
