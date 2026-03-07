@@ -19,6 +19,8 @@ public class ModConfig {
         this.ignoreCEM = ignoreCEM;
     }
 
+    public boolean ignoreCIT = true;
+
     public boolean enableAnvilModification = true;
 
     public FavoriteButton.Position favoriteButtonPosition = FavoriteButton.Position.TOP_RIGHT;
