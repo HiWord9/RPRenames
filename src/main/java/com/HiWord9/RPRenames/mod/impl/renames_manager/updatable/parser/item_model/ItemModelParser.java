@@ -42,6 +42,7 @@ public class ItemModelParser implements Parser {
 
             var rename = new ItemModelRename(
                     data.applicableConditions,
+                    data.contexts,
                     name,
                     data.items.toArray(new Item[]{})
             );

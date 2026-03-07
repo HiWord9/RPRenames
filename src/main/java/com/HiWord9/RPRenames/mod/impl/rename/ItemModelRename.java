@@ -10,6 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,11 +20,18 @@ public class ItemModelRename
         extends Rename
         implements ItemGroupComponent, GhostCraft.Loader
 {
-    protected final List<ItemModelCondition.Applicable> conditions;
+    protected final List<ItemModelCondition.Applicable> conditions = new ArrayList<>();
+    protected final List<List<ItemModelCondition>> contexts = new ArrayList<>();
 
-    public ItemModelRename(List<ItemModelCondition.Applicable> conditions, Text name, Item... items) {
+    public ItemModelRename(
+            List<ItemModelCondition.Applicable> conditions,
+            List<List<ItemModelCondition>> contexts,
+            Text name,
+            Item... items
+    ) {
         super(name, items);
-        this.conditions = conditions;
+        if (conditions != null) this.conditions.addAll(conditions);
+        if (contexts != null) this.contexts.addAll(contexts);
     }
 
     @Override
