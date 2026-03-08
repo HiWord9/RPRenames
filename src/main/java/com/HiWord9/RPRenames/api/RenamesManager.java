@@ -5,12 +5,7 @@ import net.minecraft.item.Item;
 
 import java.util.List;
 
-public interface RenamesManager<R extends Rename> {
-
-    List<R> getAllRenames();
-
-    List<R> getRenames(Item item);
-
+public interface RenamesManager<R extends Rename> extends RenamesProvider<R> {
     default boolean addRename(R rename) {
         return addRename(rename.getItem(), rename);
     }
