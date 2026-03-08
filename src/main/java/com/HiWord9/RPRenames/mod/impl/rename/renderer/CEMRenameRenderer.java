@@ -2,13 +2,15 @@ package com.HiWord9.RPRenames.mod.impl.rename.renderer;
 
 import com.HiWord9.RPRenames.api.core.rename.renderer.RenameRenderer;
 import com.HiWord9.RPRenames.api.core.rename.renderer.SimpleRenameRenderer;
+import com.HiWord9.RPRenames.api.ext.rename.renderer.PreviewTooltipPositioner;
+import com.HiWord9.RPRenames.api.ext.rename.renderer.Previewable;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.EntityPreviewTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.MultiItemTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.widget.RPRWidget;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
-import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
-import com.HiWord9.RPRenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
+import com.HiWord9.RPRenames.api.ext.rename.renderer.builder.AcceptsFavoriteSupplier;
+import com.HiWord9.RPRenames.api.ext.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.TooltipComponent;

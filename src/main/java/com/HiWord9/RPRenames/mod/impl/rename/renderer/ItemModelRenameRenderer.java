@@ -1,5 +1,6 @@
 package com.HiWord9.RPRenames.mod.impl.rename.renderer;
 
+import com.HiWord9.RPRenames.api.ext.rename.renderer.PreviewTooltipPositioner;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;

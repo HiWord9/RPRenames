@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model;
 
 import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
+import com.HiWord9.RPRenames.api.ext.renames_manager.parser.Parser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.HiWord9.RPRenames.api.core.renames_manager.RenamesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;

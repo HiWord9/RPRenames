@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.mod.config;
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
-import com.HiWord9.RPRenames.mod.impl.rename.renderer.PreviewTooltipPositioner;
+import com.HiWord9.RPRenames.api.ext.rename.renderer.PreviewTooltipPositioner;
 
 import java.io.FileReader;
 import java.io.FileWriter;

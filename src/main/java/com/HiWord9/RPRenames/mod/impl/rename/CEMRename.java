@@ -2,6 +2,8 @@ package com.HiWord9.RPRenames.mod.impl.rename;
 
 import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.api.core.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.api.ext.rename.HasResourcePack;
+import com.HiWord9.RPRenames.api.ext.rename.Informative;
 import com.HiWord9.RPRenames.mod.gui.widget.GhostCraft;
 import com.HiWord9.RPRenames.mod.impl.rename.renderer.CEMRenameRenderer;
 import com.HiWord9.RPRenames.mod.item_group.ItemGroupComponent;

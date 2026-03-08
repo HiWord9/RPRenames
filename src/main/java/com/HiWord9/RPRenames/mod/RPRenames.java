@@ -1,7 +1,7 @@
 package com.HiWord9.RPRenames.mod;
 
 import com.HiWord9.RPRenames.api.core.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.CompositeRenamesProvider;
+import com.HiWord9.RPRenames.api.ext.renames_manager.CompositeRenamesProvider;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem.CEMParser;

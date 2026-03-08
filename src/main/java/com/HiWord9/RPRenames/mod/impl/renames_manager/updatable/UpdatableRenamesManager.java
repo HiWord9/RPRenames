@@ -1,10 +1,11 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable;
 
+import com.HiWord9.RPRenames.api.ext.renames_manager.parser.ParsersHolder;
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.item_group.RPRenamesItemGroup;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.RenamesManagerImpl;
+import com.HiWord9.RPRenames.api.ext.renames_manager.RenamesManagerImpl;
 import com.HiWord9.RPRenames.api.core.rename.Rename;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
+import com.HiWord9.RPRenames.api.ext.renames_manager.parser.Parser;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.profiler.Profiler;

@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
 import com.HiWord9.RPRenames.api.core.renames_manager.RenamesManager;
-import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
+import com.HiWord9.RPRenames.api.ext.renames_manager.parser.Parser;
 import com.HiWord9.RPRenames.mod.util.ParserHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.resource.Resource;

@@ -1,4 +1,4 @@
-package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser;
+package com.HiWord9.RPRenames.api.ext.renames_manager.parser;
 
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.profiler.Profiler;
