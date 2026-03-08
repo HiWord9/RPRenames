@@ -11,12 +11,19 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
+
+import static net.minecraft.entity.EquipmentSlot.*;
+
 public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent {
     public final ItemStack stack;
 
     boolean extraSlotAvailable = true;
     EquipmentSlot extraEquipmentSlot = null;
     EquipmentSlot equipmentSlot;
+
+    static final List<EquipmentSlot> ALLOWED_EQUIPMENT_SLOTS
+            = List.of(MAINHAND, OFFHAND, FEET, LEGS, CHEST, HEAD);
 
     boolean alwaysAllowPlayerPreviewHead;
 
@@ -34,7 +41,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
         ComponentMap components = this.stack.getComponents();
         if (components.contains(DataComponentTypes.EQUIPPABLE)) {
             var component = components.get(DataComponentTypes.EQUIPPABLE);
-            if (component != null) {
+            if (component != null && ALLOWED_EQUIPMENT_SLOTS.contains(component.slot())) {
                 extraEquipmentSlot = component.slot();
             } else {
                 extraSlotAvailable = false;
