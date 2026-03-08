@@ -83,7 +83,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         rprWidget.init(
                 x - RPRWidget.WIDGET_WIDTH - 1, y,
                 rprInteractableScreen,
-                RPRenames.renamesManager,
+                RPRenames.renamesProvider,
                 RPRenames.favoritesManager,
                 nameField,
                 favoriteButton,

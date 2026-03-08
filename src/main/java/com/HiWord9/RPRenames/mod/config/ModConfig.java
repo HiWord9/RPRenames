@@ -110,7 +110,7 @@ public class ModConfig {
 
     public ModConfig write() {
         if (shouldUpdateRenamesList != null && shouldUpdateRenamesList) {
-            RPRenames.renamesManager.updateRenames(); // todo custom instance ?
+            RPRenames.updatableRenamesManager.updateRenames(); // todo custom instance ?
             shouldUpdateRenamesList = null;
         } else if (shouldUpdateItemGroup != null && shouldUpdateItemGroup) {
             RPRenamesItemGroup.update();

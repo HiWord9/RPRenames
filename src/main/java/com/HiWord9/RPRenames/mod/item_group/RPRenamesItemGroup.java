@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod.item_group;
 
-import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.api.RenamesProvider;
 import com.HiWord9.RPRenames.mod.RPRenames;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentTypes;
@@ -41,7 +41,7 @@ public class RPRenamesItemGroup {
     public static void update() {
         renamedItemStacks.clear();
         if (client().world == null) return;
-        renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.renamesManager));
+        renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.updatableRenamesManager));
     }
 
     static ItemStack getItemGroupIcon() {
@@ -126,7 +126,7 @@ public class RPRenamesItemGroup {
         itemList.addAll(getAllRenamedStacks(RPRenames.favoritesManager));
     }
 
-    public static List<ItemStack> getAllRenamedStacks(RenamesManager<?> renamesManager) {
+    public static List<ItemStack> getAllRenamedStacks(RenamesProvider<?> renamesManager) {
         var list = new ArrayList<ItemStack>();
         for (var r : renamesManager.getAllRenames()) {
             if (r instanceof ItemGroupComponent itemGroupComponent) {

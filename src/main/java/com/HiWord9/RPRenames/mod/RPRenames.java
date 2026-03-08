@@ -1,5 +1,7 @@
 package com.HiWord9.RPRenames.mod;
 
+import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.mod.impl.renames_manager.CompositeRenamesProvider;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesFileManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem.CEMParser;
@@ -34,10 +36,12 @@ public class RPRenames implements ClientModInitializer {
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
 
-    public static final UpdatableRenamesManager renamesManager = new UpdatableRenamesManager();
-    public static final ItemModelParser itemModelParser = new ItemModelParser(renamesManager);
-    public static final CITParser citParser = new CITParser(renamesManager);
-    public static final CEMParser cemParser = new CEMParser(renamesManager);
+    public static final CompositeRenamesProvider<Rename> renamesProvider = new CompositeRenamesProvider<>();
+
+    public static final UpdatableRenamesManager updatableRenamesManager = new UpdatableRenamesManager();
+    public static final ItemModelParser itemModelParser = new ItemModelParser(updatableRenamesManager);
+    public static final CITParser citParser = new CITParser(updatableRenamesManager);
+    public static final CEMParser cemParser = new CEMParser(updatableRenamesManager);
 
     public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
@@ -61,9 +65,11 @@ public class RPRenames implements ClientModInitializer {
 
         registerItemGroup();
 
-        renamesManager.parsers().add(itemModelParser);
-        renamesManager.parsers().add(citParser);
-        renamesManager.parsers().add(cemParser);
+        renamesProvider.providers.add(updatableRenamesManager);
+
+        updatableRenamesManager.parsers().add(itemModelParser);
+        updatableRenamesManager.parsers().add(citParser);
+        updatableRenamesManager.parsers().add(cemParser);
 
         favoritesManager.loadSavedFavorites();
     }

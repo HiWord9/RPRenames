@@ -257,7 +257,7 @@ public class ModConfigScreenFactory {
                 .setYesNoTextSupplier(bl -> {
                     if (bl != prevToggleRecreateConfig.bl) {
                         RPRenames.LOGGER.info("Recreating config manually");
-                        RPRenames.renamesManager.updateRenames();
+                        RPRenames.updatableRenamesManager.updateRenames();
                         prevToggleRecreateConfig.bl = bl;
                     }
                     return Text.translatable("rprenames.config.debug.recreateConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
@@ -272,7 +272,7 @@ public class ModConfigScreenFactory {
                 .setYesNoTextSupplier(bl -> {
                     if (bl != prevToggleClearConfig.bl) {
                         RPRenames.LOGGER.info("Deleting config manually");
-                        RPRenames.renamesManager.clearRenames();
+                        RPRenames.updatableRenamesManager.clearRenames();
                         prevToggleClearConfig.bl = bl;
                     }
                     return Text.translatable("rprenames.config.debug.clearConfig.title").fillStyle(Style.EMPTY.withColor(Formatting.RED));

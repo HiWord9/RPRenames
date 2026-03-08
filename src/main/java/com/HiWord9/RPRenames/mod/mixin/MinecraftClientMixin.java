@@ -25,6 +25,6 @@ public class MinecraftClientMixin {
     )
     private void onInit(RunArgs args, CallbackInfo ci) {
         // onInitializeClient() executed before resourceManager is initialized, so we register reloader in mixin
-        resourceManager.registerReloader(RPRenames.renamesManager);
+        resourceManager.registerReloader(RPRenames.updatableRenamesManager);
     }
 }

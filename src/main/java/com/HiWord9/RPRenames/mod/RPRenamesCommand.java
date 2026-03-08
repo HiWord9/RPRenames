@@ -84,7 +84,7 @@ public class RPRenamesCommand {
 
         Rename matchRename = null;
 
-        var renames = RPRenames.renamesManager.getAllRenames();
+        var renames = RPRenames.renamesProvider.getAllRenames();
         if (!renames.isEmpty()) {
             matchRename = getMatch(renames, itemStack);
         }
@@ -117,7 +117,7 @@ public class RPRenamesCommand {
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
-        var renames = RPRenames.renamesManager.getRenames(item);
+        var renames = RPRenames.renamesProvider.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(
                     Text.translatable(

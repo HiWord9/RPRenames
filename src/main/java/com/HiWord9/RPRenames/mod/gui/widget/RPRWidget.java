@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
-import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.api.RenamesProvider;
 import com.HiWord9.RPRenames.mod.util.RenamesSearchEngine;
 import com.HiWord9.RPRenames.api.rename.Rename;
 import net.minecraft.client.gui.DrawContext;
@@ -53,7 +53,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected boolean open;
 
     protected RPRInteractableScreen screen;
-    protected RenamesManager<?> renamesManager;
+    protected RenamesProvider<?> renamesProvider;
     protected FavoritesManager favoritesManager;
 
     protected TextFieldWidget nameField;
@@ -101,13 +101,13 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     public void init(
             int x, int y,
             @Nullable RPRInteractableScreen parentScreen,
-            RenamesManager<?> renamesManager,
+            RenamesProvider<?> renamesProvider,
             FavoritesManager favoritesManager,
             TextFieldWidget nameField,
             FavoriteButton favoriteButton,
             GhostCraft ghostCraft
     ) {
-        this.renamesManager = renamesManager;
+        this.renamesProvider = renamesProvider;
         this.favoritesManager = favoritesManager;
 
         this.nameField = nameField;
@@ -537,10 +537,10 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected void updateUnfilteredRenames() {
         unfilteredRenames.clear();
         switch (currentTab) {
-            case SEARCH -> unfilteredRenames.addAll(renamesManager.getRenames(getCraftItem()));
+            case SEARCH -> unfilteredRenames.addAll(renamesProvider.getRenames(getCraftItem()));
             case FAVORITE -> unfilteredRenames.addAll(favoritesManager.getRenames(getCraftItem()));
             case INVENTORY -> unfilteredRenames.addAll(getInventoryRenames());
-            case GLOBAL -> unfilteredRenames.addAll(renamesManager.getAllRenames());
+            case GLOBAL -> unfilteredRenames.addAll(renamesProvider.getAllRenames());
         }
     }
 
@@ -549,7 +549,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
         var renames = new ArrayList<Rename>();
         for (Item item : getAvailableItems())
             if (item != Items.AIR && checked.add(item))
-                for (Rename r : renamesManager.getRenames(item))
+                for (Rename r : renamesProvider.getRenames(item))
                     if (!renames.contains(r))
                         renames.add(r);
         return renames;
