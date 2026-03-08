@@ -5,7 +5,7 @@ import com.HiWord9.RPRenames.mod.gui.RPRInteractableScreen;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.widget.external.FavoriteButton;
-import com.HiWord9.RPRenames.api.core.RenamesProvider;
+import com.HiWord9.RPRenames.api.core.renames_manager.RenamesProvider;
 import com.HiWord9.RPRenames.mod.util.RenamesSearchEngine;
 import com.HiWord9.RPRenames.api.core.rename.Rename;
 import net.minecraft.client.gui.DrawContext;

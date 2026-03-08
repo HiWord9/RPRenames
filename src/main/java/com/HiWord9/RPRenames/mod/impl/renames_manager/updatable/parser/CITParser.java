@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser;
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.util.ParserHelper;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
-import com.HiWord9.RPRenames.api.core.RenamesManager;
+import com.HiWord9.RPRenames.api.core.renames_manager.RenamesManager;
 import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
 import net.minecraft.item.Item;

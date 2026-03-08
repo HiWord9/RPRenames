@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod.impl.renames_manager;
 
-import com.HiWord9.RPRenames.api.core.RenamesProvider;
+import com.HiWord9.RPRenames.api.core.renames_manager.RenamesProvider;
 import com.HiWord9.RPRenames.api.core.rename.Rename;
 import net.minecraft.item.Item;
 

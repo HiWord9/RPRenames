@@ -3,7 +3,7 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_mod
 import com.HiWord9.RPRenames.mod.impl.rename.ItemModelRename;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
-import com.HiWord9.RPRenames.api.core.RenamesManager;
+import com.HiWord9.RPRenames.api.core.renames_manager.RenamesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import net.minecraft.client.item.ItemAsset;
 import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
