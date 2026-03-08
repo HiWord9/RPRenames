@@ -16,8 +16,11 @@ import java.util.concurrent.Executor;
 
 import static com.HiWord9.RPRenames.mod.util.Util.*;
 
-public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implements ResourceReloader {
-    public final ArrayList<Parser> parsers = new ArrayList<>();
+public class UpdatableRenamesManager
+        extends RenamesManagerImpl<Rename>
+        implements ParsersHolder, ResourceReloader
+{
+    protected final ArrayList<Parser> parsers = new ArrayList<>();
 
     public void updateRenames() {
         updateRenames(client().getResourceManager(), Profilers.get());
@@ -30,10 +33,7 @@ public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implemen
         long startTime = System.currentTimeMillis();
 
         clearRenames();
-
-        for (Parser parser : parsers) {
-            parser.parse(resourceManager, profiler);
-        }
+        ParsersHolder.super.parseAll(resourceManager, profiler);
 
         RPRenamesItemGroup.update();
 
@@ -49,6 +49,11 @@ public class UpdatableRenamesManager extends RenamesManagerImpl<Rename> implemen
         );
 
         profiler.pop();
+    }
+
+    @Override
+    public List<Parser> parsers() {
+        return parsers;
     }
 
     @Override

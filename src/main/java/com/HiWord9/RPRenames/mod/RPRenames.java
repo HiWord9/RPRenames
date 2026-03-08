@@ -61,9 +61,9 @@ public class RPRenames implements ClientModInitializer {
 
         registerItemGroup();
 
-        renamesManager.parsers.add(itemModelParser);
-        renamesManager.parsers.add(citParser);
-        renamesManager.parsers.add(cemParser);
+        renamesManager.parsers().add(itemModelParser);
+        renamesManager.parsers().add(citParser);
+        renamesManager.parsers().add(cemParser);
 
         favoritesManager.loadSavedFavorites();
     }
