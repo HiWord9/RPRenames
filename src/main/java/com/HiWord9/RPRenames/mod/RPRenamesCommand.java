@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.*;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
 import com.HiWord9.RPRenames.mod.util.Util;

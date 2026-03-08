@@ -1,6 +1,6 @@
 package com.HiWord9.RPRenames.mod.impl.rename;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.mod.item_group.ItemGroupComponent;
 import com.HiWord9.RPRenames.mod.util.Util;
 import com.google.gson.*;

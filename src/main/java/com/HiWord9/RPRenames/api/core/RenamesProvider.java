@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.api;
+package com.HiWord9.RPRenames.api.core;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import net.minecraft.item.Item;
 
 import java.util.List;

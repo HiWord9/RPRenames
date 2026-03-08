@@ -1,8 +1,8 @@
 package com.HiWord9.RPRenames.mod.impl.rename.renderer;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
-import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
-import com.HiWord9.RPRenames.api.rename.renderer.SimpleRenameRenderer;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.api.core.rename.renderer.SimpleRenameRenderer;
 import com.HiWord9.RPRenames.mod.gui.Graphics;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.HiWord9.RPRenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;

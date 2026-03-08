@@ -2,9 +2,9 @@ package com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.cem;
 
 import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.util.PropertiesHelper;
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import com.HiWord9.RPRenames.mod.impl.rename.CEMRename;
-import com.HiWord9.RPRenames.api.RenamesManager;
+import com.HiWord9.RPRenames.api.core.RenamesManager;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.updatable.parser.Parser;
 import com.HiWord9.RPRenames.mod.util.ParserHelper;
 import net.minecraft.entity.EntityType;

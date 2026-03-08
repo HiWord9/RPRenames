@@ -4,7 +4,7 @@ import com.HiWord9.RPRenames.mod.RPRenames;
 import com.HiWord9.RPRenames.mod.impl.rename.HasResourcePack;
 import com.HiWord9.RPRenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.HiWord9.RPRenames.mod.impl.rename.CITRename;
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.NotNull;
 

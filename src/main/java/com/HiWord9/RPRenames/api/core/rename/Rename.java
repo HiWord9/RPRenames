@@ -1,7 +1,7 @@
-package com.HiWord9.RPRenames.api.rename;
+package com.HiWord9.RPRenames.api.core.rename;
 
-import com.HiWord9.RPRenames.api.rename.renderer.RenameRenderer;
-import com.HiWord9.RPRenames.api.rename.renderer.SimpleRenameRenderer;
+import com.HiWord9.RPRenames.api.core.rename.renderer.RenameRenderer;
+import com.HiWord9.RPRenames.api.core.rename.renderer.SimpleRenameRenderer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

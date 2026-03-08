@@ -1,6 +1,6 @@
-package com.HiWord9.RPRenames.api.rename.renderer;
+package com.HiWord9.RPRenames.api.core.rename.renderer;
 
-import com.HiWord9.RPRenames.api.rename.Rename;
+import com.HiWord9.RPRenames.api.core.rename.Rename;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 
