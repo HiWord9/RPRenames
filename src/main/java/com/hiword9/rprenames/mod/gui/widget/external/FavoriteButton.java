@@ -1,0 +1,90 @@
+package com.hiword9.rprenames.mod.gui.widget.external;
+
+import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
+import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.item.Items;
+import net.minecraft.util.Identifier;
+
+import java.util.List;
+
+public class FavoriteButton extends ClickableWidget implements OffsetableWidget {
+    public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
+
+    RPRWidget rprWidget;
+
+    public static final int BUTTON_WIDTH = 9;
+    public static final int BUTTON_HEIGHT = 9;
+
+    public static final int TEXTURE_WIDTH = 9;
+    public static final int TEXTURE_HEIGHT = 18;
+    static final int V_OFFSET = BUTTON_HEIGHT;
+
+    public boolean favorite = false;
+
+    public FavoriteButton(RPRWidget instance, int x, int y, Position offset) {
+        this(instance, x + offset.getX(), y + offset.getY());
+    }
+
+    public FavoriteButton(RPRWidget instance, int x, int y) {
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, null);
+        rprWidget = instance;
+    }
+
+    @Override
+    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (!active) return;
+
+        int u = 0;
+        int v = favorite ? 0 : V_OFFSET;
+        context.drawTexture(
+                RenderLayer::getGuiTextured,
+                TEXTURE,
+                getX(), getY(),
+                u, v,
+                getWidth(), getHeight(),
+                TEXTURE_WIDTH, TEXTURE_HEIGHT
+        );
+    }
+
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.isMouseOver(mouseX, mouseY)) {
+            var item = rprWidget.getCraftItem();
+            if (item == Items.AIR) return true;
+
+            rprWidget.addOrRemoveFavorite(!favorite, List.of(item), rprWidget.getNameText());
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    public enum Position {
+        TOP_RIGHT(159, 8),
+        LEFT_FROM_NAMEFIELD(47, 23),
+        RIGHT_FROM_RESULT_SLOT(156, 50);
+
+        final int x;
+        final int y;
+
+        Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+    }
+}

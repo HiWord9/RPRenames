@@ -1,0 +1,267 @@
+package com.hiword9.rprenames.mod.impl.rename.renderer;
+
+import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner;
+import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
+import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
+import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
+import com.hiword9.rprenames.mod.gui.widget.RPRWidget.Tab;
+import com.hiword9.rprenames.mod.impl.rename.CITRename;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import static com.hiword9.rprenames.mod.gui.Graphics.tooltipOf;
+import static com.hiword9.rprenames.mod.util.RenameRendererHelper.*;
+import static com.hiword9.rprenames.mod.util.Util.*;
+import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
+
+public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
+    protected static final MutableText playerPreviewHintShift = Text.translatable(
+            "rprenames.gui.tooltipHint.playerPreview.holdShift",
+            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
+
+    protected static final MutableText playerPreviewHintF = Text.translatable(
+            "rprenames.gui.tooltipHint.playerPreview.pressF",
+            Text.translatable("rprenames.key.f").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
+
+    protected static final MutableText favoriteHintAdd = Text.translatable(
+            "rprenames.gui.tooltipHint.favorite.add",
+            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
+
+    protected static final MutableText favoriteHintRemove = Text.translatable(
+            "rprenames.gui.tooltipHint.favorite.remove",
+            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
+    ).formatted(Formatting.DARK_GRAY);
+
+    protected static final MutableText disableHint = Text.translatable(
+            "rprenames.gui.tooltipHint.disable",
+            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.RED)
+    ).formatted(Formatting.DARK_RED);
+
+    protected CITRenameRenderer(
+            CITRename rename, RenderArea renderArea,
+            RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier
+    ) {
+        super(rename, renderArea, rprWidget, favoriteSupplier);
+    }
+
+    @Override
+    protected PlayerPreviewTooltipComponent getPlayerPreviewTooltip() {
+        int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
+        int playerWidth = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + playerSize * player().getWidth() - 1);
+        int playerHeight = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + playerSize * player().getHeight() - 1);
+
+        return new PlayerPreviewTooltipComponent(
+                player(), stack,
+                playerWidth, playerHeight,
+                playerSize,
+                config().spinPlayerPreview,
+                config().alwaysAllowPlayerPreviewHead
+        );
+    }
+
+    @Override
+    protected ItemPreviewTooltipComponent getItemPreviewTooltip() {
+        double scaleFactorItem = config().scaleFactorItem;
+        int itemSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ITEM * scaleFactorItem);
+        int itemWidth = (int) ((double) Graphics.DEFAULT_PREVIEW_WIDTH / 2 * scaleFactorItem);
+        int itemHeight = (int) ((double) Graphics.DEFAULT_PREVIEW_HEIGHT / 2 * scaleFactorItem);
+
+        return new ItemPreviewTooltipComponent(
+                stack,
+                itemWidth, itemHeight,
+                itemSize
+        );
+    }
+
+    @Override
+    protected void addTopTooltips() {
+        if (config().showDescription) {
+            var description = descriptionTooltipsComponentsList(rename);
+            tooltipComponents.addAll(description);
+        }
+        super.addTopTooltips();
+    }
+
+    @Override
+    protected void addMiddleTooltips() {
+        super.addMiddleTooltips();
+        if (config().showExtraProperties) {
+            var extraProperties = extraPropertiesTooltipComponentsList(rprWidget, rename, config().showOriginalProperties);
+            tooltipComponents.addAll(extraProperties);
+        }
+    }
+
+    @Override
+    protected void addBottomTooltips() {
+        super.addBottomTooltips();
+        if (config().showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
+            TooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
+            if (pattern != null) tooltipComponents.add(pattern);
+        }
+    }
+
+    @Override
+    protected void addPackNameTooltip() {
+        if (!config().showPackName) return;
+        super.addPackNameTooltip();
+    }
+
+    protected static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
+        ArrayList<Text> extraProperties = new ArrayList<>();
+
+        var stack = rprWidget.pickItemStackForRename(citRename);
+        if (stack == null) stack = rprWidget.getActiveItemStack();
+
+        var craftMatcher = new CITRename.CraftMatcher(citRename, stack);
+
+        if (asOriginal) {
+            if (citRename.getStackSize() > 1) {
+                extraProperties.add(rawPropertyText(
+                        "stackSize",
+                        citRename.getOriginalStackSize(),
+                        craftMatcher.enoughStackSize()
+                ));
+            }
+            if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
+                extraProperties.add(rawPropertyText(
+                        "damage",
+                        citRename.getOriginalDamage(),
+                        craftMatcher.enoughDamage()
+                ));
+            }
+            if (citRename.getEnchantment() != null) {
+                extraProperties.add(rawPropertyText(
+                        "enchantmentIDs",
+                        citRename.getOriginalEnchantment(),
+                        craftMatcher.hasEnchant()
+                ));
+                if (citRename.getOriginalEnchantmentLevel() != null) {
+                    extraProperties.add(rawPropertyText(
+                            "enchantmentLevels",
+                            citRename.getOriginalEnchantmentLevel(),
+                            craftMatcher.hasEnchant()
+                    ));
+                }
+            }
+        } else {
+            if (citRename.getStackSize() > 1) {
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.stackSize")
+                                .append(" " + citRename.getStackSize()),
+                        craftMatcher.enoughStackSize(),
+                        Formatting.GRAY
+                ));
+            }
+            if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.damage")
+                                .append(" %s%s".formatted(
+                                        citRename.getDamage().damage,
+                                        citRename.getDamage().percent ? "%" : ""
+                                )),
+                        craftMatcher.enoughDamage(),
+                        Formatting.GRAY
+                ));
+            }
+            if (citRename.getEnchantment() != null) {
+                Identifier enchant = citRename.getEnchantment();
+                extraProperties.add(styledCondition(
+                        Text.translatable("rprenames.gui.tooltipHint.enchantment")
+                                .append(Text.of(" ")).append(Text.translatable(
+                                        "enchantment." + enchant.getNamespace() + "." + enchant.getPath()
+                                ))
+                                .append(Text.of(" ")).append(Text.translatable(
+                                        "enchantment.level." + citRename.getEnchantmentLevel()
+                                )),
+                        craftMatcher.hasEnchant() && craftMatcher.hasEnoughLevels(),
+                        Formatting.GRAY
+                ));
+            }
+        }
+
+        ArrayList<TooltipComponent> propertiesComponents = new ArrayList<>();
+        for (Text line : extraProperties) propertiesComponents.add(tooltipOf(line));
+        return propertiesComponents;
+    }
+
+    protected static MutableText rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
+        return Text
+                .literal(propertyName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
+                .append(Text.literal("=").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
+                .append(styledCondition(Text.literal(propertyValue), isGood, Formatting.GREEN));
+    }
+
+    protected static MutableText styledCondition(MutableText text, boolean isGood, Formatting goodColor) {
+        return text.fillStyle(
+                Style.EMPTY.withColor(isGood ? goodColor : Formatting.DARK_RED)
+        );
+    }
+
+    @Override
+    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
+        ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
+
+        if (config().enablePreview) {
+            boolean shiftDown = hasShiftDown();
+
+            if (!shiftDown && !config().playerPreviewByDefault) {
+                if (!config().disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintShift));
+            } else if (shiftDown != config().playerPreviewByDefault) {
+                if (!config().disableTooltipHints) tooltipAddition.add(tooltipOf(playerPreviewHintF));
+
+                if (currentScreen() != null) currentScreen().setFocused(null);
+            }
+        }
+
+        if (!config().disableTooltipHints) {
+            tooltipAddition.add(tooltipOf(favoriteSupplier.get() ? favoriteHintRemove : favoriteHintAdd));
+            tooltipAddition.add(tooltipOf(disableHint));
+        }
+
+        tooltipComponents.addAll(tooltipAddition);
+
+        super.onRenderTooltip(context, mouseX, mouseY);
+
+        tooltipComponents.removeAll(tooltipAddition);
+    }
+
+    @Override
+    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
+        if (!config().enablePreview) return;
+        super.drawPreview(context, mouseX, mouseY, mainTooltip);
+    }
+
+    @Override
+    protected boolean shouldPreviewPlayer() {
+        return super.shouldPreviewPlayer() != config().playerPreviewByDefault;
+    }
+
+    @Override
+    protected PreviewTooltipPositioner.PreviewPos getPreviewPositionerPos() {
+        return config().previewPos;
+    }
+
+    public static class Builder extends RichRenameRenderer.Builder<CITRename> {
+        public Builder(CITRename rename, RenderArea renderArea) {
+            super(rename, renderArea);
+        }
+
+        @Override
+        protected RichRenameRenderer<CITRename> getNewRenderer() {
+            return new CITRenameRenderer(rename, renderArea, rprWidget, favoriteSupplier);
+        }
+    }
+}
