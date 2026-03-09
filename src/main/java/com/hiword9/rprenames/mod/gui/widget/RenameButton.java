@@ -11,7 +11,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.Identifier;
@@ -68,11 +67,10 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
         int v = hovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
-        context.drawTexture(
-                RenderLayer::getGuiTextured,
+        Graphics.renderGuiTexture(
+                context,
                 TEXTURE,
-                getX(), getY(),
-                u, v,
+                getX(), getY(), u, v,
                 getWidth(), getHeight(),
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );

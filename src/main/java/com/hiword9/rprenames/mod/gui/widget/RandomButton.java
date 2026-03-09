@@ -1,10 +1,10 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.gui.Graphics;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -39,7 +39,13 @@ public class RandomButton extends ClickableWidget implements OffsetableWidget {
         if (!active) return;
         int u = 0;
         int v = V_OFFSET * side;
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        Graphics.renderGuiTexture(
+                context,
+                TEXTURE,
+                getX(), getY(), u, v,
+                getWidth(), getHeight(),
+                TEXTURE_WIDTH, TEXTURE_HEIGHT
+        );
         if (!hovered) return;
         context.drawTooltip(textRenderer(), Text.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }

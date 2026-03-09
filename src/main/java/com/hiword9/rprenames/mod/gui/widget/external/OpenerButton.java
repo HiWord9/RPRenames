@@ -1,12 +1,12 @@
 package com.hiword9.rprenames.mod.gui.widget.external;
 
 import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.gui.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 public class OpenerButton extends ClickableWidget implements OffsetableWidget {
@@ -33,7 +33,13 @@ public class OpenerButton extends ClickableWidget implements OffsetableWidget {
         int v = 0;
         v += rprWidget.isOpen() ? OPENED_OFFSET_V : 0;
         v += hovered ? FOCUSED_OFFSET_V : 0;
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, getX(), getY(), u, v, getWidth(), getHeight(), TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        Graphics.renderGuiTexture(
+                context,
+                TEXTURE,
+                getX(), getY(), u, v,
+                getWidth(), getHeight(),
+                TEXTURE_WIDTH, TEXTURE_HEIGHT
+        );
     }
 
     @Override

@@ -58,6 +58,22 @@ public class Graphics {
         context.drawText(renderer, text, x - xOffset, y, color, shadow);
     }
 
+    public static void renderGuiTexture(
+            DrawContext context,
+            Identifier texture,
+            int x, int y, float u, float v,
+            int width, int height,
+            int textureWidth, int textureHeight
+    ) {
+        context.drawTexture(
+                RenderLayer::getGuiTextured,
+                texture,
+                x, y, u, v,
+                width, height,
+                textureWidth, textureHeight
+        );
+    }
+
     public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y) {
         renderStack(context, itemStack, x, y, 0, STACK_IN_SLOT_SIZE);
     }

@@ -14,7 +14,6 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -324,8 +323,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
         checkForInvChanges();
 
-        context.drawTexture(
-                RenderLayer::getGuiTextured,
+        Graphics.renderGuiTexture(
+                context,
                 MENU_TEXTURE,
                 getX() + MENU_START_X, getY(),
                 0,0,
