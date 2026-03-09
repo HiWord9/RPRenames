@@ -11,8 +11,8 @@ import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTool
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
-import com.hiword9.rprenames.api.ext.rename.renderer.builder.AcceptsFavoriteSupplier;
-import com.hiword9.rprenames.api.ext.rename.renderer.builder.AcceptsRPRWidget;
+import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
+import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;

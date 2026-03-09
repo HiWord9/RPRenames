@@ -1,4 +1,4 @@
-package com.hiword9.rprenames.api.ext.rename.renderer.builder;
+package com.hiword9.rprenames.mod.impl.rename.renderer.builder;
 
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 
