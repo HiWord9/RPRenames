@@ -1,5 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model;
 
+import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.impl.rename.ItemModelRename;
 import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
@@ -67,7 +68,11 @@ public class ItemModelParser implements Parser {
                 if (renameCondition == null) {
                     renameCondition = candidate;
                 } else {
-                    // todo handle multiple rename conditions; probably an error
+                    RPRenames.LOGGER.warn(
+                            "Found multiple rename conditions. Already accepted: {}; New: {}",
+                            renameCondition.value.toString(),
+                            candidate.value.toString()
+                    );
                 }
             }
         }
