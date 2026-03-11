@@ -455,30 +455,29 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     public boolean isFocused() { return false; }
 
     protected void checkForInvChanges() {
-        if (inventoryStacks.isEmpty()) {
-            inventoryStacks.addAll(inventoryCopy());
-            return;
-        }
+        if (!inventoryStacks.isEmpty()) {
+            var newStacks = inventoryCopy();
 
-        var newStacks = inventoryCopy();
+            boolean equal = true;
 
-        boolean equal = true;
-
-        if (inventoryStacks.size() != newStacks.size()) {
-            equal = false;
-        } else {
-            for (int i = 0; i < newStacks.size(); i++) {
-                if (!ItemStack.areEqual(inventoryStacks.get(i), newStacks.get(i))) {
-                    equal = false;
-                    break;
+            if (inventoryStacks.size() != newStacks.size()) {
+                equal = false;
+            } else {
+                for (int i = 0; i < newStacks.size(); i++) {
+                    if (!ItemStack.areEqual(inventoryStacks.get(i), newStacks.get(i))) {
+                        equal = false;
+                        break;
+                    }
                 }
             }
+
+            if (equal) return;
+
+            inventoryStacks.clear();
+            inventoryStacks.addAll(newStacks);
+        } else {
+            inventoryStacks.addAll(inventoryCopy());
         }
-
-        if (equal) return;
-
-        inventoryStacks.clear();
-        inventoryStacks.addAll(newStacks);
 
         updateRenames();
         refreshPageContent();
