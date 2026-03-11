@@ -15,7 +15,6 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -290,15 +289,15 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         int xScreenOffset = ((AnvilScreen) client.currentScreen).x;
         int yScreenOffset = ((AnvilScreen) client.currentScreen).y;
 
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(-xScreenOffset, -yScreenOffset, 0);
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(-xScreenOffset, -yScreenOffset);
 
         for (var drawable : widgets) {
             drawable.render(context, mouseX, mouseY, 0);
         }
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.Informative;
+import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.widget.GhostCraft;
 import com.hiword9.rprenames.mod.impl.rename.renderer.CEMRenameRenderer;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
@@ -19,7 +20,9 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.storage.NbtReadView;
 import net.minecraft.text.Text;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -112,9 +115,10 @@ public class CEMRename
             if (entityData != null) {
                 var nbt = entityData.copyNbt();
 
-                var entityCustomName = nbt.get("CustomName");
-                if (entityCustomName != null) {
-                    name = BlockEntity.tryParseCustomName(entityCustomName, registries);
+                try (var logging = new ErrorReporter.Logging(ErrorReporter.Logging.CONTEXT, RPRenames.LOGGER)) {
+                    var readView = NbtReadView.create(logging, registries, nbt);
+                    var entityCustomName = BlockEntity.tryParseCustomName(readView, "CustomName");
+                    if (entityCustomName != null) name = entityCustomName;
                 }
             }
 

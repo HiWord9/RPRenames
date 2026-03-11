@@ -94,8 +94,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
                 ),
                 14 / (Math.max(entity.getHeight(), entity.getWidth())),
                 entity,
-                false,
-                200
+                false
         );
     }
 

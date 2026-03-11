@@ -16,15 +16,12 @@ import static com.hiword9.rprenames.mod.util.Util.config;
 @Mixin(value = TooltipBackgroundRenderer.class)
 public abstract class TooltipBackgroundRendererMixin {
     @Inject(
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"
-            ),
+            at = @At(value = "TAIL"),
             method = "render"
     )
-    private static void onRender(DrawContext context, int x, int y, int width, int height, int z, Identifier texture, CallbackInfo ci) {
+    private static void onRender(DrawContext context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
         if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
-        Graphics.renderStarInFavoriteTooltip(context, x, y, width, z);
+        Graphics.renderStarInFavoriteTooltip(context, x, y, width);
     }
 
     @ModifyArg(

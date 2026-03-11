@@ -3,15 +3,14 @@ package com.hiword9.rprenames.mod.gui;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +23,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class Graphics {
             int textureWidth, int textureHeight
     ) {
         context.drawTexture(
-                RenderLayer::getGuiTextured,
+                RenderPipelines.GUI_TEXTURED,
                 texture,
                 x, y, u, v,
                 width, height,
@@ -80,46 +80,24 @@ public class Graphics {
 
     public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y, int z, int size) {
         float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(x, y, z);
-        matrices.scale(scale, scale, 1);
-        context.drawItemWithoutEntity(itemStack, 0, 0);
-        matrices.pop();
+        var matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(x, y);
+        matrices.scale(scale, scale);
+        context.drawItemWithoutEntity(itemStack, 0, 0, z);
+        matrices.popMatrix();
     }
 
-    public static void renderEntityInBox(DrawContext context, ScreenRect rect, int size, Entity entity, boolean spin) {
-        renderEntityInBox(context, rect, size, entity, spin, 500);
-    }
-
-    public static void renderEntityInBox(DrawContext context, ScreenRect rect, double size, Entity entity, boolean spin, int z) {
-        context.enableScissor(
-                rect.getLeft(), rect.getTop(),
-                rect.getRight(), rect.getBottom()
-        );
-        int x = rect.getLeft() + rect.width() / 2;
-        int y = (int) (rect.getTop() + (rect.height() + size * entity.getHeight()) / 2);
-        renderEntity(context, x, y, z, size, entity, spin);
-        context.disableScissor();
-    }
-
-    public static void renderEntity(DrawContext context, int x, int y, int z, double size, Entity entity, boolean spin) {
-        DiffuseLighting.disableGuiDepthLighting();
-        context.getMatrices().push();
-
+    @SuppressWarnings("unchecked")
+    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(DrawContext context, ScreenRect rect, double size, T entity, boolean spin) {
         if (entity instanceof SquidEntity) size /= 1.5;
         else if (entity instanceof ItemEntity) size *= 2;
 
         if (entity instanceof LivingEntity l && l.isBaby()) size /= 1.7;
 
-        context.getMatrices().translate(x, y, 1000 + z);
-        context.getMatrices().scale(1f, 1f, -1);
-        context.getMatrices().translate(0, 0, 1000);
-        context.getMatrices().scale((float) size, (float) size, (float) size);
         var quaternion = (new Quaternionf()).rotateZ(3.1415927F);
         var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
         quaternion.mul(quaternion2);
-        context.getMatrices().multiply(quaternion);
 
         var camera = client().cameraEntity;
         if (camera != null) {
@@ -132,19 +110,19 @@ public class Graphics {
         }
         setupAngles(entity, spin);
 
-        var entityRenderDispatcher = client().getEntityRenderDispatcher();
-        quaternion2.conjugate();
-        entityRenderDispatcher.setRotation(quaternion2);
-        entityRenderDispatcher.setRenderShadows(false);
-        var immediate = client().getBufferBuilders().getEntityVertexConsumers();
+        var vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F, 0.0F);
 
-        entityRenderDispatcher.render(entity, 0, 0, 0, 1.f, context.getMatrices(), immediate,
-                LightmapTextureManager.MAX_LIGHT_COORDINATE
+        var entityRenderDispatcher = client().getEntityRenderDispatcher();
+        var entityRenderer = (EntityRenderer<? super T, S>) entityRenderDispatcher.getRenderer(entity);
+        var entityRenderState = entityRenderer.createRenderState();
+        entityRenderer.updateRenderState(entity, entityRenderState, 1.0F);
+        entityRenderState.hitbox = null;
+
+        context.addEntity(
+                entityRenderState,
+                (float) size, vector3f, quaternion, quaternion2,
+                rect.getLeft(), rect.getTop(), rect.getRight(), rect.getBottom()
         );
-        immediate.draw();
-        entityRenderDispatcher.setRenderShadows(true);
-        context.getMatrices().pop();
-        DiffuseLighting.enableGuiDepthLighting();
     }
 
     private static void setupAngles(Entity entity, boolean spin) {
@@ -200,23 +178,27 @@ public class Graphics {
             TooltipPositioner positioner,
             boolean favorite
     ) {
-        renderTooltipAsFavorite = favorite;
-        context.drawTooltip(textRenderer, components, x, y, positioner, null);
-        renderTooltipAsFavorite = false;
+        var prevTooltip = context.tooltipDrawer;
+        context.tooltipDrawer = () -> {
+            if (prevTooltip != null) prevTooltip.run();
+            renderTooltipAsFavorite = favorite;
+            context.drawTooltipImmediately(textRenderer, components, x, y, positioner, null);
+            renderTooltipAsFavorite = false;
+        };
     }
 
-    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width, int z) {
-        context.getMatrices().push();
-        context.getMatrices().translate(0,0,z + 1);
-        context.drawTexture(
-                RenderLayer::getGuiTextured,
+    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width) {
+        context.getMatrices().pushMatrix();
+        context.getMatrices().translate(0,0);
+        renderGuiTexture(
+                context,
                 FavoriteButton.TEXTURE,
                 x + width - (FavoriteButton.BUTTON_WIDTH), y,
                 0, 0,
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
     }
 
     public static <H extends ScreenHandler, S extends HandledScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
@@ -247,7 +229,7 @@ public class Graphics {
     public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {
         int x = xOffset + slot.x - 1;
         int y = yOffset + slot.y - 1;
-        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, 10, color, color);
+        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color, color);
     }
 
     public static TooltipComponent tooltipOf(String string) {
