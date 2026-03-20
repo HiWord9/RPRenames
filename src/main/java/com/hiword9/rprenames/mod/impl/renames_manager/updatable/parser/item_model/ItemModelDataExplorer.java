@@ -14,6 +14,32 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 
 public class ItemModelDataExplorer {
+    private static final Map<Class<? extends ItemModel.Unbaked>, CaseFiller<?>> UNBAKED_TO_FILLER = new HashMap<>();
+
+    static {
+        registerCaseFiller(CompositeItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(ConditionItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(SelectItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(RangeDispatchItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+    }
+
+    public static <U extends ItemModel.Unbaked> void registerCaseFiller(Class<U> clazz, CaseFiller<U> caseFiller) {
+        UNBAKED_TO_FILLER.put(clazz, caseFiller);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <U extends ItemModel.Unbaked> CaseFiller<U> getCaseFiller(Class<U> clazz) {
+        return (CaseFiller<U>) UNBAKED_TO_FILLER.get(clazz);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <U extends ItemModel.Unbaked> CaseFiller<U> getCaseFiller(U unbakedModel) {
+        return (CaseFiller<U>) getCaseFiller(unbakedModel.getClass());
+    }
+
+    public interface CaseFiller<U extends ItemModel.Unbaked> {
+        void fillCases(List<Case> cases, U unbakedModel, ItemAsset asset);
+    }
 
     public static Map<Item, List<ItemModelData>> getMapUnmerged(Map<Identifier, ItemAsset> itemAssets) {
         var map = new HashMap<Item, List<ItemModelData>>();
@@ -58,25 +84,25 @@ public class ItemModelDataExplorer {
 
     public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {}
 
-    public static List<Case> getCases(ItemModel.Unbaked unbakedModel, ItemAsset asset) {
+    public static <U extends ItemModel.Unbaked> List<Case> getCases(U unbakedModel, ItemAsset asset) {
         var cases = new ArrayList<Case>();
-        switch (unbakedModel) {
-            case CompositeItemModel.Unbaked composite -> fillCases(cases, composite);
-            case ConditionItemModel.Unbaked condition -> fillCases(cases, condition);
-            case SelectItemModel.Unbaked select -> fillCases(cases, select, asset);
-            case RangeDispatchItemModel.Unbaked rangeDispatch -> fillCases(cases, rangeDispatch);
-            default -> {} // basic, empty, bundle/selected_item, special and unknown
-        }
+        var caseFiller = getCaseFiller(unbakedModel);
+        if (caseFiller != null)
+            caseFiller.fillCases(cases, unbakedModel, asset);
         return cases;
     }
 
-    private static void fillCases(List<Case> cases, CompositeItemModel.Unbaked unbakedCompositeModel) {
+    private static void fillCases(
+            List<Case> cases, CompositeItemModel.Unbaked unbakedCompositeModel, ItemAsset asset
+    ) {
         for (ItemModel.Unbaked model : unbakedCompositeModel.models()) {
             cases.add(new Case(ItemModelCondition.COMPOSITE, model));
         }
     }
 
-    private static void fillCases(List<Case> cases, ConditionItemModel.Unbaked unbakedConditionModel) {
+    private static void fillCases(
+            List<Case> cases, ConditionItemModel.Unbaked unbakedConditionModel, ItemAsset asset
+    ) {
         cases.add(new Case(
                 BooleanCondition.of(unbakedConditionModel.property(), true),
                 unbakedConditionModel.onTrue()
@@ -105,7 +131,9 @@ public class ItemModelDataExplorer {
         );
     }
 
-    private static void fillCases(List<Case> cases, RangeDispatchItemModel.Unbaked unbakedRangeDispatchModel) {
+    private static void fillCases(
+            List<Case> cases, RangeDispatchItemModel.Unbaked unbakedRangeDispatchModel, ItemAsset asset
+    ) {
         for (RangeDispatchItemModel.Entry entry : unbakedRangeDispatchModel.entries()) {
             cases.add(new Case(
                     NumericCondition.of(
