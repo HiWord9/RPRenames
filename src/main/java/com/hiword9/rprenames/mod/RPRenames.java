@@ -13,8 +13,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
@@ -53,11 +53,11 @@ public class RPRenames implements ClientModInitializer {
             LOGGER.info("Loading RPRenames built-in resource packs");
             FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
                 for (String pack : new String[]{"vanillish", "default_dark_mode", "high_contrasted"}) {
-                    ResourceManagerHelper.registerBuiltinResourcePack(
+                    ResourceLoader.registerBuiltinPack(
                             asId(pack),
                             container,
                             Text.translatable("rprenames.builtinResourcePack." + pack),
-                            ResourcePackActivationType.NORMAL
+                            PackActivationType.NORMAL
                     );
                 }
             });

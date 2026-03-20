@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 import static com.hiword9.rprenames.mod.gui.Graphics.tooltipOf;
 import static com.hiword9.rprenames.mod.util.Util.*;
 import static com.hiword9.rprenames.mod.util.Util.currentScreen;
-import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename> {
     protected static final MutableText playerPreviewHintShift = Text.translatable(

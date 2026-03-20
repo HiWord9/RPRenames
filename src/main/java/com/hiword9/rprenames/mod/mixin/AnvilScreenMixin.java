@@ -8,13 +8,14 @@ import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.mod.gui.widget.external.OpenerButton;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AnvilScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -103,17 +104,22 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         rprWidget.updatedName();
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"), method = "resize")
-    private void onResize(AnvilScreen instance, MinecraftClient client, int width, int height) {
+    @Redirect(
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(II)V"),
+            method = "resize"
+    )
+    private void onResize(AnvilScreen instance, int width, int height) {
         if (shouldNotModify()) {
-            instance.init(client, width, height);
+            instance.init(width, height);
             return;
         }
 
         int prevX = instance.x;
         int prevY = instance.y;
 
-        instance.init(client, width, height);
+        instance.init(width, height);
 
         offsetWidgets(instance.x - prevX, instance.y - prevY);
 
@@ -121,19 +127,19 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     }
 
     @Inject(at = @At(value = "HEAD"), method = "keyPressed")
-    public void onKeyPressedHead(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    public void onKeyPressedHead(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
         if (shouldNotModify()) return;
         afterPutInAnvilFirst = false;
         afterPutInAnvilSecond = false;
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;isActive()Z"), method = "keyPressed")
-    private boolean onKeyPressedNameFieldIsActive(TextFieldWidget instance, int keyCode, int scanCode, int modifiers) {
+    private boolean onKeyPressedNameFieldIsActive(TextFieldWidget instance, KeyInput input) {
         if (shouldNotModify()) return instance.isActive();
 
         var widgetAccepted = false;
         for (var w : widgets) if (w instanceof Element element) {
-            if (element.keyPressed(keyCode, scanCode, modifiers)) {
+            if (element.keyPressed(input)) {
                 widgetAccepted = true;
                 break;
             }
@@ -144,24 +150,24 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(KeyInput input) {
         if (!shouldNotModify()) {
             for (var w : widgets) if (w instanceof Element element) {
-                if (element.keyReleased(keyCode, scanCode, modifiers))
+                if (element.keyReleased(input))
                     return true;
             }
         }
-        return super.keyReleased(keyCode, scanCode, modifiers);
+        return super.keyReleased(input);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
         if (!shouldNotModify()) {
             afterPutInAnvilFirst = false;
             afterPutInAnvilSecond = false;
 
             for (var w : widgets) if (w instanceof Element element) {
-                if (element.mouseClicked(mouseX, mouseY, button)) {
+                if (element.mouseClicked(click, doubled)) {
                     if (element == ghostCraft) {
                         if (rprWidget.getActiveItemStack().isEmpty()) {
                             nameField.setText("");
@@ -175,7 +181,7 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
@@ -189,14 +195,14 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
         if (!shouldNotModify()) {
             for (var w : widgets) if (w instanceof Element element) {
-                if (element.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
+                if (element.mouseDragged(click, offsetX, offsetY))
                     return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, offsetX, offsetY);
     }
 
     @Override

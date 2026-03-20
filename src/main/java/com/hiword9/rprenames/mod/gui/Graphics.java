@@ -99,7 +99,7 @@ public class Graphics {
         var quaternion2 = (new Quaternionf()).rotateX(-10.f * 0.017453292F);
         quaternion.mul(quaternion2);
 
-        var camera = client().cameraEntity;
+        var camera = client().getCameraEntity();
         if (camera != null) {
             entity.setPos(camera.getX(), camera.getY(), camera.getZ());
         }
@@ -116,7 +116,6 @@ public class Graphics {
         var entityRenderer = (EntityRenderer<? super T, S>) entityRenderDispatcher.getRenderer(entity);
         var entityRenderState = entityRenderer.createRenderState();
         entityRenderer.updateRenderState(entity, entityRenderState, 1.0F);
-        entityRenderState.hitbox = null;
 
         context.addEntity(
                 entityRenderState,

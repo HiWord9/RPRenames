@@ -1,6 +1,7 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -40,11 +41,11 @@ public class GhostCraft implements Drawable, Element, Offsetable {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
         if (!doRender) return false;
 
         for (GhostSlot slot : slots) {
-            if (slot.isMouseOver(mouseX, mouseY)) {
+            if (slot.isMouseOver(click.x(), click.y())) {
                 reset();
                 return true;
             }
@@ -132,8 +133,8 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            return active && visible && isMouseOver(mouseX, mouseY);
+        public boolean mouseClicked(Click click, boolean doubled) {
+            return active && visible && isMouseOver(click.x(), click.y());
         }
 
         protected int getForceHighlightColor() {

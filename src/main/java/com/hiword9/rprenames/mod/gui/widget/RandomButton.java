@@ -2,6 +2,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -54,8 +55,8 @@ public class RandomButton extends ClickableWidget implements OffsetableWidget {
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (this.isMouseOver(click.x(), click.y())) {
             int randomNumber = randomNumber();
 
             setSide(randomNumber % SIDES);
@@ -69,7 +70,7 @@ public class RandomButton extends ClickableWidget implements OffsetableWidget {
 
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     public void setSide(int side) {

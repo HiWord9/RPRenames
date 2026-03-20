@@ -16,6 +16,7 @@ import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.input.KeyInput;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -23,9 +24,7 @@ import java.util.function.Supplier;
 
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.multiItemTooltipComponent;
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.packNameTooltipComponent;
-import static com.hiword9.rprenames.mod.util.Util.player;
-import static com.hiword9.rprenames.mod.util.Util.textRenderer;
-import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
+import static com.hiword9.rprenames.mod.util.Util.*;
 
 public class RichRenameRenderer<R extends Rename>
         extends SimpleRenameRenderer<R>
@@ -148,12 +147,12 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == cycleSlotsGlfwKey && isFocused()) {
+    public boolean keyPressed(KeyInput input) {
+        if (input.getKeycode() == cycleSlotsGlfwKey && isFocused()) {
             playerPreviewTooltipComponent.cycleSlots();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     public static class Builder<R extends Rename>

@@ -8,12 +8,10 @@ import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.util.RenamesSearchEngine;
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,7 +28,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
-import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
@@ -381,11 +378,11 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
         if (!open) return false;
 
         for (Element widget : widgets) {
-            if (widget.mouseClicked(mouseX, mouseY, button)) {
+            if (widget.mouseClicked(click, doubled)) {
                 if (widget == searchField && currentScreen() != null) {
                     currentScreen().setFocused(searchField);
                 }
@@ -399,7 +396,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
             }
         }
         for (RenameButton renameButton : buttons) {
-            if (renameButton.mouseClicked(mouseX, mouseY, button)) return true;
+            if (renameButton.mouseClicked(click, doubled)) return true;
         }
 
         return false;
@@ -413,9 +410,9 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
         for (var l : List.of(widgets, buttons)) for (Element element : l) {
-            if (element.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
+            if (element.mouseDragged(click, offsetX, offsetY))
                 return true;
         }
         return false;
@@ -431,18 +428,18 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
         for (var l : List.of(widgets, buttons)) for (Element element : l) {
-            if (element.keyPressed(keyCode, scanCode, modifiers))
+            if (element.keyPressed(input))
                 return true;
         }
         return false;
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(KeyInput input) {
         for (var l : List.of(widgets, buttons)) for (Element element : l) {
-            if (element.keyReleased(keyCode, scanCode, modifiers))
+            if (element.keyReleased(input))
                 return true;
         }
         return false;

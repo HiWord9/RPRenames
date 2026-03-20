@@ -99,27 +99,27 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
 
             var damageRangeFirst = predicate.damage();
             var damageRangeSecond = NumberRange.IntRange.between(
-                    maxDamageComponent - predicate.durability().max().orElse(maxDamageComponent),
-                    maxDamageComponent - predicate.durability().min().orElse(0)
+                    maxDamageComponent - predicate.durability().bounds().max().orElse(maxDamageComponent),
+                    maxDamageComponent - predicate.durability().bounds().min().orElse(0)
             );
 
             var passRange = NumberRange.IntRange.between(
                     Math.max(
-                            damageRangeFirst.min().orElse(0),
-                            damageRangeSecond.min().orElse(0)
+                            damageRangeFirst.bounds().min().orElse(0),
+                            damageRangeSecond.bounds().min().orElse(0)
                     ),
                     Math.min(
-                            damageRangeFirst.max().orElse(maxDamageComponent),
-                            damageRangeSecond.max().orElse(maxDamageComponent)
+                            damageRangeFirst.bounds().max().orElse(maxDamageComponent),
+                            damageRangeSecond.bounds().max().orElse(maxDamageComponent)
                     )
             );
 
             if (value) {
-                stack.setDamage(passRange.min().orElse(0));
+                stack.setDamage(passRange.bounds().min().orElse(0));
             } else if (predicate.test(stack)) {
-                stack.setDamage(passRange.min().orElse(0) != 0
+                stack.setDamage(passRange.bounds().min().orElse(0) != 0
                         ? 0
-                        : passRange.max().orElse(maxDamageComponent) + 1
+                        : passRange.bounds().max().orElse(maxDamageComponent) + 1
                 );
             }
         }

@@ -41,6 +41,10 @@ public class Util {
         return client().currentScreen;
     }
 
+    public static boolean hasShiftDown() {
+        return client().isShiftPressed();
+    }
+
     public static List<ItemStack> inventoryCopy() throws AssertionError {
         assert player() != null;
         return player()

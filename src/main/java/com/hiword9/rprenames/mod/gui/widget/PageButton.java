@@ -2,6 +2,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -10,7 +11,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
-import static net.minecraft.client.gui.screen.Screen.hasShiftDown;
 
 public class PageButton extends ClickableWidget implements OffsetableWidget {
     private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/page_arrows.png");
@@ -53,8 +53,8 @@ public class PageButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (this.isMouseOver(click.x(), click.y())) {
             if (type == Type.DOWN) {
                 rprWidget.prevPage();
             } else {
@@ -62,7 +62,7 @@ public class PageButton extends ClickableWidget implements OffsetableWidget {
             }
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {}

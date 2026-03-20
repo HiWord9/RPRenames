@@ -7,10 +7,12 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.item.Item;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.Identifier;
@@ -88,10 +90,10 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.isMouseOver(mouseX, mouseY)) return false;
+    public boolean mouseClicked(Click click, boolean doubled) {
+        if (!this.isMouseOver(click.x(), click.y())) return false;
 
-        if (button == 1) {
+        if (click.button() == 1) {
             List<Item> items;
 
             if (rprWidget.getCurrentTab().forCraftItemOnly) items = List.of(rprWidget.getCraftItem());
@@ -112,9 +114,9 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (renameRenderer.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) return true;
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+        if (renameRenderer.mouseDragged(click, offsetX, offsetY)) return true;
+        return super.mouseDragged(click, offsetX, offsetY);
     }
 
     @Override
@@ -124,15 +126,15 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (renameRenderer.keyPressed(keyCode, scanCode, modifiers)) return true;
-        return super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyInput input) {
+        if (renameRenderer.keyPressed(input)) return true;
+        return super.keyPressed(input);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (renameRenderer.keyReleased(keyCode, scanCode, modifiers)) return true;
-        return super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyInput input) {
+        if (renameRenderer.keyReleased(input)) return true;
+        return super.keyReleased(input);
     }
 
     @Override
