@@ -63,7 +63,11 @@ public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {
     private static void fillCases(List<Case> cases, RangeDispatchItemModel.Unbaked unbakedRangeDispatchModel) {
         for (RangeDispatchItemModel.Entry entry : unbakedRangeDispatchModel.entries()) {
             cases.add(new Case(
-                    NumericCondition.of(unbakedRangeDispatchModel.property(), entry.threshold()),
+                    NumericCondition.of(
+                            unbakedRangeDispatchModel.property(),
+                            unbakedRangeDispatchModel.scale(),
+                            entry.threshold()
+                    ),
                     entry.model()
             ));
         }

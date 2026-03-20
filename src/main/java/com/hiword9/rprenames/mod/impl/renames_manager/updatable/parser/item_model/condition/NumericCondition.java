@@ -19,8 +19,9 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
     }
 
     public static <P extends NumericProperty> NumericCondition<P> of(
-            P property, float threshold
+            P property, float scale, float threshold
     ) {
+        threshold = threshold / scale;
         return isPropertyApplicable(property)
                 ? new ApplicableNumericCondition<>(property, threshold)
                 : new NumericCondition<>(property, threshold);
@@ -58,7 +59,7 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
         }
 
         private static void applyCount(ItemStack stack, CountProperty property, float value) {
-            stack.setCount(Math.round(value * (property.normalize() ? stack.getMaxCount() : 1)));
+            stack.setCount((int) Math.ceil(value * (property.normalize() ? stack.getMaxCount() : 1)));
         }
 
         private static void applyCustomModelData(ItemStack stack, CustomModelDataFloatProperty property, float value) {
@@ -76,7 +77,7 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
         }
 
         private static void applyDamage(ItemStack stack, DamageProperty property, float value) {
-            stack.setDamage(Math.round(value * (property.normalize() ? stack.getMaxDamage() : 1)));
+            stack.setDamage((int) Math.ceil(value * (property.normalize() ? stack.getMaxDamage() : 1)));
         }
     }
 }
