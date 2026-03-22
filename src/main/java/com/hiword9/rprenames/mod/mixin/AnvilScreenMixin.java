@@ -8,6 +8,7 @@ import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.mod.gui.widget.external.OpenerButton;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
@@ -107,19 +108,19 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
     @Redirect(
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(II)V"),
+                    target = "Lnet/minecraft/client/gui/screen/ingame/AnvilScreen;init(Lnet/minecraft/client/MinecraftClient;II)V"),
             method = "resize"
     )
-    private void onResize(AnvilScreen instance, int width, int height) {
+    private void onResize(AnvilScreen instance, MinecraftClient client, int width, int height) {
         if (shouldNotModify()) {
-            instance.init(width, height);
+            instance.init(client, width, height);
             return;
         }
 
         int prevX = instance.x;
         int prevY = instance.y;
 
-        instance.init(width, height);
+        instance.init(client, width, height);
 
         offsetWidgets(instance.x - prevX, instance.y - prevY);
 
