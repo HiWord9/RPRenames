@@ -4,14 +4,14 @@ import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.Identifier;
 
-public class OpenerButton extends ClickableWidget implements OffsetableWidget {
-    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/opener.png");
+public class OpenerButton extends AbstractWidget implements OffsetableWidget {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/opener.png");
 
     RPRWidget rprWidget;
 
@@ -29,11 +29,11 @@ public class OpenerButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         int u = 0;
         int v = 0;
         v += rprWidget.isOpen() ? OPENED_OFFSET_V : 0;
-        v += hovered ? FOCUSED_OFFSET_V : 0;
+        v += isHovered ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
                 context,
                 TEXTURE,
@@ -44,7 +44,7 @@ public class OpenerButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (this.isMouseOver(click.x(), click.y())) {
             execute();
             return true;
@@ -53,7 +53,7 @@ public class OpenerButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+    protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
     public void execute() {
         rprWidget.toggleOpen();

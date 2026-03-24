@@ -11,20 +11,19 @@ import com.hiword9.rprenames.mod.impl.rename.renderer.CITRenameRenderer;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import com.hiword9.rprenames.mod.util.PropertiesHelper;
 import com.hiword9.rprenames.mod.util.RenameInfoHelper;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -61,7 +60,7 @@ public class CITRename
             String description,
             Item... items
     ) {
-        super(Text.of(name), items);
+        super(Component.nullToEmpty(name), items);
         this.packName = packName;
         this.path = path;
         this.stackSize = stackSize;
@@ -147,8 +146,8 @@ public class CITRename
     }
 
     @Override
-    public List<Text> getInfo() {
-        var info = new ArrayList<Text>();
+    public List<Component> getInfo() {
+        var info = new ArrayList<Component>();
         info.addAll(RenameInfoHelper.getProperties(properties));
         info.addAll(RenameInfoHelper.getRPPath(packName, path));
         return info;
@@ -180,7 +179,7 @@ public class CITRename
         var item = super.toStack(index);
         item.setCount(getStackSize());
         if (getDamage() != null) {
-            item.setDamage(getDamage().getParsedDamage(item.getItem()));
+            item.setDamageValue(getDamage().getParsedDamage(item.getItem()));
         }
         if (getEnchantment() != null) {
             enchantItemStack(item);
@@ -196,7 +195,7 @@ public class CITRename
             bl = super.matchesStack(stack);
         } else {
             if (getItems().contains(stack.getItem())) {
-                var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+                var customName = stack.get(DataComponents.CUSTOM_NAME);
                 if (customName != null) {
                     bl = namePattern.matcher(customName.getString()).matches();
                 }
@@ -222,20 +221,20 @@ public class CITRename
             }
 
             if (rename.getDamage() != null && rename.getDamage().damage > 0) {
-                enoughDamage = PropertiesHelper.matchesRange(stack.getDamage(), rename.getOriginalDamage(), stack.getItem());
+                enoughDamage = PropertiesHelper.matchesRange(stack.getDamageValue(), rename.getOriginalDamage(), stack.getItem());
             }
 
             if (rename.getEnchantment() == null) {
                 hasEnchant = true;
                 hasEnoughLevels = true;
             } else {
-                ItemEnchantmentsComponent enchantments;
-                enchantments = EnchantmentHelper.getEnchantments(stack);
+                ItemEnchantments enchantments;
+                enchantments = EnchantmentHelper.getEnchantmentsForCrafting(stack);
 
-                for (RegistryEntry<Enchantment> entry : enchantments.getEnchantments()) {
-                    Optional<RegistryKey<Enchantment>> key = entry.getKey();
+                for (Holder<Enchantment> entry : enchantments.keySet()) {
+                    Optional<ResourceKey<Enchantment>> key = entry.unwrapKey();
                     if (key.isEmpty()) continue;
-                    Identifier id = key.get().getValue();
+                    Identifier id = key.get().identifier();
                     if (id == null) continue;
                     if (id.equals(rename.getEnchantment())) {
                         hasEnchant = true;
@@ -297,7 +296,7 @@ public class CITRename
             var source = new ItemStack(getItem());
             source.setCount(getStackSize());
             if (getDamage() != null) {
-                source.setDamage(getDamage().getParsedDamage(source.getItem()));
+                source.setDamageValue(getDamage().getParsedDamage(source.getItem()));
             }
 
             var enchant = getEnchantingStack();
@@ -350,7 +349,7 @@ public class CITRename
     }
 
     public void enchantItemStack(ItemStack itemStack) {
-        if (client().world == null) {
+        if (client().level == null) {
             RPRenames.LOGGER.warn(
                     "Could not enchant item stack {} with rename\n{}\ncause client world is null",
                     itemStack, this
@@ -359,24 +358,24 @@ public class CITRename
         }
 
         Optional<Registry<Enchantment>> optionalRegistry = client()
-                .world
-                .getRegistryManager()
-                .getOptional(RegistryKeys.ENCHANTMENT);
+                .level
+                .registryAccess()
+                .lookup(Registries.ENCHANTMENT);
 
         if (optionalRegistry.isEmpty()) {
             RPRenames.LOGGER.warn(
                     "Could not enchant item stack {} with rename\n{}\ncause {} registry was not found",
-                    itemStack, this, RegistryKeys.ENCHANTMENT.getRegistry()
+                    itemStack, this, Registries.ENCHANTMENT.registry()
             );
             return;
         }
 
-        Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment = optionalRegistry
+        Optional<Holder.Reference<Enchantment>> optionalEnchantment = optionalRegistry
                 .get()
-                .getEntry(this.getEnchantment());
+                .get(this.getEnchantment());
 
         if (optionalEnchantment.isPresent()) {
-            itemStack.addEnchantment(optionalEnchantment.get(), this.getEnchantmentLevel());
+            itemStack.enchant(optionalEnchantment.get(), this.getEnchantmentLevel());
         } else {
             RPRenames.LOGGER.warn(
                     "Could not enchant item stack {} with rename\n{}\ncause enchantment {} is not loaded",

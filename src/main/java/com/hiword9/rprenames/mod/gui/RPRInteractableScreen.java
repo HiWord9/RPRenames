@@ -1,11 +1,11 @@
 package com.hiword9.rprenames.mod.gui;
 
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.inventory.ClickType;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
 /**
- * Intended to be used in {@link net.minecraft.client.gui.screen.Screen Screen} subclass.
+ * Intended to be used in {@link net.minecraft.client.gui.screens.Screen Screen} subclass.
  * This interface has methods that are used in {@link com.hiword9.rprenames.mod.gui.widget.RPRWidget RPRWidget}
  *
  * @see com.hiword9.rprenames.mod.gui.widget.RPRWidget RPRWidget
@@ -19,10 +19,10 @@ public interface RPRInteractableScreen {
      * @param craftSlot id of slot in crafting grid
      */
     default void moveToCraft(int inventorySlot, int craftSlot) {
-        var interactionManager = client().interactionManager;
+        var interactionManager = client().gameMode;
         if (player() == null || interactionManager == null) return;
 
-        int syncId = player().currentScreenHandler.syncId;
+        int syncId = player().containerMenu.containerId;
 
         // swapping in hotbar but picking in inventory cause server will ignore swapping if slot >= 9
         if (inventorySlot >= 9) {
@@ -30,11 +30,11 @@ public interface RPRInteractableScreen {
             i += getCraftSlotsAmount();
             // adding number of crafting slots because they are first in slots list, and we need to avoid them
 
-            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player());
-            interactionManager.clickSlot(syncId, craftSlot, 0, SlotActionType.PICKUP, player());
-            interactionManager.clickSlot(syncId, i, 0, SlotActionType.PICKUP, player());
+            interactionManager.handleInventoryMouseClick(syncId, i, 0, ClickType.PICKUP, player());
+            interactionManager.handleInventoryMouseClick(syncId, craftSlot, 0, ClickType.PICKUP, player());
+            interactionManager.handleInventoryMouseClick(syncId, i, 0, ClickType.PICKUP, player());
         } else {
-            interactionManager.clickSlot(syncId, craftSlot, inventorySlot, SlotActionType.SWAP, player());
+            interactionManager.handleInventoryMouseClick(syncId, craftSlot, inventorySlot, ClickType.SWAP, player());
         }
     }
 
@@ -43,19 +43,19 @@ public interface RPRInteractableScreen {
      * If no available slots found, drops stack on ground.
      */
     default void moveToInventory(int workSlot) {
-        var interactionManager = client().interactionManager;
+        var interactionManager = client().gameMode;
         if (player() == null || interactionManager == null) return;
 
         var inventory = player().getInventory();
-        var stack = player().currentScreenHandler.slots.get(workSlot).getStack();
+        var stack = player().containerMenu.slots.get(workSlot).getItem();
         if (stack.isEmpty()) return;
-        int syncId = player().currentScreenHandler.syncId;
+        int syncId = player().containerMenu.containerId;
 
-        if (inventory.getOccupiedSlotWithRoomForStack(stack) != -1 || inventory.getEmptySlot() != -1) {
-            interactionManager.clickSlot(syncId, workSlot, 0, SlotActionType.QUICK_MOVE, player());
+        if (inventory.getSlotWithRemainingSpace(stack) != -1 || inventory.getFreeSlot() != -1) {
+            interactionManager.handleInventoryMouseClick(syncId, workSlot, 0, ClickType.QUICK_MOVE, player());
             moveToInventory(workSlot);
         } else {
-            interactionManager.clickSlot(syncId, workSlot, 99, SlotActionType.THROW, player());
+            interactionManager.handleInventoryMouseClick(syncId, workSlot, 99, ClickType.THROW, player());
         }
     }
 

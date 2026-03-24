@@ -13,10 +13,10 @@ import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.input.KeyEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -63,8 +63,8 @@ public class RichRenameRenderer<R extends Rename>
         final int playerSize = Graphics.DEFAULT_PREVIEW_SIZE_ENTITY;
         return new PlayerPreviewTooltipComponent(
                 player(), stack,
-                (int) (width + playerSize * player().getWidth() - 1),
-                (int) (height + playerSize * player().getHeight() - 1),
+                (int) (width + playerSize * player().getBbWidth() - 1),
+                (int) (height + playerSize * player().getBbHeight() - 1),
                 playerSize,
                 false,
                 false
@@ -102,13 +102,13 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
         super.onRenderTooltip(context, mouseX, mouseY);
         drawPreview(context, mouseX, mouseY, tooltipComponents);
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         var positioner = new PreviewTooltipPositioner(getPreviewPositionerPos(), mainTooltip);
 
         if (shouldPreviewPlayer()) {
@@ -124,7 +124,7 @@ public class RichRenameRenderer<R extends Rename>
         return PreviewPos.LEFT;
     }
 
-    protected void playerPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
+    protected void playerPreview(GuiGraphics context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),
@@ -135,7 +135,7 @@ public class RichRenameRenderer<R extends Rename>
         );
     }
 
-    protected void itemPreview(DrawContext context, int mouseX, int mouseY, TooltipPositioner positioner) {
+    protected void itemPreview(GuiGraphics context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),
@@ -147,8 +147,8 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        if (input.getKeycode() == cycleSlotsGlfwKey && isFocused()) {
+    public boolean keyPressed(KeyEvent input) {
+        if (input.input() == cycleSlotsGlfwKey && isFocused()) {
             playerPreviewTooltipComponent.cycleSlots();
             return true;
         }

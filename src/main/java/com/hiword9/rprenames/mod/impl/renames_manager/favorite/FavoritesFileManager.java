@@ -6,9 +6,8 @@ import com.hiword9.rprenames.mod.util.Util;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;

@@ -2,8 +2,7 @@ package com.hiword9.rprenames.api.ext.renames_manager;
 
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.item.Item;
-
+import net.minecraft.world.item.Item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

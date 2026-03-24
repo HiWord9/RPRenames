@@ -2,17 +2,17 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public class RandomButton extends ClickableWidget implements OffsetableWidget {
-    public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/dice.png");
+public class RandomButton extends AbstractWidget implements OffsetableWidget {
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/dice.png");
     static final String TOOLTIP_KEY = "rprenames.gui.randomButton.tooltip";
 
     RPRWidget rprWidget;
@@ -36,7 +36,7 @@ public class RandomButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         if (!active) return;
         int u = 0;
         int v = V_OFFSET * side;
@@ -47,15 +47,15 @@ public class RandomButton extends ClickableWidget implements OffsetableWidget {
                 getWidth(), getHeight(),
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );
-        if (!hovered) return;
-        context.drawTooltip(textRenderer(), Text.translatable(TOOLTIP_KEY), mouseX, mouseY);
+        if (!isHovered) return;
+        context.setTooltipForNextFrame(textRenderer(), Component.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+    protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (this.isMouseOver(click.x(), click.y())) {
             int randomNumber = randomNumber();
 

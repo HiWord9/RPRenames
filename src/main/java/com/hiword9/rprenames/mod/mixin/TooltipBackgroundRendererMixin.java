@@ -1,9 +1,9 @@
 package com.hiword9.rprenames.mod.mixin;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.hiword9.rprenames.mod.util.Util.config;
 
-@Mixin(value = TooltipBackgroundRenderer.class)
+@Mixin(value = TooltipRenderUtil.class)
 public abstract class TooltipBackgroundRendererMixin {
     @Inject(
             at = @At(value = "TAIL"),
-            method = "render"
+            method = "renderTooltipBackground"
     )
-    private static void onRender(DrawContext context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
+    private static void onRender(GuiGraphics context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
         if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
         Graphics.renderStarInFavoriteTooltip(context, x, y, width);
     }
@@ -27,9 +27,9 @@ public abstract class TooltipBackgroundRendererMixin {
     @ModifyArg(
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/tooltip/TooltipBackgroundRenderer;getFrameTexture(Lnet/minecraft/util/Identifier;)Lnet/minecraft/util/Identifier;"
+                    target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;getFrameSprite(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;"
             ),
-            method = "render"
+            method = "renderTooltipBackground"
     )
     private static @Nullable Identifier onGetFrameTexture(@Nullable Identifier texture) {
         if (!Graphics.renderTooltipAsFavorite || texture != null || !config().recolorFavoriteTooltip) return texture;

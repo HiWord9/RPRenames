@@ -1,7 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.cem;
 
-import net.minecraft.entity.EntityType;
-
+import net.minecraft.world.entity.EntityType;
 import java.util.Arrays;
 
 public class CEMModels {

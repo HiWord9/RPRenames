@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.api.ext.rename.renderer;
 
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -9,17 +9,17 @@ import java.util.List;
 
 import static com.hiword9.rprenames.mod.util.Util.textRenderer;
 
-public class PreviewTooltipPositioner implements TooltipPositioner {
+public class PreviewTooltipPositioner implements ClientTooltipPositioner {
     public final PreviewPos previewPos;
-    List<TooltipComponent> tooltipComponents;
+    List<ClientTooltipComponent> tooltipComponents;
 
-    public PreviewTooltipPositioner(PreviewPos previewPos, List<TooltipComponent> mainTooltipsComponents) {
+    public PreviewTooltipPositioner(PreviewPos previewPos, List<ClientTooltipComponent> mainTooltipsComponents) {
         this.previewPos = previewPos;
         this.tooltipComponents = mainTooltipsComponents;
     }
 
     @Override
-    public Vector2ic getPosition(int screenWidth, int screenHeight, int x, int y, int width, int height) {
+    public Vector2ic positionTooltip(int screenWidth, int screenHeight, int x, int y, int width, int height) {
         if (previewPos == PreviewPos.LEFT) {
             x -= (12 + width);
             y -= 12;
@@ -31,7 +31,7 @@ public class PreviewTooltipPositioner implements TooltipPositioner {
             x += 12;
             int yOffset = -12;
             int tooltipHeight = tooltipComponents.size() == 1 ? -2 : 0;
-            for (TooltipComponent component : tooltipComponents) {
+            for (ClientTooltipComponent component : tooltipComponents) {
                 tooltipHeight += component.getHeight(textRenderer());
             }
             yOffset += tooltipHeight + 10;

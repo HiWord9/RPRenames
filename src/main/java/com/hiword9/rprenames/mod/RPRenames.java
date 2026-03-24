@@ -16,9 +16,9 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class RPRenames implements ClientModInitializer {
                     ResourceLoader.registerBuiltinPack(
                             asId(pack),
                             container,
-                            Text.translatable("rprenames.builtinResourcePack." + pack),
+                            Component.translatable("rprenames.builtinResourcePack." + pack),
                             PackActivationType.NORMAL
                     );
                 }
@@ -75,10 +75,10 @@ public class RPRenames implements ClientModInitializer {
     }
 
     public static Identifier asId(String path) {
-        return Identifier.of(MOD_ID, path);
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+    public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
         RPRenamesCommand.register(dispatcher, registryAccess);
     }
 

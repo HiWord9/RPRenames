@@ -1,12 +1,12 @@
 package com.hiword9.rprenames.api.core.rename.renderer;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
-public interface RenameRenderer extends Element {
-    void onRender(DrawContext context, int mouseX, int mouseY);
-    void onRenderTooltip(DrawContext context, int mouseX, int mouseY);
+public interface RenameRenderer extends GuiEventListener {
+    void onRender(GuiGraphics context, int mouseX, int mouseY);
+    void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY);
 
     @Override
     default void setFocused(boolean focused) {}

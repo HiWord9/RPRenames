@@ -1,5 +1,5 @@
 accessWidener v1 named
-accessible method net/minecraft/item/ItemGroup$Builder type (Lnet/minecraft/item/ItemGroup$Type;)Lnet/minecraft/item/ItemGroup$Builder;
-accessible field net/minecraft/client/gui/DrawContext tooltipDrawer Ljava/lang/Runnable;
-accessible field net/minecraft/client/gui/screen/ingame/HandledScreen x I
-accessible field net/minecraft/client/gui/screen/ingame/HandledScreen y I
+accessible method net/minecraft/world/item/CreativeModeTab$Builder type (Lnet/minecraft/world/item/CreativeModeTab$Type;)Lnet/minecraft/world/item/CreativeModeTab$Builder;
+accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
+accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I

@@ -11,17 +11,16 @@ import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.impl.rename.CEMRename;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.golem.SnowGolem;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -41,12 +40,12 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         this.favoriteSupplier = favoriteSupplier;
 
         var entityType = rename.getEntity();
-        this.entity = (LivingEntity) entityType.create(client().world, null);
+        this.entity = (LivingEntity) entityType.create(client().level, null);
         prepareEntity(entity, rename);
 
         int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
-        int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getWidth() - 1);
-        int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getHeight() - 1);
+        int width = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + size * entity.getBbWidth() - 1);
+        int height = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + size * entity.getBbHeight() - 1);
 
         entityPreviewTooltipComponent = new EntityPreviewTooltipComponent(
                 entity,
@@ -71,35 +70,35 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         }
 
         if (config().showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
+            ClientTooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
             if (pattern != null) tooltipComponents.add(pattern);
         }
     }
 
-    public static TooltipComponent mobNameTooltipComponent(EntityType<?> entityType) {
+    public static ClientTooltipComponent mobNameTooltipComponent(EntityType<?> entityType) {
         return Graphics.tooltipOf(
-                Text.translatable(entityType.getTranslationKey())
-                        .fillStyle(Style.EMPTY.withColor(Formatting.YELLOW))
+                Component.translatable(entityType.getDescriptionId())
+                        .withStyle(Style.EMPTY.withColor(ChatFormatting.YELLOW))
         );
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphics context, int mouseX, int mouseY) {
         Graphics.renderEntityInBox(context,
-                new ScreenRect(
+                new ScreenRectangle(
                         renderArea.getX() + 1,
                         renderArea.getY() + 1,
                         renderArea.getWidth() - 2,
                         renderArea.getHeight() - 2
                 ),
-                14 / (Math.max(entity.getHeight(), entity.getWidth())),
+                14 / (Math.max(entity.getBbHeight(), entity.getBbWidth())),
                 entity,
                 false
         );
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
         super.onRenderTooltip(context, mouseX, mouseY);
         if (!config().enablePreview) return;
         drawPreview(
@@ -110,7 +109,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),
@@ -123,8 +122,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
     protected void prepareEntity(Entity entity, CEMRename rename) {
         if (entity == null) return;
-        if (entity instanceof SnowGolemEntity snowGolem) {
-            snowGolem.setHasPumpkin(!config().disableSnowGolemPumpkin);
+        if (entity instanceof SnowGolem snowGolem) {
+            snowGolem.setPumpkin(!config().disableSnowGolemPumpkin);
         }
         entity.setCustomName(rename.getName());
     }

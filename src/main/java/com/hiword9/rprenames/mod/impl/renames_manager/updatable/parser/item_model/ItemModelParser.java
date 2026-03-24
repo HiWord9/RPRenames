@@ -6,21 +6,21 @@ import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesManager;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
-import net.minecraft.client.item.ItemAsset;
-import net.minecraft.client.render.item.property.select.ComponentSelectProperty;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.properties.select.ComponentContents;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class ItemModelParser implements Parser {
-    private final Map<Identifier, ItemAsset> itemAssets = new HashMap<>();
+    private final Map<Identifier, ClientItem> itemAssets = new HashMap<>();
 
     public RenamesManager<? super ItemModelRename> renamesManager;
 
@@ -28,13 +28,13 @@ public class ItemModelParser implements Parser {
         this.renamesManager = renamesManager;
     }
 
-    public void updateItemAssets(Map<Identifier, ItemAsset> itemAssets) {
+    public void updateItemAssets(Map<Identifier, ClientItem> itemAssets) {
         this.itemAssets.clear();
         this.itemAssets.putAll(itemAssets);
     }
 
     @Override
-    public void parse(ResourceManager resourceManager, Profiler profiler) {
+    public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
         var renameDataList = ItemModelDataExplorer.getListMerged(itemAssets);
 
         renameDataList.forEach(data -> {
@@ -52,16 +52,16 @@ public class ItemModelParser implements Parser {
         });
     }
 
-    private static Text getName(Collection<ItemModelCondition.Applicable> conditions) {
+    private static Component getName(Collection<ItemModelCondition.Applicable> conditions) {
         var renameCondition = getRenameCondition(conditions);
         if (renameCondition == null) return null;
         return renameCondition.value.getFirst();
     }
 
-    private static @Nullable SelectCondition<ComponentSelectProperty<Text>, Text> getRenameCondition(
+    private static @Nullable SelectCondition<ComponentContents<Component>, Component> getRenameCondition(
             Collection<ItemModelCondition.Applicable> conditions
     ) {
-        SelectCondition<ComponentSelectProperty<Text>, Text> renameCondition = null;
+        SelectCondition<ComponentContents<Component>, Component> renameCondition = null;
         for (ItemModelCondition condition : conditions) {
             var candidate = asCustomNameConditionOrNull(condition);
             if (candidate != null) {
@@ -80,13 +80,13 @@ public class ItemModelParser implements Parser {
     }
 
     @SuppressWarnings("unchecked")
-    private static SelectCondition<ComponentSelectProperty<Text>, Text> asCustomNameConditionOrNull(
+    private static SelectCondition<ComponentContents<Component>, Component> asCustomNameConditionOrNull(
             ItemModelCondition condition
     ) {
         if (condition instanceof SelectCondition<?, ?> select
-                && select.property instanceof ComponentSelectProperty<?>(ComponentType<?> componentType)
-                && componentType.equals(DataComponentTypes.CUSTOM_NAME)
-        ) return (SelectCondition<ComponentSelectProperty<Text>, Text>) select;
+                && select.property instanceof ComponentContents<?>(DataComponentType<?> componentType)
+                && componentType.equals(DataComponents.CUSTOM_NAME)
+        ) return (SelectCondition<ComponentContents<Component>, Component>) select;
 
         return null;
     }

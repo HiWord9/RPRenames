@@ -7,24 +7,23 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.item.Item;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import java.util.List;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public class RenameButton extends ClickableWidget implements OffsetableWidget {
+public class RenameButton extends AbstractWidget implements OffsetableWidget {
     final int highlightColor = config().getSlotHighlightRGBA();
 
-    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/button.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/button.png");
 
     RPRWidget rprWidget;
 
@@ -66,9 +65,9 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
-        int v = hovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
+        int v = isHovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
                 context,
                 TEXTURE,
@@ -79,7 +78,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
         renameRenderer.onRender(context, mouseX, mouseY);
     }
 
-    public void renderTooltip(DrawContext context, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphics context, int mouseX, int mouseY) {
         if (!rprWidget.getCurrentTab().forCraftItemOnly
                 && config().slotHighlightColorALPHA > 0
                 && config().highlightSlot
@@ -90,7 +89,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (!this.isMouseOver(click.x(), click.y())) return false;
 
         if (click.button() == 1) {
@@ -114,7 +113,7 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+    public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
         if (renameRenderer.mouseDragged(click, offsetX, offsetY)) return true;
         return super.mouseDragged(click, offsetX, offsetY);
     }
@@ -126,25 +125,25 @@ public class RenameButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         if (renameRenderer.keyPressed(input)) return true;
         return super.keyPressed(input);
     }
 
     @Override
-    public boolean keyReleased(KeyInput input) {
+    public boolean keyReleased(KeyEvent input) {
         if (renameRenderer.keyReleased(input)) return true;
         return super.keyReleased(input);
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+    protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
-    private <H extends ScreenHandler> void highlightSlots(
-            DrawContext context, RPRInteractableScreen screen, int highlightColor
+    private <H extends AbstractContainerMenu> void highlightSlots(
+            GuiGraphics context, RPRInteractableScreen screen, int highlightColor
     ) {
-        if (!(screen instanceof HandledScreen<?> handledScreen)) return;
-        var s = (HandledScreen<H> & RPRInteractableScreen) handledScreen;
+        if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) return;
+        var s = (AbstractContainerScreen<H> & RPRInteractableScreen) handledScreen;
         Graphics.highlightAvailableSlots(rename.getItems(), context, s, highlightColor);
     }
 }

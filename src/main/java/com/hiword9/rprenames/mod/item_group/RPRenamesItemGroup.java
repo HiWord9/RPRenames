@@ -3,16 +3,15 @@ package com.hiword9.rprenames.mod.item_group;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.RPRenames;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
-
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,35 +21,35 @@ import static com.hiword9.rprenames.mod.util.Util.*;
 
 public class RPRenamesItemGroup {
     public static final List<ItemStack> renamedItemStacks = new ArrayList<>();
-    protected static ItemGroup itemGroup;
+    protected static CreativeModeTab itemGroup;
 
     public static void register() {
         Registry.register(
-                Registries.ITEM_GROUP,
-                Identifier.of(RPRenames.MOD_ID, "item_group"),
+                BuiltInRegistries.CREATIVE_MODE_TAB,
+                Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "item_group"),
                 itemGroup = FabricItemGroup.builder()
-                        .displayName(Text.translatable("rprenames.item_group"))
+                        .title(Component.translatable("rprenames.item_group"))
                         .icon(RPRenamesItemGroup::getItemGroupIcon)
-                        .type(ItemGroup.Type.SEARCH)
-                        .texture(ItemGroup.getTabTextureId("item_search"))
-                        .entries((displayContext, entries) -> update())
+                        .type(CreativeModeTab.Type.SEARCH)
+                        .backgroundTexture(CreativeModeTab.createTextureLocation("item_search"))
+                        .displayItems((displayContext, entries) -> update())
                         .build()
         );
     }
 
     public static void update() {
         renamedItemStacks.clear();
-        if (client().world == null) return;
+        if (client().level == null) return;
         renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.updatableRenamesManager));
     }
 
     static ItemStack getItemGroupIcon() {
         ItemStack stack = new ItemStack(Items.KNOWLEDGE_BOOK);
-        stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         return stack;
     }
 
-    public static boolean verifyItemGroup(ItemGroup itemGroup) {
+    public static boolean verifyItemGroup(CreativeModeTab itemGroup) {
         return RPRenamesItemGroup.itemGroup == itemGroup;
     }
 
@@ -58,7 +57,7 @@ public class RPRenamesItemGroup {
         ArrayList<ItemStack> list = new ArrayList<>();
 
         for (ItemStack stack : renamedItemStacks) {
-            if (stack.getName().getString().toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT))) {
+            if (stack.getHoverName().getString().toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT))) {
                 list.add(stack);
             }
         }
@@ -68,15 +67,15 @@ public class RPRenamesItemGroup {
 
     private static ItemStack getNoRenamesFoundItem() {
         ItemStack itemStack = new ItemStack(Items.PAPER);
-        itemStack.set(DataComponentTypes.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
-        itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("rprenames.gui.noRenamesFound"));
+        itemStack.set(DataComponents.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
+        itemStack.set(DataComponents.CUSTOM_NAME, Component.translatable("rprenames.gui.noRenamesFound"));
         return itemStack;
     }
 
     private static ItemStack getFavoriteItem() {
         ItemStack itemStack = new ItemStack(Items.PAPER);
-        itemStack.set(DataComponentTypes.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
-        itemStack.set(DataComponentTypes.CUSTOM_NAME, Text.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
+        itemStack.set(DataComponents.CREATIVE_SLOT_LOCK, Unit.INSTANCE);
+        itemStack.set(DataComponents.CUSTOM_NAME, Component.translatable("rprenames.gui.tabs.tooltip.FAVORITE"));
         return itemStack;
     }
 

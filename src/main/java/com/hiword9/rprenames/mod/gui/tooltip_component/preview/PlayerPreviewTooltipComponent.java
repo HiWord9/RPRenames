@@ -1,19 +1,18 @@
 package com.hiword9.rprenames.mod.gui.tooltip_component.preview;
 
-import net.minecraft.block.AbstractSkullBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import java.util.List;
 
-import static net.minecraft.entity.EquipmentSlot.*;
+import static net.minecraft.world.entity.EquipmentSlot.*;
 
 public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent {
     public final ItemStack stack;
@@ -28,7 +27,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     boolean alwaysAllowPlayerPreviewHead;
 
     public PlayerPreviewTooltipComponent(
-            ClientPlayerEntity entity, ItemStack stack,
+            LocalPlayer entity, ItemStack stack,
             int width, int height,
             int size,
             boolean spin,
@@ -38,19 +37,19 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
         this.stack = stack;
         this.alwaysAllowPlayerPreviewHead = alwaysAllowPlayerPreviewHead;
 
-        ComponentMap components = this.stack.getComponents();
-        if (components.contains(DataComponentTypes.EQUIPPABLE)) {
-            var component = components.get(DataComponentTypes.EQUIPPABLE);
+        DataComponentMap components = this.stack.getComponents();
+        if (components.has(DataComponents.EQUIPPABLE)) {
+            var component = components.get(DataComponents.EQUIPPABLE);
             if (component != null && ALLOWED_EQUIPMENT_SLOTS.contains(component.slot())) {
                 extraEquipmentSlot = component.slot();
             } else {
                 extraSlotAvailable = false;
             }
-        } else if (Block.getBlockFromItem(this.stack.getItem()) == Blocks.CARVED_PUMPKIN) {
+        } else if (Block.byItem(this.stack.getItem()) == Blocks.CARVED_PUMPKIN) {
             extraEquipmentSlot = EquipmentSlot.HEAD;
-        } else if (Block.getBlockFromItem(this.stack.getItem()) instanceof AbstractSkullBlock) {
+        } else if (Block.byItem(this.stack.getItem()) instanceof AbstractSkullBlock) {
             extraEquipmentSlot = EquipmentSlot.HEAD;
-        } else if (components.contains(DataComponentTypes.GLIDER)) {
+        } else if (components.has(DataComponents.GLIDER)) {
             extraEquipmentSlot = EquipmentSlot.CHEST;
         } else {
             extraSlotAvailable = false;
@@ -64,29 +63,29 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
-        ClientPlayerEntity player = (ClientPlayerEntity) entity;
+    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics context) {
+        LocalPlayer player = (LocalPlayer) entity;
 
         assert player != null;
-        ItemStack temp = player.getEquippedStack(equipmentSlot);
+        ItemStack temp = player.getItemBySlot(equipmentSlot);
 
-        player.equipStack(equipmentSlot, stack);
+        player.setItemSlot(equipmentSlot, stack);
 
-        float h = player.bodyYaw;
-        float i = player.getYaw();
-        float j = player.getPitch();
-        float k = player.lastHeadYaw;
-        float l = player.headYaw;
+        float h = player.yBodyRot;
+        float i = player.getYRot();
+        float j = player.getXRot();
+        float k = player.yHeadRotO;
+        float l = player.yHeadRot;
 
-        super.drawItems(textRenderer, x, y, width, height, context);
+        super.renderImage(textRenderer, x, y, width, height, context);
 
-        player.bodyYaw = h;
-        player.setYaw(i);
-        player.setPitch(j);
-        player.lastHeadYaw = k;
-        player.headYaw = l;
+        player.yBodyRot = h;
+        player.setYRot(i);
+        player.setXRot(j);
+        player.yHeadRotO = k;
+        player.yHeadRot = l;
 
-        player.equipStack(equipmentSlot, temp);
+        player.setItemSlot(equipmentSlot, temp);
     }
 
     public void cycleSlots() {

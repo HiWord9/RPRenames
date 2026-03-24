@@ -1,19 +1,19 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.world.item.ItemStack;
 
 import static com.hiword9.rprenames.mod.gui.Graphics.*;
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public class GhostCraft implements Drawable, Element, Offsetable {
+public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
     public final GhostSlot[] slots;
     public final int length;
 
@@ -31,17 +31,17 @@ public class GhostCraft implements Drawable, Element, Offsetable {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         if (!doRender) return;
         renderSlots(context, mouseX, mouseY, delta);
     }
 
-    private void renderSlots(DrawContext context, int mouseX, int mouseY, float delta) {
+    private void renderSlots(GuiGraphics context, int mouseX, int mouseY, float delta) {
         for (GhostSlot slot : slots) slot.render(context, mouseX, mouseY, delta);
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (!doRender) return false;
 
         for (GhostSlot slot : slots) {
@@ -95,7 +95,7 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         for (GhostSlot slot : slots) slot.offset(x, y);
     }
 
-    public static class GhostSlot extends ClickableWidget implements OffsetableWidget {
+    public static class GhostSlot extends AbstractWidget implements OffsetableWidget {
         protected ItemStack content;
         protected boolean forceHighlight = false;
 
@@ -116,11 +116,11 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         }
 
         @Override
-        public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+        public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
             if (content != null && !content.isEmpty()) {
                 Graphics.renderStack(context, content, getX() + 1, getY() + 1);
                 if (isMouseOver(mouseX, mouseY)) {
-                    context.drawTooltip(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
+                    context.setComponentTooltipForNextFrame(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
                 }
             }
             int color;
@@ -133,7 +133,7 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         }
 
         @Override
-        public boolean mouseClicked(Click click, boolean doubled) {
+        public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
             return active && visible && isMouseOver(click.x(), click.y());
         }
 
@@ -146,7 +146,7 @@ public class GhostCraft implements Drawable, Element, Offsetable {
         }
 
         @Override
-        protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+        protected void updateWidgetNarration(NarrationElementOutput builder) {}
     }
 
     public interface Loader {

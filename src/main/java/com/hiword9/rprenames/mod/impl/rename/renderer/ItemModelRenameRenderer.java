@@ -6,12 +6,11 @@ import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewToolti
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.impl.rename.ItemModelRename;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -21,30 +20,30 @@ import static com.hiword9.rprenames.mod.util.Util.*;
 import static com.hiword9.rprenames.mod.util.Util.currentScreen;
 
 public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename> {
-    protected static final MutableText playerPreviewHintShift = Text.translatable(
+    protected static final MutableComponent playerPreviewHintShift = Component.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
-            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.shift").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText playerPreviewHintF = Text.translatable(
+    protected static final MutableComponent playerPreviewHintF = Component.translatable(
             "rprenames.gui.tooltipHint.playerPreview.pressF",
-            Text.translatable("rprenames.key.f").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.f").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText favoriteHintAdd = Text.translatable(
+    protected static final MutableComponent favoriteHintAdd = Component.translatable(
             "rprenames.gui.tooltipHint.favorite.add",
-            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.rmb").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText favoriteHintRemove = Text.translatable(
+    protected static final MutableComponent favoriteHintRemove = Component.translatable(
             "rprenames.gui.tooltipHint.favorite.remove",
-            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.rmb").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText disableHint = Text.translatable(
+    protected static final MutableComponent disableHint = Component.translatable(
             "rprenames.gui.tooltipHint.disable",
-            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.RED)
-    ).formatted(Formatting.DARK_RED);
+            Component.translatable("rprenames.gui.tooltipHint.disable.command").withStyle(ChatFormatting.RED)
+    ).withStyle(ChatFormatting.DARK_RED);
 
     protected ItemModelRenameRenderer(
             ItemModelRename rename, RenderArea renderArea,
@@ -56,8 +55,8 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     @Override
     protected PlayerPreviewTooltipComponent getPlayerPreviewTooltip() {
         int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
-        int playerWidth = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + playerSize * player().getWidth() - 1);
-        int playerHeight = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + playerSize * player().getHeight() - 1);
+        int playerWidth = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + playerSize * player().getBbWidth() - 1);
+        int playerHeight = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + playerSize * player().getBbHeight() - 1);
 
         return new PlayerPreviewTooltipComponent(
                 player(), stack,
@@ -89,8 +88,8 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
-        var tooltipAddition = new ArrayList<TooltipComponent>();
+    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+        var tooltipAddition = new ArrayList<ClientTooltipComponent>();
 
         if (config().enablePreview) {
             boolean shiftDown = hasShiftDown();
@@ -117,7 +116,7 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
         super.drawPreview(context, mouseX, mouseY, mainTooltip);
     }

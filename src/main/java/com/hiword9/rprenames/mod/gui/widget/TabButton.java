@@ -2,21 +2,20 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public class TabButton extends ClickableWidget implements OffsetableWidget {
-    private static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/tabs.png");
+public class TabButton extends AbstractWidget implements OffsetableWidget {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/tabs.png");
     private static final String TRANSLATION_PREFIX = "rprenames.gui.tabs.tooltip.";
 
     RPRWidget rprWidget;
@@ -40,7 +39,7 @@ public class TabButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         int u = rprWidget.getCurrentTab() == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
         Graphics.renderGuiTexture(
@@ -55,15 +54,15 @@ public class TabButton extends ClickableWidget implements OffsetableWidget {
             Graphics.drawTooltip(
                     context,
                     textRenderer(),
-                    List.of(Graphics.tooltipOf(Text.translatable(TRANSLATION_PREFIX + tab.toString()))),
+                    List.of(Graphics.tooltipOf(Component.translatable(TRANSLATION_PREFIX + tab.toString()))),
                     mouseX, mouseY,
-                    HoveredTooltipPositioner.INSTANCE
+                    DefaultTooltipPositioner.INSTANCE
             );
         }
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (this.isMouseOver(click.x(), click.y())) {
             if (rprWidget.getCurrentTab() != tab) rprWidget.openTab(tab);
             return true;
@@ -72,5 +71,5 @@ public class TabButton extends ClickableWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+    protected void updateWidgetNarration(NarrationElementOutput builder) {}
 }

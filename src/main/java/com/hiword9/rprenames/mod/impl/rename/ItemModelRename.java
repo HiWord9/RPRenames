@@ -7,11 +7,10 @@ import com.hiword9.rprenames.mod.gui.widget.GhostCraft;
 import com.hiword9.rprenames.mod.impl.rename.renderer.ItemModelRenameRenderer;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +27,7 @@ public class ItemModelRename
     public ItemModelRename(
             List<ItemModelCondition.Applicable> conditions,
             List<List<ItemModelCondition>> contexts,
-            Text name,
+            Component name,
             Item... items
     ) {
         super(name, items);
@@ -81,10 +80,10 @@ public class ItemModelRename
     }
 
     @Override
-    public List<Text> getInfo() {
-        var info = new ArrayList<Text>();
-        info.add(Text.translatable("rprenames.command.info.requiredConditions", conditions.size()).formatted(Formatting.AQUA));
-        info.add(Text.translatable("rprenames.command.info.availableContexts", contexts.size()).formatted(Formatting.AQUA));
+    public List<Component> getInfo() {
+        var info = new ArrayList<Component>();
+        info.add(Component.translatable("rprenames.command.info.requiredConditions", conditions.size()).withStyle(ChatFormatting.AQUA));
+        info.add(Component.translatable("rprenames.command.info.availableContexts", contexts.size()).withStyle(ChatFormatting.AQUA));
         return info;
     }
 }

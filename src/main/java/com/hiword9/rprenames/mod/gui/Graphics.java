@@ -2,26 +2,26 @@ package com.hiword9.rprenames.mod.gui;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SquidEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.squid.Squid;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -46,26 +46,26 @@ public class Graphics {
 
     static public boolean renderTooltipAsFavorite = false;
 
-    public static final Identifier FAVORITE_TOOLTIP_FRAME_TEXTURE = Identifier.of(RPRenames.MOD_ID, "favorite_tooltip");
+    public static final Identifier FAVORITE_TOOLTIP_FRAME_TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "favorite_tooltip");
 
-    public static void renderText(DrawContext context, Text text, int x, int y, boolean shadow, boolean centered) {
+    public static void renderText(GuiGraphics context, Component text, int x, int y, boolean shadow, boolean centered) {
         renderText(context, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
     }
 
-    public static void renderText(DrawContext context, Text text, int color, int x, int y, boolean shadow, boolean centered) {
+    public static void renderText(GuiGraphics context, Component text, int color, int x, int y, boolean shadow, boolean centered) {
         var renderer = textRenderer();
-        int xOffset = centered ? renderer.getWidth(text) / 2 : 0;
-        context.drawText(renderer, text, x - xOffset, y, color, shadow);
+        int xOffset = centered ? renderer.width(text) / 2 : 0;
+        context.drawString(renderer, text, x - xOffset, y, color, shadow);
     }
 
     public static void renderGuiTexture(
-            DrawContext context,
+            GuiGraphics context,
             Identifier texture,
             int x, int y, float u, float v,
             int width, int height,
             int textureWidth, int textureHeight
     ) {
-        context.drawTexture(
+        context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 x, y, u, v,
@@ -74,23 +74,23 @@ public class Graphics {
         );
     }
 
-    public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y) {
+    public static void renderStack(GuiGraphics context, ItemStack itemStack, int x, int y) {
         renderStack(context, itemStack, x, y, 0, STACK_IN_SLOT_SIZE);
     }
 
-    public static void renderStack(DrawContext context, ItemStack itemStack, int x, int y, int z, int size) {
+    public static void renderStack(GuiGraphics context, ItemStack itemStack, int x, int y, int z, int size) {
         float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
-        var matrices = context.getMatrices();
+        var matrices = context.pose();
         matrices.pushMatrix();
         matrices.translate(x, y);
         matrices.scale(scale, scale);
-        context.drawItemWithoutEntity(itemStack, 0, 0, z);
+        context.renderFakeItem(itemStack, 0, 0, z);
         matrices.popMatrix();
     }
 
     @SuppressWarnings("unchecked")
-    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(DrawContext context, ScreenRect rect, double size, T entity, boolean spin) {
-        if (entity instanceof SquidEntity) size /= 1.5;
+    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(GuiGraphics context, ScreenRectangle rect, double size, T entity, boolean spin) {
+        if (entity instanceof Squid) size /= 1.5;
         else if (entity instanceof ItemEntity) size *= 2;
 
         if (entity instanceof LivingEntity l && l.isBaby()) size /= 1.7;
@@ -101,69 +101,69 @@ public class Graphics {
 
         var camera = client().getCameraEntity();
         if (camera != null) {
-            entity.setPos(camera.getX(), camera.getY(), camera.getZ());
+            entity.setPosRaw(camera.getX(), camera.getY(), camera.getZ());
         }
 
-        if (!(entity instanceof PlayerEntity)) {
+        if (!(entity instanceof Player)) {
             assert player() != null;
-            entity.age = player().age;
+            entity.tickCount = player().tickCount;
         }
         setupAngles(entity, spin);
 
-        var vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F, 0.0F);
+        var vector3f = new Vector3f(0.0F, entity.getBbHeight() / 2.0F, 0.0F);
 
         var entityRenderDispatcher = client().getEntityRenderDispatcher();
         var entityRenderer = (EntityRenderer<? super T, S>) entityRenderDispatcher.getRenderer(entity);
         var entityRenderState = entityRenderer.createRenderState();
-        entityRenderer.updateRenderState(entity, entityRenderState, 1.0F);
+        entityRenderer.extractRenderState(entity, entityRenderState, 1.0F);
 
-        context.addEntity(
+        context.submitEntityRenderState(
                 entityRenderState,
                 (float) size, vector3f, quaternion, quaternion2,
-                rect.getLeft(), rect.getTop(), rect.getRight(), rect.getBottom()
+                rect.left(), rect.top(), rect.right(), rect.bottom()
         );
     }
 
     private static void setupAngles(Entity entity, boolean spin) {
         float yaw = spin ? (float) (((System.currentTimeMillis() / 10)) % 360) : 225.0F;
-        entity.setYaw(yaw);
-        entity.setHeadYaw(yaw);
-        entity.setPitch(0.f);
-        if (entity instanceof LivingEntity living) living.bodyYaw = yaw;
+        entity.setYRot(yaw);
+        entity.setYHeadRot(yaw);
+        entity.setXRot(0.f);
+        if (entity instanceof LivingEntity living) living.yBodyRot = yaw;
     }
 
     public static void drawTooltip(
-            DrawContext context, TextRenderer textRenderer,
-            List<TooltipComponent> components,
+            GuiGraphics context, Font textRenderer,
+            List<ClientTooltipComponent> components,
             int x, int y,
-            TooltipPositioner positioner
+            ClientTooltipPositioner positioner
     ) {
         drawTooltip(context, textRenderer, components, x, y, positioner, false);
     }
 
     public static void drawTooltip(
-            DrawContext context, TextRenderer textRenderer,
-            TooltipComponent component,
+            GuiGraphics context, Font textRenderer,
+            ClientTooltipComponent component,
             int x, int y,
-            TooltipPositioner positioner,
+            ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         drawTooltip(context, textRenderer, List.of(component), x, y, positioner, favorite);
     }
 
     public static void drawTooltipWithFixedBorders(
-            DrawContext context, TextRenderer textRenderer,
-            TooltipComponent component,
+            GuiGraphics context, Font textRenderer,
+            ClientTooltipComponent component,
             int x, int y,
-            TooltipPositioner positioner,
+            ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         drawTooltip(
                 context, textRenderer,
                 List.of(component,
-                        new TooltipComponent() { //dump tooltip component to increase list size
-                            public int getHeight(TextRenderer textRenderer) {return 0;}
-                            public int getWidth(TextRenderer textRenderer) {return 0;}
+                        new ClientTooltipComponent() { //dump tooltip component to increase list size
+                            public int getHeight(Font textRenderer) {return 0;}
+                            public int getWidth(Font textRenderer) {return 0;}
                         }
                 ),
                 x, y, positioner, favorite
@@ -171,24 +171,24 @@ public class Graphics {
     }
 
     public static void drawTooltip(
-            DrawContext context, TextRenderer textRenderer,
-            List<TooltipComponent> components,
+            GuiGraphics context, Font textRenderer,
+            List<ClientTooltipComponent> components,
             int x, int y,
-            TooltipPositioner positioner,
+            ClientTooltipPositioner positioner,
             boolean favorite
     ) {
-        var prevTooltip = context.tooltipDrawer;
-        context.tooltipDrawer = () -> {
+        var prevTooltip = context.deferredTooltip;
+        context.deferredTooltip = () -> {
             if (prevTooltip != null) prevTooltip.run();
             renderTooltipAsFavorite = favorite;
-            context.drawTooltipImmediately(textRenderer, components, x, y, positioner, null);
+            context.renderTooltip(textRenderer, components, x, y, positioner, null);
             renderTooltipAsFavorite = false;
         };
     }
 
-    public static void renderStarInFavoriteTooltip(DrawContext context, int x, int y, int width) {
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(0,0);
+    public static void renderStarInFavoriteTooltip(GuiGraphics context, int x, int y, int width) {
+        context.pose().pushMatrix();
+        context.pose().translate(0,0);
         renderGuiTexture(
                 context,
                 FavoriteButton.TEXTURE,
@@ -197,13 +197,13 @@ public class Graphics {
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
     }
 
-    public static <H extends ScreenHandler, S extends HandledScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
-            List<Item> items, DrawContext context, S screen, int color
+    public static <H extends AbstractContainerMenu, S extends AbstractContainerScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
+            List<Item> items, GuiGraphics context, S screen, int color
     ) {
-        var allSlots = screen.getScreenHandler().slots;
+        var allSlots = screen.getMenu().slots;
 
         var slotsToHighlight = new ArrayList<Slot>();
         slotsToHighlight.add(allSlots.getFirst());
@@ -211,31 +211,31 @@ public class Graphics {
                 allSlots.subList(screen.getCraftSlotsAmount(), allSlots.size())
         );
 
-        highlightSlots(items, slotsToHighlight, context, screen.x, screen.y, color);
+        highlightSlots(items, slotsToHighlight, context, screen.leftPos, screen.topPos, color);
     }
 
     public static void highlightSlots(
             List<Item> items, List<Slot> slots,
-            DrawContext context,
+            GuiGraphics context,
             int xOffset, int yOffset,
             int color
     ) {
         for (Slot slot : slots)
-            if (items.contains(slot.getStack().getItem()))
+            if (items.contains(slot.getItem().getItem()))
                 highlightSlot(context, xOffset, yOffset, slot, color);
     }
 
-    public static void highlightSlot(DrawContext context, int xOffset, int yOffset, Slot slot, int color) {
+    public static void highlightSlot(GuiGraphics context, int xOffset, int yOffset, Slot slot, int color) {
         int x = xOffset + slot.x - 1;
         int y = yOffset + slot.y - 1;
         context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color, color);
     }
 
-    public static TooltipComponent tooltipOf(String string) {
-        return tooltipOf(Text.of(string));
+    public static ClientTooltipComponent tooltipOf(String string) {
+        return tooltipOf(Component.nullToEmpty(string));
     }
 
-    public static TooltipComponent tooltipOf(Text mutableText) {
-        return TooltipComponent.of(mutableText.asOrderedText());
+    public static ClientTooltipComponent tooltipOf(Component mutableText) {
+        return ClientTooltipComponent.create(mutableText.getVisualOrderText());
     }
 }

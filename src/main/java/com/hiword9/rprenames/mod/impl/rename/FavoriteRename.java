@@ -4,16 +4,15 @@ import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import com.hiword9.rprenames.mod.util.Util;
 import com.google.gson.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.lang.reflect.Type;
 import java.util.List;
 
 public class FavoriteRename extends Rename implements ItemGroupComponent {
     public FavoriteRename(String name, Item item) {
-        super(Text.of(name), item);
+        super(Component.nullToEmpty(name), item);
     }
 
     public void setItem(Item item) {

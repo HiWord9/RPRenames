@@ -7,14 +7,13 @@ import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTool
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget.Tab;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -24,30 +23,30 @@ import static com.hiword9.rprenames.mod.util.RenameRendererHelper.*;
 import static com.hiword9.rprenames.mod.util.Util.*;
 
 public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
-    protected static final MutableText playerPreviewHintShift = Text.translatable(
+    protected static final MutableComponent playerPreviewHintShift = Component.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
-            Text.translatable("rprenames.key.shift").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.shift").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText playerPreviewHintF = Text.translatable(
+    protected static final MutableComponent playerPreviewHintF = Component.translatable(
             "rprenames.gui.tooltipHint.playerPreview.pressF",
-            Text.translatable("rprenames.key.f").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.f").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText favoriteHintAdd = Text.translatable(
+    protected static final MutableComponent favoriteHintAdd = Component.translatable(
             "rprenames.gui.tooltipHint.favorite.add",
-            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.rmb").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText favoriteHintRemove = Text.translatable(
+    protected static final MutableComponent favoriteHintRemove = Component.translatable(
             "rprenames.gui.tooltipHint.favorite.remove",
-            Text.translatable("rprenames.key.rmb").formatted(Formatting.GRAY)
-    ).formatted(Formatting.DARK_GRAY);
+            Component.translatable("rprenames.key.rmb").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableText disableHint = Text.translatable(
+    protected static final MutableComponent disableHint = Component.translatable(
             "rprenames.gui.tooltipHint.disable",
-            Text.translatable("rprenames.gui.tooltipHint.disable.command").formatted(Formatting.RED)
-    ).formatted(Formatting.DARK_RED);
+            Component.translatable("rprenames.gui.tooltipHint.disable.command").withStyle(ChatFormatting.RED)
+    ).withStyle(ChatFormatting.DARK_RED);
 
     protected CITRenameRenderer(
             CITRename rename, RenderArea renderArea,
@@ -59,8 +58,8 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     @Override
     protected PlayerPreviewTooltipComponent getPlayerPreviewTooltip() {
         int playerSize = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
-        int playerWidth = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + playerSize * player().getWidth() - 1);
-        int playerHeight = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + playerSize * player().getHeight() - 1);
+        int playerWidth = (int) (Graphics.DEFAULT_PREVIEW_WIDTH + playerSize * player().getBbWidth() - 1);
+        int playerHeight = (int) (Graphics.DEFAULT_PREVIEW_HEIGHT + playerSize * player().getBbHeight() - 1);
 
         return new PlayerPreviewTooltipComponent(
                 player(), stack,
@@ -107,7 +106,7 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     protected void addBottomTooltips() {
         super.addBottomTooltips();
         if (config().showNamePattern && rprWidget.getCurrentTab() != Tab.FAVORITE) {
-            TooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
+            ClientTooltipComponent pattern = namePatternTooltipComponent(rename.getOriginalNamePattern());
             if (pattern != null) tooltipComponents.add(pattern);
         }
     }
@@ -118,8 +117,8 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
         super.addPackNameTooltip();
     }
 
-    protected static List<TooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
-        ArrayList<Text> extraProperties = new ArrayList<>();
+    protected static List<ClientTooltipComponent> extraPropertiesTooltipComponentsList(RPRWidget rprWidget, CITRename citRename, boolean asOriginal) {
+        ArrayList<Component> extraProperties = new ArrayList<>();
 
         var stack = rprWidget.pickItemStackForRename(citRename);
         if (stack == null) stack = rprWidget.getActiveItemStack();
@@ -158,60 +157,60 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
         } else {
             if (citRename.getStackSize() > 1) {
                 extraProperties.add(styledCondition(
-                        Text.translatable("rprenames.gui.tooltipHint.stackSize")
+                        Component.translatable("rprenames.gui.tooltipHint.stackSize")
                                 .append(" " + citRename.getStackSize()),
                         craftMatcher.enoughStackSize(),
-                        Formatting.GRAY
+                        ChatFormatting.GRAY
                 ));
             }
             if (citRename.getDamage() != null && citRename.getDamage().damage > 0) {
                 extraProperties.add(styledCondition(
-                        Text.translatable("rprenames.gui.tooltipHint.damage")
+                        Component.translatable("rprenames.gui.tooltipHint.damage")
                                 .append(" %s%s".formatted(
                                         citRename.getDamage().damage,
                                         citRename.getDamage().percent ? "%" : ""
                                 )),
                         craftMatcher.enoughDamage(),
-                        Formatting.GRAY
+                        ChatFormatting.GRAY
                 ));
             }
             if (citRename.getEnchantment() != null) {
                 Identifier enchant = citRename.getEnchantment();
                 extraProperties.add(styledCondition(
-                        Text.translatable("rprenames.gui.tooltipHint.enchantment")
-                                .append(Text.of(" ")).append(Text.translatable(
+                        Component.translatable("rprenames.gui.tooltipHint.enchantment")
+                                .append(Component.nullToEmpty(" ")).append(Component.translatable(
                                         "enchantment." + enchant.getNamespace() + "." + enchant.getPath()
                                 ))
-                                .append(Text.of(" ")).append(Text.translatable(
+                                .append(Component.nullToEmpty(" ")).append(Component.translatable(
                                         "enchantment.level." + citRename.getEnchantmentLevel()
                                 )),
                         craftMatcher.hasEnchant() && craftMatcher.hasEnoughLevels(),
-                        Formatting.GRAY
+                        ChatFormatting.GRAY
                 ));
             }
         }
 
-        ArrayList<TooltipComponent> propertiesComponents = new ArrayList<>();
-        for (Text line : extraProperties) propertiesComponents.add(tooltipOf(line));
+        ArrayList<ClientTooltipComponent> propertiesComponents = new ArrayList<>();
+        for (Component line : extraProperties) propertiesComponents.add(tooltipOf(line));
         return propertiesComponents;
     }
 
-    protected static MutableText rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
-        return Text
-                .literal(propertyName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD))
-                .append(Text.literal("=").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
-                .append(styledCondition(Text.literal(propertyValue), isGood, Formatting.GREEN));
+    protected static MutableComponent rawPropertyText(String propertyName, String propertyValue, boolean isGood) {
+        return Component
+                .literal(propertyName).withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD))
+                .append(Component.literal("=").withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)))
+                .append(styledCondition(Component.literal(propertyValue), isGood, ChatFormatting.GREEN));
     }
 
-    protected static MutableText styledCondition(MutableText text, boolean isGood, Formatting goodColor) {
-        return text.fillStyle(
-                Style.EMPTY.withColor(isGood ? goodColor : Formatting.DARK_RED)
+    protected static MutableComponent styledCondition(MutableComponent text, boolean isGood, ChatFormatting goodColor) {
+        return text.withStyle(
+                Style.EMPTY.withColor(isGood ? goodColor : ChatFormatting.DARK_RED)
         );
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
-        ArrayList<TooltipComponent> tooltipAddition = new ArrayList<>();
+    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+        ArrayList<ClientTooltipComponent> tooltipAddition = new ArrayList<>();
 
         if (config().enablePreview) {
             boolean shiftDown = hasShiftDown();
@@ -238,7 +237,7 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     }
 
     @Override
-    public void drawPreview(DrawContext context, int mouseX, int mouseY, List<TooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
         super.drawPreview(context, mouseX, mouseY, mainTooltip);
     }

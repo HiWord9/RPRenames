@@ -1,9 +1,9 @@
 package com.hiword9.rprenames.mod.mixin;
 
 import com.hiword9.rprenames.mod.item_group.RPRenamesItemGroup;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.world.item.CreativeModeTab;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,31 +12,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-@Mixin(CreativeInventoryScreen.class)
+@Mixin(CreativeModeInventoryScreen.class)
 public abstract class CreativeInventoryScreenMixin {
 
-    @Shadow private TextFieldWidget searchBox;
+    @Shadow private EditBox searchBox;
 
-    @Shadow private static ItemGroup selectedTab;
+    @Shadow private static CreativeModeTab selectedTab;
 
-    @Shadow private float scrollPosition;
+    @Shadow private float scrollOffs;
 
-    @Inject(method = "search", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "refreshSearchResults", at = @At(value = "HEAD"), cancellable = true)
     private void onSearch(CallbackInfo ci) {
         if (!RPRenamesItemGroup.verifyItemGroup(selectedTab)) return;
 
         if (player() == null) return;
 
-        CreativeInventoryScreen.CreativeScreenHandler handler =
-                ((CreativeInventoryScreen.CreativeScreenHandler) player().currentScreenHandler);
+        CreativeModeInventoryScreen.ItemPickerMenu handler =
+                ((CreativeModeInventoryScreen.ItemPickerMenu) player().containerMenu);
 
-        String search = searchBox.getText();
+        String search = searchBox.getValue();
 
-        handler.itemList.clear();
-        handler.itemList.addAll(RPRenamesItemGroup.getDisplayStacks(search));
+        handler.items.clear();
+        handler.items.addAll(RPRenamesItemGroup.getDisplayStacks(search));
 
-        scrollPosition = 0.0F;
-        handler.scrollItems(0.0F);
+        scrollOffs = 0.0F;
+        handler.scrollTo(0.0F);
         ci.cancel();
     }
 }

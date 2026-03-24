@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.api.core.renames_manager;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public interface RenamesManager<R extends Rename> extends RenamesProvider<R> {
     default boolean addRename(R rename) {

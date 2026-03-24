@@ -4,17 +4,16 @@ import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.item.Items;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 import java.util.List;
 
-public class FavoriteButton extends ClickableWidget implements OffsetableWidget {
-    public static final Identifier TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
+public class FavoriteButton extends AbstractWidget implements OffsetableWidget {
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/favorite_button.png");
 
     RPRWidget rprWidget;
 
@@ -37,7 +36,7 @@ public class FavoriteButton extends ClickableWidget implements OffsetableWidget 
     }
 
     @Override
-    protected void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
+    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         if (!active) return;
 
         int u = 0;
@@ -53,10 +52,10 @@ public class FavoriteButton extends ClickableWidget implements OffsetableWidget 
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {}
+    protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (this.isMouseOver(click.x(), click.y())) {
             var item = rprWidget.getCraftItem();
             if (item == Items.AIR) return true;

@@ -3,8 +3,7 @@ package com.hiword9.rprenames.mod.impl.renames_manager.favorite;
 import com.hiword9.rprenames.mod.impl.rename.FavoriteRename;
 import com.hiword9.rprenames.api.ext.renames_manager.RenamesManagerImpl;
 import com.hiword9.rprenames.mod.util.TaskQueueThread;
-import net.minecraft.item.Item;
-
+import net.minecraft.world.item.Item;
 import java.util.Collection;
 import java.util.Set;
 

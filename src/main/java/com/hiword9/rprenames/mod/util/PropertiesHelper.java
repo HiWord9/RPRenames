@@ -2,12 +2,12 @@ package com.hiword9.rprenames.mod.util;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -234,17 +234,17 @@ public class PropertiesHelper {
         return builder.toString();
     }
 
-    public static List<Text> parseCustomDescription(String description) {
-        ArrayList<Text> lines = new ArrayList<>();
+    public static List<Component> parseCustomDescription(String description) {
+        ArrayList<Component> lines = new ArrayList<>();
         String[] split = description
-                .replaceAll("\\\\&", String.valueOf(Formatting.FORMATTING_CODE_PREFIX))
+                .replaceAll("\\\\&", String.valueOf(ChatFormatting.PREFIX_CODE))
                 .split("\n");
 
         for (String s : split) {
-            MutableText line = Text.empty();
+            MutableComponent line = Component.empty();
             char[] chars = s.toCharArray();
             for (int i = 0; i < chars.length; i++) {
-                MutableText text = Text.empty();
+                MutableComponent text = Component.empty();
 
                 if (chars[i] == '\\'
                         && i != chars.length - 1
@@ -255,7 +255,7 @@ public class PropertiesHelper {
                         color.append(chars[i + j]);
                     }
                     if (color.toString().matches("[0-9a-fA-F]*")) {
-                        text.fillStyle(Style.EMPTY.withColor(Integer.parseInt(color.toString(), 16)));
+                        text.withStyle(Style.EMPTY.withColor(Integer.parseInt(color.toString(), 16)));
                     } else {
                         text.append("\\#" + color);
                     }
@@ -272,7 +272,7 @@ public class PropertiesHelper {
                     i++;
                 }
 
-                text.append(Text.translatable(stringBuilder.toString()));
+                text.append(Component.translatable(stringBuilder.toString()));
                 line.append(text);
             }
             lines.add(line);
@@ -352,7 +352,7 @@ public class PropertiesHelper {
     }
 
     public static int parseDamagePercent(int percent, Item item) {
-        Object maxDamageComponent = item.getComponents().get(DataComponentTypes.MAX_DAMAGE);
+        Object maxDamageComponent = item.components().get(DataComponents.MAX_DAMAGE);
         if (maxDamageComponent instanceof Integer maxDamage) {
             return maxDamage * percent / 100;
         } else {

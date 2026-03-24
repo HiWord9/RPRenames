@@ -9,16 +9,20 @@ import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.util.RenamesSearchEngine;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import net.minecraft.client.gui.*;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -29,8 +33,8 @@ import java.util.stream.Collectors;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public class RPRWidget implements Drawable, Element, OffsetableWidget {
-    protected static Identifier MENU_TEXTURE = Identifier.of(RPRenames.MOD_ID, "textures/gui/menu.png");
+public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget {
+    protected static Identifier MENU_TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/menu.png");
 
     public static final int MENU_TEXTURE_WIDTH = 147;
     public static final int MENU_TEXTURE_HEIGHT = 166;
@@ -52,7 +56,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected RenamesProvider<?> renamesProvider;
     protected FavoritesManager favoritesManager;
 
-    protected TextFieldWidget nameField;
+    protected EditBox nameField;
     protected FavoriteButton favoriteButton;
     protected GhostCraft ghostCraft;
 
@@ -63,14 +67,14 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
     protected RandomButton randomButton;
 
-    public TextFieldWidget searchField;
+    public EditBox searchField;
 
     protected PageButton pageDown;
     protected PageButton pageUp;
 
-    protected final List<ClickableWidget> widgets = new ArrayList<>();
+    protected final List<AbstractWidget> widgets = new ArrayList<>();
 
-    protected Text pageCount = Text.empty();
+    protected Component pageCount = Component.empty();
 
     protected final List<RenameButton> buttons = new ArrayList<>();
 
@@ -79,9 +83,9 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected final List<Rename> unfilteredRenames = new ArrayList<>();
     protected final List<Rename> filteredRenames = new ArrayList<>();
 
-    final Text SEARCH_HINT_TEXT = Text.translatable("rprenames.gui.searchHintText")
-            .formatted(Formatting.ITALIC)
-            .formatted(Formatting.GRAY);
+    final Component SEARCH_HINT_TEXT = Component.translatable("rprenames.gui.searchHintText")
+            .withStyle(ChatFormatting.ITALIC)
+            .withStyle(ChatFormatting.GRAY);
 
     protected int page = 0;
 
@@ -99,7 +103,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
             @Nullable RPRInteractableScreen parentScreen,
             RenamesProvider<?> renamesProvider,
             FavoritesManager favoritesManager,
-            TextFieldWidget nameField,
+            EditBox nameField,
             FavoriteButton favoriteButton,
             GhostCraft ghostCraft
     ) {
@@ -137,15 +141,15 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
                 14, randomNumber() % RandomButton.SIDES
         );
 
-        searchField = new TextFieldWidget(
+        searchField = new EditBox(
                 textRenderer(),
                 MENU_START_X + SEARCH_FIELD_X_OFFSET,
                 15,
                 MENU_TEXTURE_WIDTH - 53, 10,
-                Text.of("")
+                Component.nullToEmpty("")
         );
-        searchField.setChangedListener(this::onSearch);
-        searchField.setDrawsBackground(false);
+        searchField.setResponder(this::onSearch);
+        searchField.setBordered(false);
         searchField.setMaxLength(1024);
 
         widgets.addAll(List.of(
@@ -180,7 +184,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
         );
 
         nameField.setFocused(false);
-        nameField.setFocusUnlocked(true);
+        nameField.setCanLoseFocus(true);
 
         screen.updateMenuShift();
     }
@@ -189,11 +193,11 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
         open = false;
 
         searchField.setFocused(false);
-        searchField.setFocusUnlocked(false);
-        searchField.setText("");
+        searchField.setCanLoseFocus(false);
+        searchField.setValue("");
 
         nameField.setFocused(true);
-        nameField.setFocusUnlocked(false);
+        nameField.setCanLoseFocus(false);
 
         screen.updateMenuShift();
     }
@@ -312,7 +316,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 // Implementations
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         if (!open) {
             searchField.setFocused(false);
             return;
@@ -329,7 +333,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
                 MENU_TEXTURE_WIDTH, MENU_TEXTURE_HEIGHT
         );
 
-        if (searchField != null && !searchField.isFocused() && searchField.getText().isEmpty()) {
+        if (searchField != null && !searchField.isFocused() && searchField.getValue().isEmpty()) {
             Graphics.renderText(
                     context, SEARCH_HINT_TEXT,
                     getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
@@ -348,10 +352,10 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
             Graphics.renderText(
                     context,
-                    Text.translatable("rprenames.gui.%s".formatted(key))
-                            .fillStyle(Style.EMPTY
+                    Component.translatable("rprenames.gui.%s".formatted(key))
+                            .withStyle(Style.EMPTY
                                     .withItalic(true)
-                                    .withColor(Formatting.GRAY)
+                                    .withColor(ChatFormatting.GRAY)
                             ),
                     menuCenterX, getY() + 37,
                     true, true
@@ -370,7 +374,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
             if (renameButton.isHovered()) focusedButton = renameButton;
         }
 
-        for (Drawable widget : widgets) {
+        for (Renderable widget : widgets) {
             widget.render(context, mouseX, mouseY, 0);
         }
 
@@ -378,10 +382,10 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubled) {
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (!open) return false;
 
-        for (Element widget : widgets) {
+        for (GuiEventListener widget : widgets) {
             if (widget.mouseClicked(click, doubled)) {
                 if (widget == searchField && currentScreen() != null) {
                     currentScreen().setFocused(searchField);
@@ -404,14 +408,14 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
-        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+        for (var l : List.of(widgets, buttons)) for (GuiEventListener element : l) {
             element.mouseMoved(mouseX, mouseY);
         }
     }
 
     @Override
-    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
-        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+    public boolean mouseDragged(MouseButtonEvent click, double offsetX, double offsetY) {
+        for (var l : List.of(widgets, buttons)) for (GuiEventListener element : l) {
             if (element.mouseDragged(click, offsetX, offsetY))
                 return true;
         }
@@ -420,7 +424,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+        for (var l : List.of(widgets, buttons)) for (GuiEventListener element : l) {
             if (element.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
                 return true;
         }
@@ -428,8 +432,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean keyPressed(KeyInput input) {
-        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+    public boolean keyPressed(KeyEvent input) {
+        for (var l : List.of(widgets, buttons)) for (GuiEventListener element : l) {
             if (element.keyPressed(input))
                 return true;
         }
@@ -437,8 +441,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public boolean keyReleased(KeyInput input) {
-        for (var l : List.of(widgets, buttons)) for (Element element : l) {
+    public boolean keyReleased(KeyEvent input) {
+        for (var l : List.of(widgets, buttons)) for (GuiEventListener element : l) {
             if (element.keyReleased(input))
                 return true;
         }
@@ -461,7 +465,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
                 equal = false;
             } else {
                 for (int i = 0; i < newStacks.size(); i++) {
-                    if (!ItemStack.areEqual(inventoryStacks.get(i), newStacks.get(i))) {
+                    if (!ItemStack.matches(inventoryStacks.get(i), newStacks.get(i))) {
                         equal = false;
                         break;
                     }
@@ -484,7 +488,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     public void setX(int x) {
         var prevX = getX();
         var dif = x - prevX;
-        forEachChild(w -> w.setX(w.getX() + dif));
+        visitWidgets(w -> w.setX(w.getX() + dif));
         this.x += dif;
     }
 
@@ -492,7 +496,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     public void setY(int y) {
         var prevY = getY();
         var dif = y - prevY;
-        forEachChild(w -> w.setY(w.getY() + dif));
+        visitWidgets(w -> w.setY(w.getY() + dif));
         this.y += dif;
     }
 
@@ -509,8 +513,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     public int getHeight() { return WIDGET_HEIGHT; }
 
     @Override
-    public void forEachChild(Consumer<ClickableWidget> consumer) {
-        for (ClickableWidget widget : widgets)
+    public void visitWidgets(Consumer<AbstractWidget> consumer) {
+        for (AbstractWidget widget : widgets)
             consumer.accept(widget);
         for (RenameButton renameButton : buttons)
             if (renameButton != null)
@@ -518,8 +522,8 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     @Override
-    public ScreenRect getNavigationFocus() {
-        return OffsetableWidget.super.getNavigationFocus();
+    public ScreenRectangle getRectangle() {
+        return OffsetableWidget.super.getRectangle();
     }
 
 // Updating Data
@@ -596,7 +600,7 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     protected void refreshPageWidgets() {
         pageDown.active = page > 0;
         pageUp.active = (page + 1) * BUTTONS_ON_PAGE <= filteredRenames.size() - 1;
-        pageCount = Text.of(page + 1 + "/" + (filteredRenames.size() + BUTTONS_ON_PAGE - 1) / BUTTONS_ON_PAGE);
+        pageCount = Component.nullToEmpty(page + 1 + "/" + (filteredRenames.size() + BUTTONS_ON_PAGE - 1) / BUTTONS_ON_PAGE);
     }
 
     protected RenameButton createButton(int orderOnPage, Rename rename) {
@@ -663,15 +667,15 @@ public class RPRWidget implements Drawable, Element, OffsetableWidget {
     }
 
     public String getNameText() {
-        return nameField.getText();
+        return nameField.getValue();
     }
 
     public void setNameText(String text) {
-        nameField.setText(text);
+        nameField.setValue(text);
     }
 
     protected String getSearchText() {
-        return searchField.getText();
+        return searchField.getValue();
     }
 
     public List<Item> getAvailableItems() {

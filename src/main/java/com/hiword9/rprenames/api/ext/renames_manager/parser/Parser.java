@@ -1,8 +1,8 @@
 package com.hiword9.rprenames.api.ext.renames_manager.parser;
 
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 
 public interface Parser {
-    void parse(ResourceManager resourceManager, Profiler profiler);
+    void parse(ResourceManager resourceManager, ProfilerFiller profiler);
 }

@@ -2,25 +2,24 @@ package com.hiword9.rprenames.api.core.rename;
 
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.core.rename.renderer.SimpleRenameRenderer;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Rename {
-    protected final Text name;
+    protected final Component name;
     protected final List<Item> items = new ArrayList<>();
 
-    public Rename(Text name, Item... items) {
+    public Rename(Component name, Item... items) {
         this.name = name;
         for (Item item : items) if (item != null) this.items.add(item);
     }
 
-    public Text getName() {
+    public Component getName() {
         return name;
     }
 
@@ -38,7 +37,7 @@ public class Rename {
 
     public ItemStack toStack(int index) {
         ItemStack stack = new ItemStack(items.get(index));
-        stack.set(DataComponentTypes.CUSTOM_NAME, Text.of(name));
+        stack.set(DataComponents.CUSTOM_NAME, Component.translationArg(name));
         return stack;
     }
 
@@ -52,7 +51,7 @@ public class Rename {
 
     public boolean matchesStack(ItemStack stack) {
         if (!getItems().contains(stack.getItem())) return false;
-        var customName = stack.get(DataComponentTypes.CUSTOM_NAME);
+        var customName = stack.get(DataComponents.CUSTOM_NAME);
         return customName != null && customName.equals(getName());
     }
 

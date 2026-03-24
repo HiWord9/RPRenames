@@ -2,11 +2,10 @@ package com.hiword9.rprenames.api.core.rename.renderer;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     protected T rename;
     protected ItemStack stack;
     protected RenderArea renderArea;
-    protected List<TooltipComponent> tooltipComponents = new ArrayList<>();
+    protected List<ClientTooltipComponent> tooltipComponents = new ArrayList<>();
 
     protected boolean focused = false;
 
@@ -35,7 +34,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRender(DrawContext context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphics context, int mouseX, int mouseY) {
         Graphics.renderStack(
                 context,
                 stack,
@@ -45,13 +44,13 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRenderTooltip(DrawContext context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
         Graphics.drawTooltip(
                 context,
                 textRenderer(),
                 tooltipComponents,
                 mouseX, mouseY,
-                HoveredTooltipPositioner.INSTANCE
+                DefaultTooltipPositioner.INSTANCE
         );
     }
 

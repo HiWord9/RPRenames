@@ -1,8 +1,7 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model;
 
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
-import net.minecraft.item.Item;
-
+import net.minecraft.world.item.Item;
 import java.util.*;
 
 public class ItemModelData {

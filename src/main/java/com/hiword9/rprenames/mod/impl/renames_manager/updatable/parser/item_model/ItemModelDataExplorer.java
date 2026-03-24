@@ -5,22 +5,25 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.NumericCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import com.hiword9.rprenames.mod.util.Util;
-import net.minecraft.client.item.ItemAsset;
-import net.minecraft.client.render.item.model.*;
-import net.minecraft.client.render.item.property.select.SelectProperty;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.renderer.item.ClientItem;
+import net.minecraft.client.renderer.item.CompositeModel;
+import net.minecraft.client.renderer.item.ConditionalItemModel;
+import net.minecraft.client.renderer.item.ItemModel;
+import net.minecraft.client.renderer.item.RangeSelectItemModel;
+import net.minecraft.client.renderer.item.SelectItemModel;
+import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperty;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import java.util.*;
 
 public class ItemModelDataExplorer {
     private static final Map<Class<? extends ItemModel.Unbaked>, CaseFiller<?>> UNBAKED_TO_FILLER = new HashMap<>();
 
     static {
-        registerCaseFiller(CompositeItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
-        registerCaseFiller(ConditionItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(CompositeModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(ConditionalItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
         registerCaseFiller(SelectItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
-        registerCaseFiller(RangeDispatchItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
+        registerCaseFiller(RangeSelectItemModel.Unbaked.class, ItemModelDataExplorer::fillCases);
     }
 
     public static <U extends ItemModel.Unbaked> void registerCaseFiller(Class<U> clazz, CaseFiller<U> caseFiller) {
@@ -38,10 +41,10 @@ public class ItemModelDataExplorer {
     }
 
     public interface CaseFiller<U extends ItemModel.Unbaked> {
-        void fillCases(List<Case> cases, U unbakedModel, ItemAsset asset);
+        void fillCases(List<Case> cases, U unbakedModel, ClientItem asset);
     }
 
-    public static Map<Item, List<ItemModelData>> getMapUnmerged(Map<Identifier, ItemAsset> itemAssets) {
+    public static Map<Item, List<ItemModelData>> getMapUnmerged(Map<Identifier, ClientItem> itemAssets) {
         var map = new HashMap<Item, List<ItemModelData>>();
         itemAssets.forEach((id, asset) -> {
             var list = new ArrayList<ItemModelData>();
@@ -52,11 +55,11 @@ public class ItemModelDataExplorer {
         return map;
     }
 
-    public static List<ItemModelData> getListMerged(Map<Identifier, ItemAsset> itemAssets) {
+    public static List<ItemModelData> getListMerged(Map<Identifier, ClientItem> itemAssets) {
         return ItemModelData.mergeAllPossible(getListUnmerged(itemAssets));
     }
 
-    public static List<ItemModelData> getListUnmerged(Map<Identifier, ItemAsset> itemAssets) {
+    public static List<ItemModelData> getListUnmerged(Map<Identifier, ClientItem> itemAssets) {
         return getMapUnmerged(itemAssets)
                 .values().stream()
                 .flatMap(Collection::stream)
@@ -67,7 +70,7 @@ public class ItemModelDataExplorer {
             List<ItemModelData> itemModelDataList,
             List<ItemModelCondition> conditions,
             ItemModel.Unbaked unbakedModel,
-            ItemAsset asset,
+            ClientItem asset,
             Item item
     ) {
         var cases = getCases(unbakedModel, asset);
@@ -84,7 +87,7 @@ public class ItemModelDataExplorer {
 
     public record Case(ItemModelCondition condition, ItemModel.Unbaked result) {}
 
-    public static <U extends ItemModel.Unbaked> List<Case> getCases(U unbakedModel, ItemAsset asset) {
+    public static <U extends ItemModel.Unbaked> List<Case> getCases(U unbakedModel, ClientItem asset) {
         var cases = new ArrayList<Case>();
         var caseFiller = getCaseFiller(unbakedModel);
         if (caseFiller != null)
@@ -93,7 +96,7 @@ public class ItemModelDataExplorer {
     }
 
     private static void fillCases(
-            List<Case> cases, CompositeItemModel.Unbaked unbakedCompositeModel, ItemAsset asset
+            List<Case> cases, CompositeModel.Unbaked unbakedCompositeModel, ClientItem asset
     ) {
         for (ItemModel.Unbaked model : unbakedCompositeModel.models()) {
             cases.add(new Case(ItemModelCondition.COMPOSITE, model));
@@ -101,7 +104,7 @@ public class ItemModelDataExplorer {
     }
 
     private static void fillCases(
-            List<Case> cases, ConditionItemModel.Unbaked unbakedConditionModel, ItemAsset asset
+            List<Case> cases, ConditionalItemModel.Unbaked unbakedConditionModel, ClientItem asset
     ) {
         cases.add(new Case(
                 BooleanCondition.of(unbakedConditionModel.property(), true),
@@ -114,8 +117,8 @@ public class ItemModelDataExplorer {
     }
 
     @SuppressWarnings("unchecked")
-    private static <P extends SelectProperty<T>, T> void fillCases(
-            List<Case> cases, SelectItemModel.Unbaked unbakedSelectModel, ItemAsset asset
+    private static <P extends SelectItemModelProperty<T>, T> void fillCases(
+            List<Case> cases, SelectItemModel.Unbaked unbakedSelectModel, ClientItem asset
     ) {
         var unbakedSwitch = (SelectItemModel.UnbakedSwitch<P, T>) unbakedSelectModel.unbakedSwitch();
 
@@ -132,9 +135,9 @@ public class ItemModelDataExplorer {
     }
 
     private static void fillCases(
-            List<Case> cases, RangeDispatchItemModel.Unbaked unbakedRangeDispatchModel, ItemAsset asset
+            List<Case> cases, RangeSelectItemModel.Unbaked unbakedRangeDispatchModel, ClientItem asset
     ) {
-        for (RangeDispatchItemModel.Entry entry : unbakedRangeDispatchModel.entries()) {
+        for (RangeSelectItemModel.Entry entry : unbakedRangeDispatchModel.entries()) {
             cases.add(new Case(
                     NumericCondition.of(
                             unbakedRangeDispatchModel.property(),

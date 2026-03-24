@@ -7,14 +7,13 @@ import com.hiword9.rprenames.mod.util.PropertiesHelper;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesManager;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.registry.Registries;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
-
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import java.util.*;
 
 import static com.hiword9.rprenames.mod.util.Util.config;
@@ -28,7 +27,7 @@ public class CITParser implements Parser {
         this.renamesManager = renamesManager;
     }
 
-    public void parse(ResourceManager resourceManager, Profiler profiler) {
+    public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
         profiler.push("rprenames:collecting_cit_renames");
 
         if (config().ignoreCIT) {
@@ -37,9 +36,9 @@ public class CITParser implements Parser {
         }
 
         for (String root : ROOTS) {
-            for (Map.Entry<Identifier, Resource> entry : resourceManager.findResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
+            for (Map.Entry<Identifier, Resource> entry : resourceManager.listResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
-                    String packName = ParserHelper.validatePackName(entry.getValue().getPack().getId());
+                    String packName = ParserHelper.validatePackName(entry.getValue().source().packId());
                     propertiesToRename(
                             ParserHelper.getPropFromResource(entry.getValue()),
                             packName,
@@ -98,7 +97,7 @@ public class CITParser implements Parser {
         Identifier enchantment = null;
         if (enchantIdProp != null) {
             String firstEnchantId = PropertiesHelper.getFirstValueInList(enchantIdProp);
-            enchantment = Identifier.of(firstEnchantId);
+            enchantment = Identifier.parse(firstEnchantId);
         }
 
         String enchantLvlProp = p.getProperty("enchantmentLevels");
@@ -159,7 +158,7 @@ public class CITParser implements Parser {
     private static List<Item> itemsFromMatchList(List<String> matchItemsList) {
         ArrayList<Item> items = new ArrayList<>();
         for (String matchItem : matchItemsList) {
-            Item item = Registries.ITEM.get(Identifier.of(matchItem));
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(matchItem));
             if (item == Items.AIR) continue;
             items.add(item);
         }

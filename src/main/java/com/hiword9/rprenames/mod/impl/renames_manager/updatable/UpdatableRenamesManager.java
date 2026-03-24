@@ -6,11 +6,10 @@ import com.hiword9.rprenames.mod.item_group.RPRenamesItemGroup;
 import com.hiword9.rprenames.api.ext.renames_manager.RenamesManagerImpl;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloader;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.Profilers;
-
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -19,15 +18,15 @@ import static com.hiword9.rprenames.mod.util.Util.*;
 
 public class UpdatableRenamesManager
         extends RenamesManagerImpl<Rename>
-        implements ParsersHolder, ResourceReloader
+        implements ParsersHolder, PreparableReloadListener
 {
     protected final ArrayList<Parser> parsers = new ArrayList<>();
 
     public void updateRenames() {
-        updateRenames(client().getResourceManager(), Profilers.get());
+        updateRenames(client().getResourceManager(), Profiler.get());
     }
 
-    public void updateRenames(ResourceManager resourceManager, Profiler profiler) {
+    public void updateRenames(ResourceManager resourceManager, ProfilerFiller profiler) {
         profiler.push("rprenames:reloading_renames");
 
         RPRenames.LOGGER.info("Started collecting resource pack renames");
@@ -59,14 +58,14 @@ public class UpdatableRenamesManager
 
     @Override
     public CompletableFuture<Void> reload(
-            ResourceReloader.Store store,
+            PreparableReloadListener.SharedState store,
             Executor prepareExecutor,
-            ResourceReloader.Synchronizer reloadSynchronizer,
+            PreparableReloadListener.PreparationBarrier reloadSynchronizer,
             Executor applyExecutor
     ) {
         return CompletableFuture.supplyAsync(() -> {
-            if (config().updateConfig) updateRenames(store.getResourceManager(), Profilers.get());
+            if (config().updateConfig) updateRenames(store.resourceManager(), Profiler.get());
             return null;
-        }, prepareExecutor).thenCompose(reloadSynchronizer::whenPrepared).thenAcceptAsync(o -> {}, applyExecutor);
+        }, prepareExecutor).thenCompose(reloadSynchronizer::wait).thenAcceptAsync(o -> {}, applyExecutor);
     }
 }

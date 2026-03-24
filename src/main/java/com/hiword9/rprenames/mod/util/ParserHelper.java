@@ -1,8 +1,7 @@
 package com.hiword9.rprenames.mod.util;
 
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -10,7 +9,7 @@ public class ParserHelper {
 
     public static Properties getPropFromResource(Resource resource) throws IOException {
         Properties prop = new Properties();
-        prop.load(resource.getInputStream());
+        prop.load(resource.open());
         return prop;
     }
 

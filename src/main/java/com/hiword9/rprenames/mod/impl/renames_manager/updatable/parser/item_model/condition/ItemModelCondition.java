@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public interface ItemModelCondition {
     FallbackCondition FALLBACK = new FallbackCondition();

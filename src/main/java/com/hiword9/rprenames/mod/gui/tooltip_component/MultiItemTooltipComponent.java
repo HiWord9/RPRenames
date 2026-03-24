@@ -2,21 +2,20 @@ package com.hiword9.rprenames.mod.gui.tooltip_component;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.hiword9.rprenames.mod.gui.Graphics.*;
 import static com.hiword9.rprenames.mod.util.Util.config;
 
-public class MultiItemTooltipComponent implements TooltipComponent {
-    static final Identifier SLOT = Identifier.of(RPRenames.MOD_ID, "textures/gui/slot.png");
+public class MultiItemTooltipComponent implements ClientTooltipComponent {
+    static final Identifier SLOT = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/slot.png");
 
     public final ArrayList<TooltipItem> items = new ArrayList<>();
 
@@ -25,12 +24,12 @@ public class MultiItemTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight(TextRenderer textRenderer) {
+    public int getHeight(Font textRenderer) {
         return SLOT_SIZE * Math.min(2, 1 + (items.size() - 1) / 4) + 3;
     }
 
     @Override
-    public int getWidth(TextRenderer textRenderer) {
+    public int getWidth(Font textRenderer) {
         int size = items.size();
         if (size <= 4) {
             return size * SLOT_SIZE;
@@ -38,7 +37,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
         return SLOT_SIZE * Math.min(4, 3 + (size - 4) / 3);
     }
 
-    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
+    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics context) {
         int i = 0;
         int size = items.size();
         var sorted = sort(items);
@@ -66,7 +65,7 @@ public class MultiItemTooltipComponent implements TooltipComponent {
             );
 
             if (i == 7 && size > 8) {
-                Graphics.renderText(context, Text.of("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
+                Graphics.renderText(context, Component.nullToEmpty("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
             } else {
                 if (item.isInInventory != null) {
                     if (!item.isInInventory && config().highlightTooltipSlotWrong) {

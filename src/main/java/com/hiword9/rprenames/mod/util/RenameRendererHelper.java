@@ -4,14 +4,13 @@ import com.hiword9.rprenames.mod.gui.tooltip_component.MultiItemTooltipComponent
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.ext.rename.HasDescription;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class RenameRendererHelper {
         ArrayList<MultiItemTooltipComponent.TooltipItem> tooltipItems = new ArrayList<>();
         for (int i = 0; i < rename.getItems().size(); i++) {
             ItemStack itemStack = rename.toStack(i);
-            itemStack.remove(DataComponentTypes.CUSTOM_NAME);
+            itemStack.remove(DataComponents.CUSTOM_NAME);
             tooltipItems.add(new MultiItemTooltipComponent.TooltipItem(itemStack, null));
         }
         return new MultiItemTooltipComponent(tooltipItems);
@@ -40,38 +39,38 @@ public class RenameRendererHelper {
         return component;
     }
 
-    public static List<TooltipComponent> descriptionTooltipsComponentsList(HasDescription hasDescription) {
+    public static List<ClientTooltipComponent> descriptionTooltipsComponentsList(HasDescription hasDescription) {
         String description = hasDescription.getDescription();
-        ArrayList<TooltipComponent> linesComponents = new ArrayList<>();
+        ArrayList<ClientTooltipComponent> linesComponents = new ArrayList<>();
         if (description != null) {
             var lines = PropertiesHelper.parseCustomDescription(description);
-            for (Text line : lines) linesComponents.add(tooltipOf(line));
+            for (Component line : lines) linesComponents.add(tooltipOf(line));
         }
         return linesComponents;
     }
 
-    public static TooltipComponent namePatternTooltipComponent(String namePattern) {
+    public static ClientTooltipComponent namePatternTooltipComponent(String namePattern) {
         if (namePattern != null) {
             return tooltipOf(
-                    Text.literal("Name Pattern: " + namePattern)
-                            .fillStyle(Style.EMPTY.withColor(Formatting.BLUE))
+                    Component.literal("Name Pattern: " + namePattern)
+                            .withStyle(Style.EMPTY.withColor(ChatFormatting.BLUE))
             );
         }
         return null;
     }
 
-    public static TooltipComponent packNameTooltipComponent(String packName) {
+    public static ClientTooltipComponent packNameTooltipComponent(String packName) {
         boolean zip = false;
         if (packName.endsWith(".zip")) {
             zip = true;
             packName = packName.substring(0, packName.length() - 4);
         }
 
-        MutableText packNameText = Text.literal(packName).fillStyle(Style.EMPTY.withColor(Formatting.GOLD));
+        MutableComponent packNameText = Component.literal(packName).withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD));
 
         return tooltipOf(
                 !zip ? packNameText : packNameText
-                        .append(Text.literal(".zip").fillStyle(Style.EMPTY.withColor(Formatting.GRAY)))
+                        .append(Component.literal(".zip").withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)))
         );
     }
 }

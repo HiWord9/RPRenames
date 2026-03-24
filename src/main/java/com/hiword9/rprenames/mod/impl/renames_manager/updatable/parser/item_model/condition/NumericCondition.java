@@ -1,24 +1,23 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import net.minecraft.client.render.item.property.numeric.CountProperty;
-import net.minecraft.client.render.item.property.numeric.CustomModelDataFloatProperty;
-import net.minecraft.client.render.item.property.numeric.DamageProperty;
-import net.minecraft.client.render.item.property.numeric.NumericProperty;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.item.ItemStack;
-
+import net.minecraft.client.renderer.item.properties.numeric.Count;
+import net.minecraft.client.renderer.item.properties.numeric.CustomModelDataProperty;
+import net.minecraft.client.renderer.item.properties.numeric.Damage;
+import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
-public non-sealed class NumericCondition<P extends NumericProperty> extends AbstractPropertyValueCondition<P, Float> {
+public non-sealed class NumericCondition<P extends RangeSelectItemModelProperty> extends AbstractPropertyValueCondition<P, Float> {
     private NumericCondition(P property, float threshold) {
         super(property, threshold);
     }
 
-    public static <P extends NumericProperty> NumericCondition<P> of(
+    public static <P extends RangeSelectItemModelProperty> NumericCondition<P> of(
             P property, float scale, float threshold
     ) {
         threshold = threshold / scale;
@@ -27,21 +26,21 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
                 : new NumericCondition<>(property, threshold);
     }
 
-    private static boolean isPropertyApplicable(NumericProperty property) {
+    private static boolean isPropertyApplicable(RangeSelectItemModelProperty property) {
         for (var clazz : ApplicableNumericCondition.APPLICABLE_PROPERTIES) {
             if (clazz.isInstance(property)) return true;
         }
         return false;
     }
 
-    public static class ApplicableNumericCondition<P extends NumericProperty>
+    public static class ApplicableNumericCondition<P extends RangeSelectItemModelProperty>
             extends NumericCondition<P>
-            implements ItemModelCondition.Applicable
+            implements Applicable
     {
         private static final List<Class<?>> APPLICABLE_PROPERTIES = List.of(
-                CountProperty.class,
-                CustomModelDataFloatProperty.class,
-                DamageProperty.class
+                Count.class,
+                CustomModelDataProperty.class,
+                Damage.class
         );
 
         private ApplicableNumericCondition(P property, float threshold) {
@@ -51,21 +50,21 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
         @Override
         public void apply(ItemStack stack) {
             switch (property) {
-                case CountProperty prop -> applyCount(stack, prop, value);
-                case CustomModelDataFloatProperty prop -> applyCustomModelData(stack, prop, value);
-                case DamageProperty prop -> applyDamage(stack, prop, value);
+                case Count prop -> applyCount(stack, prop, value);
+                case CustomModelDataProperty prop -> applyCustomModelData(stack, prop, value);
+                case Damage prop -> applyDamage(stack, prop, value);
                 case null, default -> {}
             }
         }
 
-        private static void applyCount(ItemStack stack, CountProperty property, float value) {
-            stack.setCount((int) Math.ceil(value * (property.normalize() ? stack.getMaxCount() : 1)));
+        private static void applyCount(ItemStack stack, Count property, float value) {
+            stack.setCount((int) Math.ceil(value * (property.normalize() ? stack.getMaxStackSize() : 1)));
         }
 
-        private static void applyCustomModelData(ItemStack stack, CustomModelDataFloatProperty property, float value) {
-            var exists = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+        private static void applyCustomModelData(ItemStack stack, CustomModelDataProperty property, float value) {
+            var exists = stack.get(DataComponents.CUSTOM_MODEL_DATA);
             if (exists == null) {
-                stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
+                stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
                         setAndFillMissing(new ArrayList<>(), property.index(), value, 0f),
                         new ArrayList<>(),
                         new ArrayList<>(),
@@ -76,8 +75,8 @@ public non-sealed class NumericCondition<P extends NumericProperty> extends Abst
             }
         }
 
-        private static void applyDamage(ItemStack stack, DamageProperty property, float value) {
-            stack.setDamage((int) Math.ceil(value * (property.normalize() ? stack.getMaxDamage() : 1)));
+        private static void applyDamage(ItemStack stack, Damage property, float value) {
+            stack.setDamageValue((int) Math.ceil(value * (property.normalize() ? stack.getMaxDamage() : 1)));
         }
     }
 }

@@ -10,22 +10,23 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.DynamicOps;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.component.*;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -33,14 +34,14 @@ import static com.hiword9.rprenames.mod.util.Util.*;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class RPRenamesCommand {
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext commandRegistryAccess) {
         dispatcher.register(literal("rprenames")
                 .then(literal("info")
                         .executes(context -> info(context.getSource())))
                 .then(literal("list")
                         .executes(context -> list(context.getSource()))
-                        .then(ClientCommandManager.argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess))
-                                .executes(context -> list(context.getSource(), ItemStackArgumentType.getItemStackArgument(context, "item").getItem()))))
+                        .then(ClientCommandManager.argument("item", ItemArgument.item(commandRegistryAccess))
+                                .executes(context -> list(context.getSource(), ItemArgument.getItem(context, "item").getItem()))))
                 .then(literal("solveRegex")
                         .then(ClientCommandManager.argument("regex", StringArgumentType.greedyString())
                                 .executes(context -> solveRegex(context.getSource(), StringArgumentType.getString(context, "regex")))))
@@ -53,31 +54,31 @@ public class RPRenamesCommand {
         config().write();
         if (config().disableTooltipHints) {
             source.sendFeedback(
-                    Text.translatable("rprenames.command.disableHints.disabled")
-                    .formatted(Formatting.GOLD)
+                    Component.translatable("rprenames.command.disableHints.disabled")
+                    .withStyle(ChatFormatting.GOLD)
             );
             source.sendFeedback(
-                    Text.translatable(
+                    Component.translatable(
                             "rprenames.command.disableHints.howToTurnOn",
-                            Text.translatable("rprenames.gui.tooltipHint.disable.command")
-                                    .formatted(Formatting.GREEN))
-                            .formatted(Formatting.GOLD)
+                            Component.translatable("rprenames.gui.tooltipHint.disable.command")
+                                    .withStyle(ChatFormatting.GREEN))
+                            .withStyle(ChatFormatting.GOLD)
             );
         } else {
             source.sendFeedback(
-                    Text.translatable("rprenames.command.disableHints.enabled")
-                    .formatted(Formatting.GOLD)
+                    Component.translatable("rprenames.command.disableHints.enabled")
+                    .withStyle(ChatFormatting.GOLD)
             );
         }
         return Command.SINGLE_SUCCESS;
     }
 
     public static int info(FabricClientCommandSource source) {
-        ItemStack itemStack = source.getPlayer().getStackInHand(Hand.MAIN_HAND);
+        ItemStack itemStack = source.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
         if (itemStack.isEmpty()) {
             source.sendFeedback(
-                    Text.translatable("rprenames.command.info.noItemGiven")
-                    .formatted(Formatting.RED)
+                    Component.translatable("rprenames.command.info.noItemGiven")
+                    .withStyle(ChatFormatting.RED)
             );
             return Command.SINGLE_SUCCESS;
         }
@@ -91,47 +92,47 @@ public class RPRenamesCommand {
 
         if (!(matchRename instanceof Informative informative)) {
             source.sendFeedback(
-                    Text.translatable("rprenames.command.info.noRenamesFound")
-                    .formatted(Formatting.RED)
+                    Component.translatable("rprenames.command.info.noRenamesFound")
+                    .withStyle(ChatFormatting.RED)
             );
             return Command.SINGLE_SUCCESS;
         }
 
         source.sendFeedback(
-                Text.translatable("rprenames.command.info.foundProperties")
-                .formatted(Formatting.YELLOW)
+                Component.translatable("rprenames.command.info.foundProperties")
+                .withStyle(ChatFormatting.YELLOW)
         );
         print(informative.getInfo(), source);
 
         return Command.SINGLE_SUCCESS;
     }
 
-    private static void print(List<Text> lines, FabricClientCommandSource source) {
-        for (Text text : lines) {
+    private static void print(List<Component> lines, FabricClientCommandSource source) {
+        for (Component text : lines) {
             source.sendFeedback(text);
         }
     }
 
     public static int list(FabricClientCommandSource source) {
-        return list(source, source.getPlayer().getStackInHand(Hand.MAIN_HAND).getItem());
+        return list(source, source.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).getItem());
     }
 
     public static int list(FabricClientCommandSource source, Item item) {
         var renames = RPRenames.renamesProvider.getRenames(item);
         if (!renames.isEmpty()) {
             source.sendFeedback(
-                    Text.translatable(
+                    Component.translatable(
                             "rprenames.command.list.foundRenames",
-                            Text.translatable(item.getTranslationKey())
+                            Component.translatable(item.getDescriptionId())
                     )
             );
             printRenameList(renames, source);
         } else {
             source.sendFeedback(
-                    Text.translatable(
+                    Component.translatable(
                             "rprenames.command.list.noRenamesFound",
-                            Text.translatable(item.getTranslationKey())
-                    ).formatted(Formatting.RED)
+                            Component.translatable(item.getDescriptionId())
+                    ).withStyle(ChatFormatting.RED)
             );
         }
 
@@ -143,21 +144,21 @@ public class RPRenamesCommand {
         Pattern pattern = Pattern.compile(regex);
         if (pattern.matcher(result).matches()) {
             source.sendFeedback(
-                    Text.of(result).copy()
-                    .fillStyle(Style.EMPTY
-                            .withColor(Formatting.LIGHT_PURPLE)
-                            .withHoverEvent(new HoverEvent.ShowText(Text.of(regex)))
+                    Component.nullToEmpty(result).copy()
+                    .withStyle(Style.EMPTY
+                            .withColor(ChatFormatting.LIGHT_PURPLE)
+                            .withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty(regex)))
                             .withClickEvent(new ClickEvent.CopyToClipboard(result))
                     )
             );
         } else {
             source.sendError(
-                    Text.translatable("rprenames.command.solveRegex.error")
-                    .fillStyle(Style.EMPTY
-                            .withColor(Formatting.RED)
+                    Component.translatable("rprenames.command.solveRegex.error")
+                    .withStyle(Style.EMPTY
+                            .withColor(ChatFormatting.RED)
                             .withHoverEvent(new HoverEvent.ShowText(
-                                    Text.of(regex).copy()
-                                            .formatted(Formatting.RED)
+                                    Component.nullToEmpty(regex).copy()
+                                            .withStyle(ChatFormatting.RED)
                             ))
                     )
             );
@@ -185,17 +186,17 @@ public class RPRenamesCommand {
 
             ClickEvent runGive = new ClickEvent.RunCommand(giveCommand);
             source.sendFeedback(
-                    Text.translatable("rprenames.command.list.givePrefix")
-                    .fillStyle(Style.EMPTY
-                            .withColor(Formatting.GRAY)
+                    Component.translatable("rprenames.command.list.givePrefix")
+                    .withStyle(Style.EMPTY
+                            .withColor(ChatFormatting.GRAY)
                             .withClickEvent(runGive)
                             .withInsertion(giveCommand)
                             .withHoverEvent(new HoverEvent.ShowText(
-                                    Text.translatable("rprenames.command.list.runGive")
+                                    Component.translatable("rprenames.command.list.runGive")
                             ))
                     )
-                    .append(itemStack.toHoverableText().copy()
-                            .styled(style -> style.withClickEvent(
+                    .append(itemStack.getDisplayName().copy()
+                            .withStyle(style -> style.withClickEvent(
                                     new ClickEvent.CopyToClipboard(r.getName().getString())
                             ))
                     )
@@ -205,25 +206,25 @@ public class RPRenamesCommand {
 
     @SuppressWarnings("unchecked") // I am not quiet sure that this will not crash, but let's try as beta
     private static <T> String getComponentsCommandArgument(FabricClientCommandSource source, ItemStack stack) {
-        if (!(stack.getComponents() instanceof MergedComponentMap)) return "";
+        if (!(stack.getComponents() instanceof PatchedDataComponentMap)) return "";
 
-        ComponentChanges changes = ((MergedComponentMap) stack.getComponents()).getChanges();
+        DataComponentPatch changes = ((PatchedDataComponentMap) stack.getComponents()).asPatch();
         if (changes.isEmpty()) return "";
 
         StringBuilder resultBuilder = new StringBuilder();
 
         resultBuilder.append("[");
 
-        for (Map.Entry<ComponentType<?>, Optional<?>> entry : changes.entrySet()) {
-            ComponentType<T> componentType = (ComponentType<T>) entry.getKey();
+        for (Map.Entry<DataComponentType<?>, Optional<?>> entry : changes.entrySet()) {
+            DataComponentType<T> componentType = (DataComponentType<T>) entry.getKey();
             Optional<?> optionalData = entry.getValue();
 
             if (optionalData.isEmpty()) continue;
 
-            Identifier id = Registries.DATA_COMPONENT_TYPE.getId(componentType);
+            Identifier id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(componentType);
             T data = (T) optionalData.get();
-            DynamicOps<NbtElement> nbtOps = source.getRegistryManager().getOps(NbtOps.INSTANCE);
-            Optional<NbtElement> optionalDataResult = componentType.getCodecOrThrow().encodeStart(nbtOps, data).result();
+            DynamicOps<Tag> nbtOps = source.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+            Optional<Tag> optionalDataResult = componentType.codecOrThrow().encodeStart(nbtOps, data).result();
 
             if (optionalDataResult.isEmpty()) continue;
 

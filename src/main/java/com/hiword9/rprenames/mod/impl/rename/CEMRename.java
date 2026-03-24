@@ -10,21 +10,20 @@ import com.hiword9.rprenames.mod.impl.rename.renderer.CEMRenameRenderer;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import com.hiword9.rprenames.mod.util.PropertiesHelper;
 import com.hiword9.rprenames.mod.util.RenameInfoHelper;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.TypedEntityData;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.text.Text;
-import net.minecraft.util.ErrorReporter;
-import net.minecraft.util.Formatting;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,7 +62,7 @@ public class CEMRename
             Properties properties,
             Rename itemRename
     ) {
-        super(Text.of(name), DEFAULT_MOB_ITEM);
+        super(Component.nullToEmpty(name), DEFAULT_MOB_ITEM);
         this.packName = packName;
         this.path = path;
         this.entity = entity;
@@ -89,15 +88,15 @@ public class CEMRename
     }
 
     public ItemStack toSpawnEgg() {
-        Item spawnEggItem = SpawnEggItem.forEntity(this.getEntity());
+        Item spawnEggItem = SpawnEggItem.byId(this.getEntity());
         ItemStack stack = new ItemStack(spawnEggItem == null ? Items.ALLAY_SPAWN_EGG : spawnEggItem);
 
-        stack.set(DataComponentTypes.CUSTOM_NAME, this.getName());
+        stack.set(DataComponents.CUSTOM_NAME, this.getName());
 
         if (spawnEggItem == null) {
-            NbtCompound nbtName = new NbtCompound();
-            nbtName.putString("id", Registries.ENTITY_TYPE.getId(this.getEntity()).toString());
-            stack.set(DataComponentTypes.ENTITY_DATA, TypedEntityData.create(this.getEntity(), nbtName));
+            CompoundTag nbtName = new CompoundTag();
+            nbtName.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(this.getEntity()).toString());
+            stack.set(DataComponents.ENTITY_DATA, TypedEntityData.of(this.getEntity(), nbtName));
         }
         return stack;
     }
@@ -105,19 +104,19 @@ public class CEMRename
     @Override
     public boolean matchesStack(ItemStack stack) {
         if (itemRename != null && itemRename.matchesStack(stack)) return true;
-        if (stack.getItem() instanceof SpawnEggItem spawnEggItem && client().world != null) {
-            var registries = client().world.getRegistryManager();
+        if (stack.getItem() instanceof SpawnEggItem spawnEggItem && client().level != null) {
+            var registries = client().level.registryAccess();
 
-            var entityType = spawnEggItem.getEntityType(stack);
+            var entityType = spawnEggItem.getType(stack);
             var name = stack.getCustomName();
 
-            var entityData = stack.get(DataComponentTypes.ENTITY_DATA);
+            var entityData = stack.get(DataComponents.ENTITY_DATA);
             if (entityData != null) {
-                var nbt = entityData.copyNbtWithoutId();
+                var nbt = entityData.copyTagWithoutId();
 
-                try (var logging = new ErrorReporter.Logging(ErrorReporter.Logging.CONTEXT, RPRenames.LOGGER)) {
-                    var readView = NbtReadView.create(logging, registries, nbt);
-                    var entityCustomName = BlockEntity.tryParseCustomName(readView, "CustomName");
+                try (var logging = new ProblemReporter.ScopedCollector(ProblemReporter.ScopedCollector.EMPTY_ROOT, RPRenames.LOGGER)) {
+                    var readView = TagValueInput.create(logging, registries, nbt);
+                    var entityCustomName = BlockEntity.parseCustomNameSafe(readView, "CustomName");
                     if (entityCustomName != null) name = entityCustomName;
                 }
             }
@@ -173,14 +172,14 @@ public class CEMRename
     }
 
     @Override
-    public List<Text> getInfo() {
-        var info = new ArrayList<Text>();
+    public List<Component> getInfo() {
+        var info = new ArrayList<Component>();
         if (itemRename != null && itemRename instanceof Informative informative) {
             info.addAll(informative.getInfo());
         }
         info.add(
-                Text.translatable("rprenames.command.info.cemProperties")
-                        .formatted(Formatting.LIGHT_PURPLE)
+                Component.translatable("rprenames.command.info.cemProperties")
+                        .withStyle(ChatFormatting.LIGHT_PURPLE)
         );
         info.addAll(RenameInfoHelper.getProperties(properties));
         info.addAll(RenameInfoHelper.getRPPath(packName, path));

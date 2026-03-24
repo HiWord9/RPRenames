@@ -1,13 +1,13 @@
 package com.hiword9.rprenames.mod.gui.tooltip_component.preview;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.world.entity.Entity;
 
-public class EntityPreviewTooltipComponent implements TooltipComponent {
+public class EntityPreviewTooltipComponent implements ClientTooltipComponent {
     final int width;
     final int height;
     final int size;
@@ -23,19 +23,19 @@ public class EntityPreviewTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight(TextRenderer textRenderer) {
+    public int getHeight(Font textRenderer) {
         return height;
     }
 
     @Override
-    public int getWidth(TextRenderer textRenderer) {
+    public int getWidth(Font textRenderer) {
         return width;
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height,  DrawContext context) {
+    public void renderImage(Font textRenderer, int x, int y, int width, int height,  GuiGraphics context) {
         Graphics.renderEntityInBox(context,
-                new ScreenRect(x - 2, y - 2, getWidth(textRenderer) + 4, getHeight(textRenderer) + 2),
+                new ScreenRectangle(x - 2, y - 2, getWidth(textRenderer) + 4, getHeight(textRenderer) + 2),
                 size, entity, spin);
     }
 }

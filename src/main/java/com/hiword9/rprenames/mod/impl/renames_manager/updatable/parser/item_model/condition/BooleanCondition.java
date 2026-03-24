@@ -1,26 +1,30 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import net.minecraft.client.render.item.property.bool.*;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.component.ComponentSubPredicate;
-import net.minecraft.predicate.component.CustomDataPredicate;
-import net.minecraft.predicate.item.DamagePredicate;
-
+import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.advancements.criterion.SingleComponentItemPredicate;
+import net.minecraft.client.renderer.item.properties.conditional.Broken;
+import net.minecraft.client.renderer.item.properties.conditional.ComponentMatches;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
+import net.minecraft.client.renderer.item.properties.conditional.CustomModelDataProperty;
+import net.minecraft.client.renderer.item.properties.conditional.Damaged;
+import net.minecraft.client.renderer.item.properties.conditional.HasComponent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.predicates.CustomDataPredicate;
+import net.minecraft.core.component.predicates.DamagePredicate;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.CustomModelData;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.hiword9.rprenames.mod.util.Util.setAndFillMissing;
 
-public non-sealed class BooleanCondition<P extends BooleanProperty> extends AbstractPropertyValueCondition<P, Boolean> {
+public non-sealed class BooleanCondition<P extends ConditionalItemModelProperty> extends AbstractPropertyValueCondition<P, Boolean> {
     private BooleanCondition(P property, boolean value) {
         super(property, value);
     }
 
-    public static <P extends BooleanProperty> BooleanCondition<P> of(
+    public static <P extends ConditionalItemModelProperty> BooleanCondition<P> of(
             P property, boolean value
     ) {
         return isPropertyApplicable(property)
@@ -28,23 +32,23 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
                 : new BooleanCondition<>(property, value);
     }
 
-    private static boolean isPropertyApplicable(BooleanProperty property) {
+    private static boolean isPropertyApplicable(ConditionalItemModelProperty property) {
         for (var clazz : ApplicableBooleanCondition.APPLICABLE_PROPERTIES) {
             if (clazz.isInstance(property)) return true;
         }
         return false;
     }
 
-    public static class ApplicableBooleanCondition<P extends BooleanProperty>
+    public static class ApplicableBooleanCondition<P extends ConditionalItemModelProperty>
             extends BooleanCondition<P>
-            implements ItemModelCondition.Applicable
+            implements Applicable
     {
         private static final List<Class<?>> APPLICABLE_PROPERTIES = List.of(
-                BrokenProperty.class,
-                ComponentBooleanProperty.class,
-                CustomModelDataFlagProperty.class,
-                DamagedProperty.class,
-                HasComponentProperty.class
+                Broken.class,
+                ComponentMatches.class,
+                CustomModelDataProperty.class,
+                Damaged.class,
+                HasComponent.class
         );
 
         private ApplicableBooleanCondition(P property, boolean value) {
@@ -54,42 +58,42 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
         @Override
         public void apply(ItemStack stack) {
             switch (property) {
-                case BrokenProperty prop -> applyBroken(stack, value);
-                case ComponentBooleanProperty prop -> applyComponentBoolean(stack, prop, value);
-                case CustomModelDataFlagProperty prop -> applyCustomModelData(stack, prop, value);
-                case DamagedProperty prop -> applyDamaged(stack, value);
-                case HasComponentProperty prop -> applyHasComponent(stack, prop, value);
+                case Broken prop -> applyBroken(stack, value);
+                case ComponentMatches prop -> applyComponentBoolean(stack, prop, value);
+                case CustomModelDataProperty prop -> applyCustomModelData(stack, prop, value);
+                case Damaged prop -> applyDamaged(stack, value);
+                case HasComponent prop -> applyHasComponent(stack, prop, value);
                 case null, default -> {}
             }
         }
 
         private static void applyBroken(ItemStack stack, boolean value) {
-            if (!stack.isDamageable()) return;
-            stack.setDamage(value ? stack.getMaxDamage() - 1 : 0);
+            if (!stack.isDamageableItem()) return;
+            stack.setDamageValue(value ? stack.getMaxDamage() - 1 : 0);
         }
 
-        private static void applyComponentBoolean(ItemStack stack, ComponentBooleanProperty property, boolean value) {
+        private static void applyComponentBoolean(ItemStack stack, ComponentMatches property, boolean value) {
             switch (property.predicate().predicate()) {
                 case CustomDataPredicate predicate -> applyCustomDataPredicate(stack, predicate, value);
                 case DamagePredicate predicate -> applyDamagePredicate(stack, predicate, value);
-                case ComponentSubPredicate<?> predicate -> {} // todo implement for ComponentSubPredicate
+                case SingleComponentItemPredicate<?> predicate -> {} // todo implement for ComponentSubPredicate
                 case null, default -> {}
             }
         }
 
         private static void applyCustomDataPredicate(ItemStack stack, CustomDataPredicate predicate, boolean value) {
-            var exists = stack.get(DataComponentTypes.CUSTOM_DATA);
-            if (value && predicate.value().nbt() != null) {
+            var exists = stack.get(DataComponents.CUSTOM_DATA);
+            if (value && predicate.value().tag() != null) {
                 if (exists == null) {
-                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
-                    exists = stack.get(DataComponentTypes.CUSTOM_DATA);
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+                    exists = stack.get(DataComponents.CUSTOM_DATA);
                     assert exists != null;
                 }
                 stack.set(
-                        DataComponentTypes.CUSTOM_DATA,
-                        NbtComponent.of(exists.copyNbt().copyFrom(predicate.value().nbt()))
+                        DataComponents.CUSTOM_DATA,
+                        CustomData.of(exists.copyTag().merge(predicate.value().tag()))
                 );
-            } else if (predicate.test(stack)) {
+            } else if (predicate.matches(stack)) {
                 // todo need to brake equality here somehow
             }
         }
@@ -98,12 +102,12 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
             var maxDamageComponent = stack.getMaxDamage();
 
             var damageRangeFirst = predicate.damage();
-            var damageRangeSecond = NumberRange.IntRange.between(
+            var damageRangeSecond = MinMaxBounds.Ints.between(
                     maxDamageComponent - predicate.durability().bounds().max().orElse(maxDamageComponent),
                     maxDamageComponent - predicate.durability().bounds().min().orElse(0)
             );
 
-            var passRange = NumberRange.IntRange.between(
+            var passRange = MinMaxBounds.Ints.between(
                     Math.max(
                             damageRangeFirst.bounds().min().orElse(0),
                             damageRangeSecond.bounds().min().orElse(0)
@@ -115,19 +119,19 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
             );
 
             if (value) {
-                stack.setDamage(passRange.bounds().min().orElse(0));
-            } else if (predicate.test(stack)) {
-                stack.setDamage(passRange.bounds().min().orElse(0) != 0
+                stack.setDamageValue(passRange.bounds().min().orElse(0));
+            } else if (predicate.matches(stack)) {
+                stack.setDamageValue(passRange.bounds().min().orElse(0) != 0
                         ? 0
                         : passRange.bounds().max().orElse(maxDamageComponent) + 1
                 );
             }
         }
 
-        private static void applyCustomModelData(ItemStack stack, CustomModelDataFlagProperty property, boolean value) {
-            var exists = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+        private static void applyCustomModelData(ItemStack stack, CustomModelDataProperty property, boolean value) {
+            var exists = stack.get(DataComponents.CUSTOM_MODEL_DATA);
             if (exists == null) {
-                stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(
+                stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
                         new ArrayList<>(),
                         setAndFillMissing(new ArrayList<>(), property.index(), value, false),
                         new ArrayList<>(),
@@ -139,13 +143,13 @@ public non-sealed class BooleanCondition<P extends BooleanProperty> extends Abst
         }
 
         private static void applyDamaged(ItemStack stack, boolean value) {
-            if (!stack.isDamageable()) return;
-            stack.setDamage(value ? 1 : 0);
+            if (!stack.isDamageableItem()) return;
+            stack.setDamageValue(value ? 1 : 0);
         }
 
-        private static void applyHasComponent(ItemStack stack, HasComponentProperty property, boolean value) {
+        private static void applyHasComponent(ItemStack stack, HasComponent property, boolean value) {
             // todo account for ignoreDefault
-            if (stack.contains(property.componentType()) == value) return;
+            if (stack.has(property.componentType()) == value) return;
 
             if (value) {
                 // todo set empty component
