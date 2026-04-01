@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.15-SNAPSHOT'
+	id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -26,16 +26,15 @@ repositories {
 dependencies {
 	// Basic settings
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	modImplementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	implementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
 
-	modImplementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
+	implementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
 }
 
 processResources {
