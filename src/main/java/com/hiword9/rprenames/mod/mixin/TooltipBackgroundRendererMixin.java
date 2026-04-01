@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.mixin;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -17,9 +17,9 @@ import static com.hiword9.rprenames.mod.util.Util.config;
 public abstract class TooltipBackgroundRendererMixin {
     @Inject(
             at = @At(value = "TAIL"),
-            method = "renderTooltipBackground"
+            method = "extractTooltipBackground"
     )
-    private static void onRender(GuiGraphics context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
+    private static void onRender(GuiGraphicsExtractor context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
         if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
         Graphics.renderStarInFavoriteTooltip(context, x, y, width);
     }
@@ -29,7 +29,7 @@ public abstract class TooltipBackgroundRendererMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;getFrameSprite(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/resources/Identifier;"
             ),
-            method = "renderTooltipBackground"
+            method = "extractTooltipBackground"
     )
     private static @Nullable Identifier onGetFrameTexture(@Nullable Identifier texture) {
         if (!Graphics.renderTooltipAsFavorite || texture != null || !config().recolorFavoriteTooltip) return texture;

@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.gui;
 
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
@@ -30,11 +30,11 @@ public interface RPRInteractableScreen {
             i += getCraftSlotsAmount();
             // adding number of crafting slots because they are first in slots list, and we need to avoid them
 
-            interactionManager.handleInventoryMouseClick(syncId, i, 0, ClickType.PICKUP, player());
-            interactionManager.handleInventoryMouseClick(syncId, craftSlot, 0, ClickType.PICKUP, player());
-            interactionManager.handleInventoryMouseClick(syncId, i, 0, ClickType.PICKUP, player());
+            interactionManager.handleContainerInput(syncId, i, 0, ContainerInput.PICKUP, player());
+            interactionManager.handleContainerInput(syncId, craftSlot, 0, ContainerInput.PICKUP, player());
+            interactionManager.handleContainerInput(syncId, i, 0, ContainerInput.PICKUP, player());
         } else {
-            interactionManager.handleInventoryMouseClick(syncId, craftSlot, inventorySlot, ClickType.SWAP, player());
+            interactionManager.handleContainerInput(syncId, craftSlot, inventorySlot, ContainerInput.SWAP, player());
         }
     }
 
@@ -52,10 +52,10 @@ public interface RPRInteractableScreen {
         int syncId = player().containerMenu.containerId;
 
         if (inventory.getSlotWithRemainingSpace(stack) != -1 || inventory.getFreeSlot() != -1) {
-            interactionManager.handleInventoryMouseClick(syncId, workSlot, 0, ClickType.QUICK_MOVE, player());
+            interactionManager.handleContainerInput(syncId, workSlot, 0, ContainerInput.QUICK_MOVE, player());
             moveToInventory(workSlot);
         } else {
-            interactionManager.handleInventoryMouseClick(syncId, workSlot, 99, ClickType.THROW, player());
+            interactionManager.handleContainerInput(syncId, workSlot, 99, ContainerInput.THROW, player());
         }
     }
 

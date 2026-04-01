@@ -3,7 +3,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -36,7 +36,7 @@ public class PageButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         int u = type == Type.DOWN ? 0 : UP_OFFSET_U;
         int v = !active ? DISABLED_OFFSET_V : isHovered ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(

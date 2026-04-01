@@ -8,16 +8,19 @@ import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.mod.gui.widget.external.OpenerButton;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,9 +36,9 @@ import java.util.List;
 import static com.hiword9.rprenames.mod.util.Util.*;
 
 @Mixin(value = AnvilScreen.class, priority = 1200)
-public abstract class AnvilScreenMixin extends Screen implements RPRInteractableScreen, Offsetable {
-    protected AnvilScreenMixin(Component title) {
-        super(title);
+public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> implements RPRInteractableScreen, Offsetable {
+    protected AnvilScreenMixin(AnvilMenu menu, Inventory inventory, Component title, Identifier menuResource) {
+        super(menu, inventory, title, menuResource);
     }
 
     @Shadow
@@ -287,23 +290,16 @@ public abstract class AnvilScreenMixin extends Screen implements RPRInteractable
         }
     }
 
-    @Inject(at = @At("HEAD"), method = "renderLabels")
-    private void onDrawForeground(GuiGraphics context, int mouseX, int mouseY, CallbackInfo ci) {
+    @Override
+    public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float a) {
+        super.extractContents(context, mouseX, mouseY, a);
+
         if (shouldNotModify()) return;
         if (minecraft == null || minecraft.screen == null) return;
 
-        int xScreenOffset = ((AnvilScreen) minecraft.screen).leftPos;
-        int yScreenOffset = ((AnvilScreen) minecraft.screen).topPos;
-
-        var matrices = context.pose();
-        matrices.pushMatrix();
-        matrices.translate(-xScreenOffset, -yScreenOffset);
-
         for (var drawable : widgets) {
-            drawable.render(context, mouseX, mouseY, 0);
+            drawable.extractRenderState(context, mouseX, mouseY, a);
         }
-
-        matrices.popMatrix();
     }
 
     @Override

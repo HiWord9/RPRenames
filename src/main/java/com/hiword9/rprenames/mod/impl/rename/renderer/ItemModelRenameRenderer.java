@@ -7,7 +7,7 @@ import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTool
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.impl.rename.ItemModelRename;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -88,7 +88,7 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         var tooltipAddition = new ArrayList<ClientTooltipComponent>();
 
         if (config().enablePreview) {
@@ -116,7 +116,7 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     }
 
     @Override
-    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
         super.drawPreview(context, mouseX, mouseY, mainTooltip);
     }

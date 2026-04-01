@@ -3,7 +3,7 @@ package com.hiword9.rprenames.mod.gui.tooltip_component;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -37,7 +37,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
         return SLOT_SIZE * Math.min(4, 3 + (size - 4) / 3);
     }
 
-    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics context) {
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor context) {
         int i = 0;
         int size = items.size();
         var sorted = sort(items);

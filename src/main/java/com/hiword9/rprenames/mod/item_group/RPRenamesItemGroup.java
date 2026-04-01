@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.item_group;
 
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.RPRenames;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,7 +27,7 @@ public class RPRenamesItemGroup {
         Registry.register(
                 BuiltInRegistries.CREATIVE_MODE_TAB,
                 Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "item_group"),
-                itemGroup = FabricItemGroup.builder()
+                itemGroup = FabricCreativeModeTab.builder()
                         .title(Component.translatable("rprenames.item_group"))
                         .icon(RPRenamesItemGroup::getItemGroupIcon)
                         .type(CreativeModeTab.Type.SEARCH)

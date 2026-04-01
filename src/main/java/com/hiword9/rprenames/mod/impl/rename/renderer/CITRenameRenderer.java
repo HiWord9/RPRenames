@@ -8,7 +8,7 @@ import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget.Tab;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -209,7 +209,7 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         ArrayList<ClientTooltipComponent> tooltipAddition = new ArrayList<>();
 
         if (config().enablePreview) {
@@ -237,7 +237,7 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     }
 
     @Override
-    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
         super.drawPreview(context, mouseX, mouseY, mainTooltip);
     }

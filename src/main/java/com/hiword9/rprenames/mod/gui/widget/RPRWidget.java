@@ -316,7 +316,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 // Implementations
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         if (!open) {
             searchField.setFocused(false);
             return;
@@ -370,12 +370,16 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 
         RenameButton focusedButton = null;
         for (RenameButton renameButton : buttons) {
-            renameButton.render(context, mouseX, mouseY, 0);
+            renameButton.extractRenderState(context, mouseX, mouseY, 0);
             if (renameButton.isHovered()) focusedButton = renameButton;
         }
 
+        for (RenameButton renameButton : buttons) {
+            renameButton.renderForeground(context, mouseX, mouseY);
+        }
+
         for (Renderable widget : widgets) {
-            widget.render(context, mouseX, mouseY, 0);
+            widget.extractRenderState(context, mouseX, mouseY, 0);
         }
 
         if (focusedButton != null) focusedButton.renderTooltip(context, mouseX, mouseY);

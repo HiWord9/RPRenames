@@ -4,7 +4,7 @@ import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -36,7 +36,7 @@ public class FavoriteButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         if (!active) return;
 
         int u = 0;

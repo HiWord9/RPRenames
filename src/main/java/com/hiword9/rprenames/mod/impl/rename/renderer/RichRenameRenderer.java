@@ -13,7 +13,7 @@ import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
@@ -102,13 +102,13 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         super.onRenderTooltip(context, mouseX, mouseY);
         drawPreview(context, mouseX, mouseY, tooltipComponents);
     }
 
     @Override
-    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         var positioner = new PreviewTooltipPositioner(getPreviewPositionerPos(), mainTooltip);
 
         if (shouldPreviewPlayer()) {
@@ -124,7 +124,7 @@ public class RichRenameRenderer<R extends Rename>
         return PreviewPos.LEFT;
     }
 
-    protected void playerPreview(GuiGraphics context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
+    protected void playerPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),
@@ -135,7 +135,7 @@ public class RichRenameRenderer<R extends Rename>
         );
     }
 
-    protected void itemPreview(GuiGraphics context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
+    protected void itemPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),

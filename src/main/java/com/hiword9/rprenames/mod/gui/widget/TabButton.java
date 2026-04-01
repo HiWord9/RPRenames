@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -39,7 +39,7 @@ public class TabButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         int u = rprWidget.getCurrentTab() == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
         Graphics.renderGuiTexture(

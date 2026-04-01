@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -31,13 +31,13 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         if (!doRender) return;
         renderSlots(context, mouseX, mouseY, delta);
     }
 
-    private void renderSlots(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        for (GhostSlot slot : slots) slot.render(context, mouseX, mouseY, delta);
+    private void renderSlots(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        for (GhostSlot slot : slots) slot.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
         }
 
         @Override
-        public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
             if (content != null && !content.isEmpty()) {
                 Graphics.renderStack(context, content, getX() + 1, getY() + 1);
                 if (isMouseOver(mouseX, mouseY)) {

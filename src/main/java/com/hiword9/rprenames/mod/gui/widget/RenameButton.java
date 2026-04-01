@@ -7,7 +7,7 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -65,7 +65,7 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
         int v = isHovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
@@ -75,10 +75,13 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
                 getWidth(), getHeight(),
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );
+    }
+
+    public void renderForeground(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         renameRenderer.onRender(context, mouseX, mouseY);
     }
 
-    public void renderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         if (!rprWidget.getCurrentTab().forCraftItemOnly
                 && config().slotHighlightColorALPHA > 0
                 && config().highlightSlot
@@ -140,7 +143,7 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
     private <H extends AbstractContainerMenu> void highlightSlots(
-            GuiGraphics context, RPRInteractableScreen screen, int highlightColor
+            GuiGraphicsExtractor context, RPRInteractableScreen screen, int highlightColor
     ) {
         if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) return;
         var s = (AbstractContainerScreen<H> & RPRInteractableScreen) handledScreen;

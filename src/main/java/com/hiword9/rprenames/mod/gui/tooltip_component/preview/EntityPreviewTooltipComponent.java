@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.gui.tooltip_component.preview;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +33,7 @@ public class EntityPreviewTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font textRenderer, int x, int y, int width, int height,  GuiGraphics context) {
+    public void extractImage(Font textRenderer, int x, int y, int width, int height,  GuiGraphicsExtractor context) {
         Graphics.renderEntityInBox(context,
                 new ScreenRectangle(x - 2, y - 2, getWidth(textRenderer) + 4, getHeight(textRenderer) + 2),
                 size, entity, spin);

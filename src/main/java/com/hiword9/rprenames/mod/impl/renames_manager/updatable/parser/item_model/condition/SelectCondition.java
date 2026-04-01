@@ -88,11 +88,11 @@ public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V>
                 case ChargeType.NONE -> {}
                 case ChargeType.ROCKET -> stack.set(
                         DataComponents.CHARGED_PROJECTILES,
-                        ChargedProjectiles.of(new ItemStack(Items.FIREWORK_ROCKET))
+                        ChargedProjectiles.ofNonEmpty(List.of(new ItemStack(Items.FIREWORK_ROCKET)))
                 );
                 case ChargeType.ARROW -> stack.set(
                         DataComponents.CHARGED_PROJECTILES,
-                        ChargedProjectiles.of(new ItemStack(Items.ARROW))
+                        ChargedProjectiles.ofNonEmpty(List.of(new ItemStack(Items.ARROW)))
                 );
             }
         }

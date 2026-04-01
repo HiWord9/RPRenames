@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.gui.tooltip_component.preview;
 
 import com.hiword9.rprenames.mod.gui.Graphics;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,7 +36,7 @@ public class ItemPreviewTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics context) {
-        Graphics.renderStack(context, stack, x + stackRenderStartX, y + stackRenderStartY, 400, size);
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor context) {
+        Graphics.renderStack(context, stack, x + stackRenderStartX, y + stackRenderStartY, size);
     }
 }

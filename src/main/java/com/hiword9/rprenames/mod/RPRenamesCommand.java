@@ -8,7 +8,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.DynamicOps;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
+import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 public class RPRenamesCommand {
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext commandRegistryAccess) {
@@ -40,10 +40,10 @@ public class RPRenamesCommand {
                         .executes(context -> info(context.getSource())))
                 .then(literal("list")
                         .executes(context -> list(context.getSource()))
-                        .then(ClientCommandManager.argument("item", ItemArgument.item(commandRegistryAccess))
-                                .executes(context -> list(context.getSource(), ItemArgument.getItem(context, "item").getItem()))))
+                        .then(ClientCommands.argument("item", ItemArgument.item(commandRegistryAccess))
+                                .executes(context -> list(context.getSource(), ItemArgument.getItem(context, "item").item().value()))))
                 .then(literal("solveRegex")
-                        .then(ClientCommandManager.argument("regex", StringArgumentType.greedyString())
+                        .then(ClientCommands.argument("regex", StringArgumentType.greedyString())
                                 .executes(context -> solveRegex(context.getSource(), StringArgumentType.getString(context, "regex")))))
                 .then(literal("disableHints")
                         .executes(context -> disableHints(context.getSource()))));

@@ -11,6 +11,7 @@ import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import com.hiword9.rprenames.mod.util.PropertiesHelper;
 import com.hiword9.rprenames.mod.util.RenameInfoHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -88,8 +89,8 @@ public class CEMRename
     }
 
     public ItemStack toSpawnEgg() {
-        Item spawnEggItem = SpawnEggItem.byId(this.getEntity());
-        ItemStack stack = new ItemStack(spawnEggItem == null ? Items.ALLAY_SPAWN_EGG : spawnEggItem);
+        var spawnEggItem = SpawnEggItem.byId(this.getEntity());
+        ItemStack stack = new ItemStack(spawnEggItem.map(Holder::value).orElse(Items.ALLAY_SPAWN_EGG));
 
         stack.set(DataComponents.CUSTOM_NAME, this.getName());
 

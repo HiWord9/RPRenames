@@ -12,7 +12,7 @@ import com.hiword9.rprenames.mod.impl.rename.CEMRename;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
@@ -83,7 +83,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void onRender(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         Graphics.renderEntityInBox(context,
                 new ScreenRectangle(
                         renderArea.getX() + 1,
@@ -98,7 +98,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         super.onRenderTooltip(context, mouseX, mouseY);
         if (!config().enablePreview) return;
         drawPreview(
@@ -109,7 +109,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void drawPreview(GuiGraphics context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
                 context,
                 textRenderer(),

@@ -2,7 +2,7 @@ package com.hiword9.rprenames.api.core.rename.renderer;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.gui.Graphics;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +34,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRender(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         Graphics.renderStack(
                 context,
                 stack,
@@ -44,7 +44,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
         Graphics.drawTooltip(
                 context,
                 textRenderer(),

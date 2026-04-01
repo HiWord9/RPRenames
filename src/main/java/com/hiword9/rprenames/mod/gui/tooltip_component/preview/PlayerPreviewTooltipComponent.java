@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.gui.tooltip_component.preview;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
@@ -63,7 +63,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     }
 
     @Override
-    public void renderImage(Font textRenderer, int x, int y, int width, int height, GuiGraphics context) {
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor context) {
         LocalPlayer player = (LocalPlayer) entity;
 
         assert player != null;
@@ -77,7 +77,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
         float k = player.yHeadRotO;
         float l = player.yHeadRot;
 
-        super.renderImage(textRenderer, x, y, width, height, context);
+        super.extractImage(textRenderer, x, y, width, height, context);
 
         player.yBodyRot = h;
         player.setYRot(i);
