@@ -5,5 +5,5 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import java.util.List;
 
 public interface Previewable {
-    void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip);
+    void extractPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip);
 }

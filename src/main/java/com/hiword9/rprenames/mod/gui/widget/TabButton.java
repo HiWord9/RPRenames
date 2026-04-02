@@ -42,7 +42,7 @@ public class TabButton extends AbstractWidget implements OffsetableWidget {
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = rprWidget.getCurrentTab() == tab ? SELECTED_OFFSET_U : 0;
         int v = index * TYPE_OFFSET_V;
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
@@ -51,7 +51,7 @@ public class TabButton extends AbstractWidget implements OffsetableWidget {
         );
 
         if (isMouseOver(mouseX, mouseY)) {
-            Graphics.drawTooltip(
+            Graphics.extractTooltip(
                     graphics,
                     font(),
                     List.of(Graphics.tooltipOf(Component.translatable(TRANSLATION_PREFIX + tab.toString()))),

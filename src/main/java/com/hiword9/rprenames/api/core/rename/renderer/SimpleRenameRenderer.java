@@ -34,8 +34,8 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        Graphics.renderStack(
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Graphics.extractItemStack(
                 graphics,
                 stack,
                 renderArea.getX() + (renderArea.getWidth() - Graphics.STACK_IN_SLOT_SIZE) / 2,
@@ -44,8 +44,8 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        Graphics.drawTooltip(
+    public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Graphics.extractTooltip(
                 graphics,
                 font(),
                 tooltipComponents,

@@ -21,7 +21,7 @@ public abstract class TooltipBackgroundRendererMixin {
     )
     private static void onRender(GuiGraphicsExtractor graphics, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
         if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
-        Graphics.renderStarInFavoriteTooltip(graphics, x, y, width);
+        Graphics.extractStarInFavoriteTooltip(graphics, x, y, width);
     }
 
     @ModifyArg(

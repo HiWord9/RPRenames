@@ -56,7 +56,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
             int j = x + SLOT_SIZE * xOffset;
             int k = y + SLOT_SIZE * yOffset;
 
-            Graphics.renderGuiTexture(
+            Graphics.extractGuiTexture(
                     graphics,
                     SLOT,
                     j, k, 0, 0,
@@ -65,7 +65,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
             );
 
             if (i == 7 && size > 8) {
-                Graphics.renderText(graphics, Component.nullToEmpty("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
+                Graphics.extractText(graphics, Component.nullToEmpty("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
             } else {
                 if (item.isInInventory != null) {
                     if (!item.isInInventory && config().highlightTooltipSlotWrong) {
@@ -75,7 +75,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
                         graphics.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
                     }
                 }
-                Graphics.renderStack(graphics, item.stack, j + 1, k + 1);
+                Graphics.extractItemStack(graphics, item.stack, j + 1, k + 1);
             }
 
             if (i == 7) break;

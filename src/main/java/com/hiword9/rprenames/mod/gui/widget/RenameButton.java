@@ -68,7 +68,7 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
         int v = isHovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
@@ -77,18 +77,18 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
         );
     }
 
-    public void renderForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        renameRenderer.onRender(graphics, mouseX, mouseY);
+    public void extractForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        renameRenderer.extractRenderState(graphics, mouseX, mouseY);
     }
 
-    public void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (!rprWidget.getCurrentTab().forCraftItemOnly
                 && config().slotHighlightColorALPHA > 0
                 && config().highlightSlot
         ) {
             highlightSlots(graphics, rprWidget.screen, highlightColor);
         }
-        renameRenderer.onRenderTooltip(graphics, mouseX, mouseY);
+        renameRenderer.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -147,6 +147,6 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     ) {
         if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) return;
         var s = (AbstractContainerScreen<H> & RPRInteractableScreen) handledScreen;
-        Graphics.highlightAvailableSlots(rename.getItems(), graphics, s, highlightColor);
+        Graphics.extractAvailableSlotsHighlighting(rename.getItems(), graphics, s, highlightColor);
     }
 }

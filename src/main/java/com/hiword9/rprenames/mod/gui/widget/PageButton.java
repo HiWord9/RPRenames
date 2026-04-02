@@ -39,7 +39,7 @@ public class PageButton extends AbstractWidget implements OffsetableWidget {
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = type == Type.DOWN ? 0 : UP_OFFSET_U;
         int v = !active ? DISABLED_OFFSET_V : isHovered ? FOCUSED_OFFSET_V : 0;
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 TEXTURE,
                 getX(), getY(), u, v,

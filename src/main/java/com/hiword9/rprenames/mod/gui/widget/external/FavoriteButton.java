@@ -41,7 +41,7 @@ public class FavoriteButton extends AbstractWidget implements OffsetableWidget {
 
         int u = 0;
         int v = favorite ? 0 : V_OFFSET;
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 TEXTURE,
                 getX(), getY(),

@@ -102,13 +102,13 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        super.onRenderTooltip(graphics, mouseX, mouseY);
-        drawPreview(graphics, mouseX, mouseY, tooltipComponents);
+    public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractTooltip(graphics, mouseX, mouseY);
+        extractPreview(graphics, mouseX, mouseY, tooltipComponents);
     }
 
     @Override
-    public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void extractPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         var positioner = new PreviewTooltipPositioner(getPreviewPositionerPos(), mainTooltip);
 
         if (shouldPreviewPlayer()) {
@@ -125,7 +125,7 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     protected void playerPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
-        Graphics.drawTooltipWithFixedBorders(
+        Graphics.extractTooltipWithFixedBorders(
                 graphics,
                 font(),
                 playerPreviewTooltipComponent,
@@ -136,7 +136,7 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     protected void itemPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
-        Graphics.drawTooltipWithFixedBorders(
+        Graphics.extractTooltipWithFixedBorders(
                 graphics,
                 font(),
                 itemPreviewTooltipComponent,

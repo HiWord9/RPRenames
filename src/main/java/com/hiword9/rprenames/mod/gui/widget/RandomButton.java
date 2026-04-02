@@ -40,7 +40,7 @@ public class RandomButton extends AbstractWidget implements OffsetableWidget {
         if (!active) return;
         int u = 0;
         int v = V_OFFSET * side;
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 TEXTURE,
                 getX(), getY(), u, v,

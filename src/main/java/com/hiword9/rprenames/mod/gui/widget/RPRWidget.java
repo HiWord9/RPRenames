@@ -324,7 +324,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 
         checkForInvChanges();
 
-        Graphics.renderGuiTexture(
+        Graphics.extractGuiTexture(
                 graphics,
                 MENU_TEXTURE,
                 getX() + MENU_START_X, getY(),
@@ -334,7 +334,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
         );
 
         if (searchField != null && !searchField.isFocused() && searchField.getValue().isEmpty()) {
-            Graphics.renderText(
+            Graphics.extractText(
                     graphics, SEARCH_HINT_TEXT,
                     getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
                     getY() + 15,
@@ -350,7 +350,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
             else if (currentTab == Tab.FAVORITE && getSearchText().isEmpty())
                 key = "noFavoriteRenamesFound";
 
-            Graphics.renderText(
+            Graphics.extractText(
                     graphics,
                     Component.translatable("rprenames.gui.%s".formatted(key))
                             .withStyle(Style.EMPTY
@@ -361,7 +361,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
                     true, true
             );
         } else {
-            Graphics.renderText(
+            Graphics.extractText(
                     graphics, pageCount,
                     menuCenterX, getY() + 140,
                     false, true
@@ -375,14 +375,14 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
         }
 
         for (RenameButton renameButton : buttons) {
-            renameButton.renderForeground(graphics, mouseX, mouseY);
+            renameButton.extractForeground(graphics, mouseX, mouseY);
         }
 
         for (Renderable widget : widgets) {
             widget.extractRenderState(graphics, mouseX, mouseY, 0);
         }
 
-        if (focusedButton != null) focusedButton.renderTooltip(graphics, mouseX, mouseY);
+        if (focusedButton != null) focusedButton.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Override

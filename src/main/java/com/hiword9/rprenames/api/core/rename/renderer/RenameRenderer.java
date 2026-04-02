@@ -5,8 +5,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 public interface RenameRenderer extends GuiEventListener {
-    void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
-    void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
+    void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
+    void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY);
 
     @Override
     default void setFocused(boolean focused) {}

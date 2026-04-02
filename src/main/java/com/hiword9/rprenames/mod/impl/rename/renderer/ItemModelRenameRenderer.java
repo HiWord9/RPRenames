@@ -88,7 +88,7 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         var tooltipAddition = new ArrayList<ClientTooltipComponent>();
 
         if (config().enablePreview) {
@@ -110,15 +110,15 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
 
         tooltipComponents.addAll(tooltipAddition);
 
-        super.onRenderTooltip(graphics, mouseX, mouseY);
+        super.extractTooltip(graphics, mouseX, mouseY);
 
         tooltipComponents.removeAll(tooltipAddition);
     }
 
     @Override
-    public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void extractPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
-        super.drawPreview(graphics, mouseX, mouseY, mainTooltip);
+        super.extractPreview(graphics, mouseX, mouseY, mainTooltip);
     }
 
     @Override

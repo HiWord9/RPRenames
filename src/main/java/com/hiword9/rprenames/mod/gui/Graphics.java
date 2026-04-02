@@ -48,17 +48,17 @@ public class Graphics {
 
     public static final Identifier FAVORITE_TOOLTIP_FRAME_TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "favorite_tooltip");
 
-    public static void renderText(GuiGraphicsExtractor graphics, Component text, int x, int y, boolean shadow, boolean centered) {
-        renderText(graphics, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
+    public static void extractText(GuiGraphicsExtractor graphics, Component text, int x, int y, boolean shadow, boolean centered) {
+        extractText(graphics, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
     }
 
-    public static void renderText(GuiGraphicsExtractor graphics, Component text, int color, int x, int y, boolean shadow, boolean centered) {
+    public static void extractText(GuiGraphicsExtractor graphics, Component text, int color, int x, int y, boolean shadow, boolean centered) {
         var font = font();
         int xOffset = centered ? font.width(text) / 2 : 0;
         graphics.text(font, text, x - xOffset, y, color, shadow);
     }
 
-    public static void renderGuiTexture(
+    public static void extractGuiTexture(
             GuiGraphicsExtractor graphics,
             Identifier texture,
             int x, int y, float u, float v,
@@ -74,11 +74,11 @@ public class Graphics {
         );
     }
 
-    public static void renderStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y) {
-        renderStack(graphics, itemStack, x, y, STACK_IN_SLOT_SIZE);
+    public static void extractItemStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y) {
+        extractItemStack(graphics, itemStack, x, y, STACK_IN_SLOT_SIZE);
     }
 
-    public static void renderStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y, int size) {
+    public static void extractItemStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y, int size) {
         float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
         graphics.nextStratum();
         var matrices = graphics.pose();
@@ -91,7 +91,7 @@ public class Graphics {
     }
 
     @SuppressWarnings("unchecked")
-    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(GuiGraphicsExtractor graphics, ScreenRectangle rect, double size, T entity, boolean spin) {
+    public static <S extends EntityRenderState, T extends Entity> void extractEntityInBox(GuiGraphicsExtractor graphics, ScreenRectangle rect, double size, T entity, boolean spin) {
         if (entity instanceof Squid) size /= 1.5;
         else if (entity instanceof ItemEntity) size *= 2;
 
@@ -134,33 +134,33 @@ public class Graphics {
         if (entity instanceof LivingEntity living) living.yBodyRot = yaw;
     }
 
-    public static void drawTooltip(
+    public static void extractTooltip(
             GuiGraphicsExtractor graphics, Font font,
             List<ClientTooltipComponent> components,
             int x, int y,
             ClientTooltipPositioner positioner
     ) {
-        drawTooltip(graphics, font, components, x, y, positioner, false);
+        extractTooltip(graphics, font, components, x, y, positioner, false);
     }
 
-    public static void drawTooltip(
+    public static void extractTooltip(
             GuiGraphicsExtractor graphics, Font font,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
-        drawTooltip(graphics, font, List.of(component), x, y, positioner, favorite);
+        extractTooltip(graphics, font, List.of(component), x, y, positioner, favorite);
     }
 
-    public static void drawTooltipWithFixedBorders(
+    public static void extractTooltipWithFixedBorders(
             GuiGraphicsExtractor graphics, Font font,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
-        drawTooltip(
+        extractTooltip(
                 graphics, font,
                 List.of(component,
                         new ClientTooltipComponent() { //dump tooltip component to increase list size
@@ -172,7 +172,7 @@ public class Graphics {
         );
     }
 
-    public static void drawTooltip(
+    public static void extractTooltip(
             GuiGraphicsExtractor graphics, Font font,
             List<ClientTooltipComponent> components,
             int x, int y,
@@ -184,10 +184,10 @@ public class Graphics {
         renderTooltipAsFavorite = false;
     }
 
-    public static void renderStarInFavoriteTooltip(GuiGraphicsExtractor graphics, int x, int y, int width) {
+    public static void extractStarInFavoriteTooltip(GuiGraphicsExtractor graphics, int x, int y, int width) {
         graphics.pose().pushMatrix();
         graphics.pose().translate(0,0);
-        renderGuiTexture(
+        extractGuiTexture(
                 graphics,
                 FavoriteButton.TEXTURE,
                 x + width - (FavoriteButton.BUTTON_WIDTH), y,
@@ -198,7 +198,7 @@ public class Graphics {
         graphics.pose().popMatrix();
     }
 
-    public static <H extends AbstractContainerMenu, S extends AbstractContainerScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
+    public static <H extends AbstractContainerMenu, S extends AbstractContainerScreen<H> & RPRInteractableScreen> void extractAvailableSlotsHighlighting(
             List<Item> items, GuiGraphicsExtractor graphics, S screen, int color
     ) {
         var allSlots = screen.getMenu().slots;
@@ -209,10 +209,10 @@ public class Graphics {
                 allSlots.subList(screen.getCraftSlotsAmount(), allSlots.size())
         );
 
-        highlightSlots(items, slotsToHighlight, graphics, screen.leftPos, screen.topPos, color);
+        extractSlotsHighlighting(items, slotsToHighlight, graphics, screen.leftPos, screen.topPos, color);
     }
 
-    public static void highlightSlots(
+    public static void extractSlotsHighlighting(
             List<Item> items, List<Slot> slots,
             GuiGraphicsExtractor graphics,
             int xOffset, int yOffset,
@@ -220,10 +220,10 @@ public class Graphics {
     ) {
         for (Slot slot : slots)
             if (items.contains(slot.getItem().getItem()))
-                highlightSlot(graphics, xOffset, yOffset, slot, color);
+                extractSlotHighlighting(graphics, xOffset, yOffset, slot, color);
     }
 
-    public static void highlightSlot(GuiGraphicsExtractor graphics, int xOffset, int yOffset, Slot slot, int color) {
+    public static void extractSlotHighlighting(GuiGraphicsExtractor graphics, int xOffset, int yOffset, Slot slot, int color) {
         int x = xOffset + slot.x - 1;
         int y = yOffset + slot.y - 1;
         graphics.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color, color);

@@ -33,10 +33,10 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (!doRender) return;
-        renderSlots(graphics, mouseX, mouseY, delta);
+        extractSlots(graphics, mouseX, mouseY, delta);
     }
 
-    private void renderSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    private void extractSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         for (GhostSlot slot : slots) slot.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 
@@ -118,7 +118,7 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
         @Override
         public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
             if (content != null && !content.isEmpty()) {
-                Graphics.renderStack(graphics, content, getX() + 1, getY() + 1);
+                Graphics.extractItemStack(graphics, content, getX() + 1, getY() + 1);
                 if (isMouseOver(mouseX, mouseY)) {
                     graphics.setComponentTooltipForNextFrame(font(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
                 }
