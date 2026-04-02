@@ -29,13 +29,13 @@ public class OpenerButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = 0;
         int v = 0;
         v += rprWidget.isOpen() ? OPENED_OFFSET_V : 0;
         v += isHovered ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
-                context,
+                graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
                 getWidth(), getHeight(),

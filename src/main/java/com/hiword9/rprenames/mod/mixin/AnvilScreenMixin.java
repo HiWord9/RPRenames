@@ -291,14 +291,14 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float a) {
-        super.extractContents(context, mouseX, mouseY, a);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
 
         if (shouldNotModify()) return;
         if (minecraft == null || minecraft.screen == null) return;
 
         for (var drawable : widgets) {
-            drawable.extractRenderState(context, mouseX, mouseY, a);
+            drawable.extractRenderState(graphics, mouseX, mouseY, a);
         }
     }
 

@@ -36,7 +36,7 @@ public class ItemPreviewTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor context) {
-        Graphics.renderStack(context, stack, x + stackRenderStartX, y + stackRenderStartY, size);
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+        Graphics.renderStack(graphics, stack, x + stackRenderStartX, y + stackRenderStartY, size);
     }
 }

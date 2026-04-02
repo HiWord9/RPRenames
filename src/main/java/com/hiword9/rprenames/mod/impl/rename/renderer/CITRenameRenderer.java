@@ -209,7 +209,7 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         ArrayList<ClientTooltipComponent> tooltipAddition = new ArrayList<>();
 
         if (config().enablePreview) {
@@ -231,15 +231,15 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
 
         tooltipComponents.addAll(tooltipAddition);
 
-        super.onRenderTooltip(context, mouseX, mouseY);
+        super.onRenderTooltip(graphics, mouseX, mouseY);
 
         tooltipComponents.removeAll(tooltipAddition);
     }
 
     @Override
-    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         if (!config().enablePreview) return;
-        super.drawPreview(context, mouseX, mouseY, mainTooltip);
+        super.drawPreview(graphics, mouseX, mouseY, mainTooltip);
     }
 
     @Override

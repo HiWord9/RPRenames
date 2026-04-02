@@ -102,18 +102,18 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
-        super.onRenderTooltip(context, mouseX, mouseY);
-        drawPreview(context, mouseX, mouseY, tooltipComponents);
+    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.onRenderTooltip(graphics, mouseX, mouseY);
+        drawPreview(graphics, mouseX, mouseY, tooltipComponents);
     }
 
     @Override
-    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         var positioner = new PreviewTooltipPositioner(getPreviewPositionerPos(), mainTooltip);
 
         if (shouldPreviewPlayer()) {
-            playerPreview(context, mouseX, mouseY, positioner);
-        } else itemPreview(context, mouseX, mouseY, positioner);
+            playerPreview(graphics, mouseX, mouseY, positioner);
+        } else itemPreview(graphics, mouseX, mouseY, positioner);
     }
 
     protected boolean shouldPreviewPlayer() {
@@ -124,9 +124,9 @@ public class RichRenameRenderer<R extends Rename>
         return PreviewPos.LEFT;
     }
 
-    protected void playerPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
+    protected void playerPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
-                context,
+                graphics,
                 textRenderer(),
                 playerPreviewTooltipComponent,
                 mouseX, mouseY,
@@ -135,9 +135,9 @@ public class RichRenameRenderer<R extends Rename>
         );
     }
 
-    protected void itemPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
+    protected void itemPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
-                context,
+                graphics,
                 textRenderer(),
                 itemPreviewTooltipComponent,
                 mouseX, mouseY,

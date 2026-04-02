@@ -36,19 +36,19 @@ public class RandomButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (!active) return;
         int u = 0;
         int v = V_OFFSET * side;
         Graphics.renderGuiTexture(
-                context,
+                graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
                 getWidth(), getHeight(),
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );
         if (!isHovered) return;
-        context.setTooltipForNextFrame(textRenderer(), Component.translatable(TOOLTIP_KEY), mouseX, mouseY);
+        graphics.setTooltipForNextFrame(textRenderer(), Component.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }
 
     @Override

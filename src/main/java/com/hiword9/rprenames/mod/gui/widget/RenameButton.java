@@ -65,11 +65,11 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = favorite ? FAVORITE_OFFSET_U : 0;
         int v = isHovered || (selected && config().highlightSelected) ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
-                context,
+                graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
                 getWidth(), getHeight(),
@@ -77,18 +77,18 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
         );
     }
 
-    public void renderForeground(GuiGraphicsExtractor context, int mouseX, int mouseY) {
-        renameRenderer.onRender(context, mouseX, mouseY);
+    public void renderForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        renameRenderer.onRender(graphics, mouseX, mouseY);
     }
 
-    public void renderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (!rprWidget.getCurrentTab().forCraftItemOnly
                 && config().slotHighlightColorALPHA > 0
                 && config().highlightSlot
         ) {
-            highlightSlots(context, rprWidget.screen, highlightColor);
+            highlightSlots(graphics, rprWidget.screen, highlightColor);
         }
-        renameRenderer.onRenderTooltip(context, mouseX, mouseY);
+        renameRenderer.onRenderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
@@ -143,10 +143,10 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     protected void updateWidgetNarration(NarrationElementOutput builder) {}
 
     private <H extends AbstractContainerMenu> void highlightSlots(
-            GuiGraphicsExtractor context, RPRInteractableScreen screen, int highlightColor
+            GuiGraphicsExtractor graphics, RPRInteractableScreen screen, int highlightColor
     ) {
         if (!(screen instanceof AbstractContainerScreen<?> handledScreen)) return;
         var s = (AbstractContainerScreen<H> & RPRInteractableScreen) handledScreen;
-        Graphics.highlightAvailableSlots(rename.getItems(), context, s, highlightColor);
+        Graphics.highlightAvailableSlots(rename.getItems(), graphics, s, highlightColor);
     }
 }

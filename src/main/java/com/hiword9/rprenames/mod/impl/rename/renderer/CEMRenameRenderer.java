@@ -83,8 +83,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void onRender(GuiGraphicsExtractor context, int mouseX, int mouseY) {
-        Graphics.renderEntityInBox(context,
+    public void onRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        Graphics.renderEntityInBox(graphics,
                 new ScreenRectangle(
                         renderArea.getX() + 1,
                         renderArea.getY() + 1,
@@ -98,20 +98,20 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     }
 
     @Override
-    public void onRenderTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
-        super.onRenderTooltip(context, mouseX, mouseY);
+    public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.onRenderTooltip(graphics, mouseX, mouseY);
         if (!config().enablePreview) return;
         drawPreview(
-                context,
+                graphics,
                 mouseX, mouseY,
                 tooltipComponents
         );
     }
 
     @Override
-    public void drawPreview(GuiGraphicsExtractor context, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
+    public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
-                context,
+                graphics,
                 textRenderer(),
                 entityPreviewTooltipComponent,
                 mouseX, mouseY,

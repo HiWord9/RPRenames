@@ -37,7 +37,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
         return SLOT_SIZE * Math.min(4, 3 + (size - 4) / 3);
     }
 
-    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor context) {
+    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         int i = 0;
         int size = items.size();
         var sorted = sort(items);
@@ -57,7 +57,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
             int k = y + SLOT_SIZE * yOffset;
 
             Graphics.renderGuiTexture(
-                    context,
+                    graphics,
                     SLOT,
                     j, k, 0, 0,
                     SLOT_SIZE, SLOT_SIZE,
@@ -65,17 +65,17 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
             );
 
             if (i == 7 && size > 8) {
-                Graphics.renderText(context, Component.nullToEmpty("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
+                Graphics.renderText(graphics, Component.nullToEmpty("+" + (size - 7)), j + SLOT_SIZE / 2, k + 5, true, true);
             } else {
                 if (item.isInInventory != null) {
                     if (!item.isInInventory && config().highlightTooltipSlotWrong) {
-                        context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_WRONG);
+                        graphics.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_WRONG);
                     }
                     if (item.isInInventory && i == 0 && config().highlightTooltipSlotSelected) {
-                        context.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
+                        graphics.fill(j, k, j + SLOT_SIZE, k + SLOT_SIZE, HIGHLIGHT_COLOR_SECOND);
                     }
                 }
-                Graphics.renderStack(context, item.stack, j + 1, k + 1);
+                Graphics.renderStack(graphics, item.stack, j + 1, k + 1);
             }
 
             if (i == 7) break;

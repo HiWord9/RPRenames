@@ -48,24 +48,24 @@ public class Graphics {
 
     public static final Identifier FAVORITE_TOOLTIP_FRAME_TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "favorite_tooltip");
 
-    public static void renderText(GuiGraphicsExtractor context, Component text, int x, int y, boolean shadow, boolean centered) {
-        renderText(context, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
+    public static void renderText(GuiGraphicsExtractor graphics, Component text, int x, int y, boolean shadow, boolean centered) {
+        renderText(graphics, text, DEFAULT_TEXT_COLOR, x, y, shadow, centered);
     }
 
-    public static void renderText(GuiGraphicsExtractor context, Component text, int color, int x, int y, boolean shadow, boolean centered) {
+    public static void renderText(GuiGraphicsExtractor graphics, Component text, int color, int x, int y, boolean shadow, boolean centered) {
         var renderer = textRenderer();
         int xOffset = centered ? renderer.width(text) / 2 : 0;
-        context.text(renderer, text, x - xOffset, y, color, shadow);
+        graphics.text(renderer, text, x - xOffset, y, color, shadow);
     }
 
     public static void renderGuiTexture(
-            GuiGraphicsExtractor context,
+            GuiGraphicsExtractor graphics,
             Identifier texture,
             int x, int y, float u, float v,
             int width, int height,
             int textureWidth, int textureHeight
     ) {
-        context.blit(
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 texture,
                 x, y, u, v,
@@ -74,24 +74,24 @@ public class Graphics {
         );
     }
 
-    public static void renderStack(GuiGraphicsExtractor context, ItemStack itemStack, int x, int y) {
-        renderStack(context, itemStack, x, y, STACK_IN_SLOT_SIZE);
+    public static void renderStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y) {
+        renderStack(graphics, itemStack, x, y, STACK_IN_SLOT_SIZE);
     }
 
-    public static void renderStack(GuiGraphicsExtractor context, ItemStack itemStack, int x, int y, int size) {
+    public static void renderStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y, int size) {
         float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
-        context.nextStratum();
-        var matrices = context.pose();
+        graphics.nextStratum();
+        var matrices = graphics.pose();
         matrices.pushMatrix();
         matrices.translate(x, y);
         matrices.scale(scale, scale);
-        context.fakeItem(itemStack, 0, 0);
+        graphics.fakeItem(itemStack, 0, 0);
         matrices.popMatrix();
-        context.guiRenderState.up();
+        graphics.guiRenderState.up();
     }
 
     @SuppressWarnings("unchecked")
-    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(GuiGraphicsExtractor context, ScreenRectangle rect, double size, T entity, boolean spin) {
+    public static <S extends EntityRenderState, T extends Entity> void renderEntityInBox(GuiGraphicsExtractor graphics, ScreenRectangle rect, double size, T entity, boolean spin) {
         if (entity instanceof Squid) size /= 1.5;
         else if (entity instanceof ItemEntity) size *= 2;
 
@@ -119,7 +119,7 @@ public class Graphics {
         var entityRenderState = entityRenderer.createRenderState();
         entityRenderer.extractRenderState(entity, entityRenderState, 1.0F);
 
-        context.entity(
+        graphics.entity(
                 entityRenderState,
                 (float) size, vector3f, quaternion, quaternion2,
                 rect.left(), rect.top(), rect.right(), rect.bottom()
@@ -135,33 +135,33 @@ public class Graphics {
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor context, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font textRenderer,
             List<ClientTooltipComponent> components,
             int x, int y,
             ClientTooltipPositioner positioner
     ) {
-        drawTooltip(context, textRenderer, components, x, y, positioner, false);
+        drawTooltip(graphics, textRenderer, components, x, y, positioner, false);
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor context, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font textRenderer,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
-        drawTooltip(context, textRenderer, List.of(component), x, y, positioner, favorite);
+        drawTooltip(graphics, textRenderer, List.of(component), x, y, positioner, favorite);
     }
 
     public static void drawTooltipWithFixedBorders(
-            GuiGraphicsExtractor context, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font textRenderer,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         drawTooltip(
-                context, textRenderer,
+                graphics, textRenderer,
                 List.of(component,
                         new ClientTooltipComponent() { //dump tooltip component to increase list size
                             public int getHeight(Font textRenderer) {return 0;}
@@ -173,33 +173,33 @@ public class Graphics {
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor context, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font textRenderer,
             List<ClientTooltipComponent> components,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         renderTooltipAsFavorite = favorite;
-        context.tooltip(textRenderer, components, x, y, positioner, null);
+        graphics.tooltip(textRenderer, components, x, y, positioner, null);
         renderTooltipAsFavorite = false;
     }
 
-    public static void renderStarInFavoriteTooltip(GuiGraphicsExtractor context, int x, int y, int width) {
-        context.pose().pushMatrix();
-        context.pose().translate(0,0);
+    public static void renderStarInFavoriteTooltip(GuiGraphicsExtractor graphics, int x, int y, int width) {
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(0,0);
         renderGuiTexture(
-                context,
+                graphics,
                 FavoriteButton.TEXTURE,
                 x + width - (FavoriteButton.BUTTON_WIDTH), y,
                 0, 0,
                 FavoriteButton.BUTTON_WIDTH, FavoriteButton.BUTTON_HEIGHT,
                 FavoriteButton.TEXTURE_WIDTH, FavoriteButton.TEXTURE_HEIGHT
         );
-        context.pose().popMatrix();
+        graphics.pose().popMatrix();
     }
 
     public static <H extends AbstractContainerMenu, S extends AbstractContainerScreen<H> & RPRInteractableScreen> void highlightAvailableSlots(
-            List<Item> items, GuiGraphicsExtractor context, S screen, int color
+            List<Item> items, GuiGraphicsExtractor graphics, S screen, int color
     ) {
         var allSlots = screen.getMenu().slots;
 
@@ -209,24 +209,24 @@ public class Graphics {
                 allSlots.subList(screen.getCraftSlotsAmount(), allSlots.size())
         );
 
-        highlightSlots(items, slotsToHighlight, context, screen.leftPos, screen.topPos, color);
+        highlightSlots(items, slotsToHighlight, graphics, screen.leftPos, screen.topPos, color);
     }
 
     public static void highlightSlots(
             List<Item> items, List<Slot> slots,
-            GuiGraphicsExtractor context,
+            GuiGraphicsExtractor graphics,
             int xOffset, int yOffset,
             int color
     ) {
         for (Slot slot : slots)
             if (items.contains(slot.getItem().getItem()))
-                highlightSlot(context, xOffset, yOffset, slot, color);
+                highlightSlot(graphics, xOffset, yOffset, slot, color);
     }
 
-    public static void highlightSlot(GuiGraphicsExtractor context, int xOffset, int yOffset, Slot slot, int color) {
+    public static void highlightSlot(GuiGraphicsExtractor graphics, int xOffset, int yOffset, Slot slot, int color) {
         int x = xOffset + slot.x - 1;
         int y = yOffset + slot.y - 1;
-        context.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color, color);
+        graphics.fillGradient(x, y, x + SLOT_SIZE, y + SLOT_SIZE, color, color);
     }
 
     public static ClientTooltipComponent tooltipOf(String string) {

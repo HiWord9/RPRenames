@@ -19,9 +19,9 @@ public abstract class TooltipBackgroundRendererMixin {
             at = @At(value = "TAIL"),
             method = "extractTooltipBackground"
     )
-    private static void onRender(GuiGraphicsExtractor context, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
+    private static void onRender(GuiGraphicsExtractor graphics, int x, int y, int width, int height, Identifier texture, CallbackInfo ci) {
         if (!Graphics.renderTooltipAsFavorite || !config().renderStarInFavoriteTooltip) return;
-        Graphics.renderStarInFavoriteTooltip(context, x, y, width);
+        Graphics.renderStarInFavoriteTooltip(graphics, x, y, width);
     }
 
     @ModifyArg(

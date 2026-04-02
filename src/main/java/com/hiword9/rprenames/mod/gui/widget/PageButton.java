@@ -36,11 +36,11 @@ public class PageButton extends AbstractWidget implements OffsetableWidget {
     }
 
     @Override
-    protected void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         int u = type == Type.DOWN ? 0 : UP_OFFSET_U;
         int v = !active ? DISABLED_OFFSET_V : isHovered ? FOCUSED_OFFSET_V : 0;
         Graphics.renderGuiTexture(
-                context,
+                graphics,
                 TEXTURE,
                 getX(), getY(), u, v,
                 getWidth(), getHeight(),
@@ -48,7 +48,7 @@ public class PageButton extends AbstractWidget implements OffsetableWidget {
         );
         if (!config().disablePageArrowsHints && hasShiftDown() && active && isHovered) {
             String key = "rprenames.gui.page" + (type == Type.DOWN ? "Down.toFirst" : "Up.toLast") + ".tooltip";
-            context.setTooltipForNextFrame(textRenderer(), Component.translatable(key).withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(textRenderer(), Component.translatable(key).withStyle(ChatFormatting.GRAY), mouseX, mouseY);
         }
     }
 

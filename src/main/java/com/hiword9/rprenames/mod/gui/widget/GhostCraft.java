@@ -31,13 +31,13 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (!doRender) return;
-        renderSlots(context, mouseX, mouseY, delta);
+        renderSlots(graphics, mouseX, mouseY, delta);
     }
 
-    private void renderSlots(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        for (GhostSlot slot : slots) slot.extractRenderState(context, mouseX, mouseY, delta);
+    private void renderSlots(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        for (GhostSlot slot : slots) slot.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 
     @Override
@@ -116,11 +116,11 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
         }
 
         @Override
-        public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
             if (content != null && !content.isEmpty()) {
-                Graphics.renderStack(context, content, getX() + 1, getY() + 1);
+                Graphics.renderStack(graphics, content, getX() + 1, getY() + 1);
                 if (isMouseOver(mouseX, mouseY)) {
-                    context.setComponentTooltipForNextFrame(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
+                    graphics.setComponentTooltipForNextFrame(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
                 }
             }
             int color;
@@ -129,7 +129,7 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
             else if (content != null) color = getWrongHighlightColor();
             else return;
 
-            context.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
+            graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
         }
 
         @Override

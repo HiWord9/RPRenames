@@ -316,7 +316,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 // Implementations
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (!open) {
             searchField.setFocused(false);
             return;
@@ -325,7 +325,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
         checkForInvChanges();
 
         Graphics.renderGuiTexture(
-                context,
+                graphics,
                 MENU_TEXTURE,
                 getX() + MENU_START_X, getY(),
                 0,0,
@@ -335,7 +335,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 
         if (searchField != null && !searchField.isFocused() && searchField.getValue().isEmpty()) {
             Graphics.renderText(
-                    context, SEARCH_HINT_TEXT,
+                    graphics, SEARCH_HINT_TEXT,
                     getX() + MENU_START_X + SEARCH_FIELD_X_OFFSET,
                     getY() + 15,
                     true, false
@@ -351,7 +351,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
                 key = "noFavoriteRenamesFound";
 
             Graphics.renderText(
-                    context,
+                    graphics,
                     Component.translatable("rprenames.gui.%s".formatted(key))
                             .withStyle(Style.EMPTY
                                     .withItalic(true)
@@ -362,7 +362,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
             );
         } else {
             Graphics.renderText(
-                    context, pageCount,
+                    graphics, pageCount,
                     menuCenterX, getY() + 140,
                     false, true
             );
@@ -370,19 +370,19 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 
         RenameButton focusedButton = null;
         for (RenameButton renameButton : buttons) {
-            renameButton.extractRenderState(context, mouseX, mouseY, 0);
+            renameButton.extractRenderState(graphics, mouseX, mouseY, 0);
             if (renameButton.isHovered()) focusedButton = renameButton;
         }
 
         for (RenameButton renameButton : buttons) {
-            renameButton.renderForeground(context, mouseX, mouseY);
+            renameButton.renderForeground(graphics, mouseX, mouseY);
         }
 
         for (Renderable widget : widgets) {
-            widget.extractRenderState(context, mouseX, mouseY, 0);
+            widget.extractRenderState(graphics, mouseX, mouseY, 0);
         }
 
-        if (focusedButton != null) focusedButton.renderTooltip(context, mouseX, mouseY);
+        if (focusedButton != null) focusedButton.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
