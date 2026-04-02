@@ -127,7 +127,7 @@ public class RichRenameRenderer<R extends Rename>
     protected void playerPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 graphics,
-                textRenderer(),
+                font(),
                 playerPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,
@@ -138,7 +138,7 @@ public class RichRenameRenderer<R extends Rename>
     protected void itemPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, ClientTooltipPositioner positioner) {
         Graphics.drawTooltipWithFixedBorders(
                 graphics,
-                textRenderer(),
+                font(),
                 itemPreviewTooltipComponent,
                 mouseX, mouseY,
                 positioner,

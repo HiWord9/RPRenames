@@ -53,9 +53,9 @@ public class Graphics {
     }
 
     public static void renderText(GuiGraphicsExtractor graphics, Component text, int color, int x, int y, boolean shadow, boolean centered) {
-        var renderer = textRenderer();
-        int xOffset = centered ? renderer.width(text) / 2 : 0;
-        graphics.text(renderer, text, x - xOffset, y, color, shadow);
+        var font = font();
+        int xOffset = centered ? font.width(text) / 2 : 0;
+        graphics.text(font, text, x - xOffset, y, color, shadow);
     }
 
     public static void renderGuiTexture(
@@ -135,37 +135,37 @@ public class Graphics {
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor graphics, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font font,
             List<ClientTooltipComponent> components,
             int x, int y,
             ClientTooltipPositioner positioner
     ) {
-        drawTooltip(graphics, textRenderer, components, x, y, positioner, false);
+        drawTooltip(graphics, font, components, x, y, positioner, false);
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor graphics, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font font,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
-        drawTooltip(graphics, textRenderer, List.of(component), x, y, positioner, favorite);
+        drawTooltip(graphics, font, List.of(component), x, y, positioner, favorite);
     }
 
     public static void drawTooltipWithFixedBorders(
-            GuiGraphicsExtractor graphics, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font font,
             ClientTooltipComponent component,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         drawTooltip(
-                graphics, textRenderer,
+                graphics, font,
                 List.of(component,
                         new ClientTooltipComponent() { //dump tooltip component to increase list size
-                            public int getHeight(Font textRenderer) {return 0;}
-                            public int getWidth(Font textRenderer) {return 0;}
+                            public int getHeight(Font font) {return 0;}
+                            public int getWidth(Font font) {return 0;}
                         }
                 ),
                 x, y, positioner, favorite
@@ -173,14 +173,14 @@ public class Graphics {
     }
 
     public static void drawTooltip(
-            GuiGraphicsExtractor graphics, Font textRenderer,
+            GuiGraphicsExtractor graphics, Font font,
             List<ClientTooltipComponent> components,
             int x, int y,
             ClientTooltipPositioner positioner,
             boolean favorite
     ) {
         renderTooltipAsFavorite = favorite;
-        graphics.tooltip(textRenderer, components, x, y, positioner, null);
+        graphics.tooltip(font, components, x, y, positioner, null);
         renderTooltipAsFavorite = false;
     }
 

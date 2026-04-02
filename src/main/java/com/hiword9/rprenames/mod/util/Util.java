@@ -31,7 +31,7 @@ public class Util {
         return client().player;
     }
 
-    public static Font textRenderer() throws AssertionError {
+    public static Font font() throws AssertionError {
         assert client() != null;
         return client().font;
     }

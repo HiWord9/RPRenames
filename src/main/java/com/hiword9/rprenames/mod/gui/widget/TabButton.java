@@ -53,7 +53,7 @@ public class TabButton extends AbstractWidget implements OffsetableWidget {
         if (isMouseOver(mouseX, mouseY)) {
             Graphics.drawTooltip(
                     graphics,
-                    textRenderer(),
+                    font(),
                     List.of(Graphics.tooltipOf(Component.translatable(TRANSLATION_PREFIX + tab.toString()))),
                     mouseX, mouseY,
                     DefaultTooltipPositioner.INSTANCE

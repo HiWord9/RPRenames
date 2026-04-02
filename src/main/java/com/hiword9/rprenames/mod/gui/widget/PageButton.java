@@ -48,7 +48,7 @@ public class PageButton extends AbstractWidget implements OffsetableWidget {
         );
         if (!config().disablePageArrowsHints && hasShiftDown() && active && isHovered) {
             String key = "rprenames.gui.page" + (type == Type.DOWN ? "Down.toFirst" : "Up.toLast") + ".tooltip";
-            graphics.setTooltipForNextFrame(textRenderer(), Component.translatable(key).withStyle(ChatFormatting.GRAY), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font(), Component.translatable(key).withStyle(ChatFormatting.GRAY), mouseX, mouseY);
         }
     }
 

@@ -7,7 +7,7 @@ import org.joml.Vector2ic;
 
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.textRenderer;
+import static com.hiword9.rprenames.mod.util.Util.font;
 
 public class PreviewTooltipPositioner implements ClientTooltipPositioner {
     public final PreviewPos previewPos;
@@ -32,7 +32,7 @@ public class PreviewTooltipPositioner implements ClientTooltipPositioner {
             int yOffset = -12;
             int tooltipHeight = tooltipComponents.size() == 1 ? -2 : 0;
             for (ClientTooltipComponent component : tooltipComponents) {
-                tooltipHeight += component.getHeight(textRenderer());
+                tooltipHeight += component.getHeight(font());
             }
             yOffset += tooltipHeight + 10;
 

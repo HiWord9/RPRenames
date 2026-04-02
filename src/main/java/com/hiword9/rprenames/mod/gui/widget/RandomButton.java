@@ -48,7 +48,7 @@ public class RandomButton extends AbstractWidget implements OffsetableWidget {
                 TEXTURE_WIDTH, TEXTURE_HEIGHT
         );
         if (!isHovered) return;
-        graphics.setTooltipForNextFrame(textRenderer(), Component.translatable(TOOLTIP_KEY), mouseX, mouseY);
+        graphics.setTooltipForNextFrame(font(), Component.translatable(TOOLTIP_KEY), mouseX, mouseY);
     }
 
     @Override

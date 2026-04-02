@@ -47,7 +47,7 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
     public void onRenderTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         Graphics.drawTooltip(
                 graphics,
-                textRenderer(),
+                font(),
                 tooltipComponents,
                 mouseX, mouseY,
                 DefaultTooltipPositioner.INSTANCE

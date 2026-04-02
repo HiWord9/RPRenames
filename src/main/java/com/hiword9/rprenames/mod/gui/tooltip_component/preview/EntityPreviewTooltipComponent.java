@@ -23,19 +23,19 @@ public class EntityPreviewTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(Font textRenderer) {
+    public int getHeight(Font font) {
         return height;
     }
 
     @Override
-    public int getWidth(Font textRenderer) {
+    public int getWidth(Font font) {
         return width;
     }
 
     @Override
-    public void extractImage(Font textRenderer, int x, int y, int width, int height,  GuiGraphicsExtractor graphics) {
+    public void extractImage(Font font, int x, int y, int width, int height,  GuiGraphicsExtractor graphics) {
         Graphics.renderEntityInBox(graphics,
-                new ScreenRectangle(x - 2, y - 2, getWidth(textRenderer) + 4, getHeight(textRenderer) + 2),
+                new ScreenRectangle(x - 2, y - 2, getWidth(font) + 4, getHeight(font) + 2),
                 size, entity, spin);
     }
 }

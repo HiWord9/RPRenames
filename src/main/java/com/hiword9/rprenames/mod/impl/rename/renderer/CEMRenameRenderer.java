@@ -112,7 +112,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
     public void drawPreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY, List<ClientTooltipComponent> mainTooltip) {
         Graphics.drawTooltipWithFixedBorders(
                 graphics,
-                textRenderer(),
+                font(),
                 entityPreviewTooltipComponent,
                 mouseX, mouseY,
                 new PreviewTooltipPositioner(config().previewPos, mainTooltip),

@@ -26,17 +26,17 @@ public class ItemPreviewTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(Font textRenderer) {
+    public int getHeight(Font font) {
         return height;
     }
 
     @Override
-    public int getWidth(Font textRenderer) {
+    public int getWidth(Font font) {
         return width;
     }
 
     @Override
-    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+    public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         Graphics.renderStack(graphics, stack, x + stackRenderStartX, y + stackRenderStartY, size);
     }
 }

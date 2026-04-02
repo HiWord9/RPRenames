@@ -24,12 +24,12 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(Font textRenderer) {
+    public int getHeight(Font font) {
         return SLOT_SIZE * Math.min(2, 1 + (items.size() - 1) / 4) + 3;
     }
 
     @Override
-    public int getWidth(Font textRenderer) {
+    public int getWidth(Font font) {
         int size = items.size();
         if (size <= 4) {
             return size * SLOT_SIZE;
@@ -37,7 +37,7 @@ public class MultiItemTooltipComponent implements ClientTooltipComponent {
         return SLOT_SIZE * Math.min(4, 3 + (size - 4) / 3);
     }
 
-    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+    public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         int i = 0;
         int size = items.size();
         var sorted = sort(items);

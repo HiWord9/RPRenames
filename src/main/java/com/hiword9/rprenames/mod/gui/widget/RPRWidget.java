@@ -142,7 +142,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
         );
 
         searchField = new EditBox(
-                textRenderer(),
+                font(),
                 MENU_START_X + SEARCH_FIELD_X_OFFSET,
                 15,
                 MENU_TEXTURE_WIDTH - 53, 10,

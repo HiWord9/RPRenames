@@ -120,7 +120,7 @@ public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
             if (content != null && !content.isEmpty()) {
                 Graphics.renderStack(graphics, content, getX() + 1, getY() + 1);
                 if (isMouseOver(mouseX, mouseY)) {
-                    graphics.setComponentTooltipForNextFrame(textRenderer(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
+                    graphics.setComponentTooltipForNextFrame(font(), Screen.getTooltipFromItem(client(), content), mouseX, mouseY);
                 }
             }
             int color;

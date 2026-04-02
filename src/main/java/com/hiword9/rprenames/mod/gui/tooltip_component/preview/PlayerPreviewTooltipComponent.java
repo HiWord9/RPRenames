@@ -63,7 +63,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
     }
 
     @Override
-    public void extractImage(Font textRenderer, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
+    public void extractImage(Font font, int x, int y, int width, int height, GuiGraphicsExtractor graphics) {
         LocalPlayer player = (LocalPlayer) entity;
 
         assert player != null;
@@ -77,7 +77,7 @@ public class PlayerPreviewTooltipComponent extends EntityPreviewTooltipComponent
         float k = player.yHeadRotO;
         float l = player.yHeadRot;
 
-        super.extractImage(textRenderer, x, y, width, height, graphics);
+        super.extractImage(font, x, y, width, height, graphics);
 
         player.yBodyRot = h;
         player.setYRot(i);
