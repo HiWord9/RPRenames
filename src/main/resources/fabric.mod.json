@@ -48,7 +48,7 @@
     "java": ">=${java_version}"
   },
   "recommends": {
-    "cloth-config": "${cloth_config_version_range}"
+    "yet_another_config_lib_v3": "*"
   },
   "breaks": {
     "easyanvils": "*",

@@ -12,10 +12,10 @@ import net.fabricmc.loader.api.FabricLoader;
 public class ModMenuIntegration implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        if (FabricLoader.getInstance().isModLoaded("cloth-config")) {
+        if (FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3")) {
             return ModConfigScreenFactory::create;
         }
-        RPRenames.LOGGER.info("Cloth-config is not installed! No configuration Screen for RPRenames available");
+        RPRenames.LOGGER.info("YetAnotherConfigLib is not installed! No configuration Screen for RPRenames available");
         return new NullScreenFactory<>();
     }
 }
