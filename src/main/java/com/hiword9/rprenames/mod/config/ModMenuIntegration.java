@@ -3,6 +3,7 @@ package com.hiword9.rprenames.mod.config;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import com.terraformersmc.modmenu.util.NullScreenFactory;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,6 +16,6 @@ public class ModMenuIntegration implements ModMenuApi {
             return ModConfigScreenFactory::create;
         }
         RPRenames.LOGGER.info("Cloth-config is not installed! No configuration Screen for RPRenames available");
-        return screen -> null;
+        return new NullScreenFactory<>();
     }
 }
