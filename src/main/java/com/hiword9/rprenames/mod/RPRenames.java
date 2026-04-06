@@ -13,6 +13,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.reloader.ResourceReloaderKeys;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
@@ -39,6 +40,8 @@ public class RPRenames implements ClientModInitializer {
     public static final Path configPathFavorite = Path.of(configPath + "/favorite");
 
     public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
+
+    public static final Identifier RENAMES_RELOADER_ID = Identifier.fromNamespaceAndPath(MOD_ID, "renames_reloader");
 
     public static final CompositeRenamesProvider<Rename> renamesProvider = new CompositeRenamesProvider<>();
 
@@ -78,6 +81,11 @@ public class RPRenames implements ClientModInitializer {
         updatableRenamesManager.parsers().add(cemParser);
 
         favoritesManager.loadSavedFavorites();
+
+        var resourceLoader = ResourceLoader.get(PackType.CLIENT_RESOURCES);
+
+        resourceLoader.registerReloadListener(RENAMES_RELOADER_ID, updatableRenamesManager);
+        resourceLoader.addListenerOrdering(ResourceReloaderKeys.AFTER_VANILLA, RENAMES_RELOADER_ID);
     }
 
     public static Identifier asId(String path) {

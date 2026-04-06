@@ -6,7 +6,6 @@
   "client": [
     "AnvilScreenMixin",
     "CreativeInventoryScreenMixin",
-    "MinecraftClientMixin",
     "TooltipBackgroundRendererMixin",
     "BakedModelManagerMixin"
   ],
