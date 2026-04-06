@@ -80,14 +80,12 @@ public class Graphics {
 
     public static void extractItemStack(GuiGraphicsExtractor graphics, ItemStack itemStack, int x, int y, int size) {
         float scale = size != STACK_IN_SLOT_SIZE ? ((float) size / STACK_IN_SLOT_SIZE) : 1f;
-        graphics.nextStratum();
         var matrices = graphics.pose();
         matrices.pushMatrix();
         matrices.translate(x, y);
         matrices.scale(scale, scale);
         graphics.fakeItem(itemStack, 0, 0);
         matrices.popMatrix();
-        graphics.guiRenderState.up();
     }
 
     @SuppressWarnings("unchecked")
