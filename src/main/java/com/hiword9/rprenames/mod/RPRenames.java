@@ -17,13 +17,17 @@ import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.CreativeModeTab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.function.BiConsumer;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
 
@@ -63,7 +67,9 @@ public class RPRenames implements ClientModInitializer {
             });
         }
 
-        registerItemGroup();
+        registerItemGroup((id, tab)
+                -> Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id, tab)
+        );
 
         renamesProvider.providers.add(updatableRenamesManager);
 
@@ -83,7 +89,7 @@ public class RPRenames implements ClientModInitializer {
         RPRenamesCommand.register((CommandDispatcher<SharedSuggestionProvider>) dispatcher, registryAccess);
     }
 
-    public static void registerItemGroup() {
-        RPRenamesItemGroup.register();
+    public static void registerItemGroup(BiConsumer<Identifier, CreativeModeTab> registry) {
+        RPRenamesItemGroup.register(registry);
     }
 }
