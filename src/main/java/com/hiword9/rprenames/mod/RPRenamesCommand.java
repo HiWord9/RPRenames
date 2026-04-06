@@ -6,12 +6,14 @@ import com.hiword9.rprenames.mod.util.PropertiesHelper;
 import com.hiword9.rprenames.mod.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.serialization.DynamicOps;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -31,33 +33,32 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.hiword9.rprenames.mod.util.Util.*;
-import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 public class RPRenamesCommand {
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext commandRegistryAccess) {
+    public static void register(CommandDispatcher<SharedSuggestionProvider> dispatcher, CommandBuildContext commandRegistryAccess) {
         dispatcher.register(literal("rprenames")
                 .then(literal("info")
                         .executes(context -> info(context.getSource())))
                 .then(literal("list")
                         .executes(context -> list(context.getSource()))
-                        .then(ClientCommands.argument("item", ItemArgument.item(commandRegistryAccess))
+                        .then(argument("item", ItemArgument.item(commandRegistryAccess))
                                 .executes(context -> list(context.getSource(), ItemArgument.getItem(context, "item").item().value()))))
                 .then(literal("solveRegex")
-                        .then(ClientCommands.argument("regex", StringArgumentType.greedyString())
+                        .then(argument("regex", StringArgumentType.greedyString())
                                 .executes(context -> solveRegex(context.getSource(), StringArgumentType.getString(context, "regex")))))
                 .then(literal("disableHints")
                         .executes(context -> disableHints(context.getSource()))));
     }
 
-    private static int disableHints(FabricClientCommandSource source) {
+    private static int disableHints(SharedSuggestionProvider source) {
         config().disableTooltipHints = !config().disableTooltipHints;
         config().write();
         if (config().disableTooltipHints) {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable("rprenames.command.disableHints.disabled")
                     .withStyle(ChatFormatting.GOLD)
             );
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable(
                             "rprenames.command.disableHints.howToTurnOn",
                             Component.translatable("rprenames.gui.tooltipHint.disable.command")
@@ -65,7 +66,7 @@ public class RPRenamesCommand {
                             .withStyle(ChatFormatting.GOLD)
             );
         } else {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable("rprenames.command.disableHints.enabled")
                     .withStyle(ChatFormatting.GOLD)
             );
@@ -73,10 +74,10 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    public static int info(FabricClientCommandSource source) {
-        ItemStack itemStack = source.getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
+    public static int info(SharedSuggestionProvider source) {
+        ItemStack itemStack = player().getItemInHand(InteractionHand.MAIN_HAND);
         if (itemStack.isEmpty()) {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable("rprenames.command.info.noItemGiven")
                     .withStyle(ChatFormatting.RED)
             );
@@ -91,14 +92,14 @@ public class RPRenamesCommand {
         }
 
         if (!(matchRename instanceof Informative informative)) {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable("rprenames.command.info.noRenamesFound")
                     .withStyle(ChatFormatting.RED)
             );
             return Command.SINGLE_SUCCESS;
         }
 
-        source.sendFeedback(
+        sendFeedback(
                 Component.translatable("rprenames.command.info.foundProperties")
                 .withStyle(ChatFormatting.YELLOW)
         );
@@ -107,20 +108,20 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static void print(List<Component> lines, FabricClientCommandSource source) {
+    private static void print(List<Component> lines, SharedSuggestionProvider source) {
         for (Component text : lines) {
-            source.sendFeedback(text);
+            sendFeedback(text);
         }
     }
 
-    public static int list(FabricClientCommandSource source) {
-        return list(source, source.getPlayer().getItemInHand(InteractionHand.MAIN_HAND).getItem());
+    public static int list(SharedSuggestionProvider source) {
+        return list(source, player().getItemInHand(InteractionHand.MAIN_HAND).getItem());
     }
 
-    public static int list(FabricClientCommandSource source, Item item) {
+    public static int list(SharedSuggestionProvider source, Item item) {
         var renames = RPRenames.renamesProvider.getRenames(item);
         if (!renames.isEmpty()) {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable(
                             "rprenames.command.list.foundRenames",
                             Component.translatable(item.getDescriptionId())
@@ -128,7 +129,7 @@ public class RPRenamesCommand {
             );
             printRenameList(renames, source);
         } else {
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable(
                             "rprenames.command.list.noRenamesFound",
                             Component.translatable(item.getDescriptionId())
@@ -139,11 +140,11 @@ public class RPRenamesCommand {
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int solveRegex(FabricClientCommandSource source, String regex) {
+    private static int solveRegex(SharedSuggestionProvider source, String regex) {
         String result = PropertiesHelper.solveRegex(PropertiesHelper.parseEscapes(regex));
         Pattern pattern = Pattern.compile(regex);
         if (pattern.matcher(result).matches()) {
-            source.sendFeedback(
+            sendFeedback(
                     Component.nullToEmpty(result).copy()
                     .withStyle(Style.EMPTY
                             .withColor(ChatFormatting.LIGHT_PURPLE)
@@ -152,7 +153,7 @@ public class RPRenamesCommand {
                     )
             );
         } else {
-            source.sendError(
+            sendError(
                     Component.translatable("rprenames.command.solveRegex.error")
                     .withStyle(Style.EMPTY
                             .withColor(ChatFormatting.RED)
@@ -171,7 +172,7 @@ public class RPRenamesCommand {
         return null;
     }
 
-    private static void printRenameList(List<Rename> renames, FabricClientCommandSource source) {
+    private static void printRenameList(List<Rename> renames, SharedSuggestionProvider source) {
         RPRenames.LOGGER.warn("Generating give commands with components, this may crash!");
         RPRenames.LOGGER.warn("If it is, please report the accident to https://github.com/HiWord9/RPRenames/issues");
         for (Rename r : renames) {
@@ -185,7 +186,7 @@ public class RPRenamesCommand {
                     + (itemStack.getCount() > 1 ? " " + itemStack.getCount() : "");
 
             ClickEvent runGive = new ClickEvent.RunCommand(giveCommand);
-            source.sendFeedback(
+            sendFeedback(
                     Component.translatable("rprenames.command.list.givePrefix")
                     .withStyle(Style.EMPTY
                             .withColor(ChatFormatting.GRAY)
@@ -205,7 +206,7 @@ public class RPRenamesCommand {
     }
 
     @SuppressWarnings("unchecked") // I am not quiet sure that this will not crash, but let's try as beta
-    private static <T> String getComponentsCommandArgument(FabricClientCommandSource source, ItemStack stack) {
+    private static <T> String getComponentsCommandArgument(SharedSuggestionProvider source, ItemStack stack) {
         if (!(stack.getComponents() instanceof PatchedDataComponentMap)) return "";
 
         DataComponentPatch changes = ((PatchedDataComponentMap) stack.getComponents()).asPatch();
@@ -239,5 +240,22 @@ public class RPRenamesCommand {
         resultBuilder.append("]");
 
         return resultBuilder.toString();
+    }
+
+    private static void sendFeedback(Component message) {
+        client().gui.getChat().addClientSystemMessage(message);
+        client().getNarrator().saySystemChatQueued(message);
+    }
+
+    private static void sendError(Component message) {
+        sendFeedback(Component.empty().append(message).withStyle(ChatFormatting.RED));
+    }
+
+    private static LiteralArgumentBuilder<SharedSuggestionProvider> literal(String name) {
+        return LiteralArgumentBuilder.literal(name);
+    }
+
+    private static <T> RequiredArgumentBuilder<SharedSuggestionProvider, T> argument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.argument(name, type);
     }
 }

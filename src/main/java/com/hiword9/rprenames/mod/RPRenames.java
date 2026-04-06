@@ -12,11 +12,11 @@ import com.hiword9.rprenames.mod.item_group.RPRenamesItemGroup;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -78,8 +78,9 @@ public class RPRenames implements ClientModInitializer {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
-    public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registryAccess) {
-        RPRenamesCommand.register(dispatcher, registryAccess);
+    @SuppressWarnings("unchecked")
+    public static <T extends SharedSuggestionProvider> void registerCommand(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess) {
+        RPRenamesCommand.register((CommandDispatcher<SharedSuggestionProvider>) dispatcher, registryAccess);
     }
 
     public static void registerItemGroup() {
