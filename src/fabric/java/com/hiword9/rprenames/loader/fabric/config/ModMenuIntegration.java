@@ -1,6 +1,7 @@
-package com.hiword9.rprenames.mod.config;
+package com.hiword9.rprenames.loader.fabric.config;
 
 import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.config.ModConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import com.terraformersmc.modmenu.util.NullScreenFactory;

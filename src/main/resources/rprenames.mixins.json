@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "${mod_main_dir}.mixin",
+  "package": "${mod_main_dir}.mod.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AnvilScreenMixin",

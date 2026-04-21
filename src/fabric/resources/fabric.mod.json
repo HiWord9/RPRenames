@@ -30,10 +30,10 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "${mod_main_dir}.${mod_client_class}"
+      "${mod_main_dir}.loader.fabric.${mod_client_class}Fabric"
     ],
     "modmenu": [
-      "${mod_main_dir}.${mod_modmenu_impl_subdir}"
+      "${mod_main_dir}.loader.fabric.${mod_modmenu_impl_subdir}"
     ]
   },
   "mixins": [

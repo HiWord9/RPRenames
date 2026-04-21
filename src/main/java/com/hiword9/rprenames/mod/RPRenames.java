@@ -10,17 +10,8 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.UpdatableRenamesManager;
 import com.hiword9.rprenames.mod.item_group.RPRenamesItemGroup;
 import com.mojang.brigadier.CommandDispatcher;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.reloader.ResourceReloaderKeys;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.SharedSuggestionProvider;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.CreativeModeTab;
 import org.slf4j.Logger;
@@ -30,16 +21,14 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
-
-public class RPRenames implements ClientModInitializer {
+public class RPRenames {
     public static final String MOD_ID = "rprenames";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final Path configPath = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID);
+    public static final Path configPath = Settings.getConfigDir().resolve(MOD_ID);
     public static final Path configPathFavorite = Path.of(configPath + "/favorite");
 
-    public static final File MOD_CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "rprenames.json");
+    public static final File MOD_CONFIG_FILE = new File(Settings.getConfigDir().toFile(), "rprenames.json");
 
     public static final Identifier RENAMES_RELOADER_ID = Identifier.fromNamespaceAndPath(MOD_ID, "renames_reloader");
 
@@ -52,27 +41,8 @@ public class RPRenames implements ClientModInitializer {
 
     public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
 
-    @Override
-    public void onInitializeClient() {
+    public static void onInit() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
-        ClientCommandRegistrationCallback.EVENT.register(RPRenames::registerCommand);
-        if (config().loadModBuiltinResources) {
-            LOGGER.info("Loading RPRenames built-in resource packs");
-            FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
-                for (String pack : new String[]{"vanillish", "default_dark_mode", "high_contrasted"}) {
-                    ResourceLoader.registerBuiltinPack(
-                            asId(pack),
-                            container,
-                            Component.translatable("rprenames.builtinResourcePack." + pack),
-                            PackActivationType.NORMAL
-                    );
-                }
-            });
-        }
-
-        registerItemGroup((id, tab)
-                -> Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, id, tab)
-        );
 
         renamesProvider.providers.add(updatableRenamesManager);
 
@@ -81,11 +51,6 @@ public class RPRenames implements ClientModInitializer {
         updatableRenamesManager.parsers().add(cemParser);
 
         favoritesManager.loadSavedFavorites();
-
-        var resourceLoader = ResourceLoader.get(PackType.CLIENT_RESOURCES);
-
-        resourceLoader.registerReloadListener(RENAMES_RELOADER_ID, updatableRenamesManager);
-        resourceLoader.addListenerOrdering(ResourceReloaderKeys.AFTER_VANILLA, RENAMES_RELOADER_ID);
     }
 
     public static Identifier asId(String path) {

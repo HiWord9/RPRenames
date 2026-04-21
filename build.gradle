@@ -1,6 +1,7 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.15-SNAPSHOT'
 	id 'maven-publish'
+	id 'xyz.wagyourtail.unimined' version '1.4.2-SNAPSHOT'
+	id "com.gradleup.shadow" version "9.4.1"
 }
 
 base {
@@ -10,35 +11,100 @@ base {
 version = project.mod_version
 group = project.maven_group
 
-loom {
-	accessWidenerPath = file("src/main/resources/${mod_id}.accesswidener")
-
-	mixin {
-		defaultRefmapName = "${mod_id}-refmap.json"
-	}
-}
-
 repositories {
+	unimined.neoForgedMaven()
+	unimined.spongeMaven()
+	unimined.wagYourMaven("snapshots")
+	unimined.modrinthMaven()
 	maven { url "https://maven.isxander.dev/releases/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
-dependencies {
-	// Basic settings
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API.
-	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	implementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
-
-	implementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
+configurations {
+	shadow
 }
 
-processResources {
+sourceSets {
+	fabric
+	neoforge
+}
 
+unimined.minecraft {
+	version project.minecraft_version
+
+	fabric {
+		loader loader_version
+		accessWidener file("src/main/resources/${project.mod_id}.accesswidener")
+	}
+
+	defaultRemapJar = false
+}
+
+unimined.minecraft(sourceSets.fabric) {
+	combineWith(sourceSets.main)
+
+	fabric {
+		loader loader_version
+		accessWidener file("src/main/resources/${project.mod_id}.accesswidener")
+	}
+
+	defaultRemapJar = true
+	defaultRemapSourcesJar = true
+}
+
+unimined.minecraft(sourceSets.neoforge) {
+	combineWith(sourceSets.main)
+
+	neoForge {
+		loader("net.neoforged:neoforge:$project.neoforge_version")
+		accessTransformer aw2at(file("src/main/resources/${project.mod_id}.accesswidener"))
+	}
+
+	minecraftRemapper.config {
+		ignoreConflicts(true)
+	}
+
+	defaultRemapJar = true
+	defaultRemapSourcesJar = true
+}
+
+dependencies {
+	compileOnly "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+
+	fabricImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	fabricImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	fabricImplementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
+
+	fabricImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	fabricImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric") {
+		exclude group: 'com.google.code.gson', module: 'gson'
+	}
+
+	neoforgeImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}-neoforge") {
+		exclude group: 'com.google.code.gson', module: 'gson'
+	}
+}
+
+shadowJar {
+	configurations = [project.configurations.shadow]
+
+	from(tasks.named("remapFabricJar").map { zipTree(it.archiveFile) })
+	from(tasks.named("remapNeoforgeJar").map { zipTree(it.archiveFile) })
+
+	archiveClassifier.set null
+}
+
+tasks.register("shadowSourcesJar", tasks.shadowJar.class as Class<Task>) {
+	dependsOn("sourcesJar")
+	configurations = [project.configurations.shadow]
+
+	from(tasks.named("remapFabricSourcesJar").map { zipTree(it.archiveFile) })
+	from(tasks.named("remapNeoforgeSourcesJar").map { zipTree(it.archiveFile) })
+
+	archiveClassifier.set "sources"
+}
+
+[tasks.processResources, tasks.processFabricResources, tasks.processNeoforgeResources].each {
 	def expandProps = [
 			"version"                         : version,
 			"group"                           : project.group, //Else we target the task's group.
@@ -68,10 +134,10 @@ processResources {
 			"loader_version_range"            : loader_version_range,
 			"java_version"                    : java_version
 	]
-	filesMatching(['fabric.mod.json', mod_id + '.mixins.json']) {
+	it.filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml', mod_id + '.mixins.json']) {
 		expand expandProps
 	}
-	inputs.properties(expandProps)
+	it.inputs.properties(expandProps)
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -83,22 +149,12 @@ java {
 	withSourcesJar()
 }
 
+tasks.named("sourcesJar").configure {
+	finalizedBy("shadowSourcesJar")
+}
+
 jar {
 	from("LICENSE") {
 		rename { "${it}_${base.archivesName}"}
-	}
-}
-
-// configure the maven publication
-// (currently not used)
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	repositories {
-		// Add repositories to publish to here.
 	}
 }

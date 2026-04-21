@@ -29,7 +29,11 @@ public class RPRenamesItemGroup {
                         .icon(RPRenamesItemGroup::getItemGroupIcon)
                         .type(CreativeModeTab.Type.SEARCH)
                         .backgroundTexture(CreativeModeTab.createTextureLocation("item_search"))
-                        .displayItems((displayContext, entries) -> update())
+                        .displayItems((_, entries) -> {
+                            // some loaders may not show tab if it's "empty"
+                            entries.accept(getItemGroupIcon());
+                            update();
+                        })
                         .build()
         );
     }
