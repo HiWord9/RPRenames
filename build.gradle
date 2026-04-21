@@ -33,7 +33,7 @@ unimined.minecraft {
 	version project.minecraft_version
 
 	fabric {
-		loader loader_version
+		loader fabric_loader_version
 		accessWidener file("src/main/resources/${project.mod_id}.accesswidener")
 	}
 
@@ -44,7 +44,7 @@ unimined.minecraft(sourceSets.fabric) {
 	combineWith(sourceSets.main)
 
 	fabric {
-		loader loader_version
+		loader fabric_loader_version
 		accessWidener file("src/main/resources/${project.mod_id}.accesswidener")
 	}
 
@@ -71,7 +71,7 @@ unimined.minecraft(sourceSets.neoforge) {
 dependencies {
 	compileOnly "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
 
-	fabricImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	fabricImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 	fabricImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	fabricImplementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
 
@@ -113,7 +113,7 @@ tasks.register("shadowSourcesJar", tasks.shadowJar.class as Class<Task>) {
 			"mod_modmenu_impl_subdir"         : mod_modmenu_impl_subdir,
 
 			"fabric_version"                  : fabric_version,
-			"loader_version"                  : loader_version,
+			"fabric_loader_version"  		  : fabric_loader_version,
 
 			"mod_id"                          : mod_id,
 			"mod_name"                        : mod_name,
@@ -130,8 +130,8 @@ tasks.register("shadowSourcesJar", tasks.shadowJar.class as Class<Task>) {
 			"mod_license"                     : mod_license,
 			"mod_license_version"             : mod_license_version,
 
-			"minecraft_version_range"         : minecraft_version_range,
-			"loader_version_range"            : loader_version_range,
+			"fabric_minecraft_version_range"  : fabric_minecraft_version_range,
+			"fabric_loader_version_range"     : fabric_loader_version_range,
 			"java_version"                    : java_version
 	]
 	it.filesMatching(['fabric.mod.json', 'META-INF/neoforge.mods.toml', mod_id + '.mixins.json']) {
