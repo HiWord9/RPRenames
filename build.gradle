@@ -145,7 +145,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-	// generating sources
 	withSourcesJar()
 }
 
@@ -153,8 +152,7 @@ tasks.named("sourcesJar").configure {
 	finalizedBy("shadowSourcesJar")
 }
 
-jar {
-	from("LICENSE") {
-		rename { "${it}_${base.archivesName}"}
-	}
+tasks.withType(Jar).configureEach {
+	it.from("LICENSE")
+	it.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
