@@ -25,8 +25,8 @@ public class RPRenames {
     public static final String MOD_ID = "rprenames";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final Path configPath = Settings.getConfigDir().resolve(MOD_ID);
-    public static final Path configPathFavorite = Path.of(configPath + "/favorite");
+    public static final Path CONFIG_PATH = Settings.getConfigDir().resolve(MOD_ID);
+    public static final Path CONFIG_PATH_FAVORITE = Path.of(CONFIG_PATH + "/favorite");
 
     public static final File MOD_CONFIG_FILE = new File(Settings.getConfigDir().toFile(), "rprenames.json");
 
@@ -39,7 +39,7 @@ public class RPRenames {
     public static final CITParser citParser = new CITParser(updatableRenamesManager);
     public static final CEMParser cemParser = new CEMParser(updatableRenamesManager);
 
-    public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.configPathFavorite));
+    public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.CONFIG_PATH_FAVORITE));
 
     public static void onInit() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
