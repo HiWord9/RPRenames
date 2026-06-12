@@ -16,7 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import java.io.*;
 import java.util.*;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class CEMParser implements Parser {
     private static final String CEM_PATH = "optifine/cem";

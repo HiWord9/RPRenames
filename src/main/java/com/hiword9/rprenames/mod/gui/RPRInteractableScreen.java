@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.gui;
 
 import net.minecraft.world.inventory.ContainerInput;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 /**
  * Intended to be used in {@link net.minecraft.client.gui.screens.Screen Screen} subclass.

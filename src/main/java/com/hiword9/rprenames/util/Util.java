@@ -1,4 +1,4 @@
-package com.hiword9.rprenames.mod.util;
+package com.hiword9.rprenames.util;
 
 import com.hiword9.rprenames.mod.config.ModConfig;
 import com.google.gson.Gson;

@@ -29,7 +29,7 @@ import net.neoforged.neoforge.resource.JarContentsPackResources.JarContentsResou
 
 import java.util.Optional;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 import static com.hiword9.rprenames.mod.RPRenames.*;
 
 @Mod(value = MOD_ID, dist = Dist.CLIENT)

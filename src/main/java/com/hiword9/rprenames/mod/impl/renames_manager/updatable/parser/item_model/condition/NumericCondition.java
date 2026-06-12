@@ -10,7 +10,7 @@ import net.minecraft.world.item.component.CustomModelData;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public non-sealed class NumericCondition<P extends RangeSelectItemModelProperty> extends AbstractPropertyValueCondition<P, Float> {
     private NumericCondition(P property, float threshold) {

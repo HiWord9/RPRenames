@@ -3,7 +3,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.RPRInteractableScreen;
 import com.hiword9.rprenames.mod.impl.renames_manager.favorite.FavoritesManager;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.util.RenamesSearchEngine;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget {
     protected static Identifier MENU_TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/menu.png");

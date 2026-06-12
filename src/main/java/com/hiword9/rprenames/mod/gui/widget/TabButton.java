@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class TabButton extends AbstractWidget implements OffsetableWidget {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/tabs.png");

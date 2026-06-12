@@ -8,7 +8,7 @@ import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class ModConfig {
     public boolean ignoreCEM = false;

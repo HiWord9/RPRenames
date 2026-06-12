@@ -23,7 +23,7 @@ import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.item.equipment.trim.TrimPatterns;
 import java.util.*;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V> extends AbstractPropertyValueCondition<P, List<V>> {
     private SelectCondition(P property, List<V> values) {

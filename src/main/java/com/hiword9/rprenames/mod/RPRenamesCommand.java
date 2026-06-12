@@ -3,7 +3,7 @@ package com.hiword9.rprenames.mod;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.ext.rename.Informative;
 import com.hiword9.rprenames.mod.util.PropertiesHelper;
-import com.hiword9.rprenames.mod.util.Util;
+import com.hiword9.rprenames.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -32,7 +32,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class RPRenamesCommand {
     public static void register(CommandDispatcher<SharedSuggestionProvider> dispatcher, CommandBuildContext commandRegistryAccess) {

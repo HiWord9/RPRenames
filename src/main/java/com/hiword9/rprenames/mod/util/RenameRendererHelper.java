@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.gui.Graphics.tooltipOf;
+import static com.hiword9.rprenames.util.Graphics.tooltipOf;
 
 public class RenameRendererHelper {
 

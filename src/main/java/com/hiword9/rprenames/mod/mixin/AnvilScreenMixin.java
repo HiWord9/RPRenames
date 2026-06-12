@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 @Mixin(value = AnvilScreen.class, priority = 1200)
 public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> implements RPRInteractableScreen, Offsetable {

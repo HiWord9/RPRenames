@@ -5,7 +5,7 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.core.rename.renderer.SimpleRenameRenderer;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner;
 import com.hiword9.rprenames.api.ext.rename.renderer.Previewable;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.multiItemTooltipComponent;
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.packNameTooltipComponent;
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class RichRenameRenderer<R extends Rename>
         extends SimpleRenameRenderer<R>

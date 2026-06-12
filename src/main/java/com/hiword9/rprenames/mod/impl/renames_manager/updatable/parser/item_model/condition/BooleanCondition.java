@@ -17,7 +17,7 @@ import net.minecraft.world.item.component.CustomModelData;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.setAndFillMissing;
+import static com.hiword9.rprenames.util.Util.setAndFillMissing;
 
 public non-sealed class BooleanCondition<P extends ConditionalItemModelProperty> extends AbstractPropertyValueCondition<P, Boolean> {
     private BooleanCondition(P property, boolean value) {

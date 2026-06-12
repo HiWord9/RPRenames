@@ -5,6 +5,7 @@ import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
 import com.hiword9.rprenames.api.core.rename.Rename;
+import com.hiword9.rprenames.util.Util;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 

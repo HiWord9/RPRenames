@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.gui.tooltip_component;
 
 import com.hiword9.rprenames.mod.RPRenames;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.gui.Graphics.*;
-import static com.hiword9.rprenames.mod.util.Util.config;
+import static com.hiword9.rprenames.util.Graphics.*;
+import static com.hiword9.rprenames.util.Util.config;
 
 public class MultiItemTooltipComponent implements ClientTooltipComponent {
     static final Identifier SLOT = Identifier.fromNamespaceAndPath(RPRenames.MOD_ID, "textures/gui/slot.png");

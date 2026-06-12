@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.impl.rename;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
-import com.hiword9.rprenames.mod.util.Util;
+import com.hiword9.rprenames.util.Util;
 import com.google.gson.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;

@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.gui.widget;
 
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -10,8 +10,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.item.ItemStack;
 
-import static com.hiword9.rprenames.mod.gui.Graphics.*;
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Graphics.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class GhostCraft implements Renderable, GuiEventListener, Offsetable {
     public final GhostSlot[] slots;

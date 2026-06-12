@@ -1,6 +1,7 @@
-package com.hiword9.rprenames.mod.gui;
+package com.hiword9.rprenames.util;
 
 import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.gui.RPRInteractableScreen;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -28,7 +29,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class Graphics {
     static public final int DEFAULT_PREVIEW_WIDTH = 42;

@@ -16,7 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import java.util.*;
 
-import static com.hiword9.rprenames.mod.util.Util.config;
+import static com.hiword9.rprenames.util.Util.config;
 
 public class CITParser implements Parser {
     private static final List<String> ROOTS = List.of("mcpatcher", "optifine", "citresewn");

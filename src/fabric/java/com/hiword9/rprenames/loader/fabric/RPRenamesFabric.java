@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 
 import static com.hiword9.rprenames.mod.RPRenames.*;
-import static com.hiword9.rprenames.mod.util.Util.config;
+import static com.hiword9.rprenames.util.Util.config;
 
 public class RPRenamesFabric implements ClientModInitializer {
     @Override

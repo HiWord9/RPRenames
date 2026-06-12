@@ -27,8 +27,8 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.hiword9.rprenames.mod.util.Util.client;
-import static com.hiword9.rprenames.mod.util.Util.config;
+import static com.hiword9.rprenames.util.Util.client;
+import static com.hiword9.rprenames.util.Util.config;
 
 public class CITRename
         extends Rename

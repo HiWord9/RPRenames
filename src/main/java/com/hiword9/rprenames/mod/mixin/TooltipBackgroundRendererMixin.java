@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.mixin;
 
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.resources.Identifier;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.hiword9.rprenames.mod.util.Util.config;
+import static com.hiword9.rprenames.util.Util.config;
 
 @Mixin(value = TooltipRenderUtil.class)
 public abstract class TooltipBackgroundRendererMixin {

@@ -7,7 +7,7 @@ import org.joml.Vector2ic;
 
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.font;
+import static com.hiword9.rprenames.util.Util.font;
 
 public class PreviewTooltipPositioner implements ClientTooltipPositioner {
     public final PreviewPos previewPos;

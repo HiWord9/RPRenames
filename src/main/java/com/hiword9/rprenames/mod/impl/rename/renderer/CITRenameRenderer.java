@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.impl.rename.renderer;
 
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.hiword9.rprenames.mod.gui.Graphics.tooltipOf;
+import static com.hiword9.rprenames.util.Graphics.tooltipOf;
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.*;
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     protected static final MutableComponent playerPreviewHintShift = Component.translatable(

@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class CEMRename
         extends Rename

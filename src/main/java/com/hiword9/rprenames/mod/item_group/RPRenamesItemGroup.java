@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class RPRenamesItemGroup {
     public static final List<ItemStack> renamedItemStacks = new ArrayList<>();

@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.gui.widget;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.gui.RPRInteractableScreen;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
@@ -18,7 +18,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import java.util.List;
 
-import static com.hiword9.rprenames.mod.util.Util.*;
+import static com.hiword9.rprenames.util.Util.*;
 
 public class RenameButton extends AbstractWidget implements OffsetableWidget {
     final int highlightColor = config().getSlotHighlightRGBA();

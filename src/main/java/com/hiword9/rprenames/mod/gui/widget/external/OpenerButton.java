@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.gui.widget.external;
 
 import com.hiword9.rprenames.mod.RPRenames;
-import com.hiword9.rprenames.mod.gui.Graphics;
+import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

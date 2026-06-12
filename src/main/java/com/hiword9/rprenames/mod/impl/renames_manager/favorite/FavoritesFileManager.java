@@ -2,7 +2,7 @@ package com.hiword9.rprenames.mod.impl.renames_manager.favorite;
 
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.impl.rename.FavoriteRename;
-import com.hiword9.rprenames.mod.util.Util;
+import com.hiword9.rprenames.util.Util;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
