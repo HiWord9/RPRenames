@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.golem.SnowGolem;
@@ -40,7 +41,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
         this.favoriteSupplier = favoriteSupplier;
 
         var entityType = rename.getEntity();
-        this.entity = (LivingEntity) entityType.create(client().level, null);
+        this.entity = (LivingEntity) entityType.create(client().level, (EntitySpawnReason) null);
         prepareEntity(entity, rename);
 
         int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);

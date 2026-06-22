@@ -243,7 +243,7 @@ public class RPRenamesCommand {
     }
 
     private static void sendFeedback(Component message) {
-        client().gui.getChat().addClientSystemMessage(message);
+        client().gui.hud.getChat().addClientSystemMessage(message);
         client().getNarrator().saySystemChatQueued(message);
     }
 

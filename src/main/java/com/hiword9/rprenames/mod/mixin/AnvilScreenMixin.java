@@ -64,14 +64,14 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         if (shouldNotModify() || init) return;
         init = true;
 
-        assert minecraft != null && minecraft.screen != null;
-        int x = ((AnvilScreen) minecraft.screen).leftPos;
-        int y = ((AnvilScreen) minecraft.screen).topPos;
+        assert minecraft != null && minecraft.gui.screen() != null;
+        int x = ((AnvilScreen) minecraft.gui.screen()).leftPos;
+        int y = ((AnvilScreen) minecraft.gui.screen()).topPos;
 
         opener = new OpenerButton(rprWidget, x + 3, y + 44);
         favoriteButton = new FavoriteButton(rprWidget, x, y, config().favoriteButtonPosition);
 
-        var slots = ((AnvilScreen) minecraft.screen).getMenu().slots;
+        var slots = ((AnvilScreen) minecraft.gui.screen()).getMenu().slots;
         ghostCraft = new GhostCraft(
                 new GhostCraft.GhostSlot(x + slots.get(0).x - 1, y + slots.get(0).y - 1),
                 new GhostCraft.GhostSlot(x + slots.get(1).x - 1, y + slots.get(1).y - 1),
@@ -79,7 +79,7 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         );
 
         RPRInteractableScreen rprInteractableScreen = null;
-        if (minecraft.screen instanceof RPRInteractableScreen screen) {
+        if (minecraft.gui.screen() instanceof RPRInteractableScreen screen) {
             rprInteractableScreen = screen;
         }
 
@@ -295,7 +295,7 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         super.extractContents(graphics, mouseX, mouseY, a);
 
         if (shouldNotModify()) return;
-        if (minecraft == null || minecraft.screen == null) return;
+        if (minecraft == null || minecraft.gui.screen() == null) return;
 
         for (var drawable : widgets) {
             drawable.extractRenderState(graphics, mouseX, mouseY, a);
