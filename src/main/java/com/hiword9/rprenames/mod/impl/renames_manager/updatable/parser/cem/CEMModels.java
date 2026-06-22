@@ -155,7 +155,21 @@ public class CEMModels {
                             "zombie_villager/type/desert", "zombie_villager/type/jungle", "zombie_villager/type/plains",
                             "zombie_villager/type/savanna", "zombie_villager/type/snow", "zombie_villager/type/swamp",
                             "zombie_villager/type/taiga", "zombie_villager/zombie_villager"
-                    }, EntityTypes.ZOMBIE_VILLAGER)
+                    }, EntityTypes.ZOMBIE_VILLAGER),
+
+            // Mobs added in Minecraft 26.2
+            new ModelData("copper_golem",
+                    new String[]{
+                            "copper_golem/copper_golem", "copper_golem/copper_golem_exposed",
+                            "copper_golem/copper_golem_weathered", "copper_golem/copper_golem_oxidized"
+                    }, EntityTypes.COPPER_GOLEM),
+            new ModelData("creaking", new String[]{"creaking/creaking"}, EntityTypes.CREAKING),
+            new ModelData("happy_ghast", new String[]{"ghast/happy_ghast", "ghast/happy_ghast_baby"}, EntityTypes.HAPPY_GHAST),
+            new ModelData("nautilus", new String[]{"nautilus/nautilus", "nautilus/nautilus_baby"}, EntityTypes.NAUTILUS),
+            new ModelData("zombie_nautilus", new String[]{"nautilus/zombie_nautilus", "nautilus/zombie_nautilus_coral"}, EntityTypes.ZOMBIE_NAUTILUS),
+            new ModelData("camel_husk", new String[]{"camel/camel_husk"}, EntityTypes.CAMEL_HUSK),
+            new ModelData("parched", new String[]{"skeleton/parched"}, EntityTypes.PARCHED),
+            new ModelData("sulfur_cube", new String[]{"sulfur_cube/sulfur_cube_outer", "sulfur_cube/sulfur_cube_inner"}, EntityTypes.SULFUR_CUBE)
     };
 
     public static boolean modelExists(String model) {
