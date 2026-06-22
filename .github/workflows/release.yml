@@ -1,0 +1,51 @@
+# Build the mod and publish the jars as a GitHub Release.
+# Triggered by pushing a version tag, e.g. `git tag v0.12.0 && git push --tags`.
+
+name: release
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: setup jdk 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: 25
+          distribution: 'microsoft'
+
+      - name: setup gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: build
+        run: ./gradlew build --stacktrace
+
+      # Collect production jars only (drop -dev variants used by the dev runtime).
+      - name: stage release jars
+        run: |
+          mkdir -p release
+          find build/libs -name '*.jar' ! -name '*-dev.jar' -exec cp {} release/ \;
+          ls -la release
+
+      - name: publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: release/*.jar
