@@ -69,18 +69,20 @@ unimined.minecraft(sourceSets.neoforge) {
 }
 
 dependencies {
-	compileOnly "dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric"
+	compileOnly "maven.modrinth:yacl:${project.yacl_version}-fabric"
 
 	fabricImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 	fabricImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	fabricImplementation "io.github.llamalad7:mixinextras-fabric:0.2.2"
+	fabricImplementation "io.github.llamalad7:mixinextras-fabric:0.5.4"
 
-	fabricImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-	fabricImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}-fabric") {
+	fabricImplementation("com.terraformersmc:modmenu:${project.modmenu_version}") {
+		exclude group: 'net.fabricmc', module: 'fabric-loader'
+	}
+	fabricImplementation("maven.modrinth:yacl:${project.yacl_version}-fabric") {
 		exclude group: 'com.google.code.gson', module: 'gson'
 	}
 
-	neoforgeImplementation("dev.isxander:yet-another-config-lib:${project.yacl_version}-neoforge") {
+	neoforgeImplementation("maven.modrinth:yacl:${project.yacl_version}-neoforge") {
 		exclude group: 'com.google.code.gson', module: 'gson'
 	}
 }

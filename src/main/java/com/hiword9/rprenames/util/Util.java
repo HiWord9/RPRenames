@@ -38,7 +38,7 @@ public class Util {
 
     public static Screen currentScreen() throws AssertionError {
         assert client() != null;
-        return client().screen;
+        return client().gui.screen();
     }
 
     public static boolean hasShiftDown() {
