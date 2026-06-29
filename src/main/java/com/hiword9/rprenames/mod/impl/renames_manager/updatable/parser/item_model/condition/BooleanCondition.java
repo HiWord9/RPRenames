@@ -1,7 +1,7 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import net.minecraft.advancements.criterion.MinMaxBounds;
-import net.minecraft.advancements.criterion.SingleComponentItemPredicate;
+import net.minecraft.advancements.predicates.MinMaxBounds;
+import net.minecraft.advancements.predicates.SingleComponentItemPredicate;
 import net.minecraft.client.renderer.item.properties.conditional.Broken;
 import net.minecraft.client.renderer.item.properties.conditional.ComponentMatches;
 import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperty;
