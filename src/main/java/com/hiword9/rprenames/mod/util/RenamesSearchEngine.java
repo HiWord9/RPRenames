@@ -17,7 +17,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class RenamesSearchEngine {
     public static List<Rename> search(List<Rename> list, String match) {
-        return search(list, match, RPRenames.favoritesManager);
+        return search(list, match, RPRenames.getFavoritesManager());
     }
 
     public static List<Rename> search(List<Rename> list, String match, FavoritesManager favoritesManager) {

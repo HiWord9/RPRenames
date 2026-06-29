@@ -107,7 +107,7 @@ public class RPRenamesItemGroup {
     }
 
     public static void addFavoriteStacks(List<ItemStack> itemList) {
-        File[] favoriteDirFiles = RPRenames.CONFIG_PATH_FAVORITE.toFile().listFiles();
+        File[] favoriteDirFiles = RPRenames.getConfigPathFavorite().toFile().listFiles();
 
         if (favoriteDirFiles == null || favoriteDirFiles.length == 0) {
             return;
@@ -123,7 +123,7 @@ public class RPRenamesItemGroup {
             itemList.add(ItemStack.EMPTY);
         }
 
-        itemList.addAll(getAllRenamedStacks(RPRenames.favoritesManager));
+        itemList.addAll(getAllRenamedStacks(RPRenames.getFavoritesManager()));
     }
 
     public static List<ItemStack> getAllRenamedStacks(RenamesProvider<?> renamesManager) {

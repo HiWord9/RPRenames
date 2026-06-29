@@ -87,7 +87,7 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
                 x - RPRWidget.WIDGET_WIDTH - 1, y,
                 rprInteractableScreen,
                 RPRenames.renamesProvider,
-                RPRenames.favoritesManager,
+                RPRenames.getFavoritesManager(),
                 name,
                 favoriteButton,
                 ghostCraft

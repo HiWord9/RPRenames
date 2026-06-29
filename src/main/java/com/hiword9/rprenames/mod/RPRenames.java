@@ -25,11 +25,6 @@ public class RPRenames {
     public static final String MOD_ID = "rprenames";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    public static final Path CONFIG_PATH = Settings.getConfigDir().resolve(MOD_ID);
-    public static final Path CONFIG_PATH_FAVORITE = Path.of(CONFIG_PATH + "/favorite");
-
-    public static final File MOD_CONFIG_FILE = new File(Settings.getConfigDir().toFile(), "rprenames.json");
-
     public static final Identifier RENAMES_RELOADER_ID = Identifier.fromNamespaceAndPath(MOD_ID, "renames_reloader");
 
     public static final CompositeRenamesProvider<Rename> renamesProvider = new CompositeRenamesProvider<>();
@@ -39,7 +34,26 @@ public class RPRenames {
     public static final CITParser citParser = new CITParser(updatableRenamesManager);
     public static final CEMParser cemParser = new CEMParser(updatableRenamesManager);
 
-    public static final FavoritesManager favoritesManager = new FavoritesManager(new FavoritesFileManager(RPRenames.CONFIG_PATH_FAVORITE));
+    private static FavoritesManager favoritesManager;
+
+    public static Path getConfigPath() {
+        return Settings.getConfigDir().resolve(MOD_ID);
+    }
+
+    public static Path getConfigPathFavorite() {
+        return getConfigPath().resolve("favorite");
+    }
+
+    public static File getModConfigFile() {
+        return new File(Settings.getConfigDir().toFile(), "rprenames.json");
+    }
+
+    public static FavoritesManager getFavoritesManager() {
+        if (favoritesManager == null) {
+            favoritesManager = new FavoritesManager(new FavoritesFileManager(getConfigPathFavorite()));
+        }
+        return favoritesManager;
+    }
 
     public static void onInit() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
@@ -50,7 +64,7 @@ public class RPRenames {
         updatableRenamesManager.parsers().add(citParser);
         updatableRenamesManager.parsers().add(cemParser);
 
-        favoritesManager.loadSavedFavorites();
+        getFavoritesManager().loadSavedFavorites();
     }
 
     public static Identifier asId(String path) {

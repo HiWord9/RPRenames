@@ -94,10 +94,10 @@ public class ModConfig {
     public static final ModConfig INSTANCE = ModConfig.read();
 
     public static ModConfig read() {
-        if (!RPRenames.MOD_CONFIG_FILE.exists())
+        if (!RPRenames.getModConfigFile().exists())
             return new ModConfig().write();
 
-        try (var reader = new FileReader(RPRenames.MOD_CONFIG_FILE)) {
+        try (var reader = new FileReader(RPRenames.getModConfigFile())) {
             return GSON.fromJson(reader, ModConfig.class);
         } catch (Exception e) {
             RPRenames.LOGGER.error("Could not read Config file", e);
@@ -117,7 +117,7 @@ public class ModConfig {
         }
         shouldUpdateItemGroup = null;
 
-        try (var writer = GSON.newJsonWriter(new FileWriter(RPRenames.MOD_CONFIG_FILE))) {
+        try (var writer = GSON.newJsonWriter(new FileWriter(RPRenames.getModConfigFile()))) {
             writer.setIndent("    ");
             GSON.toJson(GSON.toJsonTree(this, ModConfig.class), writer);
         } catch (Exception e) {
