@@ -24,6 +24,7 @@ public class CEMModels {
             new ModelData("bogged", new String[]{"skeleton/bogged"}, EntityTypes.BOGGED),
             new ModelData("breeze", new String[]{"breeze/breeze", "breeze/breeze_wind"}, EntityTypes.BREEZE),
             new ModelData("camel", new String[]{"camel/camel"}, EntityTypes.CAMEL),
+            new ModelData("camel_husk", new String[]{"camel/camel_husk"}, EntityTypes.CAMEL_HUSK),
             new ModelData("cat",
                     new String[]{
                             "cat/all_black", "cat/black", "cat/british_shorthair", "cat/calico", "cat/jellie",
@@ -37,6 +38,7 @@ public class CEMModels {
                             "cow/brown_mooshroom", "cow/red_mooshroom"
                     }, EntityTypes.MOOSHROOM),
             new ModelData("cow", new String[]{"cow/cow"}, EntityTypes.COW),
+            new ModelData("creaking", new String[]{"creaking/creaking"}, EntityTypes.CREAKING),
             new ModelData("creeper", new String[]{"creeper/creeper"}, EntityTypes.CREEPER),
             new ModelData("creeper_charge", new String[]{"creeper/creeper_armor"}, EntityTypes.CREEPER),
             new ModelData("dolphin", new String[]{"dolphin"}, EntityTypes.DOLPHIN),
@@ -58,6 +60,7 @@ public class CEMModels {
                             "frog/cold_frog", "frog/temperate_frog", "frog/warm_frog"
                     }, EntityTypes.FROG),
             new ModelData("ghast", new String[]{"ghast/ghast", "ghast/ghast_shooting"}, EntityTypes.GHAST),
+            new ModelData("happy_ghast", new String[]{"ghast/happy_ghast"}, EntityTypes.HAPPY_GHAST),
             new ModelData("goat", new String[]{"goat/goat"}, EntityTypes.GOAT),
             new ModelData("guardian", new String[]{"guardian"}, EntityTypes.GUARDIAN),
             new ModelData("elder_guardian", new String[]{"guardian_elder"}, EntityTypes.ELDER_GUARDIAN),
@@ -80,11 +83,16 @@ public class CEMModels {
             new ModelData("ravager", new String[]{"illager/ravager"}, EntityTypes.RAVAGER),
             new ModelData("vex", new String[]{"illager/vex", "illager/vex_charging"}, EntityTypes.VEX),
             new ModelData("vindicator", new String[]{"illager/vindicator"}, EntityTypes.VINDICATOR),
+            new ModelData("copper_golem", new String[]{"copper_golem/copper_golem"}, EntityTypes.COPPER_GOLEM),
             new ModelData("iron_golem", new String[]{"iron_golem/iron_golem"}, EntityTypes.IRON_GOLEM),
             new ModelData("llama",
                     new String[]{
                             "llama/brown", "llama/creamy", "llama/gray", "llama/white"
                     }, EntityTypes.LLAMA),
+            new ModelData("trader_llama",
+                    new String[]{
+                            "llama/llama_brown", "llama/llama_creamy", "llama/llama_gray", "llama/llama_white"
+                    }, EntityTypes.TRADER_LLAMA),
             new ModelData("panda",
                     new String[]{
                             "panda/aggressive_panda", "panda/brown_panda", "panda/lazy_panda", "panda/panda",
@@ -111,15 +119,21 @@ public class CEMModels {
             new ModelData("silverfish", new String[]{"silverfish"}, EntityTypes.SILVERFISH),
             new ModelData("skeleton", new String[]{"skeleton/skeleton"}, EntityTypes.SKELETON),
             new ModelData("stray", new String[]{"skeleton/stray"}, EntityTypes.STRAY),
+            new ModelData("parched", new String[]{"skeleton/parched"}, EntityTypes.PARCHED),
             new ModelData("wither_skeleton", new String[]{"skeleton/wither_skeleton"}, EntityTypes.WITHER_SKELETON),
             new ModelData("magma_cube", new String[]{"slime/magmacube"}, EntityTypes.MAGMA_CUBE),
             new ModelData("slime", new String[]{"slime/slime"}, EntityTypes.SLIME),
+            new ModelData("sulfur_cube",
+                    new String[]{"sulfur_cube/sulfur_cube_outer", "sulfur_cube/sulfur_cube_inner"},
+                    EntityTypes.SULFUR_CUBE),
             new ModelData("sniffer", new String[]{"sniffer/sniffer"}, EntityTypes.SNIFFER),
             new ModelData("snow_golem", new String[]{"snow_golem"}, EntityTypes.SNOW_GOLEM),
             new ModelData("cave_spider", new String[]{"spider/cave_spider"}, EntityTypes.CAVE_SPIDER),
             new ModelData("spider", new String[]{"spider/spider"}, EntityTypes.SPIDER),
             new ModelData("glow_squid", new String[]{"squid/glow_squid"}, EntityTypes.GLOW_SQUID),
             new ModelData("squid", new String[]{"squid/squid"}, EntityTypes.SQUID),
+            new ModelData("nautilus", new String[]{"nautilus/nautilus"}, EntityTypes.NAUTILUS),
+            new ModelData("zombie_nautilus", new String[]{"nautilus/zombie_nautilus"}, EntityTypes.ZOMBIE_NAUTILUS),
             new ModelData("strider", new String[]{"strider/strider", "strider/strider_cold"}, EntityTypes.STRIDER),
             new ModelData("tadpole", new String[]{"tadpole/tadpole"}, EntityTypes.TADPOLE),
             new ModelData("turtle", new String[]{"turtle/big_sea_turtle"}, EntityTypes.TURTLE),
