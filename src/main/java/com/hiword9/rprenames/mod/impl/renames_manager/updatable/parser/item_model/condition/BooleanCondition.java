@@ -197,14 +197,10 @@ public non-sealed class BooleanCondition<P extends ConditionalItemModelProperty>
         }
 
         private static void applyHasComponent(ItemStack stack, HasComponent property, boolean value) {
-            // todo account for ignoreDefault
-            if (stack.has(property.componentType()) == value) return;
-
-            if (value) {
-                // todo set empty component
-            } else {
-                stack.remove(property.componentType());
-            }
+            var type = property.componentType();
+            boolean has = property.ignoreDefault() ? stack.hasNonDefault(type) : stack.has(type);
+            if (has == value) return;
+            if (!value) stack.remove(type);
         }
 
         private static void applySingleComponentPredicate(
