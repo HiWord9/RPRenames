@@ -3,3 +3,4 @@ accessible method net/minecraft/world/item/CreativeModeTab$Builder type (Lnet/mi
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen leftPos I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
 accessible class net/minecraft/world/item/CreativeModeTab$Output
+accessible method net/minecraft/core/component/predicates/EnchantmentsPredicate enchantments ()Ljava/util/List;
