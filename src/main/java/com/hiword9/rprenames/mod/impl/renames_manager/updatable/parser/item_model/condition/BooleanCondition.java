@@ -142,8 +142,8 @@ public non-sealed class BooleanCondition<P extends ConditionalItemModelProperty>
                         DataComponents.CUSTOM_DATA,
                         CustomData.of(exists.copyTag().merge(predicate.value().tag()))
                 );
-            } else if (predicate.matches(stack)) {
-                // todo need to brake equality here somehow
+            } else if (!value && predicate.matches(stack)) {
+                stack.remove(DataComponents.CUSTOM_DATA);
             }
         }
 
