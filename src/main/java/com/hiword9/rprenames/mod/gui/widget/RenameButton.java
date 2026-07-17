@@ -42,6 +42,8 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     final public RenameRenderer renameRenderer;
     final public Rename rename;
 
+    protected boolean renameRendererFailed = false;
+
     public RenameButton(
             RPRWidget instance,
             Rename rename,
@@ -78,7 +80,14 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     }
 
     public void extractForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        renameRenderer.extractRenderState(graphics, mouseX, mouseY);
+        if (renameRendererFailed) return;
+
+        try {
+            renameRenderer.extractRenderState(graphics, mouseX, mouseY);
+        } catch (Exception e) {
+            RPRenames.LOGGER.error("Failed to render foreground for rename \"{}\" :", rename.getName().getString(), e);
+            renameRendererFailed = true;
+        }
     }
 
     public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
@@ -88,7 +97,15 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
         ) {
             highlightSlots(graphics, rprWidget.screen, highlightColor);
         }
-        renameRenderer.extractTooltip(graphics, mouseX, mouseY);
+
+        if (renameRendererFailed) return;
+
+        try {
+            renameRenderer.extractTooltip(graphics, mouseX, mouseY);
+        } catch (Exception e) {
+            RPRenames.LOGGER.error("Failed to render tooltip for rename \"{}\" :", rename.getName().getString(), e);
+            renameRendererFailed = true;
+        }
     }
 
     @Override
