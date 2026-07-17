@@ -42,6 +42,7 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
         var entityType = rename.getEntity();
         this.entity = (LivingEntity) entityType.create(client().level, (EntitySpawnReason) null);
+        if (this.entity != null) this.entity.setId(-1);
         prepareEntity(entity, rename);
 
         int size = (int) (Graphics.DEFAULT_PREVIEW_SIZE_ENTITY * config().scaleFactorEntity);
