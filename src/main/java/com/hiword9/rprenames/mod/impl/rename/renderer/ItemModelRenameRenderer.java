@@ -40,11 +40,6 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
             Component.translatable("rprenames.key.rmb").withStyle(ChatFormatting.GRAY)
     ).withStyle(ChatFormatting.DARK_GRAY);
 
-    protected static final MutableComponent disableHint = Component.translatable(
-            "rprenames.gui.tooltipHint.disable",
-            Component.translatable("rprenames.gui.tooltipHint.disable.command").withStyle(ChatFormatting.RED)
-    ).withStyle(ChatFormatting.DARK_RED);
-
     protected ItemModelRenameRenderer(
             ItemModelRename rename, RenderArea renderArea,
             RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier
@@ -105,7 +100,6 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
 
         if (!config().disableTooltipHints) {
             tooltipAddition.add(tooltipOf(favoriteSupplier.get() ? favoriteHintRemove : favoriteHintAdd));
-            tooltipAddition.add(tooltipOf(disableHint));
         }
 
         tooltipComponents.addAll(tooltipAddition);
