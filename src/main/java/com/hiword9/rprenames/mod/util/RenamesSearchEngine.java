@@ -6,12 +6,14 @@ import com.hiword9.rprenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.util.Util;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -52,8 +54,9 @@ public class RenamesSearchEngine {
             if (match.startsWith("\\#")) {
                 match = match.substring(1);
             }
+            String matchUp = up(match);
             for (Rename r : list) {
-                if (up(r.getName().getString()).contains(up(match))) {
+                if (anyNameMatches(r, name -> up(name).contains(matchUp))) {
                     resultList.add(r);
                 }
             }
@@ -71,7 +74,7 @@ public class RenamesSearchEngine {
                     Pattern.compile(regexText);
 
             for (Rename r : renames) {
-                if (pattern.matcher(r.getName().getString()).matches()) {
+                if (anyNameMatches(r, name -> pattern.matcher(name).matches())) {
                     resultList.add(r);
                 }
             }
@@ -162,6 +165,10 @@ public class RenamesSearchEngine {
                 resultList.add(r);
             }
         }
+    }
+
+    private static boolean anyNameMatches(Rename rename, Predicate<String> predicate) {
+        return rename.getNames().stream().map(Component::getString).anyMatch(predicate);
     }
 
     private static @NotNull String afterColon(String matchTag) {
