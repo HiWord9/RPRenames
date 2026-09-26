@@ -228,7 +228,9 @@ public non-sealed class BooleanCondition<P extends ConditionalItemModelProperty>
         }
 
         private static void applyPotions(ItemStack stack, PotionsPredicate predicate) {
-            var potion = firstHolder(predicate.potions(), Registries.POTION);
+            var potion = predicate.potions()
+                    .map(set -> firstHolder(set, Registries.POTION))
+                    .orElse(null);
             if (potion == null) return;
             stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
         }

@@ -7,6 +7,7 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -112,7 +113,7 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
         if (!this.isMouseOver(click.x(), click.y())) return false;
 
-        if (click.button() == 1) {
+        if (click.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             List<Item> items;
 
             if (rprWidget.getCurrentTab().forCraftItemOnly) items = List.of(rprWidget.getCraftItem());

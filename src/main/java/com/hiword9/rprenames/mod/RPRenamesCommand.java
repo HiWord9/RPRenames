@@ -18,6 +18,7 @@ import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -216,14 +217,11 @@ public class RPRenamesCommand {
 
         resultBuilder.append("[");
 
-        for (Map.Entry<DataComponentType<?>, Optional<?>> entry : changes.entrySet()) {
-            DataComponentType<T> componentType = (DataComponentType<T>) entry.getKey();
-            Optional<?> optionalData = entry.getValue();
-
-            if (optionalData.isEmpty()) continue;
+        for (TypedDataComponent<?> component : changes.split().added()) {
+            DataComponentType<T> componentType = (DataComponentType<T>) component.type();
 
             Identifier id = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(componentType);
-            T data = (T) optionalData.get();
+            T data = (T) component.value();
             DynamicOps<Tag> nbtOps = source.registryAccess().createSerializationContext(NbtOps.INSTANCE);
             Optional<Tag> optionalDataResult = componentType.codecOrThrow().encodeStart(nbtOps, data).result();
 

@@ -13,11 +13,11 @@ import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -36,7 +36,7 @@ public class RichRenameRenderer<R extends Rename>
     protected ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     protected PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
 
-    protected int cycleSlotsGlfwKey = GLFW.GLFW_KEY_F;
+    protected int cycleSlotsKey = InputConstants.KEY_F;
 
     protected RichRenameRenderer(R rename, RenderArea renderArea, RPRWidget rprWidget, Supplier<Boolean> favoriteSupplier) {
         super(rename, renderArea);
@@ -148,7 +148,7 @@ public class RichRenameRenderer<R extends Rename>
 
     @Override
     public boolean keyPressed(KeyEvent input) {
-        if (input.input() == cycleSlotsGlfwKey && isFocused()) {
+        if (input.input() == cycleSlotsKey && isFocused()) {
             playerPreviewTooltipComponent.cycleSlots();
             return true;
         }

@@ -179,7 +179,7 @@ public class Graphics {
             boolean favorite
     ) {
         renderTooltipAsFavorite = favorite;
-        graphics.tooltip(font, components, x, y, positioner, null);
+        graphics.tooltip(font, components, x, y, positioner, null, true);
         renderTooltipAsFavorite = false;
     }
 
