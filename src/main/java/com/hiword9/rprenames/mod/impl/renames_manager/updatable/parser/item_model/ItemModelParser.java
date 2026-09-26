@@ -38,13 +38,13 @@ public class ItemModelParser implements Parser {
         var renameDataList = ItemModelDataExplorer.getListMerged(itemAssets);
 
         renameDataList.forEach(data -> {
-            var name = getName(data.applicableConditions);
-            if (name == null) return;
+            var names = getNames(data.applicableConditions);
+            if (names == null) return;
 
             var rename = new ItemModelRename(
                     data.applicableConditions,
                     data.contexts,
-                    name,
+                    names,
                     data.items.toArray(new Item[]{})
             );
 
@@ -52,10 +52,10 @@ public class ItemModelParser implements Parser {
         });
     }
 
-    private static Component getName(Collection<ItemModelCondition.Applicable> conditions) {
+    private static List<Component> getNames(Collection<ItemModelCondition.Applicable> conditions) {
         var renameCondition = getRenameCondition(conditions);
         if (renameCondition == null) return null;
-        return renameCondition.value.getFirst();
+        return renameCondition.value;
     }
 
     private static @Nullable SelectCondition<ComponentContents<Component>, Component> getRenameCondition(

@@ -28,10 +28,10 @@ public class ItemModelRename
     public ItemModelRename(
             List<ItemModelCondition.Applicable> conditions,
             List<List<ItemModelCondition>> contexts,
-            Component name,
+            List<Component> names,
             Item... items
     ) {
-        super(name, items);
+        super(names, items);
         if (conditions != null) this.conditions.addAll(conditions);
         if (contexts != null) this.contexts.addAll(contexts);
     }
