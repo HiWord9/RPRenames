@@ -598,7 +598,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 
         for (RenameButton button : buttons)
             button.selected = button.rename.getItems().contains(craftItem)
-                            && button.rename.getName().getString().equals(nameText);
+                            && button.rename.getNames().stream().anyMatch(name -> name.getString().equals(nameText));
     }
 
     protected void refreshPageWidgets() {
