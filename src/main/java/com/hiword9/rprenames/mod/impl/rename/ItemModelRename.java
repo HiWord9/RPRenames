@@ -8,6 +8,7 @@ import com.hiword9.rprenames.mod.impl.rename.renderer.ItemModelRenameRenderer;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +37,12 @@ public class ItemModelRename
     }
 
     @Override
-    public ItemStack toStack(int index) {
-        ItemStack stack = new ItemStack(items.get(index));
+    public ItemStack toStack(int itemIndex, int nameIndex) {
+        ItemStack stack = new ItemStack(items.get(itemIndex));
         for (ItemModelCondition.Applicable condition : conditions) {
             condition.apply(stack);
         }
+        stack.set(DataComponents.CUSTOM_NAME, names.get(nameIndex));
         return stack;
     }
 

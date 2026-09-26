@@ -11,16 +11,25 @@ import java.util.List;
 import java.util.Objects;
 
 public class Rename {
-    protected final Component name;
+    protected final List<Component> names;
     protected final List<Item> items = new ArrayList<>();
 
     public Rename(Component name, Item... items) {
-        this.name = name;
+        this(List.of(name), items);
+    }
+
+    public Rename(List<Component> names, Item... items) {
+        if (names.isEmpty()) throw new IllegalArgumentException("Rename must have at least one name");
+        this.names = List.copyOf(names);
         for (Item item : items) if (item != null) this.items.add(item);
     }
 
     public Component getName() {
-        return name;
+        return names.getFirst();
+    }
+
+    public List<Component> getNames() {
+        return names;
     }
 
     public List<Item> getItems() {
@@ -35,9 +44,13 @@ public class Rename {
         return toStack(0);
     }
 
-    public ItemStack toStack(int index) {
-        ItemStack stack = new ItemStack(items.get(index));
-        stack.set(DataComponents.CUSTOM_NAME, Component.translationArg(name));
+    public ItemStack toStack(int itemIndex) {
+        return toStack(itemIndex, 0);
+    }
+
+    public ItemStack toStack(int itemIndex, int nameIndex) {
+        ItemStack stack = new ItemStack(items.get(itemIndex));
+        stack.set(DataComponents.CUSTOM_NAME, Component.translationArg(names.get(nameIndex)));
         return stack;
     }
 
@@ -52,7 +65,7 @@ public class Rename {
     public boolean matchesStack(ItemStack stack) {
         if (!getItems().contains(stack.getItem())) return false;
         var customName = stack.get(DataComponents.CUSTOM_NAME);
-        return customName != null && customName.equals(getName());
+        return customName != null && names.contains(customName);
     }
 
     public RenameRenderer.Builder<?> getNewRendererBuilder(RenameRenderer.RenderArea renderArea) {
@@ -62,7 +75,7 @@ public class Rename {
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Rename rename
-                && Objects.equals(name, rename.name)
+                && Objects.equals(names, rename.names)
                 && Objects.equals(items, rename.items);
     }
 

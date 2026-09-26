@@ -175,8 +175,8 @@ public class CITRename
     }
 
     @Override
-    public ItemStack toStack(int index) {
-        var item = super.toStack(index);
+    public ItemStack toStack(int itemIndex, int nameIndex) {
+        var item = super.toStack(itemIndex, nameIndex);
         item.setCount(getStackSize());
         if (getDamage() != null) {
             item.setDamageValue(getDamage().getParsedDamage(item.getItem()));
