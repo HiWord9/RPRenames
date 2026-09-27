@@ -4,7 +4,9 @@ import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.core.rename.renderer.SimpleRenameRenderer;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner;
+import com.hiword9.rprenames.api.ext.rename.renderer.NameSelectable;
 import com.hiword9.rprenames.api.ext.rename.renderer.Previewable;
+import com.hiword9.rprenames.util.Cycler;
 import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
@@ -18,6 +20,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -28,10 +31,12 @@ import static com.hiword9.rprenames.util.Util.*;
 
 public class RichRenameRenderer<R extends Rename>
         extends SimpleRenameRenderer<R>
-        implements Previewable
+        implements Previewable, NameSelectable
 {
     protected RPRWidget rprWidget;
     protected Supplier<Boolean> favoriteSupplier;
+
+    protected final Cycler<Component> names;
 
     protected ItemPreviewTooltipComponent itemPreviewTooltipComponent;
     protected PlayerPreviewTooltipComponent playerPreviewTooltipComponent;
@@ -42,6 +47,7 @@ public class RichRenameRenderer<R extends Rename>
         super(rename, renderArea);
         this.rprWidget = rprWidget;
         this.favoriteSupplier = favoriteSupplier;
+        names = new Cycler<>(rename.getNames());
         itemPreviewTooltipComponent = getItemPreviewTooltip();
         playerPreviewTooltipComponent = getPlayerPreviewTooltip();
     }
@@ -77,6 +83,11 @@ public class RichRenameRenderer<R extends Rename>
         addTopTooltips();
         addMiddleTooltips();
         addBottomTooltips();
+    }
+
+    @Override
+    protected void addNameTooltip() {
+        tooltipComponents.add(Graphics.tooltipOf(names.current()));
     }
 
     protected void addTopTooltips() {
@@ -144,6 +155,26 @@ public class RichRenameRenderer<R extends Rename>
                 positioner,
                 favoriteSupplier.get()
         );
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        if (verticalAmount != 0 && hasMultipleNames() && isMouseOver(mouseX, mouseY)) {
+            if (verticalAmount < 0) names.next();
+            else names.previous();
+            refreshTooltips();
+            return true;
+        }
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    protected boolean hasMultipleNames() {
+        return names.size() > 1;
+    }
+
+    @Override
+    public Component getSelectedName() {
+        return names.current();
     }
 
     @Override
