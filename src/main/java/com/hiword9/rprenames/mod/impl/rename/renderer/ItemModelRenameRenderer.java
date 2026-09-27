@@ -20,6 +20,11 @@ import static com.hiword9.rprenames.util.Util.*;
 import static com.hiword9.rprenames.util.Util.currentScreen;
 
 public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename> {
+    protected static final MutableComponent cycleNamesHint = Component.translatable(
+            "rprenames.gui.tooltipHint.cycleNames",
+            Component.translatable("rprenames.key.wheel").withStyle(ChatFormatting.GRAY)
+    ).withStyle(ChatFormatting.DARK_GRAY);
+
     protected static final MutableComponent playerPreviewHintShift = Component.translatable(
             "rprenames.gui.tooltipHint.playerPreview.holdShift",
             Component.translatable("rprenames.key.shift").withStyle(ChatFormatting.GRAY)
@@ -85,6 +90,10 @@ public class ItemModelRenameRenderer extends RichRenameRenderer<ItemModelRename>
     @Override
     public void extractTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         var tooltipAddition = new ArrayList<ClientTooltipComponent>();
+
+        if (hasMultipleNames() && !config().disableTooltipHints) {
+            tooltipAddition.add(tooltipOf(cycleNamesHint));
+        }
 
         if (config().enablePreview) {
             boolean shiftDown = hasShiftDown();
