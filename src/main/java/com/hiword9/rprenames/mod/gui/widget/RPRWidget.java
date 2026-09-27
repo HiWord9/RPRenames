@@ -233,6 +233,10 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
 // Execution
 
     public void doRename(Rename rename) {
+        doRename(rename, rename.getName());
+    }
+
+    public void doRename(Rename rename, Component name) {
         ghostCraft.reset();
 
         int indexInInventory = inventoryStacks.indexOf(pickItemStackForRename(rename));
@@ -262,7 +266,7 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
             ghostCraftLoader.loadGhostCraft(ghostCraft, getActiveItemStack());
         }
 
-        setNameText(rename.getName().getString());
+        setNameText(name.getString());
     }
 
     public void addOrRemoveFavorite(boolean add, List<Item> items, String name) {
