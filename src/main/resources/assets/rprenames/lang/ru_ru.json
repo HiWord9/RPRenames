@@ -13,7 +13,7 @@
   "rprenames.gui.nameIndex": "Имя %1$s/%2$s",
   "rprenames.gui.tooltipHint.cycleNames": "Используйте [%1$s] для переключения имён",
   "rprenames.gui.tooltipHint.playerPreview.holdShift": "Удерживайте [%1$s] для предпросмотра игрока",
-  "rprenames.gui.tooltipHint.playerPreview.pressF": "Нажмите [%1$s] для переключения между слотами",
+  "rprenames.gui.tooltipHint.playerPreview.pressF": "Нажмите [%1$s] для переключения слотов",
   "rprenames.gui.tooltipHint.favorite.add": "Нажмите [%1$s] для добавления в избранное",
   "rprenames.gui.tooltipHint.favorite.remove": "Нажмите [%1$s] для удаления из избранного",
   "rprenames.gui.tooltipHint.disable": "Скрыть подсказки: %1$s",

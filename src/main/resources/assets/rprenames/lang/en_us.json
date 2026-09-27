@@ -13,7 +13,7 @@
   "rprenames.gui.nameIndex": "Name %1$s/%2$s",
   "rprenames.gui.tooltipHint.cycleNames": "Use [%1$s] to cycle names",
   "rprenames.gui.tooltipHint.playerPreview.holdShift": "Hold [%1$s] for Player Preview",
-  "rprenames.gui.tooltipHint.playerPreview.pressF": "Press [%1$s] to cycle through slots",
+  "rprenames.gui.tooltipHint.playerPreview.pressF": "Press [%1$s] to cycle slots",
   "rprenames.gui.tooltipHint.favorite.add": "Press [%1$s] to mark as Favorite",
   "rprenames.gui.tooltipHint.favorite.remove": "Press [%1$s] to unmark as Favorites",
   "rprenames.gui.tooltipHint.disable": "Use %1$s to hide hints",
