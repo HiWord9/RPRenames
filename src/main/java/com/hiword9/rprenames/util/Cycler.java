@@ -15,6 +15,14 @@ public class Cycler<T> {
         return values.get(index);
     }
 
+    public int index() {
+        return index;
+    }
+
+    public int size() {
+        return values.size();
+    }
+
     public T next() {
         return moveTo(index + 1);
     }
