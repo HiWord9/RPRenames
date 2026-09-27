@@ -16,6 +16,7 @@ import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.Pr
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
@@ -91,6 +92,7 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     protected void addTopTooltips() {
+        addNameIndexTooltip();
         addMultiItemTooltip();
     }
 
@@ -98,6 +100,14 @@ public class RichRenameRenderer<R extends Rename>
 
     protected void addBottomTooltips() {
         addPackNameTooltip();
+    }
+
+    protected void addNameIndexTooltip() {
+        if (!hasMultipleNames()) return;
+        tooltipComponents.add(Graphics.tooltipOf(
+                Component.translatable("rprenames.gui.nameIndex", names.index() + 1, names.size())
+                        .withStyle(ChatFormatting.GRAY)
+        ));
     }
 
     protected void addMultiItemTooltip() {
