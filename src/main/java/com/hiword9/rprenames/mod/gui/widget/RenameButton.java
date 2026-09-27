@@ -7,6 +7,7 @@ import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
 import com.hiword9.rprenames.api.core.rename.Rename;
+import com.hiword9.rprenames.api.ext.rename.renderer.NameSelectable;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -121,10 +122,18 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
 
             rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName().getString());
         } else {
-            rprWidget.doRename(rename);
+            doRename();
         }
 
         return true;
+    }
+
+    protected void doRename() {
+        if (renameRenderer instanceof NameSelectable selectable) {
+            rprWidget.doRename(rename, selectable.getSelectedName());
+        } else {
+            rprWidget.doRename(rename);
+        }
     }
 
     @Override
