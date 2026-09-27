@@ -33,6 +33,11 @@ public class SimpleRenameRenderer<T extends Rename> implements RenameRenderer {
         tooltipComponents.add(Graphics.tooltipOf(rename.getName()));
     }
 
+    protected void refreshTooltips() {
+        tooltipComponents.clear();
+        addTooltips();
+    }
+
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         Graphics.extractItemStack(
