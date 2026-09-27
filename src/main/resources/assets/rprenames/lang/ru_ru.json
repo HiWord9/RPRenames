@@ -10,6 +10,8 @@
   "rprenames.gui.tabs.tooltip.FAVORITE": "Избранное",
   "rprenames.gui.tabs.tooltip.INVENTORY": "Инвентарь",
   "rprenames.gui.tabs.tooltip.GLOBAL": "Глобальное",
+  "rprenames.gui.nameIndex": "Имя %1$s/%2$s",
+  "rprenames.gui.tooltipHint.cycleNames": "Используйте [%1$s] для переключения имён",
   "rprenames.gui.tooltipHint.playerPreview.holdShift": "Удерживайте [%1$s] для предпросмотра игрока",
   "rprenames.gui.tooltipHint.playerPreview.pressF": "Нажмите [%1$s] для переключения между слотами",
   "rprenames.gui.tooltipHint.favorite.add": "Нажмите [%1$s] для добавления в избранное",
@@ -22,6 +24,7 @@
   "rprenames.key.shift": "Shift",
   "rprenames.key.f": "F",
   "rprenames.key.rmb": "ПКМ",
+  "rprenames.key.wheel": "Колёсико",
 
   "rprenames.command.disableHints.disabled": "Подсказки больше не будут вас беспокоить",
   "rprenames.command.disableHints.enabled": "Подсказки снова включены",
