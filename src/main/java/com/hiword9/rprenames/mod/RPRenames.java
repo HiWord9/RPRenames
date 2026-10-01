@@ -7,6 +7,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.cem.CEMParser;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.CITParser;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.ItemModelParser;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.BuiltinRenameProperties;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.UpdatableRenamesManager;
 import com.hiword9.rprenames.mod.item_group.RPRenamesItemGroup;
 import com.mojang.brigadier.CommandDispatcher;
@@ -57,6 +58,8 @@ public class RPRenames {
 
     public static void onInit() {
         LOGGER.info("RPRenames author like coca-cola zero, but don't tell anyone");
+
+        BuiltinRenameProperties.bootstrap();
 
         renamesProvider.providers.add(updatableRenamesManager);
 
