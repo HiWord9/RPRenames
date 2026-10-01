@@ -25,6 +25,14 @@ public class RenameProperties {
         return (T) values.getOrDefault(property, property.getDefaultValue());
     }
 
+    public RenameProperties overlay(RenameProperties top) {
+        if (top.isEmpty()) return this;
+
+        var values = new LinkedHashMap<>(this.values);
+        values.putAll(top.values);
+        return new RenameProperties(values);
+    }
+
     public boolean isEmpty() {
         return values.isEmpty();
     }
