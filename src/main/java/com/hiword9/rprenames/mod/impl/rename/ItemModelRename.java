@@ -6,6 +6,7 @@ import com.hiword9.rprenames.api.ext.rename.Informative;
 import com.hiword9.rprenames.mod.gui.widget.GhostCraft;
 import com.hiword9.rprenames.mod.impl.rename.renderer.ItemModelRenameRenderer;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -24,16 +25,19 @@ public class ItemModelRename
 {
     protected final List<ItemModelCondition.Applicable> conditions = new ArrayList<>();
     protected final List<List<ItemModelCondition>> contexts = new ArrayList<>();
+    protected final RenameProperties properties;
 
     public ItemModelRename(
             List<ItemModelCondition.Applicable> conditions,
             List<List<ItemModelCondition>> contexts,
             List<Component> names,
+            RenameProperties properties,
             Item... items
     ) {
         super(names, items);
         if (conditions != null) this.conditions.addAll(conditions);
         if (contexts != null) this.contexts.addAll(contexts);
+        this.properties = properties;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class ItemModelRename
     public boolean equals(Object obj) {
         return super.equals(obj)
                 && obj instanceof ItemModelRename i
-                && Objects.deepEquals(conditions, i.conditions);
+                && Objects.deepEquals(conditions, i.conditions)
+                && Objects.equals(properties, i.properties);
     }
 
     @Override
@@ -79,6 +84,10 @@ public class ItemModelRename
     public List<ItemStack> getItemGroupStacks() {
         if (config().compareItemGroupRenames) return List.of(toStack());
         return toStackAll();
+    }
+
+    public RenameProperties getProperties() {
+        return properties;
     }
 
     @Override

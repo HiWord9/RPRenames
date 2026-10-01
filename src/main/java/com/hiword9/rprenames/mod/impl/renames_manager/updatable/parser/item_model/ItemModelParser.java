@@ -1,5 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model;
 
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.impl.rename.ItemModelRename;
 import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
@@ -45,6 +46,7 @@ public class ItemModelParser implements Parser {
                     data.applicableConditions,
                     data.contexts,
                     names,
+                    RenameProperties.EMPTY,
                     data.items.toArray(new Item[]{})
             );
 
