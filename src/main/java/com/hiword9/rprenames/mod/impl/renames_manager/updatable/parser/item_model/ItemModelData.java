@@ -1,6 +1,7 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model;
 
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import net.minecraft.world.item.Item;
 import java.util.*;
 
@@ -8,18 +9,27 @@ public class ItemModelData {
     protected final List<Item> items;
     protected final List<ItemModelCondition.Applicable> applicableConditions;
     protected final List<List<ItemModelCondition>> contexts;
+    protected final RenameProperties properties;
 
     public ItemModelData(
             List<Item> items,
             List<ItemModelCondition.Applicable> conditions,
-            List<List<ItemModelCondition>> contexts
+            List<List<ItemModelCondition>> contexts,
+            RenameProperties properties
     ) {
         this.items = items;
         this.applicableConditions = conditions;
         this.contexts = contexts;
+        this.properties = properties;
+    }
+
+    public ItemModelData withProperties(RenameProperties properties) {
+        return new ItemModelData(items, applicableConditions, contexts, properties);
     }
 
     public ItemModelData tryMerge(ItemModelData other) {
+        if (!properties.equals(other.properties)) return null;
+
         var mergedConditions = tryMergeConditions(applicableConditions, other.applicableConditions);
         if (mergedConditions == null) return null;
 
@@ -31,7 +41,7 @@ public class ItemModelData {
             if (!items.contains(item))
                 items.add(item);
 
-        return new ItemModelData(items, mergedConditions, contexts);
+        return new ItemModelData(items, mergedConditions, contexts, properties);
     }
 
     // todo this should be improved for edge cases
@@ -71,7 +81,7 @@ public class ItemModelData {
         var applicableConditions = pullApplicableConditions(conditions);
         var contexts = getContexts(conditions, applicableConditions);
 
-        return new ItemModelData(items, applicableConditions, contexts);
+        return new ItemModelData(items, applicableConditions, contexts, RenameProperties.EMPTY);
     }
 
     protected static List<List<ItemModelCondition>> getContexts(

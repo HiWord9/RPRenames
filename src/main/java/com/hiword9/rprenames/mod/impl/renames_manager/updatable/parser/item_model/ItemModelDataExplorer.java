@@ -4,6 +4,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.NumericCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenamePropertiesHolder;
 import com.hiword9.rprenames.util.Util;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.CompositeModel;
@@ -124,7 +125,12 @@ public class ItemModelDataExplorer {
 
         for (var switchCase : unbakedSwitch.cases()) {
             cases.add(new Case(
-                    SelectCondition.of(unbakedSwitch.property(), switchCase.values(), asset),
+                    SelectCondition.of(
+                            unbakedSwitch.property(),
+                            switchCase.values(),
+                            RenamePropertiesHolder.of(switchCase).rprenames$getProperties(),
+                            asset
+                    ),
                     switchCase.model()
             ));
         }

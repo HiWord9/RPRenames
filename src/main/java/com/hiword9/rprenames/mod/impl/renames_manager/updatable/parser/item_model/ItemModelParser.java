@@ -1,6 +1,5 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model;
 
-import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.RPRenames;
 import com.hiword9.rprenames.mod.impl.rename.ItemModelRename;
 import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
@@ -36,49 +35,82 @@ public class ItemModelParser implements Parser {
 
     @Override
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
-        var renameDataList = ItemModelDataExplorer.getListMerged(itemAssets);
+        var renameDataList = ItemModelData.mergeAllPossible(
+                ItemModelDataExplorer.getListUnmerged(itemAssets).stream()
+                        .map(ItemModelParser::withRenameProperties)
+                        .toList()
+        );
+        var ignoredProperties = new HashSet<SelectCondition<?, ?>>();
 
         renameDataList.forEach(data -> {
-            var names = getNames(data.applicableConditions);
-            if (names == null) return;
+            var renameCondition = getRenameCondition(data.applicableConditions);
+            collectIgnoredProperties(ignoredProperties, data, renameCondition);
+            if (renameCondition == null) return;
 
             var rename = new ItemModelRename(
                     data.applicableConditions,
                     data.contexts,
-                    names,
-                    RenameProperties.EMPTY,
+                    renameCondition.value,
+                    data.properties,
                     data.items.toArray(new Item[]{})
             );
 
             for (var item : data.items) renamesManager.addRename(item, rename);
         });
+
+        ignoredProperties.forEach(condition -> RPRenames.LOGGER.warn(
+                "Ignoring rename properties outside of custom_name select case {}: {}",
+                condition.value,
+                condition.properties
+        ));
     }
 
-    private static List<Component> getNames(Collection<ItemModelCondition.Applicable> conditions) {
-        var renameCondition = getRenameCondition(conditions);
-        if (renameCondition == null) return null;
-        return renameCondition.value;
+    private static ItemModelData withRenameProperties(ItemModelData data) {
+        var renameConditions = getRenameConditions(data.applicableConditions);
+        return renameConditions.isEmpty() ? data : data.withProperties(renameConditions.getFirst().properties);
+    }
+
+    private static void collectIgnoredProperties(
+            Set<SelectCondition<?, ?>> ignoredProperties,
+            ItemModelData data,
+            @Nullable SelectCondition<?, ?> renameCondition
+    ) {
+        var conditions = new ArrayList<ItemModelCondition>(data.applicableConditions);
+        data.contexts.forEach(conditions::addAll);
+        for (var condition : conditions) {
+            if (condition instanceof SelectCondition<?, ?> select
+                    && select != renameCondition
+                    && !select.properties.isEmpty()
+            ) ignoredProperties.add(select);
+        }
     }
 
     private static @Nullable SelectCondition<ComponentContents<Component>, Component> getRenameCondition(
             Collection<ItemModelCondition.Applicable> conditions
     ) {
-        SelectCondition<ComponentContents<Component>, Component> renameCondition = null;
-        for (ItemModelCondition condition : conditions) {
-            var candidate = asCustomNameConditionOrNull(condition);
-            if (candidate != null) {
-                if (renameCondition == null) {
-                    renameCondition = candidate;
-                } else {
-                    RPRenames.LOGGER.warn(
-                            "Found multiple rename conditions. Already accepted: {}; New: {}",
-                            renameCondition.value.toString(),
-                            candidate.value.toString()
-                    );
-                }
-            }
+        var renameConditions = getRenameConditions(conditions);
+        if (renameConditions.isEmpty()) return null;
+
+        var renameCondition = renameConditions.getFirst();
+        for (var candidate : renameConditions.subList(1, renameConditions.size())) {
+            RPRenames.LOGGER.warn(
+                    "Found multiple rename conditions. Already accepted: {}; New: {}",
+                    renameCondition.value.toString(),
+                    candidate.value.toString()
+            );
         }
         return renameCondition;
+    }
+
+    private static List<SelectCondition<ComponentContents<Component>, Component>> getRenameConditions(
+            Collection<ItemModelCondition.Applicable> conditions
+    ) {
+        var renameConditions = new ArrayList<SelectCondition<ComponentContents<Component>, Component>>();
+        for (ItemModelCondition condition : conditions) {
+            var candidate = asCustomNameConditionOrNull(condition);
+            if (candidate != null) renameConditions.add(candidate);
+        }
+        return renameConditions;
     }
 
     @SuppressWarnings("unchecked")
