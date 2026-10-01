@@ -28,13 +28,13 @@ public class SwitchCasePropertiesCodec<T> implements Codec<SelectItemModel.Switc
         var encoded = original.encode(input, ops, prefix);
         if (properties.isEmpty()) return encoded;
 
-        return encoded.flatMap(map -> RenameProperties.CODEC.encodeStart(ops, properties)
+        return encoded.flatMap(map -> RenamePropertiesDefinition.CODEC.encodeStart(ops, properties)
                 .flatMap(value -> ops.mergeToMap(map, ops.createString(KEY), value))
         );
     }
 
     protected <I> void readProperties(DynamicOps<I> ops, I input, SelectItemModel.SwitchCase<T> switchCase) {
-        ops.get(input, KEY).result().ifPresent(value -> RenameProperties.CODEC.parse(ops, value)
+        ops.get(input, KEY).result().ifPresent(value -> RenamePropertiesDefinition.CODEC.parse(ops, value)
                 .resultOrPartial(error -> RPRenames.LOGGER.warn(
                         "Invalid {} in select case {}: {}",
                         KEY,

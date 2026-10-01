@@ -3,9 +3,9 @@ package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mod
 import net.minecraft.client.renderer.item.SelectItemModel;
 
 public interface RenamePropertiesHolder {
-    RenameProperties rprenames$getProperties();
+    RenamePropertiesDefinition rprenames$getProperties();
 
-    void rprenames$setProperties(RenameProperties properties);
+    void rprenames$setProperties(RenamePropertiesDefinition properties);
 
     static RenamePropertiesHolder of(SelectItemModel.SwitchCase<?> switchCase) {
         return (RenamePropertiesHolder) (Object) switchCase;

@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenamePropertiesDefinition;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.properties.select.Charge;
 import net.minecraft.client.renderer.item.properties.select.ComponentContents;
@@ -27,15 +27,15 @@ import java.util.*;
 import static com.hiword9.rprenames.util.Util.*;
 
 public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V> extends AbstractPropertyValueCondition<P, List<V>> {
-    public final RenameProperties properties;
+    public final RenamePropertiesDefinition properties;
 
-    private SelectCondition(P property, List<V> values, RenameProperties properties) {
+    private SelectCondition(P property, List<V> values, RenamePropertiesDefinition properties) {
         super(property, values);
         this.properties = properties;
     }
 
     public static <P extends SelectItemModelProperty<V>, V> SelectCondition<P, V> of(
-            P property, List<V> values, RenameProperties properties, ClientItem asset
+            P property, List<V> values, RenamePropertiesDefinition properties, ClientItem asset
     ) {
         return isPropertyApplicable(property)
                 ? new ApplicableSelectCondition<>(property, values, properties, asset)
@@ -63,7 +63,7 @@ public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V>
 
         private final ClientItem asset;
 
-        private ApplicableSelectCondition(P property, List<V> values, RenameProperties properties, ClientItem asset) {
+        private ApplicableSelectCondition(P property, List<V> values, RenamePropertiesDefinition properties, ClientItem asset) {
             super(property, values, properties);
             this.asset = asset;
         }
