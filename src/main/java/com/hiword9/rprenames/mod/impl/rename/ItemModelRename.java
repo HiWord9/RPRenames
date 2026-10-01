@@ -2,10 +2,12 @@ package com.hiword9.rprenames.mod.impl.rename;
 
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
+import com.hiword9.rprenames.api.ext.rename.HasDescription;
 import com.hiword9.rprenames.api.ext.rename.Informative;
 import com.hiword9.rprenames.mod.gui.widget.GhostCraft;
 import com.hiword9.rprenames.mod.impl.rename.renderer.ItemModelRenameRenderer;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.BuiltinRenameProperties;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
 import net.minecraft.ChatFormatting;
@@ -21,7 +23,7 @@ import static com.hiword9.rprenames.util.Util.config;
 
 public class ItemModelRename
         extends Rename
-        implements ItemGroupComponent, GhostCraft.Loader, Informative
+        implements ItemGroupComponent, GhostCraft.Loader, Informative, HasDescription
 {
     protected final List<ItemModelCondition.Applicable> conditions = new ArrayList<>();
     protected final List<List<ItemModelCondition>> contexts = new ArrayList<>();
@@ -88,6 +90,11 @@ public class ItemModelRename
 
     public RenameProperties getProperties() {
         return properties;
+    }
+
+    @Override
+    public List<Component> getDescription() {
+        return properties.get(BuiltinRenameProperties.DESCRIPTION);
     }
 
     @Override
