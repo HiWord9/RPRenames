@@ -35,31 +35,65 @@ public class ItemModelParser implements Parser {
 
     @Override
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
-        var renameDataList = ItemModelDataExplorer.getListMerged(itemAssets);
+        var renameDataList = ItemModelData.mergeAllPossible(
+                ItemModelDataExplorer.getListUnmerged(itemAssets).stream()
+                        .map(ItemModelParser::withRenameProperties)
+                        .toList()
+        );
+        var ignoredProperties = new HashSet<SelectCondition<?, ?>>();
 
         renameDataList.forEach(data -> {
-            var names = getNames(data.applicableConditions);
-            if (names == null) return;
+            var renameCondition = getRenameCondition(data.applicableConditions);
+            collectIgnoredProperties(ignoredProperties, data, renameCondition);
+            if (renameCondition == null) return;
 
             var rename = new ItemModelRename(
                     data.applicableConditions,
                     data.contexts,
-                    names,
+                    renameCondition.value,
+                    data.properties,
                     data.items.toArray(new Item[]{})
             );
 
             for (var item : data.items) renamesManager.addRename(item, rename);
         });
+
+        ignoredProperties.forEach(condition -> RPRenames.LOGGER.warn(
+                "Ignoring rename properties outside of custom_name select case {}: {}",
+                condition.value,
+                condition.properties
+        ));
     }
 
-    private static List<Component> getNames(Collection<ItemModelCondition.Applicable> conditions) {
-        var renameCondition = getRenameCondition(conditions);
-        if (renameCondition == null) return null;
-        return renameCondition.value;
+    private static ItemModelData withRenameProperties(ItemModelData data) {
+        var renameCondition = getRenameCondition(data.applicableConditions, false);
+        return renameCondition == null ? data : data.withProperties(renameCondition.properties);
+    }
+
+    private static void collectIgnoredProperties(
+            Set<SelectCondition<?, ?>> ignoredProperties,
+            ItemModelData data,
+            @Nullable SelectCondition<?, ?> renameCondition
+    ) {
+        var conditions = new ArrayList<ItemModelCondition>(data.applicableConditions);
+        data.contexts.forEach(conditions::addAll);
+        for (var condition : conditions) {
+            if (condition instanceof SelectCondition<?, ?> select
+                    && select != renameCondition
+                    && !select.properties.isEmpty()
+            ) ignoredProperties.add(select);
+        }
     }
 
     private static @Nullable SelectCondition<ComponentContents<Component>, Component> getRenameCondition(
             Collection<ItemModelCondition.Applicable> conditions
+    ) {
+        return getRenameCondition(conditions, true);
+    }
+
+    private static @Nullable SelectCondition<ComponentContents<Component>, Component> getRenameCondition(
+            Collection<ItemModelCondition.Applicable> conditions,
+            boolean logging
     ) {
         SelectCondition<ComponentContents<Component>, Component> renameCondition = null;
         for (ItemModelCondition condition : conditions) {
@@ -67,7 +101,7 @@ public class ItemModelParser implements Parser {
             if (candidate != null) {
                 if (renameCondition == null) {
                     renameCondition = candidate;
-                } else {
+                } else if (logging) {
                     RPRenames.LOGGER.warn(
                             "Found multiple rename conditions. Already accepted: {}; New: {}",
                             renameCondition.value.toString(),
