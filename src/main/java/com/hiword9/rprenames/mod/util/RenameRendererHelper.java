@@ -40,12 +40,8 @@ public class RenameRendererHelper {
     }
 
     public static List<ClientTooltipComponent> descriptionTooltipsComponentsList(HasDescription hasDescription) {
-        String description = hasDescription.getDescription();
         ArrayList<ClientTooltipComponent> linesComponents = new ArrayList<>();
-        if (description != null) {
-            var lines = PropertiesHelper.parseCustomDescription(description);
-            for (Component line : lines) linesComponents.add(tooltipOf(line));
-        }
+        for (Component line : hasDescription.getDescription()) linesComponents.add(tooltipOf(line));
         return linesComponents;
     }
 

@@ -40,7 +40,7 @@ public class CITRename
     protected final Damage damage;
     protected final Identifier enchantment;
     protected final Integer enchantmentLevel;
-    protected String description;
+    protected final List<Component> description;
 
     protected final Properties properties;
 
@@ -67,7 +67,7 @@ public class CITRename
         this.damage = damage;
         this.enchantment = enchantment;
         this.enchantmentLevel = enchantmentLevel;
-        this.description = description;
+        this.description = description == null ? List.of() : PropertiesHelper.parseCustomDescription(description);
         this.properties = properties;
     }
 
@@ -80,7 +80,7 @@ public class CITRename
     }
 
     @Override
-    public String getDescription() {
+    public List<Component> getDescription() {
         return description;
     }
 
