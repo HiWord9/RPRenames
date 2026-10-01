@@ -1,6 +1,6 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition;
 
-import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenamePropertiesDefinition;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.properties.select.Charge;
 import net.minecraft.client.renderer.item.properties.select.ComponentContents;
@@ -27,19 +27,19 @@ import java.util.*;
 import static com.hiword9.rprenames.util.Util.*;
 
 public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V> extends AbstractPropertyValueCondition<P, List<V>> {
-    public final RenameProperties properties;
+    public final RenamePropertiesDefinition propertiesDefinition;
 
-    private SelectCondition(P property, List<V> values, RenameProperties properties) {
+    private SelectCondition(P property, List<V> values, RenamePropertiesDefinition propertiesDefinition) {
         super(property, values);
-        this.properties = properties;
+        this.propertiesDefinition = propertiesDefinition;
     }
 
     public static <P extends SelectItemModelProperty<V>, V> SelectCondition<P, V> of(
-            P property, List<V> values, RenameProperties properties, ClientItem asset
+            P property, List<V> values, RenamePropertiesDefinition propertiesDefinition, ClientItem asset
     ) {
         return isPropertyApplicable(property)
-                ? new ApplicableSelectCondition<>(property, values, properties, asset)
-                : new SelectCondition<>(property, values, properties);
+                ? new ApplicableSelectCondition<>(property, values, propertiesDefinition, asset)
+                : new SelectCondition<>(property, values, propertiesDefinition);
     }
 
     private static <V> boolean isPropertyApplicable(SelectItemModelProperty<V> property) {
@@ -63,8 +63,8 @@ public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V>
 
         private final ClientItem asset;
 
-        private ApplicableSelectCondition(P property, List<V> values, RenameProperties properties, ClientItem asset) {
-            super(property, values, properties);
+        private ApplicableSelectCondition(P property, List<V> values, RenamePropertiesDefinition propertiesDefinition, ClientItem asset) {
+            super(property, values, propertiesDefinition);
             this.asset = asset;
         }
 

@@ -19,29 +19,29 @@ public class SwitchCasePropertiesCodec<T> implements Codec<SelectItemModel.Switc
     @Override
     public <I> DataResult<Pair<SelectItemModel.SwitchCase<T>, I>> decode(DynamicOps<I> ops, I input) {
         return original.decode(ops, input)
-                .ifSuccess(result -> readProperties(ops, input, result.getFirst()));
+                .ifSuccess(result -> readPropertiesDefinition(ops, input, result.getFirst()));
     }
 
     @Override
     public <I> DataResult<I> encode(SelectItemModel.SwitchCase<T> input, DynamicOps<I> ops, I prefix) {
-        var properties = RenamePropertiesHolder.of(input).rprenames$getProperties();
+        var definition = RenamePropertiesHolder.of(input).rprenames$getPropertiesDefinition();
         var encoded = original.encode(input, ops, prefix);
-        if (properties.isEmpty()) return encoded;
+        if (definition.isEmpty()) return encoded;
 
-        return encoded.flatMap(map -> RenameProperties.CODEC.encodeStart(ops, properties)
+        return encoded.flatMap(map -> RenamePropertiesDefinition.CODEC.encodeStart(ops, definition)
                 .flatMap(value -> ops.mergeToMap(map, ops.createString(KEY), value))
         );
     }
 
-    protected <I> void readProperties(DynamicOps<I> ops, I input, SelectItemModel.SwitchCase<T> switchCase) {
-        ops.get(input, KEY).result().ifPresent(value -> RenameProperties.CODEC.parse(ops, value)
+    protected <I> void readPropertiesDefinition(DynamicOps<I> ops, I input, SelectItemModel.SwitchCase<T> switchCase) {
+        ops.get(input, KEY).result().ifPresent(value -> RenamePropertiesDefinition.CODEC.parse(ops, value)
                 .resultOrPartial(error -> RPRenames.LOGGER.warn(
                         "Invalid '{}' in select case {}: {}",
                         KEY,
                         ops.get(input, "when").result().map(Object::toString).orElse("?"),
                         error
                 ))
-                .ifPresent(RenamePropertiesHolder.of(switchCase)::rprenames$setProperties)
+                .ifPresent(RenamePropertiesHolder.of(switchCase)::rprenames$setPropertiesDefinition)
         );
     }
 }

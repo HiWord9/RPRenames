@@ -128,7 +128,7 @@ public class ItemModelDataExplorer {
                     SelectCondition.of(
                             unbakedSwitch.property(),
                             switchCase.values(),
-                            RenamePropertiesHolder.of(switchCase).rprenames$getProperties(),
+                            RenamePropertiesHolder.of(switchCase).rprenames$getPropertiesDefinition(),
                             asset
                     ),
                     switchCase.model()
