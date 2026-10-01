@@ -8,6 +8,8 @@ import com.hiword9.rprenames.mod.gui.widget.OffsetableWidget;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.mod.gui.widget.external.OpenerButton;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
@@ -26,7 +28,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -107,22 +108,22 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         rprWidget.updatedName();
     }
 
-    @Redirect(
+    @WrapOperation(
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/screens/inventory/AnvilScreen;init(II)V"),
             method = "resize"
     )
-    private void onResize(AnvilScreen instance, int width, int height) {
+    private void onResize(AnvilScreen instance, int width, int height, Operation<Void> original) {
         if (shouldNotModify()) {
-            instance.init(width, height);
+            original.call(instance, width, height);
             return;
         }
 
         int prevX = instance.leftPos;
         int prevY = instance.topPos;
 
-        instance.init(width, height);
+        original.call(instance, width, height);
 
         offsetWidgets(instance.leftPos - prevX, instance.topPos - prevY);
 
@@ -136,9 +137,9 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         afterPutInAnvilSecond = false;
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/EditBox;canConsumeInput()Z"), method = "keyPressed")
-    private boolean onKeyPressedNameFieldIsActive(EditBox instance, KeyEvent input) {
-        if (shouldNotModify()) return instance.canConsumeInput();
+    @WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/EditBox;canConsumeInput()Z"), method = "keyPressed")
+    private boolean onKeyPressedNameFieldIsActive(EditBox instance, Operation<Boolean> original, KeyEvent input) {
+        if (shouldNotModify()) return original.call(instance);
 
         var widgetAccepted = false;
         for (var w : widgets) if (w instanceof GuiEventListener element) {
@@ -149,7 +150,7 @@ public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> imp
         }
         return widgetAccepted
                 || rprWidget.searchField.canConsumeInput()
-                || instance.canConsumeInput();
+                || original.call(instance);
     }
 
     @Override
