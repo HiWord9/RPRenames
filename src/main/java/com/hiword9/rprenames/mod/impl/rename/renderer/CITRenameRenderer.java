@@ -80,15 +80,6 @@ public class CITRenameRenderer extends RichRenameRenderer<CITRename> {
     }
 
     @Override
-    protected void addTopTooltips() {
-        if (config().showDescription) {
-            var description = descriptionTooltipsComponentsList(rename);
-            tooltipComponents.addAll(description);
-        }
-        super.addTopTooltips();
-    }
-
-    @Override
     protected void addMiddleTooltips() {
         super.addMiddleTooltips();
         if (config().showExtraProperties) {

@@ -11,6 +11,7 @@ import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.ItemPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.tooltip_component.preview.PlayerPreviewTooltipComponent;
 import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
+import com.hiword9.rprenames.api.ext.rename.HasDescription;
 import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
@@ -26,6 +27,7 @@ import net.minecraft.network.chat.Component;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static com.hiword9.rprenames.mod.util.RenameRendererHelper.descriptionTooltipsComponentsList;
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.multiItemTooltipComponent;
 import static com.hiword9.rprenames.mod.util.RenameRendererHelper.packNameTooltipComponent;
 import static com.hiword9.rprenames.util.Util.*;
@@ -92,6 +94,7 @@ public class RichRenameRenderer<R extends Rename>
     }
 
     protected void addTopTooltips() {
+        addDescriptionTooltip();
         addNameIndexTooltip();
         addMultiItemTooltip();
     }
@@ -100,6 +103,12 @@ public class RichRenameRenderer<R extends Rename>
 
     protected void addBottomTooltips() {
         addPackNameTooltip();
+    }
+
+    protected void addDescriptionTooltip() {
+        if (!config().showDescription) return;
+        if (!(rename instanceof HasDescription hasDescription)) return;
+        tooltipComponents.addAll(descriptionTooltipsComponentsList(hasDescription));
     }
 
     protected void addNameIndexTooltip() {
