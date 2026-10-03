@@ -28,7 +28,7 @@ public class CITParser implements Parser {
     }
 
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
-        profiler.push("rprenames:collecting_cit_renames");
+        profiler.push(RPRenames.MOD_ID + ":collecting_cit_renames");
 
         if (config().ignoreCIT) {
             profiler.pop();

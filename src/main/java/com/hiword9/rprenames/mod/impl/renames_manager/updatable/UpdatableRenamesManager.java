@@ -27,7 +27,7 @@ public class UpdatableRenamesManager
     }
 
     public void updateRenames(ResourceManager resourceManager, ProfilerFiller profiler) {
-        profiler.push("rprenames:reloading_renames");
+        profiler.push(RPRenames.MOD_ID + ":reloading_renames");
 
         RPRenames.LOGGER.info("Started collecting resource pack renames");
         long startTime = System.currentTimeMillis();

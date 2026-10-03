@@ -37,7 +37,7 @@ import static com.hiword9.rprenames.util.Util.*;
 
 public class RPRenamesCommand {
     public static void register(CommandDispatcher<SharedSuggestionProvider> dispatcher, CommandBuildContext commandRegistryAccess) {
-        dispatcher.register(literal("rprenames")
+        dispatcher.register(literal(RPRenames.MOD_ID)
                 .then(literal("info")
                         .executes(context -> info(context.getSource())))
                 .then(literal("list")

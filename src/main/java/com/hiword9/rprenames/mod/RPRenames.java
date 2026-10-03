@@ -46,7 +46,7 @@ public class RPRenames {
     }
 
     public static File getModConfigFile() {
-        return new File(Settings.getConfigDir().toFile(), "rprenames.json");
+        return new File(Settings.getConfigDir().toFile(), MOD_ID + ".json");
     }
 
     public static FavoritesManager getFavoritesManager() {

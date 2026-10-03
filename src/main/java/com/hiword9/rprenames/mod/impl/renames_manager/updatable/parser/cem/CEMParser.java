@@ -37,7 +37,7 @@ public class CEMParser implements Parser {
     public static boolean ignoreSkip = false;
 
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
-        profiler.push("rprenames:collecting_cem_renames");
+        profiler.push(RPRenames.MOD_ID + ":collecting_cem_renames");
 
         if (shouldSkipCemRenames()) {
             profiler.pop();
