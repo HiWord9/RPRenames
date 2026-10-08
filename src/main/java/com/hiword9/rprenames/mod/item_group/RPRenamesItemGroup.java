@@ -1,6 +1,7 @@
 package com.hiword9.rprenames.mod.item_group;
 
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
+import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.RPRenames;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import static com.hiword9.rprenames.util.Util.*;
 
@@ -127,9 +129,13 @@ public class RPRenamesItemGroup {
     }
 
     public static List<ItemStack> getAllRenamedStacks(RenamesProvider<?> renamesManager) {
+        return getAllRenamedStacks(renamesManager, rename -> true);
+    }
+
+    public static List<ItemStack> getAllRenamedStacks(RenamesProvider<?> renamesManager, Predicate<Rename> filter) {
         var list = new ArrayList<ItemStack>();
         for (var r : renamesManager.getAllRenames()) {
-            if (r instanceof ItemGroupComponent itemGroupComponent) {
+            if (filter.test(r) && r instanceof ItemGroupComponent itemGroupComponent) {
                 list.addAll(itemGroupComponent.getItemGroupStacks());
             }
         }
