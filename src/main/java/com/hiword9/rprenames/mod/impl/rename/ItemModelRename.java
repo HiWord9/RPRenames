@@ -3,7 +3,9 @@ package com.hiword9.rprenames.mod.impl.rename;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.ext.rename.HasDescription;
+import com.hiword9.rprenames.api.ext.rename.HasVisibility;
 import com.hiword9.rprenames.api.ext.rename.Informative;
+import com.hiword9.rprenames.api.ext.rename.Visibility;
 import com.hiword9.rprenames.mod.gui.widget.GhostCraft;
 import com.hiword9.rprenames.mod.impl.rename.renderer.ItemModelRenameRenderer;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
@@ -23,7 +25,7 @@ import static com.hiword9.rprenames.util.Util.config;
 
 public class ItemModelRename
         extends Rename
-        implements ItemGroupComponent, GhostCraft.Loader, Informative, HasDescription
+        implements ItemGroupComponent, GhostCraft.Loader, Informative, HasDescription, HasVisibility
 {
     protected final List<ItemModelCondition.Applicable> conditions = new ArrayList<>();
     protected final List<List<ItemModelCondition>> contexts = new ArrayList<>();
@@ -104,6 +106,11 @@ public class ItemModelRename
     @Override
     public List<Component> getDescription() {
         return properties.get(BuiltinRenameProperties.DESCRIPTION);
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return properties.get(BuiltinRenameProperties.VISIBILITY);
     }
 
     @Override
