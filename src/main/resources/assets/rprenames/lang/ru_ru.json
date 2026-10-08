@@ -144,6 +144,8 @@
   "rprenames.config.debug.showOriginalProperties.tooltip": "Если включено, упрощённые значения дополнительных свойств\nво всплывающих подсказках будут отображаться в том виде,\nв каком они записаны в файле '.properties'",
   "rprenames.config.debug.fixDelayedPacketsChangingTab": "Исправлено изменение вкладки после автоматического размещения предметов",
   "rprenames.config.debug.fixDelayedPacketsChangingTab.tooltip": "Иногда после автоматического размещения предметов\nв наковальне сервер может отправить в ответ 2 пакета,\nодин для предыдущего состояния, а второй для актуального обновления слота.\nЭтот мод расценивает это как ручное перемещение предметов игроком,\nчто приводит к смене вкладки на поиск и сбросу имени в поле имени.\nЕсли включено, программа попытается это исправить.\nНе рекомендуется включать, если вы ещё не сталкивались с этой проблемой.",
+  "rprenames.config.debug.showHiddenRenames": "Показывать скрытые переименования",
+  "rprenames.config.debug.showHiddenRenames.tooltip": "Если включено, скрытые переименования тоже будут показаны",
 
   "rprenames.config.general.creativeTabCategory": "Творческая вкладка RPRenames",
   "rprenames.config.gui.tooltipCategory": "Всплывающая подсказка",
