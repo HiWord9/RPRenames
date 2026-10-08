@@ -3,6 +3,7 @@ package com.hiword9.rprenames.mod;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.ext.rename.Informative;
 import com.hiword9.rprenames.mod.util.PropertiesHelper;
+import com.hiword9.rprenames.mod.util.VisibilityHelper;
 import com.hiword9.rprenames.util.Util;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -120,7 +121,8 @@ public class RPRenamesCommand {
     }
 
     public static int list(SharedSuggestionProvider source, Item item) {
-        var renames = RPRenames.renamesProvider.getRenames(item);
+        var renames = RPRenames.renamesProvider.getRenames(item).stream()
+                .filter(VisibilityHelper::shouldBeVisible).toList();
         if (!renames.isEmpty()) {
             sendFeedback(
                     Component.translatable(

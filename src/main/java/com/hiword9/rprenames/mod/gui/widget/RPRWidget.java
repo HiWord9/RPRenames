@@ -7,6 +7,7 @@ import com.hiword9.rprenames.util.Graphics;
 import com.hiword9.rprenames.mod.gui.widget.external.FavoriteButton;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.mod.util.RenamesSearchEngine;
+import com.hiword9.rprenames.mod.util.VisibilityHelper;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -549,6 +550,8 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
             case INVENTORY -> unfilteredRenames.addAll(getInventoryRenames());
             case GLOBAL -> unfilteredRenames.addAll(renamesProvider.getAllRenames());
         }
+        if (currentTab != Tab.FAVORITE)
+            unfilteredRenames.removeIf(rename -> !VisibilityHelper.shouldBeVisible(rename));
     }
 
     protected List<Rename> getInventoryRenames() {

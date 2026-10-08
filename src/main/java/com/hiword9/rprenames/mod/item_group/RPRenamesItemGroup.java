@@ -3,6 +3,7 @@ package com.hiword9.rprenames.mod.item_group;
 import com.hiword9.rprenames.api.core.renames_manager.RenamesProvider;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.RPRenames;
+import com.hiword9.rprenames.mod.util.VisibilityHelper;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -43,7 +44,7 @@ public class RPRenamesItemGroup {
     public static void update() {
         renamedItemStacks.clear();
         if (client().level == null) return;
-        renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.updatableRenamesManager));
+        renamedItemStacks.addAll(getAllRenamedStacks(RPRenames.updatableRenamesManager, VisibilityHelper::shouldBeVisible));
     }
 
     static ItemStack getItemGroupIcon() {
