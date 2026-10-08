@@ -83,6 +83,13 @@ public class ModConfig {
     public boolean showNamePattern = false;
     public boolean showOriginalProperties = false;
     public boolean fixDelayedPacketsChangingTab = false;
+    public boolean showHiddenRenames = false;
+    public void setShowHiddenRenames(boolean showHiddenRenames) {
+        if (shouldUpdateItemGroup == null || !shouldUpdateItemGroup) {
+            this.shouldUpdateItemGroup = showHiddenRenames != this.showHiddenRenames;
+        }
+        this.showHiddenRenames = showHiddenRenames;
+    }
 
     public boolean showDescription = true; // todo ? add to config screen
 

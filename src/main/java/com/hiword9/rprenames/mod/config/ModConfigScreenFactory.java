@@ -285,6 +285,12 @@ public class ModConfigScreenFactory {
                     .binding(defaultConfig.fixDelayedPacketsChangingTab, () -> currentConfig.fixDelayedPacketsChangingTab, val -> currentConfig.fixDelayedPacketsChangingTab = val)
                     .controller(TickBoxControllerBuilder::create)
                     .build())
+                .option(Option.<Boolean>createBuilder()
+                    .name(Component.translatable("rprenames.config.debug.showHiddenRenames"))
+                    .description(OptionDescription.of(Component.translatable("rprenames.config.debug.showHiddenRenames.tooltip")))
+                    .binding(defaultConfig.showHiddenRenames, () -> currentConfig.showHiddenRenames, currentConfig::setShowHiddenRenames)
+                    .controller(TickBoxControllerBuilder::create)
+                    .build())
                 .build())
             .build()
             .generateScreen(parent);
