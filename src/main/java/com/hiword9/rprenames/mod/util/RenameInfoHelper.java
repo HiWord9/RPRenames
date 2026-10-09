@@ -12,13 +12,15 @@ public class RenameInfoHelper {
     public static List<Component> getProperties(Properties properties) {
         var lines = new ArrayList<Component>();
         for (String s : properties.stringPropertyNames()) {
-            lines.add(
-                    Component.nullToEmpty(s).copy().withStyle(ChatFormatting.GOLD)
-                    .append(Component.nullToEmpty("=").copy().withStyle(ChatFormatting.GRAY))
-                    .append(Component.nullToEmpty(properties.getProperty(s)).copy().withStyle(ChatFormatting.GREEN))
-            );
+            lines.add(getProperty(s, properties.getProperty(s)));
         }
         return lines;
+    }
+
+    public static Component getProperty(String key, String value) {
+        return Component.nullToEmpty(key).copy().withStyle(ChatFormatting.GOLD)
+                .append(Component.nullToEmpty("=").copy().withStyle(ChatFormatting.GRAY))
+                .append(Component.nullToEmpty(value).copy().withStyle(ChatFormatting.GREEN));
     }
 
     public static List<Component> getRPPath(String packName, String path) {
