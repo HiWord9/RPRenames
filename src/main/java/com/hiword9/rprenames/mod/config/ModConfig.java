@@ -83,6 +83,7 @@ public class ModConfig {
     public boolean showNamePattern = false;
     public boolean showOriginalProperties = false;
     public boolean fixDelayedPacketsChangingTab = false;
+    public boolean logRenameProperties = false;
     public boolean showHiddenRenames = false;
     public void setShowHiddenRenames(boolean showHiddenRenames) {
         if (shouldUpdateItemGroup == null || !shouldUpdateItemGroup) {

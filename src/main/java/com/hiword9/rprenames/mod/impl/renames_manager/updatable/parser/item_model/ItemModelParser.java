@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.hiword9.rprenames.util.Util.config;
+
 public class ItemModelParser implements Parser {
     private final Map<Identifier, ClientItem> itemAssets = new HashMap<>();
 
@@ -63,6 +65,16 @@ public class ItemModelParser implements Parser {
             );
 
             for (var item : data.items) renamesManager.addRename(item, rename);
+
+            if (config().logRenameProperties && !renameCondition.propertiesDefinition.isEmpty()) {
+                RPRenames.LOGGER.info(
+                        "Rename properties of '{}' in {}: {} -> {}",
+                        renameCondition.value.getFirst().getString(),
+                        itemsToString(data.items),
+                        renameCondition.propertiesDefinition,
+                        data.properties
+                );
+            }
         });
 
         ignoredProperties.forEach((condition, items) -> RPRenames.LOGGER.warn(
