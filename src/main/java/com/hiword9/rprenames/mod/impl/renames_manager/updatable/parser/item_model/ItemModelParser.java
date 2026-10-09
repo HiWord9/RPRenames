@@ -7,6 +7,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.api.core.renames_manager.RenamesManager;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenamePropertiesResolver;
+import com.hiword9.rprenames.util.Util;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.properties.select.ComponentContents;
 import net.minecraft.core.component.DataComponentType;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemModelParser implements Parser {
     private final Map<Identifier, ClientItem> itemAssets = new HashMap<>();
@@ -37,16 +39,19 @@ public class ItemModelParser implements Parser {
     @Override
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
         var propertiesResolver = new RenamePropertiesResolver(resourceManager);
+        var ignoredProperties = new LinkedHashMap<SelectCondition<?, ?>, Set<Item>>();
         var renameDataList = ItemModelData.mergeAllPossible(
                 ItemModelDataExplorer.getListUnmerged(itemAssets).stream()
-                        .map(data -> withRenameProperties(data, propertiesResolver))
+                        .map(data -> {
+                            var renameCondition = getRenameCondition(data.applicableConditions, false);
+                            collectIgnoredProperties(ignoredProperties, data, renameCondition);
+                            return withRenameProperties(data, renameCondition, propertiesResolver);
+                        })
                         .toList()
         );
-        var ignoredProperties = new HashSet<SelectCondition<?, ?>>();
 
         renameDataList.forEach(data -> {
             var renameCondition = getRenameCondition(data.applicableConditions);
-            collectIgnoredProperties(ignoredProperties, data, renameCondition);
             if (renameCondition == null) return;
 
             var rename = new ItemModelRename(
@@ -60,21 +65,25 @@ public class ItemModelParser implements Parser {
             for (var item : data.items) renamesManager.addRename(item, rename);
         });
 
-        ignoredProperties.forEach(condition -> RPRenames.LOGGER.warn(
-                "Ignoring rename properties outside of custom_name select case {}: {}",
+        ignoredProperties.forEach((condition, items) -> RPRenames.LOGGER.warn(
+                "Ignoring rename properties outside of custom_name select case {} in {}: {}",
                 condition.value,
+                itemsToString(items),
                 condition.propertiesDefinition
         ));
     }
 
-    private static ItemModelData withRenameProperties(ItemModelData data, RenamePropertiesResolver propertiesResolver) {
-        var renameCondition = getRenameCondition(data.applicableConditions, false);
+    private static ItemModelData withRenameProperties(
+            ItemModelData data,
+            @Nullable SelectCondition<?, ?> renameCondition,
+            RenamePropertiesResolver propertiesResolver
+    ) {
         if (renameCondition == null) return data;
         return data.withProperties(propertiesResolver.resolve(renameCondition.propertiesDefinition));
     }
 
     private static void collectIgnoredProperties(
-            Set<SelectCondition<?, ?>> ignoredProperties,
+            Map<SelectCondition<?, ?>, Set<Item>> ignoredProperties,
             ItemModelData data,
             @Nullable SelectCondition<?, ?> renameCondition
     ) {
@@ -84,7 +93,7 @@ public class ItemModelParser implements Parser {
             if (condition instanceof SelectCondition<?, ?> select
                     && select != renameCondition
                     && !select.propertiesDefinition.isEmpty()
-            ) ignoredProperties.add(select);
+            ) ignoredProperties.computeIfAbsent(select, k -> new LinkedHashSet<>()).addAll(data.items);
         }
     }
 
@@ -114,6 +123,10 @@ public class ItemModelParser implements Parser {
             }
         }
         return renameCondition;
+    }
+
+    private static String itemsToString(Collection<Item> items) {
+        return items.stream().map(Util::idFromItem).collect(Collectors.joining(", ", "[", "]"));
     }
 
     @SuppressWarnings("unchecked")
