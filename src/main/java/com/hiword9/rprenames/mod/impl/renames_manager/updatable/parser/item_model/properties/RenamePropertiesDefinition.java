@@ -1,9 +1,11 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import java.util.List;
@@ -19,6 +21,13 @@ public record RenamePropertiesDefinition(List<Identifier> templates, RenamePrope
 
     public boolean isEmpty() {
         return templates.isEmpty() && properties.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return CODEC.encodeStart(JsonOps.INSTANCE, this).resultOrPartial()
+                .map(JsonElement::toString)
+                .orElseGet(() -> templates + " " + properties);
     }
 
     private static DataResult<Identifier> readTemplateId(String id) {

@@ -1,9 +1,11 @@
 package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapLike;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +51,9 @@ public class RenameProperties {
 
     @Override
     public String toString() {
-        return values.toString();
+        return CODEC.encodeStart(JsonOps.INSTANCE, this).resultOrPartial()
+                .map(JsonElement::toString)
+                .orElseGet(values::toString);
     }
 
     protected static class PropertiesCodec implements Codec<RenameProperties> {
