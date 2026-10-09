@@ -12,6 +12,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.BuiltinRenameProperties;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
+import com.hiword9.rprenames.mod.util.RenameInfoHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -118,6 +119,7 @@ public class ItemModelRename
         var info = new ArrayList<Component>();
         info.add(Component.translatable("rprenames.command.info.requiredConditions", conditions.size()).withStyle(ChatFormatting.AQUA));
         info.add(Component.translatable("rprenames.command.info.availableContexts", contexts.size()).withStyle(ChatFormatting.AQUA));
+        info.addAll(RenameInfoHelper.getProperties(properties));
         return info;
     }
 }
