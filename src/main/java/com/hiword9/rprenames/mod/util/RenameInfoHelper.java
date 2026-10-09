@@ -1,5 +1,8 @@
 package com.hiword9.rprenames.mod.util;
 
+import com.google.gson.JsonElement;
+import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -15,6 +18,20 @@ public class RenameInfoHelper {
             lines.add(getProperty(s, properties.getProperty(s)));
         }
         return lines;
+    }
+
+    public static List<Component> getProperties(RenameProperties properties) {
+        var lines = new ArrayList<Component>();
+        RenameProperties.CODEC.encodeStart(JsonOps.INSTANCE, properties).resultOrPartial()
+                .filter(JsonElement::isJsonObject)
+                .ifPresent(json -> json.getAsJsonObject().entrySet().forEach(entry ->
+                        lines.add(getProperty(entry.getKey(), asString(entry.getValue())))
+                ));
+        return lines;
+    }
+
+    protected static String asString(JsonElement json) {
+        return json.isJsonPrimitive() ? json.getAsString() : json.toString();
     }
 
     public static Component getProperty(String key, String value) {
