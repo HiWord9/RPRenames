@@ -270,9 +270,32 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
         setNameText(name.getString());
     }
 
+    public void toggleFavorite(Rename rename, Component selectedName) {
+        boolean favorite = shouldRenameButtonBeFavorite(rename);
+
+        List<Item> items = currentTab.forCraftItemOnly
+                ? List.of(getCraftItem())
+                : List.copyOf(rename.getItems());
+
+        List<String> names = favorite
+                ? rename.getNames().stream()
+                        .map(Component::getString)
+                        .distinct()
+                        .toList()
+                : List.of(selectedName.getString());
+
+        addOrRemoveFavorite(!favorite, items, names);
+    }
+
     public void addOrRemoveFavorite(boolean add, List<Item> items, String name) {
-        if (add) favoritesManager.addRenames(items, name);
-        else favoritesManager.removeRenames(items, name);
+        addOrRemoveFavorite(add, items, List.of(name));
+    }
+
+    public void addOrRemoveFavorite(boolean add, List<Item> items, List<String> names) {
+        for (String name : names) {
+            if (add) favoritesManager.addRenames(items, name);
+            else favoritesManager.removeRenames(items, name);
+        }
 
         refreshFavoriteButton();
         if (!isOpen()) return;
@@ -641,9 +664,11 @@ public class RPRWidget implements Renderable, GuiEventListener, OffsetableWidget
     }
 
     protected boolean shouldRenameButtonBeFavorite(Rename rename) {
-        return currentTab == Tab.SEARCH
-                ? favoritesManager.isFavorite(getCraftItem(), rename.getName().getString())
-                : favoritesManager.isFavoriteAny(rename.getItems(), rename.getName().getString());
+        return rename.getNames().stream()
+                .map(Component::getString)
+                .anyMatch(name -> currentTab == Tab.SEARCH
+                        ? favoritesManager.isFavorite(getCraftItem(), name)
+                        : favoritesManager.isFavoriteAny(rename.getItems(), name));
     }
 
 // Other / Util

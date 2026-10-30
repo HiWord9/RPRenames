@@ -15,10 +15,9 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
-import java.util.List;
 
 import static com.hiword9.rprenames.util.Util.*;
 
@@ -115,12 +114,7 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
         if (!this.isMouseOver(click.x(), click.y())) return false;
 
         if (click.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
-            List<Item> items;
-
-            if (rprWidget.getCurrentTab().forCraftItemOnly) items = List.of(rprWidget.getCraftItem());
-            else items = List.copyOf(rename.getItems());
-
-            rprWidget.addOrRemoveFavorite(!favorite, items, rename.getName().getString());
+            rprWidget.toggleFavorite(rename, getSelectedName());
         } else {
             doRename();
         }
@@ -129,11 +123,13 @@ public class RenameButton extends AbstractWidget implements OffsetableWidget {
     }
 
     protected void doRename() {
-        if (renameRenderer instanceof NameSelectable selectable) {
-            rprWidget.doRename(rename, selectable.getSelectedName());
-        } else {
-            rprWidget.doRename(rename);
-        }
+        rprWidget.doRename(rename, getSelectedName());
+    }
+
+    protected Component getSelectedName() {
+        return renameRenderer instanceof NameSelectable selectable
+                ? selectable.getSelectedName()
+                : rename.getName();
     }
 
     @Override
