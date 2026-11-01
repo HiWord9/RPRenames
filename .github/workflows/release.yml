@@ -10,6 +10,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      RELEASE_VERSION: ${{ github.event.release.tag_name }}
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -23,7 +25,7 @@ jobs:
       - name: setup gradle
         uses: gradle/actions/setup-gradle@v4
       - name: build
-        run: ./gradlew build --stacktrace
+        run: ./gradlew build "-Pmod_version=$RELEASE_VERSION" --stacktrace
       - name: attach jars to release
         env:
           GH_TOKEN: ${{ github.token }}
