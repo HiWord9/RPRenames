@@ -1,0 +1,63 @@
+name: publish maven
+on:
+  workflow_call:
+    secrets:
+      MAVEN_DEPLOY_KEY:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check deploy key
+        id: key
+        env:
+          MAVEN_DEPLOY_KEY: ${{ secrets.MAVEN_DEPLOY_KEY }}
+        run: |
+          if [ -n "$MAVEN_DEPLOY_KEY" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Add the MAVEN_DEPLOY_KEY repository secret to enable Maven publishing."
+            echo 'Maven files were built, but publishing needs [MAVEN_DEPLOY_KEY](https://github.com/HiWord9/RPRenames/settings/secrets/actions/new).' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: download maven
+        if: steps.key.outputs.configured == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: maven
+          path: ${{ runner.temp }}/maven
+      - name: checkout maven repository
+        if: steps.key.outputs.configured == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: HiWord9/maven
+          ref: main
+          path: maven-repository
+          ssh-key: ${{ secrets.MAVEN_DEPLOY_KEY }}
+      - name: publish maven
+        if: steps.key.outputs.configured == 'true'
+        env:
+          MAVEN_FILES: ${{ runner.temp }}/maven
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          git -C maven-repository config user.name 'github-actions[bot]'
+          git -C maven-repository config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5; do
+            git -C maven-repository fetch origin main
+            git -C maven-repository reset --hard origin/main
+            python3 maven-repository/scripts/publish.py "$MAVEN_FILES" maven-repository/repository
+            git -C maven-repository add repository
+            if git -C maven-repository diff --cached --quiet; then
+              echo 'Maven files are already published.' >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            git -C maven-repository commit -m "publish: RPRenames ${SOURCE_SHA:0:7}"
+            if git -C maven-repository push origin HEAD:main; then
+              echo 'Published to [HiWord9/maven](https://github.com/HiWord9/maven/tree/main/repository). GitHub Pages deploys the update separately.' >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+          done
+          exit 1

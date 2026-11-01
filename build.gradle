@@ -158,3 +158,18 @@ tasks.withType(Jar).configureEach {
 	it.from("LICENSE")
 	it.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+publishing {
+	publications {
+		register("mavenJava", MavenPublication) {
+			artifactId = "${project.mod_id}-${project.minecraft_version}"
+			artifact tasks.named("shadowJar")
+			artifact tasks.named("shadowSourcesJar")
+		}
+	}
+	repositories {
+		maven {
+			url = System.getenv("local_maven_url")
+		}
+	}
+}

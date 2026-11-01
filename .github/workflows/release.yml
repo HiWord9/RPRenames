@@ -26,6 +26,16 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: build
         run: ./gradlew build "-Pmod_version=$RELEASE_VERSION" --stacktrace
+      - name: export maven
+        env:
+          local_maven_url: file://${{ runner.temp }}/maven
+        run: ./gradlew publish "-Pmod_version=$RELEASE_VERSION" --stacktrace
+      - name: upload maven
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven
+          path: ${{ runner.temp }}/maven
+          if-no-files-found: error
       - name: attach jars to release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -33,3 +43,9 @@ jobs:
         run: |
           find build/libs -maxdepth 1 -name '*.jar' ! -name '*-dev.jar' \
             -exec gh release upload "$TAG" --clobber {} +
+
+  publish-maven:
+    needs: release
+    uses: ./.github/workflows/publish-maven.yml
+    secrets:
+      MAVEN_DEPLOY_KEY: ${{ secrets.MAVEN_DEPLOY_KEY }}
