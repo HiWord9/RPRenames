@@ -18,6 +18,7 @@ repositories {
 	unimined.modrinthMaven()
 	maven { url "https://maven.isxander.dev/releases/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
+	maven { url "https://maven.miros.love/" }
 }
 
 configurations {
@@ -70,6 +71,7 @@ unimined.minecraft(sourceSets.neoforge) {
 
 dependencies {
 	compileOnly "maven.modrinth:yacl:${project.yacl_version}-fabric"
+	compileOnly "com.hiword9:mim:${project.mim_version}"
 
 	fabricImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 	fabricImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
@@ -81,10 +83,12 @@ dependencies {
 	fabricImplementation("maven.modrinth:yacl:${project.yacl_version}-fabric") {
 		exclude group: 'com.google.code.gson', module: 'gson'
 	}
+	fabricRuntimeOnly "com.hiword9:mim:${project.mim_version}"
 
 	neoforgeImplementation("maven.modrinth:yacl:${project.yacl_version}-neoforge") {
 		exclude group: 'com.google.code.gson', module: 'gson'
 	}
+	neoforgeRuntimeOnly "com.hiword9:mim:${project.mim_version}"
 }
 
 shadowJar {
