@@ -104,7 +104,9 @@ public class ItemModelParser implements Parser {
             RenamePropertiesResolver propertiesResolver
     ) {
         if (renameCondition == null) return data;
-        return data.withProperties(propertiesResolver.resolve(renameCondition.propertiesDefinition));
+        return data
+                .withProperties(propertiesResolver.resolve(renameCondition.propertiesDefinition))
+                .withPack(renameCondition.pack == null ? data.pack : renameCondition.pack);
     }
 
     private static void collectIgnoredProperties(

@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.item.properties.select.TrimMaterialProperty
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.util.RegistryContextSwapper;
 import net.minecraft.world.item.CrossbowItem.ChargeType;
 import net.minecraft.world.item.ItemStack;
@@ -22,24 +23,33 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 import net.minecraft.world.item.equipment.trim.TrimMaterial;
 import net.minecraft.world.item.equipment.trim.TrimPattern;
 import net.minecraft.world.item.equipment.trim.TrimPatterns;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static com.hiword9.rprenames.util.Util.*;
 
 public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V> extends AbstractPropertyValueCondition<P, List<V>> {
     public final RenamePropertiesDefinition propertiesDefinition;
+    public final @Nullable PackLocationInfo pack;
 
-    private SelectCondition(P property, List<V> values, RenamePropertiesDefinition propertiesDefinition) {
+    private SelectCondition(
+            P property, List<V> values, RenamePropertiesDefinition propertiesDefinition, @Nullable PackLocationInfo pack
+    ) {
         super(property, values);
         this.propertiesDefinition = propertiesDefinition;
+        this.pack = pack;
     }
 
     public static <P extends SelectItemModelProperty<V>, V> SelectCondition<P, V> of(
-            P property, List<V> values, RenamePropertiesDefinition propertiesDefinition, ClientItem asset
+            P property,
+            List<V> values,
+            RenamePropertiesDefinition propertiesDefinition,
+            @Nullable PackLocationInfo pack,
+            ClientItem asset
     ) {
         return isPropertyApplicable(property)
-                ? new ApplicableSelectCondition<>(property, values, propertiesDefinition, asset)
-                : new SelectCondition<>(property, values, propertiesDefinition);
+                ? new ApplicableSelectCondition<>(property, values, propertiesDefinition, pack, asset)
+                : new SelectCondition<>(property, values, propertiesDefinition, pack);
     }
 
     private static <V> boolean isPropertyApplicable(SelectItemModelProperty<V> property) {
@@ -63,8 +73,14 @@ public non-sealed class SelectCondition<P extends SelectItemModelProperty<V>, V>
 
         private final ClientItem asset;
 
-        private ApplicableSelectCondition(P property, List<V> values, RenamePropertiesDefinition propertiesDefinition, ClientItem asset) {
-            super(property, values, propertiesDefinition);
+        private ApplicableSelectCondition(
+                P property,
+                List<V> values,
+                RenamePropertiesDefinition propertiesDefinition,
+                @Nullable PackLocationInfo pack,
+                ClientItem asset
+        ) {
+            super(property, values, propertiesDefinition, pack);
             this.asset = asset;
         }
 
