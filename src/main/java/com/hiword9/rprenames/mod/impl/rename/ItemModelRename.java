@@ -150,6 +150,7 @@ public class ItemModelRename
         info.add(Component.translatable("rprenames.command.info.requiredConditions", conditions.size()).withStyle(ChatFormatting.AQUA));
         info.add(Component.translatable("rprenames.command.info.availableContexts", contexts.size()).withStyle(ChatFormatting.AQUA));
         info.addAll(RenameInfoHelper.getProperties(properties));
+        info.addAll(RenameInfoHelper.getRPPath(pack, getPaths()));
         return info;
     }
 }
