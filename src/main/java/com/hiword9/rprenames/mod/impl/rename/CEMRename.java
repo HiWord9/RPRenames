@@ -16,6 +16,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -25,6 +26,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.TagValueInput;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +41,7 @@ public class CEMRename
 {
     public static final Item DEFAULT_MOB_ITEM = Items.NAME_TAG;
 
-    private final String packName;
+    private final PackLocationInfo pack;
     private final String path;
     private final EntityType<?> entity;
     private final Properties properties;
@@ -56,7 +58,7 @@ public class CEMRename
 
     public CEMRename(
             String name,
-            String packName,
+            PackLocationInfo pack,
             String path,
             String namePattern,
             EntityType<?> entity,
@@ -64,7 +66,7 @@ public class CEMRename
             Rename itemRename
     ) {
         super(Component.nullToEmpty(name), DEFAULT_MOB_ITEM);
-        this.packName = packName;
+        this.pack = pack;
         this.path = path;
         this.entity = entity;
         this.properties = properties;
@@ -146,8 +148,8 @@ public class CEMRename
     }
 
     @Override
-    public String getPackName() {
-        return packName;
+    public @Nullable PackLocationInfo getPack() {
+        return pack;
     }
 
     @Override
@@ -183,7 +185,7 @@ public class CEMRename
                         .withStyle(ChatFormatting.LIGHT_PURPLE)
         );
         info.addAll(RenameInfoHelper.getProperties(properties));
-        info.addAll(RenameInfoHelper.getRPPath(packName, path));
+        info.addAll(RenameInfoHelper.getRPPath(pack, path));
         return info;
     }
 

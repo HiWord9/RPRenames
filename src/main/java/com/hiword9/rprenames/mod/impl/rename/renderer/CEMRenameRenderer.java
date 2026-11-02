@@ -11,6 +11,7 @@ import com.hiword9.rprenames.mod.gui.widget.RPRWidget;
 import com.hiword9.rprenames.mod.impl.rename.CEMRename;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
+import com.hiword9.rprenames.mod.util.ParserHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -67,8 +68,8 @@ public class CEMRenameRenderer extends SimpleRenameRenderer<CEMRename> implement
 
         tooltipComponents.add(mobNameTooltipComponent(rename.getEntity()));
 
-        if (config().showPackName && rename.getPackName() != null) {
-            tooltipComponents.add(packNameTooltipComponent(rename.getPackName()));
+        if (config().showPackName && rename.getPack() != null) {
+            tooltipComponents.add(packNameTooltipComponent(ParserHelper.getPackName(rename.getPack())));
         }
 
         if (config().showNamePattern && rprWidget.getCurrentTab() != RPRWidget.Tab.FAVORITE) {

@@ -18,12 +18,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,7 +36,7 @@ public class CITRename
         extends Rename
         implements HasResourcePack, HasDescription, ItemGroupComponent, GhostCraft.Loader, Informative
 {
-    protected final String packName;
+    protected final PackLocationInfo pack;
     protected final String path;
     protected final Integer stackSize;
     protected final Damage damage;
@@ -50,7 +52,7 @@ public class CITRename
 
     public CITRename(
             String name,
-            String packName,
+            PackLocationInfo pack,
             String path,
             Integer stackSize,
             Damage damage,
@@ -61,7 +63,7 @@ public class CITRename
             Item... items
     ) {
         super(Component.nullToEmpty(name), items);
-        this.packName = packName;
+        this.pack = pack;
         this.path = path;
         this.stackSize = stackSize;
         this.damage = damage;
@@ -136,8 +138,8 @@ public class CITRename
     }
 
     @Override
-    public String getPackName() {
-        return packName;
+    public @Nullable PackLocationInfo getPack() {
+        return pack;
     }
 
     @Override
@@ -149,7 +151,7 @@ public class CITRename
     public List<Component> getInfo() {
         var info = new ArrayList<Component>();
         info.addAll(RenameInfoHelper.getProperties(properties));
-        info.addAll(RenameInfoHelper.getRPPath(packName, path));
+        info.addAll(RenameInfoHelper.getRPPath(pack, path));
         return info;
     }
 

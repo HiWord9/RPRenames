@@ -86,9 +86,10 @@ public class RenamesSearchEngine {
 
         for (Rename r : renames) {
             if (!(r instanceof HasResourcePack rpRename)) continue;
-            if (rpRename.getPackName() == null) continue;
+            var packName = ParserHelper.getPackName(rpRename.getPack());
+            if (packName == null) continue;
 
-            if (up(rpRename.getPackName())
+            if (up(packName)
                     .replace(" ", "_")
                     .contains(packNameUp)
             ) resultList.add(r);

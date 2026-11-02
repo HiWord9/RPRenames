@@ -9,6 +9,7 @@ import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -38,11 +39,11 @@ public class CITParser implements Parser {
         for (String root : ROOTS) {
             for (Map.Entry<Identifier, Resource> entry : resourceManager.listResources(root + "/cit", s -> s.getPath().endsWith(".properties")).entrySet()) {
                 try {
-                    String packName = ParserHelper.validatePackName(entry.getValue().source().packId());
+                    PackLocationInfo pack = entry.getValue().source().location();
                     propertiesToRename(
                             ParserHelper.getPropFromResource(entry.getValue()),
-                            packName,
-                            ParserHelper.getFullPathFromIdentifier(packName, entry.getKey())
+                            pack,
+                            ParserHelper.getFullPathFromIdentifier(pack.id(), entry.getKey())
                     );
                 } catch (Exception e) {
                     RPRenames.LOGGER.error("Something went wrong while parsing CIT Renames", e);
@@ -52,7 +53,7 @@ public class CITParser implements Parser {
         profiler.pop();
     }
 
-    private void propertiesToRename(Properties p, String packName, String path) {
+    private void propertiesToRename(Properties p, PackLocationInfo pack, String path) {
         String matchItems = p.getProperty("matchItems");
         if (matchItems == null) matchItems = p.getProperty("items");
         if (matchItems == null) return;
@@ -110,7 +111,7 @@ public class CITParser implements Parser {
 
         CITRename rename = new CITRename(
                 PropertiesHelper.getFirstName(customName, path),
-                packName,
+                pack,
                 path,
                 stackSize,
                 damage,

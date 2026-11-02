@@ -1,7 +1,9 @@
 package com.hiword9.rprenames.mod.util;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.resources.Resource;
+import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,5 +21,9 @@ public class ParserHelper {
 
     public static String validatePackName(String packName) {
         return packName.startsWith("file/") ? packName.substring(5) : packName;
+    }
+
+    public static @Nullable String getPackName(@Nullable PackLocationInfo pack) {
+        return pack == null ? null : validatePackName(pack.id());
     }
 }

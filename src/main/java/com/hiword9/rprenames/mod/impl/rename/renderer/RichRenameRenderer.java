@@ -16,6 +16,7 @@ import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.renderer.PreviewTooltipPositioner.PreviewPos;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsFavoriteSupplier;
 import com.hiword9.rprenames.mod.impl.rename.renderer.builder.AcceptsRPRWidget;
+import com.hiword9.rprenames.mod.util.ParserHelper;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -127,8 +128,8 @@ public class RichRenameRenderer<R extends Rename>
     protected void addPackNameTooltip() {
         if (!(rename instanceof HasResourcePack rpRename)) return;
 
-        if (rpRename.getPackName() == null) return;
-        tooltipComponents.add(packNameTooltipComponent(rpRename.getPackName()));
+        if (rpRename.getPack() == null) return;
+        tooltipComponents.add(packNameTooltipComponent(ParserHelper.getPackName(rpRename.getPack())));
     }
 
     @Override

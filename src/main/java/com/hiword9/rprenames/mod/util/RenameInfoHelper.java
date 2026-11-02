@@ -7,6 +7,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.packs.PackLocationInfo;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -40,7 +42,8 @@ public class RenameInfoHelper {
                 .append(Component.nullToEmpty(value).copy().withStyle(ChatFormatting.GREEN));
     }
 
-    public static List<Component> getRPPath(String packName, String path) {
+    public static List<Component> getRPPath(@Nullable PackLocationInfo pack, String path) {
+        var packName = ParserHelper.getPackName(pack);
         var lines = new ArrayList<Component>();
         if (packName != null && path != null) {
             lines.add(getPath(path, packName));

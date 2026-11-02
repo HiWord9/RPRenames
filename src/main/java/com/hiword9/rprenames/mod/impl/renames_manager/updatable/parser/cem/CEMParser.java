@@ -9,6 +9,7 @@ import com.hiword9.rprenames.api.ext.renames_manager.parser.Parser;
 import com.hiword9.rprenames.mod.util.ParserHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -121,13 +122,13 @@ public class CEMParser implements Parser {
         }
         Resource resource = optionalResource.get();
 
-        String packName = ParserHelper.validatePackName(resource.source().packId());
-        String path = ParserHelper.getFullPathFromIdentifier(packName, identifier);
+        PackLocationInfo pack = resource.source().location();
+        String path = ParserHelper.getFullPathFromIdentifier(pack.id(), identifier);
         if (checked.contains(path)) return;
 
         propertiesToRenameMob(
                 ParserHelper.getPropFromResource(resource),
-                packName,
+                pack,
                 path,
                 entityType
         );
@@ -149,8 +150,8 @@ public class CEMParser implements Parser {
 
         Resource resourceProp = optionalResourceProp.get();
 
-        String packName = ParserHelper.validatePackName(resourceProp.source().packId());
-        String path = ParserHelper.getFullPathFromIdentifier(packName, propId);
+        PackLocationInfo pack = resourceProp.source().location();
+        String path = ParserHelper.getFullPathFromIdentifier(pack.id(), propId);
         checked.add(path);
 
         CEMModels.ModelData modelData = CEMModels.find(fileName);
@@ -158,13 +159,13 @@ public class CEMParser implements Parser {
 
         propertiesToRenameMob(
                 ParserHelper.getPropFromResource(resourceProp),
-                packName,
+                pack,
                 path,
                 modelData.mob()
         );
     }
 
-    private void propertiesToRenameMob(Properties p, String packName, String path, EntityType<?> entityType) {
+    private void propertiesToRenameMob(Properties p, PackLocationInfo pack, String path, EntityType<?> entityType) {
         ArrayList<String> skins = new ArrayList<>();
         for (String s : p.stringPropertyNames()) {
             if (!s.startsWith("name.")) continue;
@@ -194,7 +195,7 @@ public class CEMParser implements Parser {
 
             var rename = new CEMRename(
                     name,
-                    packName,
+                    pack,
                     path,
                     namePattern,
                     entityType,
