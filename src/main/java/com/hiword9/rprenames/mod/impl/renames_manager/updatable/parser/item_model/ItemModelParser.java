@@ -53,7 +53,7 @@ public class ItemModelParser implements Parser {
                         .map(data -> {
                             var renameCondition = getRenameCondition(data.applicableConditions, false);
                             collectIgnoredProperties(ignoredProperties, data, renameCondition);
-                            return withRenameProperties(data, renameCondition, propertiesResolver);
+                            return withRenameData(data, renameCondition, propertiesResolver);
                         })
                         .toList()
         );
@@ -98,7 +98,7 @@ public class ItemModelParser implements Parser {
                 .orElse(null);
     }
 
-    private static ItemModelData withRenameProperties(
+    private static ItemModelData withRenameData(
             ItemModelData data,
             @Nullable SelectCondition<?, ?> renameCondition,
             RenamePropertiesResolver propertiesResolver
