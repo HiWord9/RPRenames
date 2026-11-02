@@ -6,6 +6,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.favorite.FavoritesManager;
 import com.hiword9.rprenames.mod.impl.rename.CITRename;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.util.Util;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
@@ -86,14 +87,19 @@ public class RenamesSearchEngine {
 
         for (Rename r : renames) {
             if (!(r instanceof HasResourcePack rpRename)) continue;
-            var packName = ParserHelper.getPackName(rpRename.getPack());
-            if (packName == null) continue;
+            var pack = rpRename.getPack();
+            if (pack == null) continue;
 
-            if (up(packName)
-                    .replace(" ", "_")
-                    .contains(packNameUp)
+            if (matchesPackName(ParserHelper.getPackName(pack), packNameUp)
+                    || matchesPackName(ChatFormatting.stripFormatting(pack.title().getString()), packNameUp)
             ) resultList.add(r);
         }
+    }
+
+    private static boolean matchesPackName(String packName, String packNameUp) {
+        return up(packName)
+                .replace(" ", "_")
+                .contains(packNameUp);
     }
 
     private static void handleItem(List<Rename> renames, String itemTag, List<Rename> resultList) {
