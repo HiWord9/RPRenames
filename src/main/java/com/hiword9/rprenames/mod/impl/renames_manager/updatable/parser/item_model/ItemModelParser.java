@@ -7,6 +7,7 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.api.core.renames_manager.RenamesManager;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.SelectCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenamePropertiesResolver;
+import com.hiword9.rprenames.mod.util.ParserHelper;
 import com.hiword9.rprenames.util.Util;
 import net.minecraft.client.renderer.item.ClientItem;
 import net.minecraft.client.renderer.item.properties.select.ComponentContents;
@@ -14,6 +15,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
@@ -43,7 +45,11 @@ public class ItemModelParser implements Parser {
         var propertiesResolver = new RenamePropertiesResolver(resourceManager);
         var ignoredProperties = new LinkedHashMap<SelectCondition<?, ?>, Set<Item>>();
         var renameDataList = ItemModelData.mergeAllPossible(
-                ItemModelDataExplorer.getListUnmerged(itemAssets).stream()
+                ItemModelDataExplorer.getMapUnmerged(itemAssets).entrySet().stream()
+                        .flatMap(entry -> {
+                            var pack = getPack(resourceManager, entry.getKey());
+                            return entry.getValue().stream().map(data -> data.withPack(pack));
+                        })
                         .map(data -> {
                             var renameCondition = getRenameCondition(data.applicableConditions, false);
                             collectIgnoredProperties(ignoredProperties, data, renameCondition);
@@ -61,6 +67,7 @@ public class ItemModelParser implements Parser {
                     data.contexts,
                     renameCondition.value,
                     data.properties,
+                    data.pack,
                     data.items.toArray(new Item[]{})
             );
 
@@ -83,6 +90,12 @@ public class ItemModelParser implements Parser {
                 itemsToString(items),
                 condition.propertiesDefinition
         ));
+    }
+
+    private static @Nullable PackLocationInfo getPack(ResourceManager resourceManager, Item item) {
+        return resourceManager.getResource(ParserHelper.getItemAssetFile(item))
+                .map(resource -> resource.source().location())
+                .orElse(null);
     }
 
     private static ItemModelData withRenameProperties(

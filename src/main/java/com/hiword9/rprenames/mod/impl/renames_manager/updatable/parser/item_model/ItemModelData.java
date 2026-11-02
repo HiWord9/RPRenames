@@ -2,7 +2,9 @@ package com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mod
 
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.condition.ItemModelCondition;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class ItemModelData {
@@ -10,6 +12,7 @@ public class ItemModelData {
     protected final List<ItemModelCondition.Applicable> applicableConditions;
     protected final List<List<ItemModelCondition>> contexts;
     protected final RenameProperties properties;
+    protected final @Nullable PackLocationInfo pack;
 
     public ItemModelData(
             List<Item> items,
@@ -25,14 +28,29 @@ public class ItemModelData {
             List<List<ItemModelCondition>> contexts,
             RenameProperties properties
     ) {
+        this(items, conditions, contexts, properties, null);
+    }
+
+    public ItemModelData(
+            List<Item> items,
+            List<ItemModelCondition.Applicable> conditions,
+            List<List<ItemModelCondition>> contexts,
+            RenameProperties properties,
+            @Nullable PackLocationInfo pack
+    ) {
         this.items = items;
         this.applicableConditions = conditions;
         this.contexts = contexts;
         this.properties = properties == null ? RenameProperties.EMPTY : properties;
+        this.pack = pack;
     }
 
     public ItemModelData withProperties(RenameProperties properties) {
-        return new ItemModelData(items, applicableConditions, contexts, properties);
+        return new ItemModelData(items, applicableConditions, contexts, properties, pack);
+    }
+
+    public ItemModelData withPack(@Nullable PackLocationInfo pack) {
+        return new ItemModelData(items, applicableConditions, contexts, properties, pack);
     }
 
     public ItemModelData tryMerge(ItemModelData other) {
@@ -49,7 +67,7 @@ public class ItemModelData {
             if (!items.contains(item))
                 items.add(item);
 
-        return new ItemModelData(items, mergedConditions, contexts, properties);
+        return new ItemModelData(items, mergedConditions, contexts, properties, pack);
     }
 
     // todo this should be improved for edge cases

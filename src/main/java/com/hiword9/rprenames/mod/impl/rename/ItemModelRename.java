@@ -3,6 +3,7 @@ package com.hiword9.rprenames.mod.impl.rename;
 import com.hiword9.rprenames.api.core.rename.Rename;
 import com.hiword9.rprenames.api.core.rename.renderer.RenameRenderer;
 import com.hiword9.rprenames.api.ext.rename.HasDescription;
+import com.hiword9.rprenames.api.ext.rename.HasResourcePack;
 import com.hiword9.rprenames.api.ext.rename.HasVisibility;
 import com.hiword9.rprenames.api.ext.rename.Informative;
 import com.hiword9.rprenames.api.ext.rename.Visibility;
@@ -12,12 +13,15 @@ import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_mode
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.BuiltinRenameProperties;
 import com.hiword9.rprenames.mod.impl.renames_manager.updatable.parser.item_model.properties.RenameProperties;
 import com.hiword9.rprenames.mod.item_group.ItemGroupComponent;
+import com.hiword9.rprenames.mod.util.ParserHelper;
 import com.hiword9.rprenames.mod.util.RenameInfoHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,11 +30,12 @@ import static com.hiword9.rprenames.util.Util.config;
 
 public class ItemModelRename
         extends Rename
-        implements ItemGroupComponent, GhostCraft.Loader, Informative, HasDescription, HasVisibility
+        implements ItemGroupComponent, GhostCraft.Loader, Informative, HasDescription, HasVisibility, HasResourcePack
 {
     protected final List<ItemModelCondition.Applicable> conditions = new ArrayList<>();
     protected final List<List<ItemModelCondition>> contexts = new ArrayList<>();
     protected final RenameProperties properties;
+    protected final @Nullable PackLocationInfo pack;
 
     public ItemModelRename(
             List<ItemModelCondition.Applicable> conditions,
@@ -48,10 +53,22 @@ public class ItemModelRename
             RenameProperties properties,
             Item... items
     ) {
+        this(conditions, contexts, names, properties, null, items);
+    }
+
+    public ItemModelRename(
+            List<ItemModelCondition.Applicable> conditions,
+            List<List<ItemModelCondition>> contexts,
+            List<Component> names,
+            RenameProperties properties,
+            @Nullable PackLocationInfo pack,
+            Item... items
+    ) {
         super(names, items);
         if (conditions != null) this.conditions.addAll(conditions);
         if (contexts != null) this.contexts.addAll(contexts);
         this.properties = properties == null ? RenameProperties.EMPTY : properties;
+        this.pack = pack;
     }
 
     @Override
@@ -112,6 +129,19 @@ public class ItemModelRename
     @Override
     public Visibility getVisibility() {
         return properties.get(BuiltinRenameProperties.VISIBILITY);
+    }
+
+    @Override
+    public @Nullable PackLocationInfo getPack() {
+        return pack;
+    }
+
+    @Override
+    public List<String> getPaths() {
+        if (pack == null) return List.of();
+        return items.stream()
+                .map(item -> ParserHelper.getFullPathFromIdentifier(pack.id(), ParserHelper.getItemAssetFile(item)))
+                .toList();
     }
 
     @Override
