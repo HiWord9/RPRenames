@@ -42,14 +42,14 @@ public class RenameInfoHelper {
                 .append(Component.nullToEmpty(value).copy().withStyle(ChatFormatting.GREEN));
     }
 
-    public static List<Component> getRPPath(@Nullable PackLocationInfo pack, String path) {
+    public static List<Component> getRPPath(@Nullable PackLocationInfo pack, List<String> paths) {
         var packName = ParserHelper.getPackName(pack);
         var lines = new ArrayList<Component>();
-        if (packName != null && path != null) {
-            lines.add(getPath(path, packName));
+        if (packName != null) {
+            for (String path : paths) lines.add(getPath(path, packName));
         }
 
-        if (path == null) {
+        if (paths.isEmpty()) {
             lines.add(
                     Component.translatable("rprenames.command.info.noPath")
                             .withStyle(ChatFormatting.RED)

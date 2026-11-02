@@ -143,15 +143,15 @@ public class CITRename
     }
 
     @Override
-    public String getPath() {
-        return path;
+    public List<String> getPaths() {
+        return path == null ? List.of() : List.of(path);
     }
 
     @Override
     public List<Component> getInfo() {
         var info = new ArrayList<Component>();
         info.addAll(RenameInfoHelper.getProperties(properties));
-        info.addAll(RenameInfoHelper.getRPPath(pack, path));
+        info.addAll(RenameInfoHelper.getRPPath(pack, getPaths()));
         return info;
     }
 
