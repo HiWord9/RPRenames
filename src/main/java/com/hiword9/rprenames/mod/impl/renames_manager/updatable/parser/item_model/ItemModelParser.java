@@ -44,17 +44,23 @@ public class ItemModelParser implements Parser {
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
         var propertiesResolver = new RenamePropertiesResolver(resourceManager);
         var ignoredProperties = new LinkedHashMap<SelectCondition<?, ?>, Set<Item>>();
+        // same renames of one item are merged from any packs, of different items only from one pack
         var renameDataList = ItemModelData.mergeAllPossible(
                 ItemModelDataExplorer.getMapUnmerged(itemAssets).entrySet().stream()
-                        .flatMap(entry -> {
+                        .map(entry -> {
                             var pack = getPack(resourceManager, entry.getKey());
-                            return entry.getValue().stream().map(data -> data.withPack(pack));
+                            return ItemModelData.mergeAllPossible(
+                                    entry.getValue().stream()
+                                            .map(data -> {
+                                                var renameCondition = getRenameCondition(data.applicableConditions, false);
+                                                collectIgnoredProperties(ignoredProperties, data, renameCondition);
+                                                return withRenameData(data.withPack(pack), renameCondition, propertiesResolver);
+                                            })
+                                            .toList(),
+                                    false
+                            );
                         })
-                        .map(data -> {
-                            var renameCondition = getRenameCondition(data.applicableConditions, false);
-                            collectIgnoredProperties(ignoredProperties, data, renameCondition);
-                            return withRenameData(data, renameCondition, propertiesResolver);
-                        })
+                        .flatMap(Collection::stream)
                         .toList()
         );
 

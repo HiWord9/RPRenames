@@ -54,8 +54,12 @@ public class ItemModelData {
     }
 
     public ItemModelData tryMerge(ItemModelData other) {
+        return tryMerge(other, true);
+    }
+
+    public ItemModelData tryMerge(ItemModelData other, boolean separatePacks) {
         if (!properties.equals(other.properties)) return null;
-        if (!Objects.equals(pack, other.pack)) return null;
+        if (separatePacks && !Objects.equals(pack, other.pack)) return null;
 
         var mergedConditions = tryMergeConditions(applicableConditions, other.applicableConditions);
         if (mergedConditions == null) return null;
@@ -83,6 +87,10 @@ public class ItemModelData {
     }
 
     public static List<ItemModelData> mergeAllPossible(List<ItemModelData> itemModelDataList) {
+        return mergeAllPossible(itemModelDataList, true);
+    }
+
+    public static List<ItemModelData> mergeAllPossible(List<ItemModelData> itemModelDataList, boolean separatePacks) {
         var list = new ArrayList<>(itemModelDataList);
         for (int i = 0; i < list.size(); i++) {
             var currentData = list.get(i);
@@ -92,7 +100,7 @@ public class ItemModelData {
                 var other = list.get(j);
                 if (other == null) continue;
 
-                var merged = currentData.tryMerge(other);
+                var merged = currentData.tryMerge(other, separatePacks);
                 if (merged == null) continue;
 
                 currentData = merged;
