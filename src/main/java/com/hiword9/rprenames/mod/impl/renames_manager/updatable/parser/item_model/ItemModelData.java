@@ -55,6 +55,7 @@ public class ItemModelData {
 
     public ItemModelData tryMerge(ItemModelData other) {
         if (!properties.equals(other.properties)) return null;
+        if (!Objects.equals(pack, other.pack)) return null;
 
         var mergedConditions = tryMergeConditions(applicableConditions, other.applicableConditions);
         if (mergedConditions == null) return null;
