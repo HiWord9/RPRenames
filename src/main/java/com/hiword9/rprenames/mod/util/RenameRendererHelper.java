@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,5 +69,14 @@ public class RenameRendererHelper {
                 !zip ? packNameText : packNameText
                         .append(Component.literal(".zip").withStyle(Style.EMPTY.withColor(ChatFormatting.GRAY)))
         );
+    }
+
+    public static ClientTooltipComponent packNameTooltipComponent(Component packName) {
+        if (packName.getContents() instanceof PlainTextContents.LiteralContents(String text)
+                && packName.getSiblings().isEmpty()
+                && packName.getStyle().isEmpty()
+        ) return packNameTooltipComponent(text);
+
+        return tooltipOf(Component.empty().withStyle(ChatFormatting.GOLD).append(packName));
     }
 }
