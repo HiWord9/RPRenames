@@ -5,7 +5,7 @@ plugins {
 }
 
 base {
-	archivesName = "$project.archives_base_name-$project.minecraft_version"
+	archivesName = project.archives_base_name
 }
 
 version = project.mod_version
@@ -154,7 +154,12 @@ java {
 	withSourcesJar()
 }
 
+tasks.named("jar").configure {
+	archiveClassifier.set "dev"
+}
+
 tasks.named("sourcesJar").configure {
+	archiveClassifier.set "sources-dev"
 	finalizedBy("shadowSourcesJar")
 }
 
@@ -166,7 +171,7 @@ tasks.withType(Jar).configureEach {
 publishing {
 	publications {
 		register("mavenJava", MavenPublication) {
-			artifactId = "${project.mod_id}-${project.minecraft_version}"
+			artifactId = project.mod_id
 			artifact tasks.named("shadowJar")
 			artifact tasks.named("shadowSourcesJar")
 		}
