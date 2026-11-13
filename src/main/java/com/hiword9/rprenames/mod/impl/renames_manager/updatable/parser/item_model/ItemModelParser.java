@@ -22,12 +22,15 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import static com.hiword9.rprenames.util.Util.config;
 
 public class ItemModelParser implements Parser {
-    private final Map<Identifier, ClientItem> itemAssets = new HashMap<>();
+    private CompletableFuture<Map<Identifier, ClientItem>> itemAssets = CompletableFuture.completedFuture(Map.of());
 
     public RenamesManager<? super ItemModelRename> renamesManager;
 
@@ -35,13 +38,15 @@ public class ItemModelParser implements Parser {
         this.renamesManager = renamesManager;
     }
 
-    public void updateItemAssets(Map<Identifier, ClientItem> itemAssets) {
-        this.itemAssets.clear();
-        this.itemAssets.putAll(itemAssets);
+    public void updateItemAssets(CompletableFuture<Map<Identifier, ClientItem>> itemAssets) {
+        this.itemAssets = itemAssets;
     }
 
     @Override
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
+        var itemAssets = getItemAssets();
+        if (itemAssets == null) return;
+
         var propertiesResolver = new RenamePropertiesResolver(resourceManager);
         var ignoredProperties = new LinkedHashMap<SelectCondition<?, ?>, Set<Item>>();
         // same renames of one item are merged from any packs, of different items only from one pack
@@ -96,6 +101,15 @@ public class ItemModelParser implements Parser {
                 itemsToString(items),
                 condition.propertiesDefinition
         ));
+    }
+
+    private @Nullable Map<Identifier, ClientItem> getItemAssets() {
+        try {
+            return itemAssets.join();
+        } catch (CompletionException | CancellationException e) {
+            RPRenames.LOGGER.error("Could not get item assets", e);
+            return null;
+        }
     }
 
     private static @Nullable PackLocationInfo getPack(ResourceManager resourceManager, Item item) {

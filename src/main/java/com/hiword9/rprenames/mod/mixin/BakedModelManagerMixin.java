@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
 @Mixin(ModelManager.class)
@@ -18,7 +19,8 @@ public class BakedModelManagerMixin {
             CallbackInfoReturnable<CompletableFuture<Void>> cir,
             @Local(ordinal = 4) CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemAssetsLoaderResult
     ) {
-        var itemAssets = itemAssetsLoaderResult.join().contents();
-        RPRenames.itemModelParser.updateItemAssets(itemAssets);
+        RPRenames.itemModelParser.updateItemAssets(
+                itemAssetsLoaderResult.thenApply(itemAssets -> new HashMap<>(itemAssets.contents()))
+        );
     }
 }
