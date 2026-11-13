@@ -63,8 +63,7 @@ public class UpdatableRenamesManager
             PreparableReloadListener.PreparationBarrier reloadSynchronizer,
             Executor applyExecutor
     ) {
-        // item model renames need item assets loaded by ModelManager; wait for them without blocking
-        return RPRenames.itemModelParser.getItemAssetsFuture().exceptionally(t -> null).thenApplyAsync(o -> {
+        return CompletableFuture.supplyAsync(() -> {
             if (config().updateConfig) updateRenames(store.resourceManager(), Profiler.get());
             return null;
         }, prepareExecutor).thenCompose(reloadSynchronizer::wait).thenAcceptAsync(o -> {}, applyExecutor);

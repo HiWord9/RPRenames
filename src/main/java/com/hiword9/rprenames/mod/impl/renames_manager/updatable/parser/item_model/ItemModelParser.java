@@ -22,13 +22,16 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import static com.hiword9.rprenames.util.Util.config;
 
 public class ItemModelParser implements Parser {
-    private final Map<Identifier, ClientItem> itemAssets = new HashMap<>();
+    // supplied by ModelManager on each resource reload; completes during that reload's preparation
+    private volatile CompletableFuture<Map<Identifier, ClientItem>> itemAssets = CompletableFuture.completedFuture(Map.of());
 
     public RenamesManager<? super ItemModelRename> renamesManager;
 
@@ -36,24 +39,21 @@ public class ItemModelParser implements Parser {
         this.renamesManager = renamesManager;
     }
 
-    private volatile CompletableFuture<?> itemAssetsFuture = CompletableFuture.completedFuture(null);
-
-    public void setItemAssetsFuture(CompletableFuture<?> future) {
-        this.itemAssetsFuture = future;
-    }
-
-    /** Completes once item assets of the current resource reload are loaded. */
-    public CompletableFuture<?> getItemAssetsFuture() {
-        return itemAssetsFuture;
-    }
-
-    public void updateItemAssets(Map<Identifier, ClientItem> itemAssets) {
-        this.itemAssets.clear();
-        this.itemAssets.putAll(itemAssets);
+    public void updateItemAssets(CompletableFuture<Map<Identifier, ClientItem>> itemAssets) {
+        this.itemAssets = itemAssets;
     }
 
     @Override
     public void parse(ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<Identifier, ClientItem> itemAssets;
+        try {
+            // parsing runs off the render thread, so waiting here does not block the resource reload
+            itemAssets = this.itemAssets.join();
+        } catch (CompletionException | CancellationException e) {
+            RPRenames.LOGGER.error("Could not get item assets, skipping item model renames", e);
+            return;
+        }
+
         var propertiesResolver = new RenamePropertiesResolver(resourceManager);
         var ignoredProperties = new LinkedHashMap<SelectCondition<?, ?>, Set<Item>>();
         // same renames of one item are merged from any packs, of different items only from one pack

@@ -13,16 +13,15 @@ import java.util.concurrent.CompletableFuture;
 
 @Mixin(ModelManager.class)
 public class BakedModelManagerMixin {
-    // Must not block: reload() runs on the render thread while listeners are still being started,
-    // and the item assets future may depend on listeners that start later (e.g. Fabric model loading
-    // plugins waiting on another listener's shared state) - joining here deadlocks the game on startup.
+    // must not wait for the future here: reload is called on the render thread before the following
+    // reload listeners are started, while item assets may depend on them (e.g. via model loading plugins)
     @Inject(at = @At("RETURN"), method = "reload")
     private static void afterReloadModels(
             CallbackInfoReturnable<CompletableFuture<Void>> cir,
             @Local(ordinal = 4) CompletableFuture<ClientItemInfoLoader.LoadedClientInfos> itemAssetsLoaderResult
     ) {
-        RPRenames.itemModelParser.setItemAssetsFuture(
-                itemAssetsLoaderResult.thenAccept(result -> RPRenames.itemModelParser.updateItemAssets(result.contents()))
+        RPRenames.itemModelParser.updateItemAssets(
+                itemAssetsLoaderResult.thenApply(ClientItemInfoLoader.LoadedClientInfos::contents)
         );
     }
 }
