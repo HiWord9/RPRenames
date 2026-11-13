@@ -22,6 +22,7 @@ import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.hiword9.rprenames.util.Util.config;
@@ -33,6 +34,17 @@ public class ItemModelParser implements Parser {
 
     public ItemModelParser(RenamesManager<? super ItemModelRename> renamesManager) {
         this.renamesManager = renamesManager;
+    }
+
+    private volatile CompletableFuture<?> itemAssetsFuture = CompletableFuture.completedFuture(null);
+
+    public void setItemAssetsFuture(CompletableFuture<?> future) {
+        this.itemAssetsFuture = future;
+    }
+
+    /** Completes once item assets of the current resource reload are loaded. */
+    public CompletableFuture<?> getItemAssetsFuture() {
+        return itemAssetsFuture;
     }
 
     public void updateItemAssets(Map<Identifier, ClientItem> itemAssets) {
